@@ -1,4 +1,4 @@
-# Antemortem Structural Lab v0.1.0
+# Antemortem Structural Lab v0.1.1 — TypeSafe Direct API
 
 **실행 가능한 연구용 실험판 — 공개 릴리스 / 프로덕션 감사기 / AGI 안전성 판정기가 아닙니다.**
 
@@ -13,7 +13,7 @@ Omega Aile의 기존 `antemortem-cli`를 변경하거나 대체하지 않는 독
 | CAST | 명시적으로 신뢰한 로컬 Python 함수에 입력을 주입해 실제 실행한 줄과 반환값/예외를 기록 | 격리·실행시간 제한·비신뢰 코드 실행 |
 | 교차 피드백 | 실제 도달했지만 참 분기에는 진입하지 못한 조건을 MRI 조건식과 결합해 새로운 입력 생성 | 범용 최적 실험 설계·임의 수학 증명 |
 | 오라클 | `implementation`과 명시된 `reference` 함수를 같은 입력으로 실행·비교. 별도 참조 소스 지정 가능 | 참조 구현이 절대적으로 옳다는 자동 증명 |
-| Jev | TypeSafe Jev/Vercel의 공식 HTTP `/v1/evaluate` Choice 요청 형식에 맞춰 선택적으로 다음 입력 후보를 선택 | 사용하지 않은 API를 실제 사용했다고 보고, 판단을 진실의 증거로 채택 |
+| Jev | TypeSafe 직접 API `/v1/systemone` (`jev-latest`) 또는 Vercel AI Gateway `/v1/evaluate` (`typesafe-ai/jev`) 중 **정확히 하나**로 다음 입력 후보 선택 | 미실행 API를 성공했다고 보고, Jev 판단을 진실의 증거로 채택 |
 | 증거 재검사 | 소스·오라클의 SHA256 및 입력·출력 관계를 다시 확인 | 암호학적 서명, 불신 환경에서의 실행 증명 |
 
 ## 실행하기
@@ -83,20 +83,55 @@ python -m tomolab bench --budget 12 --seeds 30
 - 통계적 신뢰구간 및 문제 외 분포에서의 검증
 - 실제 Jev vs 결정적 정책의 성능 차이를 측정한 실험
 
-## Jev: 선택 사항이며 실제 호출하지 않은 모드를 엄격하게 구별
+## Jev 실제 연결: TypeSafe 직접 키와 Vercel 키 구분
 
-공식 Vercel 문서: https://vercel.com/changelog/ai-gateway-now-supports-typesafe-clients-and-http-api-for-jev
+- TypeSafe 공식 API: https://docs.typesafe.ai/introduction/quickstart
+- TypeSafe 원시 HTTP: `POST https://api.typesafe.ai/v1/systemone` / 모델 `jev-latest` / 인증 `TYPESAFE_API_KEY`
+- Vercel 공식 API: `POST https://ai-gateway.vercel.sh/v1/evaluate` / 모델 `typesafe-ai/jev` / 인증 `AI_GATEWAY_API_KEY`
+- 키를 혼용하지 마세요. `--jev-provider auto`는 TypeSafe 키가 있으면 TypeSafe를 우선합니다. 실패해도 다른 과금 제공자로 자동 재시도하지 않습니다.
 
-```bash
-export AI_GATEWAY_API_KEY=...  # 직접 구성하는 경우만
-python -m tomolab demo --case two_paths --mode cross --jev --budget 8
+### Windows에서 키를 노출하지 않고 연결 확인하기
+
+압축 해제한 이 프로젝트 폴더에서 **PowerShell**로 실행합니다. 키를 채팅·명령 인수·코드·파일에 넣지 않고 숨김 입력 창에서 직접 입력할 수 있습니다.
+
+```powershell
+.\scripts\connect-typesafe-jev.ps1
 ```
 
-- `--jev` 없이 네트워크 요청은 없습니다.
-- `--jev` 사용 시 2개 이상의 후보가 있을 때만 실제 모델 선택 요청을 수행하며, API 비용이 발생할 수 있습니다.
-- 인증 키가 없거나 호출이 실패하면 **실제 Jev가 작동한 것처럼 보고하지 않고** `jev_error_deterministic_fallback`이라고 기록합니다.
-- 전송 페이로드에는 후보의 작은 정수 입력값·분기 대상 여부·시험 횟수만 포함하며 소스코드·파일명·비밀정보는 포함하지 않습니다. 그러나 **입력값 자체가 민감하다면 사용하지 마세요**.
-- `jev_live`는 요청·응답을 처리했다는 상태일 뿐 Jev가 더 좋은 선택을 했다는 뜻은 아닙니다. 포함된 모의 응답 테스트는 API 호환성/후보 화이트리스트 계약만 테스트합니다. 실제 계정 호출은 **실행하지 않았습니다**.
+스크립트 실행 정책상 막힌 경우, 정책을 영구 변경하지 말고 별도 PowerShell 프로세스로 실행할 수 있습니다. 조직 관리 PC라면 보안 정책을 우회하지 마세요.
+
+```powershell
+powershell -NoProfile -ExecutionPolicy RemoteSigned -File .\scripts\connect-typesafe-jev.ps1
+```
+
+**성공 신호:** `decision_provider: jev_live_typesafe`, `decision_calls: 1`, `decision_live_calls: 1`, `decision_fallbacks: 0`.
+이 테스트는 고정된 예제의 작은 정수 후보만 전송하며 **실제 TypeSafe API 1회 호출 비용**이 발생할 수 있습니다. 키는 종료 시 프로세스 환경에서 제거합니다. 키를 로그·스크린샷에 포함하지 마세요.
+
+### 수동 설정
+
+macOS / Linux / WSL:
+
+```bash
+read -rs -p "TypeSafe API key: " TYPESAFE_API_KEY; echo
+export TYPESAFE_API_KEY
+python -m tomolab demo --case two_paths --mode cross --jev --jev-provider typesafe --budget 1 --output results/typesafe_jev_smoke.json
+unset TYPESAFE_API_KEY
+```
+
+Windows PowerShell에서는 위 스크립트를 우선 사용하세요. 여기에 키 값을 직접 적어두면 Shell 기록에 남을 수 있습니다.
+
+다른 청구 계정인 Vercel을 **명시적으로** 선택하고 싶다면 `--jev-provider vercel`과 `AI_GATEWAY_API_KEY`를 사용합니다.
+
+### 결과 해석
+
+- `--jev`가 없으면 네트워크 요청은 발생하지 않습니다.
+- `--jev`라도 후보가 2개 미만이면 모델 요청이 발생하지 않습니다.
+- JSON의 `decision_live_calls`와 `decision_fallbacks`는 라이브 선택 횟수와 폴백 횟수를 구분합니다. 혼합되는 경우 `jev_partial_fallback`입니다.
+- 실제 요청을 시도해 응답을 처리한 경우 `decision_provider=jev_live_typesafe` 또는 `jev_live_vercel`.
+- 인증·연결·응답 오류는 `decision_provider=jev_error_deterministic_fallback`과 `decision_fallbacks > 0`으로 기록합니다. 오류를 감추고 연결 성공이라고 주장하지 마세요.
+- 실험 데이터는 공개된 예제의 작은 정수 후보·분기 플래그만 전송합니다. 일반 프로젝트에서 입력값 자체가 민감하면 `--jev`를 사용하지 마세요.
+- 실제 계정 키 없이도 모의 응답을 사용한 오프라인 계약 테스트는 실행할 수 있습니다. **본 개발 환경에서는 사용자의 실제 키가 없으므로 라이브 인증까지는 검증하지 못했습니다.**
+- Jev 선택이 결정적 우위로 입증된 것은 아니며, 성능 향상 판단은 추후 동일 예산 블라인드 평가로 제한합니다.
 
 ## 판정 의미
 
