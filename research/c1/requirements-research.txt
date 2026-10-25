@@ -1,0 +1,2 @@
+# Optional independent SMT cross-check only; not a runtime dependency.
+z3-solver==5.3.2.0
