@@ -21,6 +21,17 @@ $confirmation = Read-Host 'Type PUBLISH to confirm'
 if ($confirmation -cne 'PUBLISH') { throw 'Cancelled, no publishing performed.' }
 gh repo view $repo --json name > $null 2>&1
 if ($LASTEXITCODE -eq 0) { throw "$repo already exists. Manual inspection is required to prevent accidental overwrite." }
+# A local Git bundle clone has origin pointing at the local .bundle file.
+# Remove only that known temporary origin; never rewrite an unexpected remote.
+$existingOrigin = git remote get-url origin 2>$null
+if ($LASTEXITCODE -eq 0) {
+    if ($existingOrigin -like '*.bundle') {
+        git remote remove origin
+        if ($LASTEXITCODE -ne 0) { throw 'Cannot remove local bundle origin' }
+    } else {
+        throw "Unexpected existing origin: $existingOrigin. Review the remote manually before publishing."
+    }
+}
 gh repo create $repo --public --source . --remote origin --push --description 'Experimental MRI-CAST feedback and claim-to-witness research tools'
 if ($LASTEXITCODE -ne 0) { throw 'Repository creation or initial push failed' }
 git push origin main
