@@ -1,0 +1,25 @@
+{
+  "schema": "c1-evaluation-provenance-v1",
+  "public_case_count": 46,
+  "split": "PUBLIC_DEVELOPMENT_NOT_HELD_OUT",
+  "origin": "New synthetic fixtures authored for this repository by an evaluation-role agent. Formal anchors, manual predicates and gold membership tables were frozen before reading implementation results.",
+  "independence": "Separate implementation/evaluation roles and files, same model family and session; not independent human or external benchmark validation.",
+  "human_reviews": 0,
+  "external_benchmark_cases": 0,
+  "candidate_obligations": "Curated adversarial mutations separate from core implementation; paired ablation uses identical candidates and evidence.",
+  "gold": "Explicit truth membership tables independently generated using manually written predicates, not the production DSL evaluator.",
+  "sealed_policy": "Private archive outside Git; hash commitment only; unused and unopened for C1 dev evaluation.",
+  "limitations": [
+    "Tiny finite synthetic domains",
+    "Natural-language anchor fidelity not independently validated",
+    "Repeated conceptual families and bilingual templates are correlated cases",
+    "Gold source independence is procedural, not an external annotation authority"
+  ],
+  "gold_freeze_commit": "d067dd1",
+  "dataset_content_sha256": "b392278896fbbe4939206285d4aef7f4a805aadecebb2b0d25ca6b47bd30d58e",
+  "gold_content_sha256": "5bd7222cef1b426f83431cb16b93b0ff3ba4be1ecafea57a4581194506908291",
+  "content_hash_rule": "SHA-256 of UTF-8 JSON with sorted keys, ensure_ascii=False, separators comma/colon; stable across LF/CRLF.",
+  "holdout_revision": "v1 development-related unused archive retained; v2 distinct conceptual family created after preliminary dev inspection and before final multi-baseline evaluation, unused. See commitment lineage.",
+  "candidate_generation_blinding": "LLM role read only blind_generation_prompts.json and its own direct outputs during self-review. No gold, supplied formal C, curated O, core source, or result access during generation. Same model family/session; no human validation.",
+  "fairness_corrections": "Generated candidates use their declared/prompt quantifier, never the curated mutation obligation_quantifier; existential candidates use finite quantified outcome, not a single failing valuation."
+}
