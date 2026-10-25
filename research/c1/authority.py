@@ -252,6 +252,8 @@ def analyze(contract: dict[str, Any]) -> dict[str, Any]:
         "witnesses": {"c_not_o": None, "o_not_c": None},
         "checked_states": 0, "admissible_states": 0,
         "contract_sha256": None, "formal_anchor_only": True,
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN", "semantic_fidelity": "NOT_ESTABLISHED",
         "relation_scope": "pointwise predicates on common finite admissible support",
     }
     try:
@@ -323,6 +325,8 @@ def adjudicate(contract: dict[str, Any], evidence: dict[str, Any]) -> dict[str, 
     result: dict[str, Any] = {
         "status": "UNKNOWN", "reason": "NO_LOGICAL_AUTHORITY", "authority": None,
         "evidence_valid": False, "analysis": analysis, "formal_anchor_only": True,
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN", "semantic_fidelity": "NOT_ESTABLISHED",
     }
     try:
         if analysis["relation"] not in {

@@ -4,6 +4,8 @@
 이 검사는 사람이 제공한 형식 주장 `C`와 생성된 의무 `O`를 비교한다.
 `claim_text`와 `C`의 의미 동치는 검증하지 않는다. `reviewed`는 제공자의
 검토 상태를 기록하는 값이며 엔진이 자연어 정확성을 인증했다는 뜻이 아니다.
+이번 합성 자료의 독립 인간 의미 판정 수는 0이다. 별도 작성 에이전트의 제공된
+형식 anchor 출처를 기록했으며 `reviewed`라는 이름만으로 인간 판정으로 승격하지 않는다.
 
 ## 계약
 
@@ -72,6 +74,8 @@ bounded_proof = adjudicate(contract, {"status": "PASS_EXHAUSTIVE"})
 
 `analyze`는 관계, 함의 두 방향, 반대 방향의 분리 witness, 입력/지원 영역 상태 수,
 전제 만족 여부, 계약 SHA256, 시간을 반환한다. `formal_anchor_only=True`가 항상 붙는다.
+또한 모든 결과에 `conclusion_target=SUPPLIED_FORMAL_CLAIM`,
+`natural_language_status=UNKNOWN`, `semantic_fidelity=NOT_ESTABLISHED`를 명시한다.
 
 `adjudicate`는 evidence를 신뢰하지 않고 다시 검증한다. 실패 witness는 모든 변수의
 정확한 타입·범위·전제·예외를 만족하고 실제로 의무를 위반해야 한다. `forall` 주장과

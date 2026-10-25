@@ -184,3 +184,12 @@ def test_hash_binds_evidence_to_contract_and_rejects_tampering():
 def test_sampled_pass_never_proves_and_invalid_evidence_does_not_raise():
     for evidence in [{"status": "PASS_SAMPLED"}, {"status": "FAIL"}, None, []]:
         assert adjudicate(contract(), evidence)["status"] == "UNKNOWN"
+
+
+def test_every_conclusion_preserves_unknown_natural_language_fidelity():
+    c = contract()
+    for result in [analyze(c), adjudicate(c, {"status": "FAIL", "witness": {"x": -1}}),
+                   adjudicate(c, {"status": "PASS_EXHAUSTIVE"}), analyze({})]:
+        assert result["conclusion_target"] == "SUPPLIED_FORMAL_CLAIM"
+        assert result["natural_language_status"] == "UNKNOWN"
+        assert result["semantic_fidelity"] == "NOT_ESTABLISHED"

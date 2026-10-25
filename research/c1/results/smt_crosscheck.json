@@ -1,0 +1,1599 @@
+{
+  "schema": "c1-z3-crosscheck-v1",
+  "scope": "public development only; sealed holdout untouched",
+  "solver_distribution": "z3-solver",
+  "solver_package_version": "5.3.2.0",
+  "solver_version": "5.3.2",
+  "timeout_ms_per_query": 1000,
+  "official_sources": [
+    "https://z3prover.github.io/api/html/namespacez3py.html",
+    "https://z3prover.github.io/api/html/classz3py_1_1_solver.html"
+  ],
+  "cases": 46,
+  "parity_pass": 46,
+  "sat_unsat_cases": 40,
+  "solver_unknown_cases": 0,
+  "independence": "separate typed SMT visitor; production analyze used only after SMT for parity; no gold labels read",
+  "limitations": "cross-check of supplied formal predicates, not natural-language fidelity or real-world program behavior",
+  "rows": [
+    {
+      "id": "B01",
+      "parity": true,
+      "finite_relation": "SUFFICIENT_ONLY",
+      "smt": {
+        "relation": "SUFFICIENT_ONLY",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": false,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "x": 0
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "sat",
+            "witness": {
+              "x": 0
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.009450800000195159
+      }
+    },
+    {
+      "id": "B02",
+      "parity": true,
+      "finite_relation": "NECESSARY_ONLY",
+      "smt": {
+        "relation": "NECESSARY_ONLY",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": false,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "x": 0
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "sat",
+            "witness": {
+              "x": 0
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.004992099999071797
+      }
+    },
+    {
+      "id": "B03",
+      "parity": true,
+      "finite_relation": "EQUIVALENT",
+      "smt": {
+        "relation": "EQUIVALENT",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "x": -1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0035984000023745466
+      }
+    },
+    {
+      "id": "B04",
+      "parity": true,
+      "finite_relation": "INCOMPARABLE",
+      "smt": {
+        "relation": "INCOMPARABLE",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": false,
+        "o_implies_c": false,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "x": -1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "sat",
+            "witness": {
+              "x": 1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "o_not_c": {
+            "status": "sat",
+            "witness": {
+              "x": -1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.004939799997373484
+      }
+    },
+    {
+      "id": "B05",
+      "parity": true,
+      "finite_relation": "SUFFICIENT_ONLY",
+      "smt": {
+        "relation": "SUFFICIENT_ONLY",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": false,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "x": -2
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "sat",
+            "witness": {
+              "x": 1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0036521000001812354
+      }
+    },
+    {
+      "id": "B06",
+      "parity": true,
+      "finite_relation": "NECESSARY_ONLY",
+      "smt": {
+        "relation": "NECESSARY_ONLY",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": false,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "x": -2
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "sat",
+            "witness": {
+              "x": 1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0034549999982118607
+      }
+    },
+    {
+      "id": "B07",
+      "parity": true,
+      "finite_relation": "NECESSARY_ONLY",
+      "smt": {
+        "relation": "NECESSARY_ONLY",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": false,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "x": -1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "sat",
+            "witness": {
+              "x": -1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.005004899998311885
+      }
+    },
+    {
+      "id": "B08",
+      "parity": true,
+      "finite_relation": "SUFFICIENT_ONLY",
+      "smt": {
+        "relation": "SUFFICIENT_ONLY",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": false,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "x": -1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "sat",
+            "witness": {
+              "x": -1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.003970500001742039
+      }
+    },
+    {
+      "id": "B09",
+      "parity": true,
+      "finite_relation": "SUFFICIENT_ONLY",
+      "smt": {
+        "relation": "SUFFICIENT_ONLY",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": false,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "x": -1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "sat",
+            "witness": {
+              "x": -1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.004966000000422355
+      }
+    },
+    {
+      "id": "B10",
+      "parity": true,
+      "finite_relation": "EQUIVALENT",
+      "smt": {
+        "relation": "EQUIVALENT",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "x": 1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0036547999989124946
+      }
+    },
+    {
+      "id": "L01",
+      "parity": true,
+      "finite_relation": "SUFFICIENT_ONLY",
+      "smt": {
+        "relation": "SUFFICIENT_ONLY",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": false,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "p": false,
+              "q": false
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "sat",
+            "witness": {
+              "p": true,
+              "q": false
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0017127000028267503
+      }
+    },
+    {
+      "id": "L02",
+      "parity": true,
+      "finite_relation": "NECESSARY_ONLY",
+      "smt": {
+        "relation": "NECESSARY_ONLY",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": false,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "p": false,
+              "q": false
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "sat",
+            "witness": {
+              "p": true,
+              "q": false
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0014009000005898997
+      }
+    },
+    {
+      "id": "L03",
+      "parity": true,
+      "finite_relation": "INCOMPARABLE",
+      "smt": {
+        "relation": "INCOMPARABLE",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": false,
+        "o_implies_c": false,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "p": false,
+              "q": false
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "sat",
+            "witness": {
+              "p": false,
+              "q": true
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "o_not_c": {
+            "status": "sat",
+            "witness": {
+              "p": true,
+              "q": false
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.001731899999867892
+      }
+    },
+    {
+      "id": "L04",
+      "parity": true,
+      "finite_relation": "EQUIVALENT",
+      "smt": {
+        "relation": "EQUIVALENT",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "p": false,
+              "q": false
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0015629999979864806
+      }
+    },
+    {
+      "id": "L05",
+      "parity": true,
+      "finite_relation": "INCOMPARABLE",
+      "smt": {
+        "relation": "INCOMPARABLE",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": false,
+        "o_implies_c": false,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "p": false,
+              "q": false
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "sat",
+            "witness": {
+              "p": true,
+              "q": false
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "o_not_c": {
+            "status": "sat",
+            "witness": {
+              "p": false,
+              "q": true
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0014710000032209791
+      }
+    },
+    {
+      "id": "L06",
+      "parity": true,
+      "finite_relation": "SUFFICIENT_ONLY",
+      "smt": {
+        "relation": "SUFFICIENT_ONLY",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": false,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "p": false
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "sat",
+            "witness": {
+              "p": false
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0014866999990772456
+      }
+    },
+    {
+      "id": "L07",
+      "parity": true,
+      "finite_relation": "SUFFICIENT_ONLY",
+      "smt": {
+        "relation": "SUFFICIENT_ONLY",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": false,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "p": false
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "sat",
+            "witness": {
+              "p": true
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0013041999991401099
+      }
+    },
+    {
+      "id": "L08",
+      "parity": true,
+      "finite_relation": "NECESSARY_ONLY",
+      "smt": {
+        "relation": "NECESSARY_ONLY",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": false,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "p": false,
+              "q": false
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "sat",
+            "witness": {
+              "p": false,
+              "q": true
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.001357799999823328
+      }
+    },
+    {
+      "id": "P01",
+      "parity": true,
+      "finite_relation": "SUFFICIENT_ONLY",
+      "smt": {
+        "relation": "SUFFICIENT_ONLY",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": false,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "x": 0
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "sat",
+            "witness": {
+              "x": 0
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0030646999985037837
+      }
+    },
+    {
+      "id": "P02",
+      "parity": true,
+      "finite_relation": "EQUIVALENT",
+      "smt": {
+        "relation": "EQUIVALENT",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "x": 1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.002912599997216603
+      }
+    },
+    {
+      "id": "P03",
+      "parity": true,
+      "finite_relation": "UNKNOWN",
+      "smt": {
+        "relation": "UNKNOWN",
+        "reason": "INCONSISTENT_OR_EMPTY_PREMISES",
+        "premise_satisfiable": false,
+        "c_implies_o": null,
+        "o_implies_c": null,
+        "queries": {
+          "premises": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0006083000007492956
+      }
+    },
+    {
+      "id": "P04",
+      "parity": true,
+      "finite_relation": "EQUIVALENT",
+      "smt": {
+        "relation": "EQUIVALENT",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "x": 1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0036738999988301657
+      }
+    },
+    {
+      "id": "P05",
+      "parity": true,
+      "finite_relation": "EQUIVALENT",
+      "smt": {
+        "relation": "EQUIVALENT",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "x": 1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0035075000014330726
+      }
+    },
+    {
+      "id": "P06",
+      "parity": true,
+      "finite_relation": "EQUIVALENT",
+      "smt": {
+        "relation": "EQUIVALENT",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "x": 0
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0037549000007857103
+      }
+    },
+    {
+      "id": "P07",
+      "parity": true,
+      "finite_relation": "EQUIVALENT",
+      "smt": {
+        "relation": "EQUIVALENT",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "x": -1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0022785000001022127
+      }
+    },
+    {
+      "id": "P08",
+      "parity": true,
+      "finite_relation": "EQUIVALENT",
+      "smt": {
+        "relation": "EQUIVALENT",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "p": true
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0011988999976892956
+      }
+    },
+    {
+      "id": "Q01",
+      "parity": true,
+      "finite_relation": "EQUIVALENT",
+      "smt": {
+        "relation": "EQUIVALENT",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "x": -1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.003448999999818625
+      }
+    },
+    {
+      "id": "Q02",
+      "parity": true,
+      "finite_relation": "EQUIVALENT",
+      "smt": {
+        "relation": "EQUIVALENT",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "x": -1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0034957999996549916
+      }
+    },
+    {
+      "id": "Q03",
+      "parity": true,
+      "finite_relation": "UNKNOWN",
+      "smt": {
+        "relation": "UNKNOWN",
+        "reason": "MIXED_QUANTIFIERS",
+        "premise_satisfiable": null,
+        "c_implies_o": null,
+        "o_implies_c": null,
+        "queries": {},
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 2.6999987312592566e-06
+      }
+    },
+    {
+      "id": "Q04",
+      "parity": true,
+      "finite_relation": "EQUIVALENT",
+      "smt": {
+        "relation": "EQUIVALENT",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "x": 0
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.004139599997870391
+      }
+    },
+    {
+      "id": "T01",
+      "parity": true,
+      "finite_relation": "SUFFICIENT_ONLY",
+      "smt": {
+        "relation": "SUFFICIENT_ONLY",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": false,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "before": 0,
+              "after": 1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "sat",
+            "witness": {
+              "before": 0,
+              "after": 1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.006653000000369502
+      }
+    },
+    {
+      "id": "T02",
+      "parity": true,
+      "finite_relation": "EQUIVALENT",
+      "smt": {
+        "relation": "EQUIVALENT",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "before": 0,
+              "after": 1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.003683499999169726
+      }
+    },
+    {
+      "id": "T03",
+      "parity": true,
+      "finite_relation": "INCOMPARABLE",
+      "smt": {
+        "relation": "INCOMPARABLE",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": false,
+        "o_implies_c": false,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "before": 0,
+              "after": 0
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "sat",
+            "witness": {
+              "before": 0,
+              "after": 1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "o_not_c": {
+            "status": "sat",
+            "witness": {
+              "before": 1,
+              "after": 0
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.005636099998810096
+      }
+    },
+    {
+      "id": "T04",
+      "parity": true,
+      "finite_relation": "SUFFICIENT_ONLY",
+      "smt": {
+        "relation": "SUFFICIENT_ONLY",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": false,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "before": 0,
+              "after": 1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "sat",
+            "witness": {
+              "before": 0,
+              "after": 1
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.006537000001117121
+      }
+    },
+    {
+      "id": "T05",
+      "parity": true,
+      "finite_relation": "OUT_OF_SCOPE",
+      "smt": {
+        "relation": "OUT_OF_SCOPE",
+        "reason": "OUT_OF_SCOPE_TIME_HORIZON",
+        "premise_satisfiable": null,
+        "c_implies_o": null,
+        "o_implies_c": null,
+        "queries": {},
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 2.4000000848900527e-06
+      }
+    },
+    {
+      "id": "T06",
+      "parity": true,
+      "finite_relation": "OUT_OF_SCOPE",
+      "smt": {
+        "relation": "OUT_OF_SCOPE",
+        "reason": "OUT_OF_SCOPE_INTERPRETATION",
+        "premise_satisfiable": null,
+        "c_implies_o": null,
+        "o_implies_c": null,
+        "queries": {},
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 1.1000010999850929e-06
+      }
+    },
+    {
+      "id": "A01",
+      "parity": true,
+      "finite_relation": "AMBIGUOUS",
+      "smt": {
+        "relation": "AMBIGUOUS",
+        "reason": "AMBIGUOUS_INTERPRETATION",
+        "premise_satisfiable": null,
+        "c_implies_o": null,
+        "o_implies_c": null,
+        "queries": {},
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 7.999988156370819e-07
+      }
+    },
+    {
+      "id": "A02",
+      "parity": true,
+      "finite_relation": "AMBIGUOUS",
+      "smt": {
+        "relation": "AMBIGUOUS",
+        "reason": "AMBIGUOUS_INTERPRETATION",
+        "premise_satisfiable": null,
+        "c_implies_o": null,
+        "o_implies_c": null,
+        "queries": {},
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 6.000009307172149e-07
+      }
+    },
+    {
+      "id": "A03",
+      "parity": true,
+      "finite_relation": "OUT_OF_SCOPE",
+      "smt": {
+        "relation": "OUT_OF_SCOPE",
+        "reason": "OUT_OF_SCOPE_INTERPRETATION",
+        "premise_satisfiable": null,
+        "c_implies_o": null,
+        "o_implies_c": null,
+        "queries": {},
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 6.000009307172149e-07
+      }
+    },
+    {
+      "id": "A04",
+      "parity": true,
+      "finite_relation": "EQUIVALENT",
+      "smt": {
+        "relation": "EQUIVALENT",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "p": false
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0012282999996386934
+      }
+    },
+    {
+      "id": "C01",
+      "parity": true,
+      "finite_relation": "EQUIVALENT",
+      "smt": {
+        "relation": "EQUIVALENT",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "left": 0,
+              "right": 0
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0023991999987629242
+      }
+    },
+    {
+      "id": "C02",
+      "parity": true,
+      "finite_relation": "EQUIVALENT",
+      "smt": {
+        "relation": "EQUIVALENT",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "left": 0,
+              "right": 0
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.002617300000565592
+      }
+    },
+    {
+      "id": "C03",
+      "parity": true,
+      "finite_relation": "EQUIVALENT",
+      "smt": {
+        "relation": "EQUIVALENT",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "left": 0,
+              "right": 0
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.002693000002182089
+      }
+    },
+    {
+      "id": "C04",
+      "parity": true,
+      "finite_relation": "EQUIVALENT",
+      "smt": {
+        "relation": "EQUIVALENT",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "left": 0,
+              "right": 0
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0025201000025845133
+      }
+    },
+    {
+      "id": "C05",
+      "parity": true,
+      "finite_relation": "EQUIVALENT",
+      "smt": {
+        "relation": "EQUIVALENT",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "left": 0,
+              "right": 0
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0025477000017417595
+      }
+    },
+    {
+      "id": "C06",
+      "parity": true,
+      "finite_relation": "EQUIVALENT",
+      "smt": {
+        "relation": "EQUIVALENT",
+        "reason": "Z3_SAT_UNSAT_PREDICATE_COMPARISON",
+        "premise_satisfiable": true,
+        "c_implies_o": true,
+        "o_implies_c": true,
+        "queries": {
+          "premises": {
+            "status": "sat",
+            "witness": {
+              "left": 0,
+              "right": 0
+            },
+            "reason_unknown": null,
+            "model_satisfies_query": true
+          },
+          "c_not_o": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          },
+          "o_not_c": {
+            "status": "unsat",
+            "witness": null,
+            "reason_unknown": null
+          }
+        },
+        "conclusion_target": "SUPPLIED_FORMAL_CLAIM",
+        "natural_language_status": "UNKNOWN",
+        "elapsed_seconds": 0.0024919999996200204
+      }
+    }
+  ]
+}
