@@ -1,0 +1,32 @@
+name: C1 research checks
+permissions:
+  contents: read
+on:
+  push:
+    branches: ['research/c1-*']
+  pull_request:
+  workflow_dispatch:
+jobs:
+  bounded-research:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install research tools in the CI environment
+        run: python -m pip install pytest -r research/c1/requirements-research.txt
+      - name: Run existing and research tests
+        run: python -m pytest -q
+      - name: Reproduce trusted fixture evaluation in a clean process
+        run: python scripts/run-c1-isolated.py --output research/c1/results/ci_dev.json
+      - name: Cross-check finite implications with Z3
+        run: python -m research.c1.smt_crosscheck --output research/c1/results/ci_smt.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: c1-${{ matrix.os }}
+          path: research/c1/results/ci_*.json

@@ -1,0 +1,13 @@
+{
+  "schema": "c1-process-isolation-v1",
+  "returncode": 0,
+  "separate_virtual_environment": true,
+  "python_isolated_mode": true,
+  "environment_policy": "OS startup allowlist; no provider credentials inherited",
+  "trusted_json_fixtures_only": true,
+  "arbitrary_target_execution": false,
+  "timeout_seconds": 60,
+  "os_security_sandbox": false,
+  "network_filter_enforced_by_runner": false,
+  "scope": "Data-only interpreter; no C1 network/API calls. Not safe for hostile Python."
+}
