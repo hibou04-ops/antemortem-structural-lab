@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "antemortem-structural-lab"
+version = "0.1.0"
+requires-python = ">=3.11"
+description = "Experimental cross-modal branch exploration and behavioral falsification laboratory"
+license = "Apache-2.0"
+
+[project.scripts]
+tomolab = "tomolab.cli:main"
+
+[tool.setuptools]
+packages = ["tomolab"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
