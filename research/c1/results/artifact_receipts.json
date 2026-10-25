@@ -1,0 +1,36 @@
+{
+  "schema": "c1-artifact-receipts-v1",
+  "rule": "LF normalization replaces CRLF then CR, with no other change; semantic content hashes are separately recorded in dev_results.json",
+  "artifacts": {
+    "fixtures/blind_generation_prompts.json": {
+      "original_working_bytes_sha256": "a585915cc647ba3db7de57c6b637a10af5dc51def1d5dac95a1cf4b1edc76c45",
+      "normalized_lf_sha256": "754686c82e55406d6675b39fadd8b17a0f5d1a43146de0602cc3445f0eee2685",
+      "committed_bytes_sha256": "754686c82e55406d6675b39fadd8b17a0f5d1a43146de0602cc3445f0eee2685",
+      "normalization_matches_commit": true
+    },
+    "fixtures/dev_contracts.json": {
+      "original_working_bytes_sha256": "e2dc8ef58f344cc04cc131c0721a597b76c8a2d82256bee25374ad2352302c5f",
+      "normalized_lf_sha256": "2d42e8e4131a113a9bb7fc44b5edc6b7deb6cfa8e954e0e680bdb3d78d78598f",
+      "committed_bytes_sha256": "2d42e8e4131a113a9bb7fc44b5edc6b7deb6cfa8e954e0e680bdb3d78d78598f",
+      "normalization_matches_commit": true
+    },
+    "fixtures/dev_gold.json": {
+      "original_working_bytes_sha256": "8ccf6361901890536ac5ef2f09d8fe58f3fb12109f964a435155efcb905f6161",
+      "normalized_lf_sha256": "2dea50beaed436d95c6d37b2ecddc6032301619b2d449d680198fcdcd7e24dd9",
+      "committed_bytes_sha256": "2dea50beaed436d95c6d37b2ecddc6032301619b2d449d680198fcdcd7e24dd9",
+      "normalization_matches_commit": true
+    },
+    "baselines/llm_direct.json": {
+      "original_working_bytes_sha256": "1e12394d1de68a5a7289983ba3dd7d295bd6f92501e430eae2af1bc160ce823e",
+      "normalized_lf_sha256": "87e0cedaf48ef0c3bedbdd29ce08f502cde889758ed4e06c4b9dc47a96163809",
+      "committed_bytes_sha256": "87e0cedaf48ef0c3bedbdd29ce08f502cde889758ed4e06c4b9dc47a96163809",
+      "normalization_matches_commit": true
+    },
+    "baselines/llm_self_review.json": {
+      "original_working_bytes_sha256": "72254b6bb3ef47f5e20594d4c7a60e82594b19ba6c42882f39687e54e413b0ad",
+      "normalized_lf_sha256": "838fd57a3638b3fc064c1b500504f9edee384b43ec8587403bc8c21ac94ce303",
+      "committed_bytes_sha256": "838fd57a3638b3fc064c1b500504f9edee384b43ec8587403bc8c21ac94ce303",
+      "normalization_matches_commit": true
+    }
+  }
+}

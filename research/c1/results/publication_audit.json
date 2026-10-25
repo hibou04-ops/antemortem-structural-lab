@@ -1,0 +1,50 @@
+{
+  "schema": "c1-publication-audit-v1",
+  "base_commit": "1c020aceec4c745a743cdbb1ca47634bc2b63bad",
+  "scope": "Tracked public source and artifacts; pattern scan plus source-lineage review, not proof against every possible disclosure.",
+  "base_files": 48,
+  "unchanged_base_files": 47,
+  "changed_existing_files": [
+    "MANIFEST.in"
+  ],
+  "allowed_existing_change": "MANIFEST.in: include public research modules and fixtures in source distribution only",
+  "protected_existing_files": 47,
+  "protected_diff": [],
+  "runtime_version": "0.2.0",
+  "runtime_modified_files": [],
+  "privacy_scan": {
+    "tracked_files_scanned": 81,
+    "findings": [],
+    "checks": [
+      "private SYNC identifiers",
+      "provider/GitHub token patterns",
+      "private key headers",
+      "local username paths",
+      "binary artifact inventory"
+    ],
+    "private_holdout_in_git": false
+  },
+  "validation": {
+    "existing_tests": 45,
+    "new_c1_tests": 147,
+    "all_tests_passed": 192,
+    "boolean_soundness_decisions": 2560,
+    "boolean_wrong_conclusions": 0,
+    "z3_parity": {
+      "passed": 46,
+      "cases": 46
+    },
+    "build": "sdist and wheel PASS",
+    "wheel_check": "independent install, pip check, demo, claim, replay PASS"
+  },
+  "environment_failures": [
+    "Default temporary directory setup denied; rerun in workspace passed.",
+    "Docker daemon unavailable; used data-only DSL in separate venv/isolated process."
+  ],
+  "unverified": [
+    "external human semantic validation",
+    "sealed holdout performance",
+    "real-world false bug reduction",
+    "Jev contribution"
+  ]
+}
