@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sysconfig
 from pathlib import Path
 
 from .engine import MODES, run_experiment
@@ -11,7 +12,8 @@ from .mri import inspect_file
 from .replay import replay_evidence
 
 ROOT = Path(__file__).resolve().parent.parent
-EXAMPLES = ROOT / "examples"
+EXAMPLES = (ROOT / "examples" if (ROOT / "pyproject.toml").is_file() else
+            Path(sysconfig.get_path("data")) / "share" / "antemortem-structural-lab" / "examples")
 
 
 def _save(payload: dict, output: str | None) -> None:

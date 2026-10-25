@@ -123,7 +123,7 @@ def test_cli_claim_compile_and_run(tmp_path):
     outfile = tmp_path / "claim.json"
     assert main(["claim-run", str(CASES / "symmetry_bug.py"), "--claim", SWAP,
                  "--allow-local-execution", "--output", str(outfile)]) == 0
-    data = json.loads(outfile.read_text())
+    data = json.loads(outfile.read_text(encoding="utf-8"))
     assert data["oracle_function"] is None
     assert data["status"] == "CLAIM_REFUTED"
     assert main(["claim-replay", str(outfile), "--allow-local-execution"]) == 0

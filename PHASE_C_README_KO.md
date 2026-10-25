@@ -79,7 +79,7 @@ CrossHair 공식 문서에서 `--analysis_kind=asserts`는 함수 첫 `assert`�
 python -m crosshair check --analysis_kind=asserts baselines/crosshair_claim_contracts.py
 ```
 
-이 스크립트에는 합성 결함 주장 3종 및 정상 대조 주장 3종이 들어 있다. CrossHair가 반례를 찾는다면 이번 신기능도 **CrossHair가 이미 할 수 있는 것의 제한적인 재구현**이 된다. 우위가 입증되지 않으면 CrossHair를 재사용하는 것이 합리적이다. **이 환경에서는 CrossHair가 설치되어 있지 않아 공식 baseline은 아직 실행하지 않았다.** 사용자의 Windows PC에는 이전 대화에서 CrossHair 0.0.112가 설치됨.
+이 스크립트에는 합성 결함 주장 3종 및 정상 대조 주장 3종이 들어 있다. 공개 전 Windows / Python 3.12 검사에서 CrossHair 0.0.112도 같은 결함 관계식 세 종류의 반례를 모두 찾았다. 따라서 이 사례들은 기존 도구 대비 우위를 보여주지 않는다. 반례 발견에 따른 종료 코드 1은 이 비교에서 예상되는 결과다. 서로 다른 탐색 비용이나 속도의 우열은 여기서 판단하지 않는다.
 
 공정한 비교를 위해 총 벽시계 시간과 결함 탐지 여부를 기록한다. CrossHair의 솔버 반복 횟수와 Phase C의 대상 함수 호출 수는 동등한 비용 단위가 아니므로 직접 비교하지 않는다.
 
@@ -91,7 +91,7 @@ python -m crosshair check --analysis_kind=asserts baselines/crosshair_claim_cont
 
 **Phase C2**: 전문가가 작성한 계약과 제안 계약의 의미적 일치도, 오탐과 거짓 계약에 의한 허위 반증, 반례를 찾지 못한 경우의 UNKNOWN 분리.
 
-**Phase C3**: PBT-Bench(2026, https://pbtbench.com/)처럼 40개 Python 라이브러리 / 365개 주입 결함을 사용하는 독립 benchmark, CrossHair 및 Hypothesis + 전문가 계약 등 강력한 baseline과 대조. 단, 벤치마크의 독립 버전·라이선스·평가 환경을 실제로 확인한 뒤 수행.
+**Phase C3**: 독립적인 제3자 benchmark를 확보하고, CrossHair 및 Hypothesis + 전문가 계약 등 강력한 baseline과 대조. 평가 자료의 버전·라이선스·독립성·실행 환경을 실제로 확인한 뒤 수행한다. 아직 확보·검증한 비교 결과는 없다.
 
 **중단 조건:** 단순 계약 컴파일과 기존 CrossHair/Hypothesis에 작은 접착 코드만 붙인 것과 비교해 의미 충실도나 결함 발견 효율이 개선되지 않으면 별도 제품화 금지.
 
@@ -105,4 +105,3 @@ API 키·개인 연구·비공개 전략 내용은 포함하지 않았다. 이�
 - https://crosshair.readthedocs.io/en/stable/kinds_of_contracts.html
 - https://crosshair.readthedocs.io/en/stable/contracts.html
 - https://doi.org/10.1109/TSE.2013.46
-- https://pbtbench.com/
