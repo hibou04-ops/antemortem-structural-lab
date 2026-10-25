@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:antemortem:c1-contract-v1",
+  "title": "C1 bounded formal-anchor contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "claim_text", "variables", "assumptions", "exceptions", "quantifier", "claim", "obligation", "time", "evidence_scope", "interpretation"],
+  "properties": {
+    "schema": {"const": "c1-contract-v1"},
+    "id": {"type": "string", "minLength": 1},
+    "claim_text": {"type": "string", "minLength": 1},
+    "variables": {
+      "type": "object", "minProperties": 1, "maxProperties": 16,
+      "propertyNames": {"pattern": "^[A-Za-z][A-Za-z0-9_]{0,63}$"},
+      "additionalProperties": {"oneOf": [
+        {"type": "object", "additionalProperties": false, "required": ["type"], "properties": {"type": {"const": "bool"}}},
+        {"type": "object", "additionalProperties": false, "required": ["type", "min", "max"], "properties": {"type": {"const": "int"}, "min": {"type": "integer", "minimum": -1000000000, "maximum": 1000000000}, "max": {"type": "integer", "minimum": -1000000000, "maximum": 1000000000}}}
+      ]}
+    },
+    "assumptions": {"type": "array", "items": {"$ref": "#/$defs/expression"}},
+    "exceptions": {"type": "array", "items": {"$ref": "#/$defs/expression"}},
+    "quantifier": {"enum": ["forall", "exists"]},
+    "obligation_quantifier": {"enum": ["forall", "exists"]},
+    "claim": {"$ref": "#/$defs/expression"},
+    "obligation": {"$ref": "#/$defs/expression"},
+    "time": {"type": "object", "additionalProperties": false, "required": ["kind", "horizon"], "properties": {"kind": {"enum": ["state", "transition"]}, "horizon": {"type": "integer", "minimum": 0}}},
+    "evidence_scope": {"type": "object", "additionalProperties": false, "required": ["kind", "description"], "properties": {"kind": {"const": "finite"}, "description": {"type": "string", "minLength": 1}}},
+    "interpretation": {"type": "object", "additionalProperties": false, "required": ["status", "source"], "properties": {"status": {"enum": ["reviewed", "ambiguous", "out_of_scope"]}, "source": {"type": "string", "minLength": 1}}},
+    "metadata": {}
+  },
+  "$defs": {
+    "expression": {"oneOf": [
+      {"type": "boolean"},
+      {"type": "integer", "minimum": -1000000000, "maximum": 1000000000},
+      {"type": "string", "minLength": 1},
+      {"type": "array", "minItems": 2, "prefixItems": [{"enum": ["and", "or", "not", "implies", "==", "!=", "<", "<=", ">", ">=", "+", "-", "*"]}], "items": {"$ref": "#/$defs/expression"}}
+    ]}
+  }
+}
