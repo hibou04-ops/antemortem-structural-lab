@@ -30,7 +30,12 @@ if ($LASTEXITCODE -ne 0) { throw 'Could not push tags' }
 foreach ($tag in $tags) {
     gh release view $tag --repo $repo > $null 2>&1
     if ($LASTEXITCODE -eq 0) { Write-Host "Release $tag already exists; preserving it."; continue }
-    gh release create $tag --repo $repo --verify-tag --prerelease --title "$tag (experimental)" --notes-file "docs/releases/$tag.md"
+    $version = $tag.TrimStart('v')
+    $wheelDir = Join-Path (Split-Path -Parent (Get-Location)) 'release-assets'
+    $wheel = Join-Path $wheelDir "antemortem_structural_lab-$version-py3-none-any.whl"
+    $releaseArgs = @('release', 'create', $tag, '--repo', $repo, '--verify-tag', '--prerelease', '--title', "$tag (experimental)", '--notes-file', "docs/releases/$tag.md")
+    if (Test-Path $wheel) { $releaseArgs += $wheel }
+    & gh @releaseArgs
     if ($LASTEXITCODE -ne 0) { throw "Could not create release $tag" }
 }
 gh repo view $repo --json url,isPrivate,defaultBranchRef
