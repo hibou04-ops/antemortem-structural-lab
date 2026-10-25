@@ -1,15 +1,24 @@
 {
-  "schema": "c1-unused-holdout-commitment-v1",
+  "schema": "c1-unused-holdout-commitment-v2",
   "status": "SEALED_UNUSED",
   "case_count": 12,
   "family_count": 1,
-  "archive_sha256": "013591e0f9adfae5a4a394b274904ebe24b4b7da4a3dcdce960974474e7651d4",
-  "bytes": 905,
+  "family_disjoint_from_dev": true,
+  "family_split_basis": "Named conceptual family absent from dev; operators, curator and model family are shared, so no broad distribution-independence claim.",
+  "archive_sha256": "ed6c5f38f7fcda8206d3e2dd4d511172552d1150efac47767f9295d87d45b19a",
+  "bytes": 1783,
   "evaluation_runs": 0,
   "public_contents": false,
-  "sealing": "SHA-256 of archive including a private 256-bit nonce; integrity commitment, not encryption.",
-  "limitation": "One prospective transfer family; same curator; not an independent confirmatory holdout.",
-  "family_disjoint_from_dev": false,
-  "core_results_seen_when_authored": false,
-  "archive_updated_after_gold_freeze": "Private nonce added before any dev evaluation; no case content changed."
+  "sealing": "SHA-256 of ZIP including a private 256-bit nonce; integrity commitment, not encryption.",
+  "authoring_boundary": "After preliminary dev inspection; before final multi-baseline evaluation. No holdout evaluation or solver run.",
+  "core_results_seen_when_authored": true,
+  "previous_commitment": {
+    "schema": "c1-unused-holdout-commitment-v1",
+    "archive_sha256": "013591e0f9adfae5a4a394b274904ebe24b4b7da4a3dcdce960974474e7651d4",
+    "case_count": 12,
+    "evaluation_runs": 0,
+    "status": "RETAINED_UNUSED_DEVELOPMENT_RELATED_ONLY"
+  },
+  "revision_reason": "Design correction: preserve v1 but replace future-evaluation candidate with a conceptual family absent from dev. Not a post-hoc confirmatory result.",
+  "limitation": "One conceptual family, same curator, no independent human validation; unused prospective material only, not qualified confirmatory evidence."
 }
