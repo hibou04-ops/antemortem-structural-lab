@@ -30,6 +30,8 @@ def _add_engine_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--low", type=int, default=-25)
     parser.add_argument("--high", type=int, default=25)
     parser.add_argument("--jev", action="store_true", help="Use live Jev; network, key and possible data charges")
+    parser.add_argument("--jev-provider", choices=("auto", "typesafe", "vercel"), default="auto",
+                        help="Choose TypeSafe direct or Vercel route; auto prefers TypeSafe")
     parser.add_argument("--output", help="Write JSON evidence (otherwise stdout)")
 
 
@@ -74,6 +76,7 @@ def main(argv: list[str] | None = None) -> int:
                 oracle_path=getattr(args, "oracle_file", None),
                 mode=args.mode, budget=args.budget, seed=args.seed,
                 low=args.low, high=args.high, trusted_execution=True, use_jev=args.jev,
+                jev_provider=args.jev_provider,
             )
             _save(result.as_dict(), args.output)
         elif args.command == "replay":

@@ -89,6 +89,7 @@ class ExperimentResult:
     decision_provider: str = "off"
     decision_calls: int = 0
     decision_fallbacks: int = 0
+    decision_live_calls: int = 0
     status: str = "NO_COUNTEREXAMPLE_FOUND"
 
     def as_dict(self) -> dict[str, Any]:
@@ -109,6 +110,7 @@ class ExperimentResult:
             "decision_provider": self.decision_provider,
             "decision_calls": self.decision_calls,
             "decision_fallbacks": self.decision_fallbacks,
+            "decision_live_calls": self.decision_live_calls,
             "observed_guards": reached,
             "taken_guards": taken,
             "structural_model_disagreements": self.meta_disagreements,

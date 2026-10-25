@@ -6,7 +6,7 @@ import hashlib
 from pathlib import Path
 
 from .cast import load_trusted_functions, observe
-from .jev import JevError, choose
+from .jev import JevError, choose, resolve_route
 from .model import ExperimentResult, Inspection, Observation, Proposal
 from .mri import inspect_file, predicted_trace, static_proposals
 
@@ -57,6 +57,7 @@ def run_experiment(
     high: int = 25,
     trusted_execution: bool = False,
     use_jev: bool = False,
+    jev_provider: str = "auto",
 ) -> ExperimentResult:
     if not trusted_execution:
         raise PermissionError("execution requires explicit trusted_execution=True; no OS sandbox is provided")
@@ -68,6 +69,8 @@ def run_experiment(
         raise ValueError("high must be >= low")
     if use_jev and mode != "cross":
         raise ValueError("Jev selection only supported for cross mode")
+    if jev_provider not in ("auto", "typesafe", "vercel"):
+        raise ValueError("jev_provider must be auto, typesafe or vercel")
 
     ins = inspect_file(path, function)
     actual_oracle_path = (oracle_path or path).resolve(strict=True)
@@ -114,15 +117,23 @@ def run_experiment(
         if use_jev and mode == "cross" and len(candidates) > 1:
             result.decision_calls += 1
             try:
+                selected_route = resolve_route(provider=jev_provider)
                 selected = choose(candidates[:8], {
                     "tested": len(tested),
                     "observed_guards": len({l for o in result.observations for l in o.reached_guards}),
-                })
-                result.decision_provider = "jev_live"
+                }, provider=selected_route.provider)
+                result.decision_live_calls += 1
+                result.decision_provider = (
+                    f"jev_partial_{selected_route.provider}_fallback"
+                    if result.decision_fallbacks else f"jev_live_{selected_route.provider}"
+                )
             except JevError:
                 selected = 0
                 result.decision_fallbacks += 1
-                result.decision_provider = "jev_error_deterministic_fallback"
+                result.decision_provider = (
+                    "jev_error_deterministic_fallback"
+                    if not result.decision_live_calls else "jev_partial_fallback"
+                )
             probe = candidates[selected]
         else:
             probe = candidates[0]
