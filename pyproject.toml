@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "antemortem-structural-lab"
-version = "0.1.1"
+version = "0.2.0"
 requires-python = ">=3.11"
-description = "Experimental cross-modal branch exploration and behavioral falsification laboratory"
+description = "Experimental cross-modal branch and claim-to-witness falsification laboratory"
 license = "Apache-2.0"
 
 [project.scripts]

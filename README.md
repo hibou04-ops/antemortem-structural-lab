@@ -1,4 +1,13 @@
-# Antemortem Structural Lab v0.1.1 — TypeSafe Direct API
+# Antemortem Structural Lab v0.2.0 — Claim-to-Witness (Phase C)
+
+> **v0.1.1 전 기능 보존** + `Phase C` (참조 함수 없는 관계 기반 반례) 추가. 아래의 이전 README는 v0.1.1 사용법을 보존하기 위해 남겼습니다.
+
+**[Phase C 사용자 안내·벤치마크 및 신뢰 경계](PHASE_C_README_KO.md)**를 먼저 읽으세요.
+
+---
+
+## v0.1.1에서 보존한 기능
+
 
 **실행 가능한 연구용 실험판 — 공개 릴리스 / 프로덕션 감사기 / AGI 안전성 판정기가 아닙니다.**
 
