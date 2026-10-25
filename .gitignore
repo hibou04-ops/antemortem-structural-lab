@@ -1,0 +1,33 @@
+# Generated Python and packaging artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+# Logs and test output may contain full local paths or private inputs
+results/*
+!results/.gitkeep
+*.log
+*.tmp
+# Secrets
+.env
+.env.*
+!.env.example
+*credentials*.json
+*secret*.json
+*.pem
+*.key
+# Private research and archival data are not part of this public repo
+SYNC/
+HISTORY/
+HANDOFFS/
+PRIVATE_RESEARCH/
+OMEGA_AILE_PRIVATE_RESEARCH_HANDOFF*
+*_SYNC_COMPLETE_*.zip
