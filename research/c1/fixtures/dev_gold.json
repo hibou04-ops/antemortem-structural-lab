@@ -1,0 +1,2286 @@
+{
+  "schema": "c1-dev-gold-v1",
+  "cases": [
+    {
+      "id": "B01",
+      "relation": "SUFFICIENT_ONLY",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": true,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "c_implies_o": false,
+      "o_implies_c": true,
+      "rationale": "Changing at least to strictly greater excludes x=0; original is true everywhere.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "B02",
+      "relation": "NECESSARY_ONLY",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": false,
+      "rationale": "Changing strictly greater to at least admits x=0; exhaustive O pass cannot prove C.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "B03",
+      "relation": "EQUIVALENT",
+      "expected_status": "REFUTED",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "x": -1
+        },
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Independent truth-set inclusion: C subset O=True, O subset C=True.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "B04",
+      "relation": "INCOMPARABLE",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "x": -1
+        },
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": -1
+        },
+        {
+          "x": 0
+        }
+      ],
+      "c_implies_o": false,
+      "o_implies_c": false,
+      "rationale": "At x=1 only O fails; C false elsewhere does not validate this witness.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "B05",
+      "relation": "SUFFICIENT_ONLY",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": true,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "x": -2
+        },
+        {
+          "x": -1
+        },
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": -2
+        },
+        {
+          "x": -1
+        },
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": -2
+        },
+        {
+          "x": -1
+        },
+        {
+          "x": 0
+        }
+      ],
+      "c_implies_o": false,
+      "o_implies_c": true,
+      "rationale": "Independent truth-set inclusion: C subset O=False, O subset C=True.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "B06",
+      "relation": "NECESSARY_ONLY",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "x": -2
+        },
+        {
+          "x": -1
+        },
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": -2
+        },
+        {
+          "x": -1
+        },
+        {
+          "x": 0
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": -2
+        },
+        {
+          "x": -1
+        },
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": false,
+      "rationale": "Independent truth-set inclusion: C subset O=True, O subset C=False.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "B07",
+      "relation": "NECESSARY_ONLY",
+      "expected_status": "REFUTED",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "x": -1
+        },
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": 0
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": -1
+        },
+        {
+          "x": 0
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": false,
+      "rationale": "Independent truth-set inclusion: C subset O=True, O subset C=False.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "B08",
+      "relation": "SUFFICIENT_ONLY",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": true,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "x": -1
+        },
+        {
+          "x": 0
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": -1
+        },
+        {
+          "x": 0
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": 0
+        }
+      ],
+      "c_implies_o": false,
+      "o_implies_c": true,
+      "rationale": "Independent truth-set inclusion: C subset O=False, O subset C=True.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "B09",
+      "relation": "SUFFICIENT_ONLY",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "x": -1
+        },
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": -1
+        },
+        {
+          "x": 1
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": 1
+        }
+      ],
+      "c_implies_o": false,
+      "o_implies_c": true,
+      "rationale": "Independent truth-set inclusion: C subset O=False, O subset C=True.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "B10",
+      "relation": "EQUIVALENT",
+      "expected_status": "PROVED_BOUNDED",
+      "premise_satisfiable": true,
+      "claim_true_bounded": true,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Independent truth-set inclusion: C subset O=True, O subset C=True.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "L01",
+      "relation": "SUFFICIENT_ONLY",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "p": false,
+          "q": false
+        },
+        {
+          "p": false,
+          "q": true
+        },
+        {
+          "p": true,
+          "q": false
+        },
+        {
+          "p": true,
+          "q": true
+        }
+      ],
+      "claim_true_states": [
+        {
+          "p": false,
+          "q": true
+        },
+        {
+          "p": true,
+          "q": false
+        },
+        {
+          "p": true,
+          "q": true
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "p": true,
+          "q": true
+        }
+      ],
+      "c_implies_o": false,
+      "o_implies_c": true,
+      "rationale": "Independent truth-set inclusion: C subset O=False, O subset C=True.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "L02",
+      "relation": "NECESSARY_ONLY",
+      "expected_status": "REFUTED",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "p": false,
+          "q": false
+        },
+        {
+          "p": false,
+          "q": true
+        },
+        {
+          "p": true,
+          "q": false
+        },
+        {
+          "p": true,
+          "q": true
+        }
+      ],
+      "claim_true_states": [
+        {
+          "p": true,
+          "q": true
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "p": false,
+          "q": true
+        },
+        {
+          "p": true,
+          "q": false
+        },
+        {
+          "p": true,
+          "q": true
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": false,
+      "rationale": "Independent truth-set inclusion: C subset O=True, O subset C=False.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "L03",
+      "relation": "INCOMPARABLE",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "p": false,
+          "q": false
+        },
+        {
+          "p": false,
+          "q": true
+        },
+        {
+          "p": true,
+          "q": false
+        },
+        {
+          "p": true,
+          "q": true
+        }
+      ],
+      "claim_true_states": [
+        {
+          "p": false,
+          "q": false
+        },
+        {
+          "p": false,
+          "q": true
+        },
+        {
+          "p": true,
+          "q": true
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "p": false,
+          "q": false
+        },
+        {
+          "p": true,
+          "q": false
+        },
+        {
+          "p": true,
+          "q": true
+        }
+      ],
+      "c_implies_o": false,
+      "o_implies_c": false,
+      "rationale": "Independent truth-set inclusion: C subset O=False, O subset C=False.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "L04",
+      "relation": "EQUIVALENT",
+      "expected_status": "REFUTED",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "p": false,
+          "q": false
+        },
+        {
+          "p": false,
+          "q": true
+        },
+        {
+          "p": true,
+          "q": false
+        },
+        {
+          "p": true,
+          "q": true
+        }
+      ],
+      "claim_true_states": [
+        {
+          "p": false,
+          "q": false
+        },
+        {
+          "p": false,
+          "q": true
+        },
+        {
+          "p": true,
+          "q": true
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "p": false,
+          "q": false
+        },
+        {
+          "p": false,
+          "q": true
+        },
+        {
+          "p": true,
+          "q": true
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Independent truth-set inclusion: C subset O=True, O subset C=True.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "L05",
+      "relation": "INCOMPARABLE",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "p": false,
+          "q": false
+        },
+        {
+          "p": false,
+          "q": true
+        },
+        {
+          "p": true,
+          "q": false
+        },
+        {
+          "p": true,
+          "q": true
+        }
+      ],
+      "claim_true_states": [
+        {
+          "p": false,
+          "q": false
+        },
+        {
+          "p": true,
+          "q": false
+        },
+        {
+          "p": true,
+          "q": true
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "p": false,
+          "q": false
+        },
+        {
+          "p": false,
+          "q": true
+        },
+        {
+          "p": true,
+          "q": true
+        }
+      ],
+      "c_implies_o": false,
+      "o_implies_c": false,
+      "rationale": "Independent truth-set inclusion: C subset O=False, O subset C=False.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "L06",
+      "relation": "SUFFICIENT_ONLY",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": true,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "p": false
+        },
+        {
+          "p": true
+        }
+      ],
+      "claim_true_states": [
+        {
+          "p": false
+        },
+        {
+          "p": true
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "p": true
+        }
+      ],
+      "c_implies_o": false,
+      "o_implies_c": true,
+      "rationale": "Independent truth-set inclusion: C subset O=False, O subset C=True.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "L07",
+      "relation": "SUFFICIENT_ONLY",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": true,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "p": false
+        },
+        {
+          "p": true
+        }
+      ],
+      "claim_true_states": [
+        {
+          "p": false
+        },
+        {
+          "p": true
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "p": false
+        }
+      ],
+      "c_implies_o": false,
+      "o_implies_c": true,
+      "rationale": "Independent truth-set inclusion: C subset O=False, O subset C=True.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "L08",
+      "relation": "NECESSARY_ONLY",
+      "expected_status": "REFUTED",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "p": false,
+          "q": false
+        },
+        {
+          "p": false,
+          "q": true
+        },
+        {
+          "p": true,
+          "q": false
+        },
+        {
+          "p": true,
+          "q": true
+        }
+      ],
+      "claim_true_states": [
+        {
+          "p": false,
+          "q": false
+        },
+        {
+          "p": true,
+          "q": true
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "p": false,
+          "q": false
+        },
+        {
+          "p": false,
+          "q": true
+        },
+        {
+          "p": true,
+          "q": true
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": false,
+      "rationale": "Independent truth-set inclusion: C subset O=True, O subset C=False.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "P01",
+      "relation": "SUFFICIENT_ONLY",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": true,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": 1
+        }
+      ],
+      "c_implies_o": false,
+      "o_implies_c": true,
+      "rationale": "Independent truth-set inclusion: C subset O=False, O subset C=True.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "P02",
+      "relation": "EQUIVALENT",
+      "expected_status": "PROVED_BOUNDED",
+      "premise_satisfiable": true,
+      "claim_true_bounded": true,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "x": 1
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": 1
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": 1
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Independent truth-set inclusion: C subset O=True, O subset C=True.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "P03",
+      "relation": "UNKNOWN",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": false,
+      "claim_true_bounded": null,
+      "evidence_valid": false,
+      "admissible_states": [],
+      "claim_true_states": [],
+      "obligation_true_states": [],
+      "c_implies_o": null,
+      "o_implies_c": null,
+      "rationale": "Empty premise domain; refuse vacuous proof and relation authority.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "P04",
+      "relation": "EQUIVALENT",
+      "expected_status": "PROVED_BOUNDED",
+      "premise_satisfiable": true,
+      "claim_true_bounded": true,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Independent truth-set inclusion: C subset O=True, O subset C=True.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "P05",
+      "relation": "EQUIVALENT",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": true,
+      "evidence_valid": false,
+      "admissible_states": [
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "The proposed zero witness is explicitly excluded.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "P06",
+      "relation": "EQUIVALENT",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": true,
+      "evidence_valid": false,
+      "admissible_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "A negative counterexample lies outside the declared input interval.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "P07",
+      "relation": "EQUIVALENT",
+      "expected_status": "REFUTED",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "x": -1
+        },
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Independent truth-set inclusion: C subset O=True, O subset C=True.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "P08",
+      "relation": "EQUIVALENT",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": true,
+      "evidence_valid": false,
+      "admissible_states": [
+        {
+          "p": true
+        }
+      ],
+      "claim_true_states": [
+        {
+          "p": true
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "p": true
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Independent truth-set inclusion: C subset O=True, O subset C=True.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "Q01",
+      "relation": "EQUIVALENT",
+      "expected_status": "REFUTED",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "x": -1
+        },
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Independent truth-set inclusion: C subset O=True, O subset C=True.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "Q02",
+      "relation": "EQUIVALENT",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": true,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "x": -1
+        },
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "One failing valuation cannot refute an existential claim.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "Q03",
+      "relation": "UNKNOWN",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "x": -1
+        },
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Mixed quantifier comparison is deliberately unsupported.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "Q04",
+      "relation": "EQUIVALENT",
+      "expected_status": "PROVED_BOUNDED",
+      "premise_satisfiable": true,
+      "claim_true_bounded": true,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Independent truth-set inclusion: C subset O=True, O subset C=True.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "T01",
+      "relation": "SUFFICIENT_ONLY",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": true,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "before": 0,
+          "after": 1
+        },
+        {
+          "before": 1,
+          "after": 2
+        },
+        {
+          "before": 2,
+          "after": 3
+        }
+      ],
+      "claim_true_states": [
+        {
+          "before": 0,
+          "after": 1
+        },
+        {
+          "before": 1,
+          "after": 2
+        },
+        {
+          "before": 2,
+          "after": 3
+        }
+      ],
+      "obligation_true_states": [],
+      "c_implies_o": false,
+      "o_implies_c": true,
+      "rationale": "Independent truth-set inclusion: C subset O=False, O subset C=True.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "T02",
+      "relation": "EQUIVALENT",
+      "expected_status": "PROVED_BOUNDED",
+      "premise_satisfiable": true,
+      "claim_true_bounded": true,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "before": 0,
+          "after": 1
+        },
+        {
+          "before": 1,
+          "after": 2
+        },
+        {
+          "before": 2,
+          "after": 3
+        }
+      ],
+      "claim_true_states": [
+        {
+          "before": 0,
+          "after": 1
+        },
+        {
+          "before": 1,
+          "after": 2
+        },
+        {
+          "before": 2,
+          "after": 3
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "before": 0,
+          "after": 1
+        },
+        {
+          "before": 1,
+          "after": 2
+        },
+        {
+          "before": 2,
+          "after": 3
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Independent truth-set inclusion: C subset O=True, O subset C=True.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "T03",
+      "relation": "INCOMPARABLE",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "before": 0,
+          "after": 0
+        },
+        {
+          "before": 0,
+          "after": 1
+        },
+        {
+          "before": 0,
+          "after": 2
+        },
+        {
+          "before": 0,
+          "after": 3
+        },
+        {
+          "before": 1,
+          "after": 0
+        },
+        {
+          "before": 1,
+          "after": 1
+        },
+        {
+          "before": 1,
+          "after": 2
+        },
+        {
+          "before": 1,
+          "after": 3
+        },
+        {
+          "before": 2,
+          "after": 0
+        },
+        {
+          "before": 2,
+          "after": 1
+        },
+        {
+          "before": 2,
+          "after": 2
+        },
+        {
+          "before": 2,
+          "after": 3
+        }
+      ],
+      "claim_true_states": [
+        {
+          "before": 0,
+          "after": 0
+        },
+        {
+          "before": 0,
+          "after": 1
+        },
+        {
+          "before": 0,
+          "after": 2
+        },
+        {
+          "before": 0,
+          "after": 3
+        },
+        {
+          "before": 1,
+          "after": 1
+        },
+        {
+          "before": 1,
+          "after": 2
+        },
+        {
+          "before": 1,
+          "after": 3
+        },
+        {
+          "before": 2,
+          "after": 2
+        },
+        {
+          "before": 2,
+          "after": 3
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "before": 0,
+          "after": 0
+        },
+        {
+          "before": 1,
+          "after": 0
+        },
+        {
+          "before": 1,
+          "after": 1
+        },
+        {
+          "before": 2,
+          "after": 0
+        },
+        {
+          "before": 2,
+          "after": 1
+        },
+        {
+          "before": 2,
+          "after": 2
+        }
+      ],
+      "c_implies_o": false,
+      "o_implies_c": false,
+      "rationale": "Independent truth-set inclusion: C subset O=False, O subset C=False.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "T04",
+      "relation": "SUFFICIENT_ONLY",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": true,
+      "evidence_valid": false,
+      "admissible_states": [
+        {
+          "before": 0,
+          "after": 1
+        },
+        {
+          "before": 1,
+          "after": 2
+        },
+        {
+          "before": 2,
+          "after": 3
+        }
+      ],
+      "claim_true_states": [
+        {
+          "before": 0,
+          "after": 1
+        },
+        {
+          "before": 1,
+          "after": 2
+        },
+        {
+          "before": 2,
+          "after": 3
+        }
+      ],
+      "obligation_true_states": [],
+      "c_implies_o": false,
+      "o_implies_c": true,
+      "rationale": "The proposed counterexample violates the transition relation.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "T05",
+      "relation": "OUT_OF_SCOPE",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "before": 0,
+          "after": 0
+        },
+        {
+          "before": 0,
+          "after": 1
+        },
+        {
+          "before": 0,
+          "after": 2
+        },
+        {
+          "before": 0,
+          "after": 3
+        },
+        {
+          "before": 1,
+          "after": 0
+        },
+        {
+          "before": 1,
+          "after": 1
+        },
+        {
+          "before": 1,
+          "after": 2
+        },
+        {
+          "before": 1,
+          "after": 3
+        },
+        {
+          "before": 2,
+          "after": 0
+        },
+        {
+          "before": 2,
+          "after": 1
+        },
+        {
+          "before": 2,
+          "after": 2
+        },
+        {
+          "before": 2,
+          "after": 3
+        }
+      ],
+      "claim_true_states": [
+        {
+          "before": 0,
+          "after": 0
+        },
+        {
+          "before": 0,
+          "after": 1
+        },
+        {
+          "before": 0,
+          "after": 2
+        },
+        {
+          "before": 0,
+          "after": 3
+        },
+        {
+          "before": 1,
+          "after": 1
+        },
+        {
+          "before": 1,
+          "after": 2
+        },
+        {
+          "before": 1,
+          "after": 3
+        },
+        {
+          "before": 2,
+          "after": 2
+        },
+        {
+          "before": 2,
+          "after": 3
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "before": 0,
+          "after": 0
+        },
+        {
+          "before": 0,
+          "after": 1
+        },
+        {
+          "before": 0,
+          "after": 2
+        },
+        {
+          "before": 0,
+          "after": 3
+        },
+        {
+          "before": 1,
+          "after": 1
+        },
+        {
+          "before": 1,
+          "after": 2
+        },
+        {
+          "before": 1,
+          "after": 3
+        },
+        {
+          "before": 2,
+          "after": 2
+        },
+        {
+          "before": 2,
+          "after": 3
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Two-step temporal claim is outside the one-step boundary.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "T06",
+      "relation": "OUT_OF_SCOPE",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "p": false
+        },
+        {
+          "p": true
+        }
+      ],
+      "claim_true_states": [
+        {
+          "p": true
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "p": true
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Unbounded temporal claim cannot be settled by a finite state snapshot.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "A01",
+      "relation": "AMBIGUOUS",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "x": -1
+        },
+        {
+          "x": 0
+        },
+        {
+          "x": 1
+        }
+      ],
+      "claim_true_states": [
+        {
+          "x": 1
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "x": 1
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Normally supplies no precise frequency or exception scope.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "A02",
+      "relation": "AMBIGUOUS",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "p": false
+        },
+        {
+          "p": true
+        }
+      ],
+      "claim_true_states": [
+        {
+          "p": true
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "p": true
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Safe has no grounded predicate; matching formulas cannot establish the text.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "A03",
+      "relation": "OUT_OF_SCOPE",
+      "expected_status": "UNKNOWN",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "p": false
+        },
+        {
+          "p": true
+        }
+      ],
+      "claim_true_states": [
+        {
+          "p": true
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "p": true
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Independent truth-set inclusion: C subset O=True, O subset C=True.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "A04",
+      "relation": "EQUIVALENT",
+      "expected_status": "REFUTED",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "p": false
+        },
+        {
+          "p": true
+        }
+      ],
+      "claim_true_states": [
+        {
+          "p": true
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "p": true
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Independent truth-set inclusion: C subset O=True, O subset C=True.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "C01",
+      "relation": "EQUIVALENT",
+      "expected_status": "REFUTED",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "left": -1,
+          "right": -1
+        },
+        {
+          "left": -1,
+          "right": 0
+        },
+        {
+          "left": -1,
+          "right": 1
+        },
+        {
+          "left": 0,
+          "right": -1
+        },
+        {
+          "left": 0,
+          "right": 0
+        },
+        {
+          "left": 0,
+          "right": 1
+        },
+        {
+          "left": 1,
+          "right": -1
+        },
+        {
+          "left": 1,
+          "right": 0
+        },
+        {
+          "left": 1,
+          "right": 1
+        }
+      ],
+      "claim_true_states": [
+        {
+          "left": -1,
+          "right": -1
+        },
+        {
+          "left": 0,
+          "right": 0
+        },
+        {
+          "left": 1,
+          "right": 1
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "left": -1,
+          "right": -1
+        },
+        {
+          "left": 0,
+          "right": 0
+        },
+        {
+          "left": 1,
+          "right": 1
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Symbolic output observations only; no target execution or original-input function semantics validated.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "C02",
+      "relation": "EQUIVALENT",
+      "expected_status": "REFUTED",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "left": -1,
+          "right": -1
+        },
+        {
+          "left": -1,
+          "right": 0
+        },
+        {
+          "left": -1,
+          "right": 1
+        },
+        {
+          "left": 0,
+          "right": -1
+        },
+        {
+          "left": 0,
+          "right": 0
+        },
+        {
+          "left": 0,
+          "right": 1
+        },
+        {
+          "left": 1,
+          "right": -1
+        },
+        {
+          "left": 1,
+          "right": 0
+        },
+        {
+          "left": 1,
+          "right": 1
+        }
+      ],
+      "claim_true_states": [
+        {
+          "left": -1,
+          "right": -1
+        },
+        {
+          "left": 0,
+          "right": 0
+        },
+        {
+          "left": 1,
+          "right": 1
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "left": -1,
+          "right": -1
+        },
+        {
+          "left": 0,
+          "right": 0
+        },
+        {
+          "left": 1,
+          "right": 1
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Symbolic output observations only; no target execution or original-input function semantics validated.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "C03",
+      "relation": "EQUIVALENT",
+      "expected_status": "REFUTED",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "left": -1,
+          "right": -1
+        },
+        {
+          "left": -1,
+          "right": 0
+        },
+        {
+          "left": -1,
+          "right": 1
+        },
+        {
+          "left": 0,
+          "right": -1
+        },
+        {
+          "left": 0,
+          "right": 0
+        },
+        {
+          "left": 0,
+          "right": 1
+        },
+        {
+          "left": 1,
+          "right": -1
+        },
+        {
+          "left": 1,
+          "right": 0
+        },
+        {
+          "left": 1,
+          "right": 1
+        }
+      ],
+      "claim_true_states": [
+        {
+          "left": -1,
+          "right": 0
+        },
+        {
+          "left": 0,
+          "right": 1
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "left": -1,
+          "right": 0
+        },
+        {
+          "left": 0,
+          "right": 1
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Symbolic output observations only; no target execution or original-input function semantics validated.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "C04",
+      "relation": "EQUIVALENT",
+      "expected_status": "REFUTED",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "left": -1,
+          "right": -1
+        },
+        {
+          "left": -1,
+          "right": 0
+        },
+        {
+          "left": -1,
+          "right": 1
+        },
+        {
+          "left": 0,
+          "right": -1
+        },
+        {
+          "left": 0,
+          "right": 0
+        },
+        {
+          "left": 0,
+          "right": 1
+        },
+        {
+          "left": 1,
+          "right": -1
+        },
+        {
+          "left": 1,
+          "right": 0
+        },
+        {
+          "left": 1,
+          "right": 1
+        }
+      ],
+      "claim_true_states": [
+        {
+          "left": -1,
+          "right": 0
+        },
+        {
+          "left": 0,
+          "right": 1
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "left": -1,
+          "right": 0
+        },
+        {
+          "left": 0,
+          "right": 1
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Symbolic output observations only; no target execution or original-input function semantics validated.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "C05",
+      "relation": "EQUIVALENT",
+      "expected_status": "REFUTED",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "left": -1,
+          "right": -1
+        },
+        {
+          "left": -1,
+          "right": 0
+        },
+        {
+          "left": -1,
+          "right": 1
+        },
+        {
+          "left": 0,
+          "right": -1
+        },
+        {
+          "left": 0,
+          "right": 0
+        },
+        {
+          "left": 0,
+          "right": 1
+        },
+        {
+          "left": 1,
+          "right": -1
+        },
+        {
+          "left": 1,
+          "right": 0
+        },
+        {
+          "left": 1,
+          "right": 1
+        }
+      ],
+      "claim_true_states": [
+        {
+          "left": -1,
+          "right": -1
+        },
+        {
+          "left": -1,
+          "right": 0
+        },
+        {
+          "left": -1,
+          "right": 1
+        },
+        {
+          "left": 0,
+          "right": 0
+        },
+        {
+          "left": 0,
+          "right": 1
+        },
+        {
+          "left": 1,
+          "right": 1
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "left": -1,
+          "right": -1
+        },
+        {
+          "left": -1,
+          "right": 0
+        },
+        {
+          "left": -1,
+          "right": 1
+        },
+        {
+          "left": 0,
+          "right": 0
+        },
+        {
+          "left": 0,
+          "right": 1
+        },
+        {
+          "left": 1,
+          "right": 1
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Symbolic output observations only; no target execution or original-input function semantics validated.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    },
+    {
+      "id": "C06",
+      "relation": "EQUIVALENT",
+      "expected_status": "REFUTED",
+      "premise_satisfiable": true,
+      "claim_true_bounded": false,
+      "evidence_valid": true,
+      "admissible_states": [
+        {
+          "left": -1,
+          "right": -1
+        },
+        {
+          "left": -1,
+          "right": 0
+        },
+        {
+          "left": -1,
+          "right": 1
+        },
+        {
+          "left": 0,
+          "right": -1
+        },
+        {
+          "left": 0,
+          "right": 0
+        },
+        {
+          "left": 0,
+          "right": 1
+        },
+        {
+          "left": 1,
+          "right": -1
+        },
+        {
+          "left": 1,
+          "right": 0
+        },
+        {
+          "left": 1,
+          "right": 1
+        }
+      ],
+      "claim_true_states": [
+        {
+          "left": -1,
+          "right": -1
+        },
+        {
+          "left": -1,
+          "right": 0
+        },
+        {
+          "left": -1,
+          "right": 1
+        },
+        {
+          "left": 0,
+          "right": 0
+        },
+        {
+          "left": 0,
+          "right": 1
+        },
+        {
+          "left": 1,
+          "right": 1
+        }
+      ],
+      "obligation_true_states": [
+        {
+          "left": -1,
+          "right": -1
+        },
+        {
+          "left": -1,
+          "right": 0
+        },
+        {
+          "left": -1,
+          "right": 1
+        },
+        {
+          "left": 0,
+          "right": 0
+        },
+        {
+          "left": 0,
+          "right": 1
+        },
+        {
+          "left": 1,
+          "right": 1
+        }
+      ],
+      "c_implies_o": true,
+      "o_implies_c": true,
+      "rationale": "Symbolic output observations only; no target execution or original-input function semantics validated.",
+      "origin": "Manually curated mathematical predicates; truth sets enumerated before core result access."
+    }
+  ]
+}

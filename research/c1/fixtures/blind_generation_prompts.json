@@ -1,0 +1,1131 @@
+{
+  "instructions": "Generate one JSON DSL obligation per id using only this text and declared context. Return {id,obligation,decision:FORMALIZED|UNKNOWN,reason}. Preserve quantifiers, exceptions and time; if text ambiguous or unsupported return UNKNOWN. Do not access gold, formal anchors, curated obligations or solver results. Operators and/or/not/implies, == != < <= > >= + - *, literals int/bool and variable-name strings. left/right in legacy template tasks denote corresponding output observations in order; shift uses right=next, left=previous. No function calls, arbitrary code or target execution.",
+  "cases": [
+    {
+      "id": "B01",
+      "claim_text": "For x from 0 through 2 inclusive, x is at least zero.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": 0,
+          "max": 2
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "B02",
+      "claim_text": "For x from 0 through 2 inclusive, x is strictly greater than zero.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": 0,
+          "max": 2
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "B03",
+      "claim_text": "For x from -1 through 1 inclusive, x is at least zero.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "B04",
+      "claim_text": "For x from -1 through 1 inclusive, x is at least zero.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "B05",
+      "claim_text": "For x from -2 through 1 inclusive, x is at most one.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": -2,
+          "max": 1
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "B06",
+      "claim_text": "For x from -2 through 1 inclusive, x is less than one.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": -2,
+          "max": 1
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "B07",
+      "claim_text": "For x from -1 through 1 inclusive, x equals zero.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "B08",
+      "claim_text": "For x from -1 through 0 inclusive, x is at most zero.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": -1,
+          "max": 0
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "B09",
+      "claim_text": "For x from -1 through 1 inclusive, x differs from zero.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "B10",
+      "claim_text": "For x from 1 through 2 inclusive, x is positive.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": 1,
+          "max": 2
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "L01",
+      "claim_text": "For every Boolean p and q, p or q is true.",
+      "variables": {
+        "p": {
+          "type": "bool"
+        },
+        "q": {
+          "type": "bool"
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "L02",
+      "claim_text": "For every Boolean p and q, both p and q are true.",
+      "variables": {
+        "p": {
+          "type": "bool"
+        },
+        "q": {
+          "type": "bool"
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "L03",
+      "claim_text": "If p is true then q is true, for every Boolean p and q.",
+      "variables": {
+        "p": {
+          "type": "bool"
+        },
+        "q": {
+          "type": "bool"
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "L04",
+      "claim_text": "p is true only if q is true, for every Boolean p and q.",
+      "variables": {
+        "p": {
+          "type": "bool"
+        },
+        "q": {
+          "type": "bool"
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "L05",
+      "claim_text": "p is true if q is true, for every Boolean p and q.",
+      "variables": {
+        "p": {
+          "type": "bool"
+        },
+        "q": {
+          "type": "bool"
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "L06",
+      "claim_text": "Every Boolean p either holds or does not hold.",
+      "variables": {
+        "p": {
+          "type": "bool"
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "L07",
+      "claim_text": "Every Boolean p equals itself.",
+      "variables": {
+        "p": {
+          "type": "bool"
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "L08",
+      "claim_text": "For every Boolean p and q, p and q have the same value.",
+      "variables": {
+        "p": {
+          "type": "bool"
+        },
+        "q": {
+          "type": "bool"
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "P01",
+      "claim_text": "Assuming x is nonnegative, every x from -1 through 1 is at least zero.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        }
+      },
+      "assumptions": [
+        [
+          ">=",
+          "x",
+          0
+        ]
+      ],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "P02",
+      "claim_text": "Assuming x is positive, every x from -1 through 1 is at least zero.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        }
+      },
+      "assumptions": [
+        [
+          ">",
+          "x",
+          0
+        ]
+      ],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "P03",
+      "claim_text": "Assuming x is both negative and nonnegative, every x equals zero.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        }
+      },
+      "assumptions": [
+        [
+          "<",
+          "x",
+          0
+        ],
+        [
+          ">=",
+          "x",
+          0
+        ]
+      ],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "P04",
+      "claim_text": "Except x=0, every x from 0 through 2 is at least zero.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": 0,
+          "max": 2
+        }
+      },
+      "assumptions": [],
+      "exceptions": [
+        [
+          "==",
+          "x",
+          0
+        ]
+      ],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "P05",
+      "claim_text": "Except x=0, every x from 0 through 2 is at least zero.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": 0,
+          "max": 2
+        }
+      },
+      "assumptions": [],
+      "exceptions": [
+        [
+          "==",
+          "x",
+          0
+        ]
+      ],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "P06",
+      "claim_text": "Every x in the closed interval [0,2] is at least zero.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": 0,
+          "max": 2
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "P07",
+      "claim_text": "Every x in the closed interval [-1,2] is at least zero.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": -1,
+          "max": 2
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "P08",
+      "claim_text": "When p holds, p holds for every Boolean p.",
+      "variables": {
+        "p": {
+          "type": "bool"
+        }
+      },
+      "assumptions": [
+        "p"
+      ],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "Q01",
+      "claim_text": "For every x in [-1,1], x is at least zero.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "Q02",
+      "claim_text": "There exists an x in [-1,1] that is at least zero.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "exists",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "Q03",
+      "claim_text": "For every x in [-1,1], x is at least zero.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "Q04",
+      "claim_text": "There exists an x in [0,2] that is at least zero.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": 0,
+          "max": 2
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "exists",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "T01",
+      "claim_text": "For each transition after=before+1, the next value is no smaller than before.",
+      "variables": {
+        "before": {
+          "type": "int",
+          "min": 0,
+          "max": 2
+        },
+        "after": {
+          "type": "int",
+          "min": 0,
+          "max": 3
+        }
+      },
+      "assumptions": [
+        [
+          "==",
+          "after",
+          [
+            "+",
+            "before",
+            1
+          ]
+        ]
+      ],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "transition",
+        "horizon": 1
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "T02",
+      "claim_text": "For each transition after=before+1, the next value exceeds before by exactly one.",
+      "variables": {
+        "before": {
+          "type": "int",
+          "min": 0,
+          "max": 2
+        },
+        "after": {
+          "type": "int",
+          "min": 0,
+          "max": 3
+        }
+      },
+      "assumptions": [
+        [
+          "==",
+          "after",
+          [
+            "+",
+            "before",
+            1
+          ]
+        ]
+      ],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "transition",
+        "horizon": 1
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "T03",
+      "claim_text": "For each transition, after is no smaller than before.",
+      "variables": {
+        "before": {
+          "type": "int",
+          "min": 0,
+          "max": 2
+        },
+        "after": {
+          "type": "int",
+          "min": 0,
+          "max": 3
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "transition",
+        "horizon": 1
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "T04",
+      "claim_text": "For each transition after=before+1, the next value is no smaller than before.",
+      "variables": {
+        "before": {
+          "type": "int",
+          "min": 0,
+          "max": 2
+        },
+        "after": {
+          "type": "int",
+          "min": 0,
+          "max": 3
+        }
+      },
+      "assumptions": [
+        [
+          "==",
+          "after",
+          [
+            "+",
+            "before",
+            1
+          ]
+        ]
+      ],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "transition",
+        "horizon": 1
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "T05",
+      "claim_text": "After two transitions the value will never decrease.",
+      "variables": {
+        "before": {
+          "type": "int",
+          "min": 0,
+          "max": 2
+        },
+        "after": {
+          "type": "int",
+          "min": 0,
+          "max": 3
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "transition",
+        "horizon": 2
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "T06",
+      "claim_text": "For all future time the Boolean flag stays true.",
+      "variables": {
+        "p": {
+          "type": "bool"
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "A01",
+      "claim_text": "The value is normally positive.",
+      "variables": {
+        "x": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "A02",
+      "claim_text": "The output should be safe.",
+      "variables": {
+        "p": {
+          "type": "bool"
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "A03",
+      "claim_text": "Every input has a secure response under external adversaries.",
+      "variables": {
+        "p": {
+          "type": "bool"
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "A04",
+      "claim_text": "Every Boolean p is true.",
+      "variables": {
+        "p": {
+          "type": "bool"
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "C01",
+      "claim_text": "Swapping the two integer inputs does not change the result",
+      "variables": {
+        "left": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        },
+        "right": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "C02",
+      "claim_text": "두 정수 입력의 순서를 바꿔도 반환값은 같다",
+      "variables": {
+        "left": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        },
+        "right": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "C03",
+      "claim_text": "Increasing the first integer input by one increases the result by one",
+      "variables": {
+        "left": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        },
+        "right": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "C04",
+      "claim_text": "첫 번째 정수 입력을 1 증가시키면 반환값도 1 증가한다",
+      "variables": {
+        "left": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        },
+        "right": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "C05",
+      "claim_text": "Increasing the first integer input by one does not decrease the result",
+      "variables": {
+        "left": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        },
+        "right": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    },
+    {
+      "id": "C06",
+      "claim_text": "첫 번째 정수 입력을 1 증가시키면 반환값이 감소하지 않는다",
+      "variables": {
+        "left": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        },
+        "right": {
+          "type": "int",
+          "min": -1,
+          "max": 1
+        }
+      },
+      "assumptions": [],
+      "exceptions": [],
+      "quantifier": "forall",
+      "time": {
+        "kind": "state",
+        "horizon": 0
+      },
+      "evidence_scope": {
+        "kind": "finite",
+        "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+      }
+    }
+  ]
+}

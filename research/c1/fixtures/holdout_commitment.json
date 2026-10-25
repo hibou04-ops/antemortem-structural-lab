@@ -1,0 +1,12 @@
+{
+  "schema": "c1-unused-holdout-commitment-v1",
+  "status": "SEALED_UNUSED",
+  "case_count": 12,
+  "family_count": 1,
+  "archive_sha256": "77658fc331e3d7f5ffbf30a7a506c95d80a7347755642306dc502672e39a4ffd",
+  "bytes": 760,
+  "evaluation_runs": 0,
+  "public_contents": false,
+  "sealing": "Integrity commitment, not cryptographic encryption. Private file is outside Git.",
+  "limitation": "One prospective transfer family; same curator; not an independent confirmatory holdout."
+}

@@ -1,0 +1,2273 @@
+{
+  "schema": "c1-dev-cases-v1",
+  "cases": [
+    {
+      "id": "B01",
+      "family": "boundary",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "B01",
+        "claim_text": "For x from 0 through 2 inclusive, x is at least zero.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": 0,
+            "max": 2
+          }
+        },
+        "claim": [
+          ">=",
+          "x",
+          0
+        ],
+        "obligation": [
+          ">",
+          "x",
+          0
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "x": 0
+        }
+      }
+    },
+    {
+      "id": "B02",
+      "family": "boundary",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "B02",
+        "claim_text": "For x from 0 through 2 inclusive, x is strictly greater than zero.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": 0,
+            "max": 2
+          }
+        },
+        "claim": [
+          ">",
+          "x",
+          0
+        ],
+        "obligation": [
+          ">=",
+          "x",
+          0
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "PASS_EXHAUSTIVE"
+      }
+    },
+    {
+      "id": "B03",
+      "family": "boundary",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "B03",
+        "claim_text": "For x from -1 through 1 inclusive, x is at least zero.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          }
+        },
+        "claim": [
+          ">=",
+          "x",
+          0
+        ],
+        "obligation": [
+          ">=",
+          "x",
+          0
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "x": -1
+        }
+      }
+    },
+    {
+      "id": "B04",
+      "family": "boundary",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "B04",
+        "claim_text": "For x from -1 through 1 inclusive, x is at least zero.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          }
+        },
+        "claim": [
+          ">=",
+          "x",
+          0
+        ],
+        "obligation": [
+          "<=",
+          "x",
+          0
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "x": 1
+        }
+      }
+    },
+    {
+      "id": "B05",
+      "family": "boundary",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "B05",
+        "claim_text": "For x from -2 through 1 inclusive, x is at most one.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": -2,
+            "max": 1
+          }
+        },
+        "claim": [
+          "<=",
+          "x",
+          1
+        ],
+        "obligation": [
+          "<",
+          "x",
+          1
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "x": 1
+        }
+      }
+    },
+    {
+      "id": "B06",
+      "family": "boundary",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "B06",
+        "claim_text": "For x from -2 through 1 inclusive, x is less than one.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": -2,
+            "max": 1
+          }
+        },
+        "claim": [
+          "<",
+          "x",
+          1
+        ],
+        "obligation": [
+          "<=",
+          "x",
+          1
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "PASS_EXHAUSTIVE"
+      }
+    },
+    {
+      "id": "B07",
+      "family": "boundary",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "B07",
+        "claim_text": "For x from -1 through 1 inclusive, x equals zero.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          }
+        },
+        "claim": [
+          "==",
+          "x",
+          0
+        ],
+        "obligation": [
+          "<=",
+          "x",
+          0
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "x": 1
+        }
+      }
+    },
+    {
+      "id": "B08",
+      "family": "boundary",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "B08",
+        "claim_text": "For x from -1 through 0 inclusive, x is at most zero.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": -1,
+            "max": 0
+          }
+        },
+        "claim": [
+          "<=",
+          "x",
+          0
+        ],
+        "obligation": [
+          "==",
+          "x",
+          0
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "x": -1
+        }
+      }
+    },
+    {
+      "id": "B09",
+      "family": "boundary",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "B09",
+        "claim_text": "For x from -1 through 1 inclusive, x differs from zero.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          }
+        },
+        "claim": [
+          "!=",
+          "x",
+          0
+        ],
+        "obligation": [
+          ">",
+          "x",
+          0
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "x": -1
+        }
+      }
+    },
+    {
+      "id": "B10",
+      "family": "boundary",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "B10",
+        "claim_text": "For x from 1 through 2 inclusive, x is positive.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": 1,
+            "max": 2
+          }
+        },
+        "claim": [
+          ">",
+          "x",
+          0
+        ],
+        "obligation": [
+          ">=",
+          "x",
+          1
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "PASS_EXHAUSTIVE"
+      }
+    },
+    {
+      "id": "L01",
+      "family": "boolean",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "L01",
+        "claim_text": "For every Boolean p and q, p or q is true.",
+        "variables": {
+          "p": {
+            "type": "bool"
+          },
+          "q": {
+            "type": "bool"
+          }
+        },
+        "claim": [
+          "or",
+          "p",
+          "q"
+        ],
+        "obligation": [
+          "and",
+          "p",
+          "q"
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "p": false,
+          "q": true
+        }
+      }
+    },
+    {
+      "id": "L02",
+      "family": "boolean",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "L02",
+        "claim_text": "For every Boolean p and q, both p and q are true.",
+        "variables": {
+          "p": {
+            "type": "bool"
+          },
+          "q": {
+            "type": "bool"
+          }
+        },
+        "claim": [
+          "and",
+          "p",
+          "q"
+        ],
+        "obligation": [
+          "or",
+          "p",
+          "q"
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "p": false,
+          "q": false
+        }
+      }
+    },
+    {
+      "id": "L03",
+      "family": "direction",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "L03",
+        "claim_text": "If p is true then q is true, for every Boolean p and q.",
+        "variables": {
+          "p": {
+            "type": "bool"
+          },
+          "q": {
+            "type": "bool"
+          }
+        },
+        "claim": [
+          "implies",
+          "p",
+          "q"
+        ],
+        "obligation": [
+          "implies",
+          "q",
+          "p"
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "p": false,
+          "q": true
+        }
+      }
+    },
+    {
+      "id": "L04",
+      "family": "direction",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "L04",
+        "claim_text": "p is true only if q is true, for every Boolean p and q.",
+        "variables": {
+          "p": {
+            "type": "bool"
+          },
+          "q": {
+            "type": "bool"
+          }
+        },
+        "claim": [
+          "implies",
+          "p",
+          "q"
+        ],
+        "obligation": [
+          "or",
+          [
+            "not",
+            "p"
+          ],
+          "q"
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "p": true,
+          "q": false
+        }
+      }
+    },
+    {
+      "id": "L05",
+      "family": "direction",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "L05",
+        "claim_text": "p is true if q is true, for every Boolean p and q.",
+        "variables": {
+          "p": {
+            "type": "bool"
+          },
+          "q": {
+            "type": "bool"
+          }
+        },
+        "claim": [
+          "implies",
+          "q",
+          "p"
+        ],
+        "obligation": [
+          "implies",
+          "p",
+          "q"
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "p": true,
+          "q": false
+        }
+      }
+    },
+    {
+      "id": "L06",
+      "family": "boolean",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "L06",
+        "claim_text": "Every Boolean p either holds or does not hold.",
+        "variables": {
+          "p": {
+            "type": "bool"
+          }
+        },
+        "claim": [
+          "or",
+          "p",
+          [
+            "not",
+            "p"
+          ]
+        ],
+        "obligation": "p",
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "p": false
+        }
+      }
+    },
+    {
+      "id": "L07",
+      "family": "boolean",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "L07",
+        "claim_text": "Every Boolean p equals itself.",
+        "variables": {
+          "p": {
+            "type": "bool"
+          }
+        },
+        "claim": [
+          "==",
+          "p",
+          "p"
+        ],
+        "obligation": [
+          "not",
+          "p"
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "p": true
+        }
+      }
+    },
+    {
+      "id": "L08",
+      "family": "boolean",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "L08",
+        "claim_text": "For every Boolean p and q, p and q have the same value.",
+        "variables": {
+          "p": {
+            "type": "bool"
+          },
+          "q": {
+            "type": "bool"
+          }
+        },
+        "claim": [
+          "==",
+          "p",
+          "q"
+        ],
+        "obligation": [
+          "implies",
+          "p",
+          "q"
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "p": true,
+          "q": false
+        }
+      }
+    },
+    {
+      "id": "P01",
+      "family": "premise",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "P01",
+        "claim_text": "Assuming x is nonnegative, every x from -1 through 1 is at least zero.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          }
+        },
+        "claim": [
+          ">=",
+          "x",
+          0
+        ],
+        "obligation": [
+          ">",
+          "x",
+          0
+        ],
+        "assumptions": [
+          [
+            ">=",
+            "x",
+            0
+          ]
+        ],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "x": 0
+        }
+      }
+    },
+    {
+      "id": "P02",
+      "family": "premise",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "P02",
+        "claim_text": "Assuming x is positive, every x from -1 through 1 is at least zero.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          }
+        },
+        "claim": [
+          ">=",
+          "x",
+          0
+        ],
+        "obligation": [
+          ">",
+          "x",
+          0
+        ],
+        "assumptions": [
+          [
+            ">",
+            "x",
+            0
+          ]
+        ],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "PASS_EXHAUSTIVE"
+      }
+    },
+    {
+      "id": "P03",
+      "family": "inconsistent",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "P03",
+        "claim_text": "Assuming x is both negative and nonnegative, every x equals zero.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          }
+        },
+        "claim": [
+          "==",
+          "x",
+          0
+        ],
+        "obligation": [
+          "==",
+          "x",
+          0
+        ],
+        "assumptions": [
+          [
+            "<",
+            "x",
+            0
+          ],
+          [
+            ">=",
+            "x",
+            0
+          ]
+        ],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "PASS_EXHAUSTIVE"
+      }
+    },
+    {
+      "id": "P04",
+      "family": "exception",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "P04",
+        "claim_text": "Except x=0, every x from 0 through 2 is at least zero.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": 0,
+            "max": 2
+          }
+        },
+        "claim": [
+          ">=",
+          "x",
+          0
+        ],
+        "obligation": [
+          ">",
+          "x",
+          0
+        ],
+        "assumptions": [],
+        "exceptions": [
+          [
+            "==",
+            "x",
+            0
+          ]
+        ],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "PASS_EXHAUSTIVE"
+      }
+    },
+    {
+      "id": "P05",
+      "family": "exception",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "P05",
+        "claim_text": "Except x=0, every x from 0 through 2 is at least zero.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": 0,
+            "max": 2
+          }
+        },
+        "claim": [
+          ">=",
+          "x",
+          0
+        ],
+        "obligation": [
+          ">",
+          "x",
+          0
+        ],
+        "assumptions": [],
+        "exceptions": [
+          [
+            "==",
+            "x",
+            0
+          ]
+        ],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "x": 0
+        }
+      }
+    },
+    {
+      "id": "P06",
+      "family": "domain",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "P06",
+        "claim_text": "Every x in the closed interval [0,2] is at least zero.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": 0,
+            "max": 2
+          }
+        },
+        "claim": [
+          ">=",
+          "x",
+          0
+        ],
+        "obligation": [
+          ">=",
+          "x",
+          0
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "x": -1
+        }
+      }
+    },
+    {
+      "id": "P07",
+      "family": "domain",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "P07",
+        "claim_text": "Every x in the closed interval [-1,2] is at least zero.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": -1,
+            "max": 2
+          }
+        },
+        "claim": [
+          ">=",
+          "x",
+          0
+        ],
+        "obligation": [
+          ">=",
+          "x",
+          0
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "x": -1
+        }
+      }
+    },
+    {
+      "id": "P08",
+      "family": "premise",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "P08",
+        "claim_text": "When p holds, p holds for every Boolean p.",
+        "variables": {
+          "p": {
+            "type": "bool"
+          }
+        },
+        "claim": "p",
+        "obligation": "p",
+        "assumptions": [
+          "p"
+        ],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "p": false
+        }
+      }
+    },
+    {
+      "id": "Q01",
+      "family": "quantifier",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "Q01",
+        "claim_text": "For every x in [-1,1], x is at least zero.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          }
+        },
+        "claim": [
+          ">=",
+          "x",
+          0
+        ],
+        "obligation": [
+          ">=",
+          "x",
+          0
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "x": -1
+        }
+      }
+    },
+    {
+      "id": "Q02",
+      "family": "quantifier",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "Q02",
+        "claim_text": "There exists an x in [-1,1] that is at least zero.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          }
+        },
+        "claim": [
+          ">=",
+          "x",
+          0
+        ],
+        "obligation": [
+          ">=",
+          "x",
+          0
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "exists",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "x": -1
+        }
+      }
+    },
+    {
+      "id": "Q03",
+      "family": "quantifier",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "Q03",
+        "claim_text": "For every x in [-1,1], x is at least zero.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          }
+        },
+        "claim": [
+          ">=",
+          "x",
+          0
+        ],
+        "obligation": [
+          ">=",
+          "x",
+          0
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        },
+        "obligation_quantifier": "exists"
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "x": -1
+        }
+      }
+    },
+    {
+      "id": "Q04",
+      "family": "quantifier",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "Q04",
+        "claim_text": "There exists an x in [0,2] that is at least zero.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": 0,
+            "max": 2
+          }
+        },
+        "claim": [
+          ">=",
+          "x",
+          0
+        ],
+        "obligation": [
+          ">=",
+          "x",
+          0
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "exists",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "PASS_EXHAUSTIVE"
+      }
+    },
+    {
+      "id": "T01",
+      "family": "transition",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "T01",
+        "claim_text": "For each transition after=before+1, the next value is no smaller than before.",
+        "variables": {
+          "before": {
+            "type": "int",
+            "min": 0,
+            "max": 2
+          },
+          "after": {
+            "type": "int",
+            "min": 0,
+            "max": 3
+          }
+        },
+        "claim": [
+          ">=",
+          "after",
+          "before"
+        ],
+        "obligation": [
+          ">",
+          "after",
+          [
+            "+",
+            "before",
+            1
+          ]
+        ],
+        "assumptions": [
+          [
+            "==",
+            "after",
+            [
+              "+",
+              "before",
+              1
+            ]
+          ]
+        ],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "transition",
+          "horizon": 1
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "before": 0,
+          "after": 1
+        }
+      }
+    },
+    {
+      "id": "T02",
+      "family": "transition",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "T02",
+        "claim_text": "For each transition after=before+1, the next value exceeds before by exactly one.",
+        "variables": {
+          "before": {
+            "type": "int",
+            "min": 0,
+            "max": 2
+          },
+          "after": {
+            "type": "int",
+            "min": 0,
+            "max": 3
+          }
+        },
+        "claim": [
+          "==",
+          "after",
+          [
+            "+",
+            "before",
+            1
+          ]
+        ],
+        "obligation": [
+          "==",
+          "after",
+          [
+            "+",
+            "before",
+            1
+          ]
+        ],
+        "assumptions": [
+          [
+            "==",
+            "after",
+            [
+              "+",
+              "before",
+              1
+            ]
+          ]
+        ],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "transition",
+          "horizon": 1
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "PASS_EXHAUSTIVE"
+      }
+    },
+    {
+      "id": "T03",
+      "family": "transition",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "T03",
+        "claim_text": "For each transition, after is no smaller than before.",
+        "variables": {
+          "before": {
+            "type": "int",
+            "min": 0,
+            "max": 2
+          },
+          "after": {
+            "type": "int",
+            "min": 0,
+            "max": 3
+          }
+        },
+        "claim": [
+          ">=",
+          "after",
+          "before"
+        ],
+        "obligation": [
+          ">=",
+          "before",
+          "after"
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "transition",
+          "horizon": 1
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "before": 0,
+          "after": 1
+        }
+      }
+    },
+    {
+      "id": "T04",
+      "family": "transition",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "T04",
+        "claim_text": "For each transition after=before+1, the next value is no smaller than before.",
+        "variables": {
+          "before": {
+            "type": "int",
+            "min": 0,
+            "max": 2
+          },
+          "after": {
+            "type": "int",
+            "min": 0,
+            "max": 3
+          }
+        },
+        "claim": [
+          ">=",
+          "after",
+          "before"
+        ],
+        "obligation": [
+          ">",
+          "after",
+          [
+            "+",
+            "before",
+            1
+          ]
+        ],
+        "assumptions": [
+          [
+            "==",
+            "after",
+            [
+              "+",
+              "before",
+              1
+            ]
+          ]
+        ],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "transition",
+          "horizon": 1
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "before": 2,
+          "after": 1
+        }
+      }
+    },
+    {
+      "id": "T05",
+      "family": "time",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "T05",
+        "claim_text": "After two transitions the value will never decrease.",
+        "variables": {
+          "before": {
+            "type": "int",
+            "min": 0,
+            "max": 2
+          },
+          "after": {
+            "type": "int",
+            "min": 0,
+            "max": 3
+          }
+        },
+        "claim": [
+          ">=",
+          "after",
+          "before"
+        ],
+        "obligation": [
+          ">=",
+          "after",
+          "before"
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "transition",
+          "horizon": 2
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "before": 1,
+          "after": 0
+        }
+      }
+    },
+    {
+      "id": "T06",
+      "family": "time",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "T06",
+        "claim_text": "For all future time the Boolean flag stays true.",
+        "variables": {
+          "p": {
+            "type": "bool"
+          }
+        },
+        "claim": "p",
+        "obligation": "p",
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "out_of_scope",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "p": false
+        }
+      }
+    },
+    {
+      "id": "A01",
+      "family": "interpretation",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "A01",
+        "claim_text": "The value is normally positive.",
+        "variables": {
+          "x": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          }
+        },
+        "claim": [
+          ">",
+          "x",
+          0
+        ],
+        "obligation": [
+          ">",
+          "x",
+          0
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "ambiguous",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "x": -1
+        }
+      }
+    },
+    {
+      "id": "A02",
+      "family": "interpretation",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "A02",
+        "claim_text": "The output should be safe.",
+        "variables": {
+          "p": {
+            "type": "bool"
+          }
+        },
+        "claim": "p",
+        "obligation": "p",
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "ambiguous",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "p": false
+        }
+      }
+    },
+    {
+      "id": "A03",
+      "family": "interpretation",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "A03",
+        "claim_text": "Every input has a secure response under external adversaries.",
+        "variables": {
+          "p": {
+            "type": "bool"
+          }
+        },
+        "claim": "p",
+        "obligation": "p",
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "out_of_scope",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "p": false
+        }
+      }
+    },
+    {
+      "id": "A04",
+      "family": "interpretation",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "A04",
+        "claim_text": "Every Boolean p is true.",
+        "variables": {
+          "p": {
+            "type": "bool"
+          }
+        },
+        "claim": "p",
+        "obligation": "p",
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "p": false
+        }
+      }
+    },
+    {
+      "id": "C01",
+      "family": "legacy_template",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "C01",
+        "claim_text": "Swapping the two integer inputs does not change the result",
+        "variables": {
+          "left": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          },
+          "right": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          }
+        },
+        "claim": [
+          "==",
+          "right",
+          "left"
+        ],
+        "obligation": [
+          "==",
+          "right",
+          "left"
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "left": -1,
+          "right": 0
+        }
+      },
+      "legacy_kind": "swap"
+    },
+    {
+      "id": "C02",
+      "family": "legacy_template",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "C02",
+        "claim_text": "두 정수 입력의 순서를 바꿔도 반환값은 같다",
+        "variables": {
+          "left": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          },
+          "right": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          }
+        },
+        "claim": [
+          "==",
+          "right",
+          "left"
+        ],
+        "obligation": [
+          "==",
+          "right",
+          "left"
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "left": -1,
+          "right": 0
+        }
+      },
+      "legacy_kind": "swap"
+    },
+    {
+      "id": "C03",
+      "family": "legacy_template",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "C03",
+        "claim_text": "Increasing the first integer input by one increases the result by one",
+        "variables": {
+          "left": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          },
+          "right": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          }
+        },
+        "claim": [
+          "==",
+          "right",
+          [
+            "+",
+            "left",
+            1
+          ]
+        ],
+        "obligation": [
+          "==",
+          "right",
+          [
+            "+",
+            "left",
+            1
+          ]
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "left": -1,
+          "right": -1
+        }
+      },
+      "legacy_kind": "shift_x"
+    },
+    {
+      "id": "C04",
+      "family": "legacy_template",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "C04",
+        "claim_text": "첫 번째 정수 입력을 1 증가시키면 반환값도 1 증가한다",
+        "variables": {
+          "left": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          },
+          "right": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          }
+        },
+        "claim": [
+          "==",
+          "right",
+          [
+            "+",
+            "left",
+            1
+          ]
+        ],
+        "obligation": [
+          "==",
+          "right",
+          [
+            "+",
+            "left",
+            1
+          ]
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "left": -1,
+          "right": -1
+        }
+      },
+      "legacy_kind": "shift_x"
+    },
+    {
+      "id": "C05",
+      "family": "legacy_template",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "C05",
+        "claim_text": "Increasing the first integer input by one does not decrease the result",
+        "variables": {
+          "left": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          },
+          "right": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          }
+        },
+        "claim": [
+          ">=",
+          "right",
+          "left"
+        ],
+        "obligation": [
+          ">=",
+          "right",
+          "left"
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "left": 0,
+          "right": -1
+        }
+      },
+      "legacy_kind": "monotone_x"
+    },
+    {
+      "id": "C06",
+      "family": "legacy_template",
+      "contract": {
+        "schema": "c1-contract-v1",
+        "id": "C06",
+        "claim_text": "첫 번째 정수 입력을 1 증가시키면 반환값이 감소하지 않는다",
+        "variables": {
+          "left": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          },
+          "right": {
+            "type": "int",
+            "min": -1,
+            "max": 1
+          }
+        },
+        "claim": [
+          ">=",
+          "right",
+          "left"
+        ],
+        "obligation": [
+          ">=",
+          "right",
+          "left"
+        ],
+        "assumptions": [],
+        "exceptions": [],
+        "quantifier": "forall",
+        "time": {
+          "kind": "state",
+          "horizon": 0
+        },
+        "evidence_scope": {
+          "kind": "finite",
+          "description": "Exactly the declared finite Cartesian domain after assumptions and exceptions; symbolic observations, no target code."
+        },
+        "interpretation": {
+          "status": "reviewed",
+          "source": "Evaluation curator formal anchor; no independent human validation."
+        }
+      },
+      "evidence": {
+        "status": "FAIL",
+        "witness": {
+          "left": 0,
+          "right": -1
+        }
+      },
+      "legacy_kind": "monotone_x"
+    }
+  ]
+}

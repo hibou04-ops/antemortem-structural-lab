@@ -1,0 +1,18 @@
+{
+  "schema": "c1-evaluation-provenance-v1",
+  "public_case_count": 46,
+  "split": "PUBLIC_DEVELOPMENT_NOT_HELD_OUT",
+  "origin": "New synthetic fixtures authored for this repository by an evaluation-role agent. Formal anchors, manual predicates and gold membership tables were frozen before reading implementation results.",
+  "independence": "Separate implementation/evaluation roles and files, same model family and session; not independent human or external benchmark validation.",
+  "human_reviews": 0,
+  "external_benchmark_cases": 0,
+  "candidate_obligations": "Curated adversarial mutations separate from core implementation; paired ablation uses identical candidates and evidence.",
+  "gold": "Explicit truth membership tables independently generated using manually written predicates, not the production DSL evaluator.",
+  "sealed_policy": "Private archive outside Git; hash commitment only; unused and unopened for C1 dev evaluation.",
+  "limitations": [
+    "Tiny finite synthetic domains",
+    "Natural-language anchor fidelity not independently validated",
+    "Repeated conceptual families and bilingual templates are correlated cases",
+    "Gold source independence is procedural, not an external annotation authority"
+  ]
+}
