@@ -1,0 +1,465 @@
+{
+  "schema": "c1-llm-candidates-v1",
+  "provenance": {
+    "method": "single-agent direct generation",
+    "model": "inherited model; exact revision unavailable",
+    "external_api_calls": 0,
+    "token_usage": null,
+    "monetary_cost": null,
+    "limitations": [
+      "single model family",
+      "not external benchmark"
+    ],
+    "elapsed_seconds": 60.244,
+    "prompt_sha256": "a585915cc647ba3db7de57c6b637a10af5dc51def1d5dac95a1cf4b1edc76c45"
+  },
+  "candidates": [
+    {
+      "id": "B01",
+      "obligation": [
+        ">=",
+        "x",
+        0
+      ],
+      "decision": "FORMALIZED",
+      "reason": "포함된 정수 영역에서 적어도 0이라는 비교를 표현한다."
+    },
+    {
+      "id": "B02",
+      "obligation": [
+        ">",
+        "x",
+        0
+      ],
+      "decision": "FORMALIZED",
+      "reason": "strictly greater는 0을 포함하지 않는다."
+    },
+    {
+      "id": "B03",
+      "obligation": [
+        ">=",
+        "x",
+        0
+      ],
+      "decision": "FORMALIZED",
+      "reason": "선언된 [-1,1] 영역에서 비음수라는 속성을 표현한다."
+    },
+    {
+      "id": "B04",
+      "obligation": [
+        ">=",
+        "x",
+        0
+      ],
+      "decision": "FORMALIZED",
+      "reason": "선언된 [-1,1] 영역에서 비음수라는 속성을 표현한다."
+    },
+    {
+      "id": "B05",
+      "obligation": [
+        "<=",
+        "x",
+        1
+      ],
+      "decision": "FORMALIZED",
+      "reason": "at most one은 1 이하이다."
+    },
+    {
+      "id": "B06",
+      "obligation": [
+        "<",
+        "x",
+        1
+      ],
+      "decision": "FORMALIZED",
+      "reason": "less than one은 1 미만이다."
+    },
+    {
+      "id": "B07",
+      "obligation": [
+        "==",
+        "x",
+        0
+      ],
+      "decision": "FORMALIZED",
+      "reason": "0과의 동일성을 직접 표현한다."
+    },
+    {
+      "id": "B08",
+      "obligation": [
+        "<=",
+        "x",
+        0
+      ],
+      "decision": "FORMALIZED",
+      "reason": "at most zero는 0 이하이다."
+    },
+    {
+      "id": "B09",
+      "obligation": [
+        "!=",
+        "x",
+        0
+      ],
+      "decision": "FORMALIZED",
+      "reason": "differs from zero는 0과 같지 않음이다."
+    },
+    {
+      "id": "B10",
+      "obligation": [
+        ">",
+        "x",
+        0
+      ],
+      "decision": "FORMALIZED",
+      "reason": "positive는 양의 정수라는 의미로 0 초과로 번역한다."
+    },
+    {
+      "id": "L01",
+      "obligation": [
+        "or",
+        "p",
+        "q"
+      ],
+      "decision": "FORMALIZED",
+      "reason": "p 또는 q의 논리합을 표현한다."
+    },
+    {
+      "id": "L02",
+      "obligation": [
+        "and",
+        "p",
+        "q"
+      ],
+      "decision": "FORMALIZED",
+      "reason": "both라는 조건에 따라 두 값의 논리곱을 표현한다."
+    },
+    {
+      "id": "L03",
+      "obligation": [
+        "implies",
+        "p",
+        "q"
+      ],
+      "decision": "FORMALIZED",
+      "reason": "p가 참이면 q가 참이라는 방향의 함의이다."
+    },
+    {
+      "id": "L04",
+      "obligation": [
+        "implies",
+        "p",
+        "q"
+      ],
+      "decision": "FORMALIZED",
+      "reason": "p only if q에서 q는 필요조건이므로 p에서 q로 함의한다."
+    },
+    {
+      "id": "L05",
+      "obligation": [
+        "implies",
+        "q",
+        "p"
+      ],
+      "decision": "FORMALIZED",
+      "reason": "p if q에서 q가 전건이고 p가 후건이다."
+    },
+    {
+      "id": "L06",
+      "obligation": [
+        "or",
+        "p",
+        [
+          "not",
+          "p"
+        ]
+      ],
+      "decision": "FORMALIZED",
+      "reason": "p 또는 p의 부정을 표현한다."
+    },
+    {
+      "id": "L07",
+      "obligation": [
+        "==",
+        "p",
+        "p"
+      ],
+      "decision": "FORMALIZED",
+      "reason": "Boolean의 자기 동일성을 표현한다."
+    },
+    {
+      "id": "L08",
+      "obligation": [
+        "==",
+        "p",
+        "q"
+      ],
+      "decision": "FORMALIZED",
+      "reason": "same value를 Boolean 값의 동일성으로 표현한다."
+    },
+    {
+      "id": "P01",
+      "obligation": [
+        ">=",
+        "x",
+        0
+      ],
+      "decision": "FORMALIZED",
+      "reason": "비음수 전제는 선언된 적용 영역에 유지하고 결론인 x>=0을 표현한다."
+    },
+    {
+      "id": "P02",
+      "obligation": [
+        ">=",
+        "x",
+        0
+      ],
+      "decision": "FORMALIZED",
+      "reason": "양수 전제는 선언된 적용 영역에 유지하고 결론인 x>=0을 표현한다."
+    },
+    {
+      "id": "P03",
+      "obligation": [
+        "==",
+        "x",
+        0
+      ],
+      "decision": "FORMALIZED",
+      "reason": "모순되는 두 전제를 제거하거나 수정하지 않고 결론인 x=0만 번역한다. 전제의 모순 여부와 주장 판정은 생성과 별개이다."
+    },
+    {
+      "id": "P04",
+      "obligation": [
+        ">=",
+        "x",
+        0
+      ],
+      "decision": "FORMALIZED",
+      "reason": "선언된 x=0 예외를 유지한 영역에서 x>=0이라는 결론을 표현한다."
+    },
+    {
+      "id": "P05",
+      "obligation": [
+        ">=",
+        "x",
+        0
+      ],
+      "decision": "FORMALIZED",
+      "reason": "선언된 x=0 예외를 유지한 영역에서 x>=0이라는 결론을 표현한다."
+    },
+    {
+      "id": "P06",
+      "obligation": [
+        ">=",
+        "x",
+        0
+      ],
+      "decision": "FORMALIZED",
+      "reason": "닫힌 입력 구간은 선언된 변수 영역에 보존하고 결론을 표현한다."
+    },
+    {
+      "id": "P07",
+      "obligation": [
+        ">=",
+        "x",
+        0
+      ],
+      "decision": "FORMALIZED",
+      "reason": "닫힌 입력 구간은 선언된 변수 영역에 보존하고 결론을 표현한다."
+    },
+    {
+      "id": "P08",
+      "obligation": "p",
+      "decision": "FORMALIZED",
+      "reason": "p라는 전제가 적용되는 영역에서 p가 성립한다는 결론을 표현한다."
+    },
+    {
+      "id": "Q01",
+      "obligation": [
+        ">=",
+        "x",
+        0
+      ],
+      "decision": "FORMALIZED",
+      "reason": "입력별 비음수 predicate를 만들고 선언된 forall을 유지한다."
+    },
+    {
+      "id": "Q02",
+      "obligation": [
+        ">=",
+        "x",
+        0
+      ],
+      "decision": "FORMALIZED",
+      "reason": "입력별 비음수 predicate를 만들고 선언된 exists를 유지한다. 한 실패 입력으로 존재 명제를 부정하지 않는다."
+    },
+    {
+      "id": "Q03",
+      "obligation": [
+        ">=",
+        "x",
+        0
+      ],
+      "decision": "FORMALIZED",
+      "reason": "입력별 비음수 predicate를 만들고 선언된 forall을 유지한다."
+    },
+    {
+      "id": "Q04",
+      "obligation": [
+        ">=",
+        "x",
+        0
+      ],
+      "decision": "FORMALIZED",
+      "reason": "입력별 비음수 predicate를 만들고 선언된 exists를 유지한다."
+    },
+    {
+      "id": "T01",
+      "obligation": [
+        ">=",
+        "after",
+        "before"
+      ],
+      "decision": "FORMALIZED",
+      "reason": "한 단계 전이와 after=before+1 전제를 유지하고 no smaller를 after>=before로 표현한다."
+    },
+    {
+      "id": "T02",
+      "obligation": [
+        "==",
+        "after",
+        [
+          "+",
+          "before",
+          1
+        ]
+      ],
+      "decision": "FORMALIZED",
+      "reason": "한 단계 뒤의 값이 정확히 1 크다는 등식을 표현한다."
+    },
+    {
+      "id": "T03",
+      "obligation": [
+        ">=",
+        "after",
+        "before"
+      ],
+      "decision": "FORMALIZED",
+      "reason": "추가 전이 규칙을 발명하지 않고 주어진 before와 after의 비감소만 표현한다."
+    },
+    {
+      "id": "T04",
+      "obligation": [
+        ">=",
+        "after",
+        "before"
+      ],
+      "decision": "FORMALIZED",
+      "reason": "한 단계 전이와 after=before+1 전제를 유지하고 no smaller를 after>=before로 표현한다."
+    },
+    {
+      "id": "T05",
+      "obligation": null,
+      "decision": "UNKNOWN",
+      "reason": "두 단계 뒤와 이후의 never decrease를 표현하려면 중간 상태 또는 trace 의미가 필요하다. before와 after 두 관측 및 제공된 DSL만으로 시간 조건을 확정할 수 없다."
+    },
+    {
+      "id": "T06",
+      "obligation": null,
+      "decision": "UNKNOWN",
+      "reason": "all future time이라는 무한 시간 주장은 horizon 0의 단일 Boolean 관측으로 보존할 수 없다."
+    },
+    {
+      "id": "A01",
+      "obligation": null,
+      "decision": "UNKNOWN",
+      "reason": "normally의 빈도 기준, 예외와 확률 분포가 정의되지 않았다."
+    },
+    {
+      "id": "A02",
+      "obligation": null,
+      "decision": "UNKNOWN",
+      "reason": "safe라는 속성의 정의와 Boolean p와의 대응이 없다."
+    },
+    {
+      "id": "A03",
+      "obligation": null,
+      "decision": "UNKNOWN",
+      "reason": "external adversaries와 secure response의 모델 및 보안 속성이 선언되지 않았다."
+    },
+    {
+      "id": "A04",
+      "obligation": "p",
+      "decision": "FORMALIZED",
+      "reason": "모든 Boolean 입력에서 p가 참이라는 predicate를 표현한다."
+    },
+    {
+      "id": "C01",
+      "obligation": [
+        "==",
+        "left",
+        "right"
+      ],
+      "decision": "FORMALIZED",
+      "reason": "지침에 따라 두 관측을 입력 순서 교환 전후 출력으로 해석하고 동일성을 표현한다."
+    },
+    {
+      "id": "C02",
+      "obligation": [
+        "==",
+        "left",
+        "right"
+      ],
+      "decision": "FORMALIZED",
+      "reason": "지침에 따라 두 관측을 입력 순서 교환 전후 출력으로 해석하고 반환값의 동일성을 표현한다."
+    },
+    {
+      "id": "C03",
+      "obligation": [
+        "==",
+        "right",
+        [
+          "+",
+          "left",
+          1
+        ]
+      ],
+      "decision": "FORMALIZED",
+      "reason": "shift에서 right는 다음 출력이고 left는 이전 출력이므로 정확한 1 증가를 표현한다."
+    },
+    {
+      "id": "C04",
+      "obligation": [
+        "==",
+        "right",
+        [
+          "+",
+          "left",
+          1
+        ]
+      ],
+      "decision": "FORMALIZED",
+      "reason": "shift에서 right는 다음 출력이고 left는 이전 출력이므로 반환값의 정확한 1 증가를 표현한다."
+    },
+    {
+      "id": "C05",
+      "obligation": [
+        ">=",
+        "right",
+        "left"
+      ],
+      "decision": "FORMALIZED",
+      "reason": "입력 증가 후 출력 right가 이전 출력 left보다 작지 않음을 표현한다."
+    },
+    {
+      "id": "C06",
+      "obligation": [
+        ">=",
+        "right",
+        "left"
+      ],
+      "decision": "FORMALIZED",
+      "reason": "입력 증가 후 출력 right가 이전 출력 left보다 작지 않음을 표현한다."
+    }
+  ]
+}

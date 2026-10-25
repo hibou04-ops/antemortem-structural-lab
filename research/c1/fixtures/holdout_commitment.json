@@ -3,10 +3,13 @@
   "status": "SEALED_UNUSED",
   "case_count": 12,
   "family_count": 1,
-  "archive_sha256": "77658fc331e3d7f5ffbf30a7a506c95d80a7347755642306dc502672e39a4ffd",
-  "bytes": 760,
+  "archive_sha256": "013591e0f9adfae5a4a394b274904ebe24b4b7da4a3dcdce960974474e7651d4",
+  "bytes": 905,
   "evaluation_runs": 0,
   "public_contents": false,
-  "sealing": "Integrity commitment, not cryptographic encryption. Private file is outside Git.",
-  "limitation": "One prospective transfer family; same curator; not an independent confirmatory holdout."
+  "sealing": "SHA-256 of archive including a private 256-bit nonce; integrity commitment, not encryption.",
+  "limitation": "One prospective transfer family; same curator; not an independent confirmatory holdout.",
+  "family_disjoint_from_dev": false,
+  "core_results_seen_when_authored": false,
+  "archive_updated_after_gold_freeze": "Private nonce added before any dev evaluation; no case content changed."
 }
