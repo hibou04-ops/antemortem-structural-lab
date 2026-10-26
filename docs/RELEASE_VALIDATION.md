@@ -10,11 +10,13 @@ This section separates implementation, bounded research performance, packaging a
 | Distribution build | Wheel and sdist for `0.3.0a1` built successfully |
 | Fresh wheel environment | Dependency check, packaged demo, claim compilation/search/replay, Mold imports/demo and frozen mapped plan passed outside the source checkout |
 | README runtime examples | All 14 literal CLI commands from the Korean and English READMEs exited successfully in separate public-source copies; expected output states verified |
-| Documentation links | Initial seven-document audit checked 43 relative-link occurrences with none missing; final links are rechecked after evidence links are added |
+| Documentation links | Final nine-document audit checked 47 relative-link occurrences with none missing |
 | Independent E3 evaluation | 7,040 candidate Oracle calls, all 5,120 final candidates frozen before evaluation, no final feedback |
 | Independent ledger review | A second agent recomputed 7,040 rows from literal target formulas and records without importing the target or engine; all matched |
 | Freeze preservation | All 10 frozen engine/spec files and all three benchmark source commitments unchanged after evaluation |
-| CI / Docker / final published assets | Required before publication; local results do not substitute for the actual [Actions run](https://github.com/hibou04-ops/antemortem-structural-lab/actions) and public asset readback |
+| PR CI | [Run 40355976452](https://github.com/hibou04-ops/antemortem-structural-lab/actions/runs/40355976452): all seven jobs passed; Ubuntu and Windows with Python 3.11/3.12/3.13 exercised source tests, builds, metadata/content checks and clean wheel installation |
+| Docker access controls | Same run's generator-isolation job passed: host sentinel unreadable, public code not writable, external connection unavailable, UID 65534, private host environment absent; 24 end-to-end development calls completed |
+| Final main and published assets | The update script requires successful final-main CI and matching source HEAD before tagging; validates draft asset sizes and SHA-256 before publication. Final commit/tag runs are available in [Actions](https://github.com/hibou04-ops/antemortem-structural-lab/actions), and public assets in [v0.3.0a1](https://github.com/hibou04-ops/antemortem-structural-lab/releases/tag/v0.3.0a1) |
 
 The new checks cover competing hypotheses and refutations, active-query and diversity behavior, justified and rejected transfer, frozen-state protection, JSON process communication, existing CLI compatibility and installed-wheel execution. The optional Docker boundary is evaluated separately from the default `LOGICAL_ISOLATION_ONLY` subprocess path. Targets and Oracles remain trusted host code.
 
