@@ -90,9 +90,45 @@ def main(argv: list[str] | None = None) -> int:
     pcb.add_argument("--budget", type=int, default=12)
     pcb.add_argument("--seeds", type=int, default=30)
     pcb.add_argument("--output")
+    pm = cmd.add_parser("mold-demo", help="Learn competing structural constraints from a trusted bundled example")
+    pmr = cmd.add_parser("mold-run", help="Learn with trusted target and separate reference; evaluator is NOT sandboxed")
+    pmr.add_argument("path", type=Path)
+    pmr.add_argument("--oracle-file", type=Path, required=True)
+    pmr.add_argument("--spec", type=Path, required=True)
+    pmr.add_argument("--function", default="implementation")
+    pmr.add_argument("--oracle", default="reference")
+    pmr.add_argument("--allow-local-execution", action="store_true")
+    pmp = cmd.add_parser("mold-plan", help="Freeze mapped structural probes for a new public contract; no oracle calls")
+    pmp.add_argument("--snapshot", type=Path, required=True)
+    pmp.add_argument("--spec", type=Path, required=True)
+    for mold_parser in (pm, pmr, pmp):
+        mold_parser.add_argument("--budget", type=int, default=32)
+        mold_parser.add_argument("--seed", type=int, default=7)
+        mold_parser.add_argument("--backend", choices=("subprocess", "docker"), default="subprocess")
+        mold_parser.add_argument("--solver", choices=("enumeration", "z3"), default="enumeration")
+        mold_parser.add_argument("--output")
     args = p.parse_args(argv)
     try:
-        if args.command == "claim-compile":
+        if args.command in ("mold-demo", "mold-run", "mold-plan"):
+            from .mold.service import run_mold, plan_mold
+            options = dict(budget=args.budget, seed=args.seed, backend=args.backend, solver=args.solver)
+            if args.command == "mold-plan":
+                snapshot = json.loads(args.snapshot.read_text(encoding="utf-8"))
+                spec = json.loads(args.spec.read_text(encoding="utf-8"))
+                result = plan_mold(snapshot, spec, **options)
+            else:
+                if args.command == "mold-run" and not args.allow_local_execution:
+                    p.error("mold-run requires --allow-local-execution (evaluator has NO sandbox)")
+                folder = EXAMPLES / "mold"
+                spec_path = folder / "spec.json" if args.command == "mold-demo" else args.spec
+                spec = json.loads(spec_path.read_text(encoding="utf-8"))
+                result = run_mold(folder / "target.py" if args.command == "mold-demo" else args.path,
+                                  folder / "oracle.py" if args.command == "mold-demo" else args.oracle_file,
+                                  spec, function=getattr(args, "function", "implementation"),
+                                  oracle_function=getattr(args, "oracle", "reference"),
+                                  trusted_execution=True, **options)
+            _save(result, args.output)
+        elif args.command == "claim-compile":
             contract = compile_claim(args.claim)
             _save({"schema": "tomolab-claim-contract-v1", "claim": contract.as_dict()}, args.output)
         elif args.command == "claim-run":

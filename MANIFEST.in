@@ -2,9 +2,14 @@ include README.md README.ko.md LICENSE CHANGELOG.md PUBLIC_IMPORT_NOTICE.md
 include SECURITY.md CONTRIBUTING.md PHASE_C_README_KO.md PHASE_C_VALIDATION.md
 include VALIDATION_REPORT.md JEV_CONNECTION_CHANGELOG.md
 recursive-include examples *.py
+recursive-include examples/mold *.json
 recursive-include baselines *.py
 recursive-include tests *.py
 recursive-include docs *.md
 recursive-include scripts *.ps1
 recursive-include scripts *.py
 recursive-include .github *.yml
+prune research/e1
+prune research/e2
+prune research/e3
+global-exclude PRIVATE_* *EVIDENCE*.zip

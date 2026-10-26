@@ -1,0 +1,11 @@
+{
+  "schema": "tomolab-mold-spec-v1",
+  "task_id": "bundled-difference-demo",
+  "variables": [
+    {"name": "x", "role": "left", "type": "int", "low": -8, "high": 8},
+    {"name": "y", "role": "right", "type": "int", "low": -8, "high": 8}
+  ],
+  "operation": "integer-addition",
+  "invariant": "result-equals-addition",
+  "semantic_contract": "int-add-v1"
+}

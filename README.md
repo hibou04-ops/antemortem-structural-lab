@@ -1,105 +1,147 @@
 # Antemortem Structural Lab
 
-An experimental Python project for examining the gap between what code appears to do and what it actually does.
+An experimental Python tool that tests trusted functions, records failing inputs, and uses competing explanations of those failures to choose the next test. It combines **MRI** code inspection, **CAST** execution observations, **Claim-to-Witness** checks, and a **Mold** learning loop.
 
-[한국어 README](README.ko.md) | [Changelog](CHANGELOG.md) | [Phase C0 details](PHASE_C_README_KO.md)
+**[한국어 사용자 안내](README.ko.md)** · [Changelog](CHANGELOG.md) · [Validation record](docs/RELEASE_VALIDATION.md)
 
-## The idea
+`0.3.0a1` is an experimental prerelease. Implemented functionality and demonstrated superiority on real projects are separate claims.
 
-I first pictured an ant nest revealed by a cast: a hidden network becomes visible through the shape left behind. That led me to a question about code. If you cannot see the whole shape from the outside, can you learn something useful by applying carefully chosen inputs and looking at what comes back?
+## The problem
 
-For code, there is another view available: the structure of the program itself. I wanted to put those two views side by side and see whether each one could help the other find what it had missed.
+Static analysis exposes conditions; execution supplies witnesses. Random tests may find violations without using the structure suggested by earlier failures. This lab connects those observations while preserving their provenance and limits.
 
-That became Structural Lab. MRI borrows the idea of looking inside: it is the working name for reading a program's structure. CAST is the name for probing its behavior through execution. The current implementation is small, but it is enough to test parts of that idea instead of leaving it as a diagram.
+The Mold engine does not assume that a failing coordinate transfers to another program. It retains multiple relations consistent with the evidence, asks queries where they disagree, and checks variable roles and declared contracts before using a learned relation on another target. A matching contract permits probing; it does **not** prove that the new target contains the same bug.
 
-Static analysis, feedback-guided testing, and symbolic execution already have long histories. What interested me was the handoff between the two views: what one misses, what the other observes, and whether that leads to a useful next test.
+## Architecture and supported features
 
-## What works today
+```mermaid
+flowchart LR
+    S[Public specification] --> G[Generator]
+    M[MRI: source structure] --> C[Existing CAST exploration]
+    G --> X[Candidate]
+    X --> O[Separate Oracle evaluation]
+    O --> F[Minimal failure or refutation evidence]
+    F --> V[Version space and Mold history]
+    V --> Q[Disagreement and diversity selection]
+    Q --> G
+    V --> Z[Frozen candidate plan]
+    Z --> H[Independent final evaluation]
+```
 
-At v0.2.0, the lab can inspect a limited set of Python conditions, execute trusted example functions, use observed branch behavior to propose another input, and save a counterexample for replay.
+| Feature | Current implementation |
+| --- | --- |
+| MRI / CAST | Restricted Python condition analysis, branch observations, executable reference comparison |
+| Claim-to-Witness | Six fixed Korean/English sentences, three relations, saved counterexamples and replay |
+| Mold | Normalized evidence, finite relation grammar, counterexample-guided hypothesis elimination |
+| Query selection | Disagreement queries with periodic spatial-diversity exploration |
+| Provenance | Evidence, refutations, competing hypotheses, versions, scope and uncertainty in JSON |
+| Applicability | Bijective variable-role mapping and matching operation, invariant and semantic contract; otherwise `UNKNOWN` |
+| Constraint checking | Bounded enumeration by default; optional Z3 backend |
+| Evaluation boundary | Separate generator process, optional Docker generator, frozen learning state |
 
-It also has an early claim-checking path. Instead of requiring a second function as the correct answer, this path checks a relationship that the target function is supposed to satisfy. For example, if swapping two integer inputs should not change the result, it looks for inputs where the outputs differ.
+The current relation grammar covers sums, differences, absolute-value relations and sum residues modulo 2, 3 or 5 over `left` and `right` roles. It uses a fixed finite threshold library and `eq` / `le` / `ge` comparisons. It does not infer arbitrary program semantics.
 
-The important distinction is that no reference function is needed, but a defined relation still is. At present, six recognized sentences in English and Korean map to three fixed relations. The project does not understand arbitrary natural-language requirements.
+## Quick start
 
-## Try it
+Requires **Python 3.11+**. The default runtime needs no paid model, API or Z3 installation.
 
-Requires Python 3.11 or newer. The core runtime uses the standard library. These examples use only the files included in this repository.
+Install the GitHub Release wheel:
+
+```bash
+python -m pip install https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.3.0a1/antemortem_structural_lab-0.3.0a1-py3-none-any.whl
+python -m tomolab mold-demo --budget 32 --seed 7 --backend subprocess --solver enumeration --output results/mold.json
+```
+
+The demo runs only the bundled reviewable fixture. Its `status` is `COUNTEREXAMPLES_FOUND` or `NOT_REFUTED_WITHIN_BUDGET`. The JSON includes minimal `failures`, a `snapshot` of competing hypotheses and Mold versions, source hashes, call counts and isolation level. Finding no failure, or retaining one hypothesis, does not establish target correctness.
+
+To obtain the source and examples:
 
 ```bash
 git clone https://github.com/hibou04-ops/antemortem-structural-lab.git
 cd antemortem-structural-lab
 python -m pip install -e .
-python -m pip install pytest
-python -m pytest -q
 ```
 
-First, inspect the contract without running the target function:
+Each command also works as a single line in PowerShell. `tomolab` and `python -m tomolab` use the same CLI. This release is distributed on GitHub; it does not imply a PyPI publication.
+
+## Examples
+
+### Existing Claim-to-Witness path
+
+Compilation does not execute the target. The following run and replay commands execute trusted local fixtures.
 
 ```bash
 python -m tomolab claim-compile --claim "Swapping the two integer inputs does not change the result"
-```
-
-Then try the same claim against a deliberately flawed example:
-
-```bash
 python -m tomolab claim-run examples/claim_only/symmetry_bug.py --claim "Swapping the two integer inputs does not change the result" --mode cross --budget 12 --allow-local-execution --output results/symmetry.json
-```
-
-Replay the saved counterexample:
-
-```bash
 python -m tomolab claim-replay results/symmetry.json --allow-local-execution
-```
-
-The example violates the encoded symmetry relation at two inputs: (17, -3) returns 15, while (-3, 17) returns 14. The replay command checks whether the recorded violation still occurs against matching source and contract data.
-
-For the earlier branch-feedback experiment, run:
-
-```bash
 python -m tomolab demo --mode cross --budget 12
 ```
 
-On Windows PowerShell, each command above can be pasted as a single line.
+The symmetry fixture returns 15 at `(17, -3)` and 14 at `(-3, 17)`. This is a counterexample to the encoded relation, not a verification of every interpretation of the natural-language claim. Searches without a witness remain `NOT_REFUTED_WITHIN_BUDGET`. See [Phase C0 details](PHASE_C_README_KO.md).
 
-## Current boundaries
+### Learn with a separate Oracle
 
-The claim checker works with two positional integer inputs, integer results, deterministic and side-effect-free target functions, and a declared integer domain. The default domain is -25 to 25. Unsupported claims are rejected rather than guessed.
+```bash
+python -m tomolab mold-run examples/mold/target.py --oracle-file examples/mold/oracle.py --spec examples/mold/spec.json --function implementation --oracle reference --allow-local-execution --budget 32 --seed 7 --output results/mold-run.json
+```
 
-A found counterexample challenges the encoded relation under the stated assumptions. It does not automatically disprove every interpretation of the original requirement. An unfound counterexample is reported as `NOT_REFUTED_WITHIN_BUDGET`, not as proof of correctness.
+The Oracle computes expected outputs independently of the generator. The generator receives structured evidence only; it does not use success scores or natural-language rewards. Inspect both surviving hypotheses and eliminated hypotheses rather than reading one relation as established truth.
 
-The included synthetic benchmarks are designed around the branch patterns this prototype handles. They are useful for checking that the feedback loop works, not for claiming an advantage on real projects. CrossHair also finds all three supplied claim violations in the current comparison. No superiority over CrossHair, Hypothesis, or other established tools has been shown.
+### Plan after freezing
 
-The earlier branch-feedback experiment has an optional Jev adapter for selecting probes. Phase C0 uses a deterministic policy and does not call Jev. The adapter is not a truth oracle, and its contribution to test effectiveness has not yet been established. Jev is not required for the examples above.
+```bash
+python -m tomolab mold-plan --snapshot results/mold-run.json --spec examples/mold/renamed-spec.json --budget 32 --output results/mold-plan.json
+```
 
-## Safety before running code
+This command does not execute target code. It produces candidates from a frozen Mold and public specification. Renamed variables can receive `APPLICABLE_FOR_PROBING` when roles and contracts match. Inapplicable transfer is recorded as `UNKNOWN`, with exploration continuing without transferred constraints. Final evaluation results must not feed back into the frozen generator.
 
-`claim-run`, `claim-replay`, and the older execution commands import and execute Python with your local user privileges. The execution flag confirms that you chose to run the code. It does not create a sandbox.
+For optional Z3 support, run `python -m pip install -e ".[solver]"` from the source directory and select `--solver z3`. If Z3 is absent, that choice fails explicitly rather than being reported as a solver-backed check. The default Docker image does not contain Z3.
 
-Use targets you wrote or have reviewed and trust. Do not run unknown or hostile code through this tool. Saved evidence can include local paths and test inputs, so review it before sharing. Keep API keys in environment variables and out of Git history.
+## Relationship to established tools
 
-See [Security](SECURITY.md) for the current security model.
+- **Hypothesis** offers general property-based testing. This project does not replace it or demonstrate superiority over it.
+- **CrossHair** checks Python contracts through symbolic execution. In the earlier comparison, it found all three supplied synthetic violations. The [comparison fixture](baselines/crosshair_claim_contracts.py) remains available.
+- **Z3** is an optional constraint-checking backend. The default exhaustively checks a small finite domain; neither option establishes correctness over an undeclared, unbounded domain.
+- **Jev** remains an optional candidate-selection adapter for the older branch experiment. Mold and Claim commands require no paid calls. See the [connection history](JEV_CONNECTION_CHANGELOG.md) and [third-party notes](docs/THIRD_PARTY.md).
 
-## Where the project goes next
+## Research results and limits
 
-The next research question is harder than finding a failing input. If a claim is written in natural language, how do we know the relation selected for testing preserves what that claim actually means?
+E1 concluded `E1_EXECUTED_NO_IMPROVEMENT`. E2 concluded `E2_EXECUTED_NO_IMPROVEMENT`. E2 used 26,880 candidate Oracle calls; A/B/C/D found 76/75/72/76 task-site-by-seed instances, with 16 distinct injected task sites each across seeds. D and baseline A produced identical final candidates and records. New portable constraints: zero. These are not counts of independent real-world defects.
 
-That is Phase C1: Claim-to-Obligation Semantic Fidelity. It needs an independent evaluation set and explicit treatment of assumptions, missing conditions, and unknown cases before a more general claim compiler would be credible. C1 is not implemented in v0.2.0.
+E3 evaluated 7,040 candidates on new synthetic problems. Final uniform/Mold task-site-by-seed discoveries were **30/30**, with **6/6** distinct sites. Mean first-discovery calls decreased from 21.025 to 17.5 (non-discoveries censored at 65), but the preregistered discovery-breadth criterion was unmet: **`NO_IMPROVEMENT`**, with **`GENERALIZATION_UNKNOWN`**. Repeated failing inputs are not new defects.
 
-## Development history
+See the [E3 protocol and aggregates](docs/E3_EVALUATION.md), [release validation](docs/RELEASE_VALIDATION.md) and [v0.3.0a1 notes](docs/releases/v0.3.0a1.md) for separate research, implementation and packaging evidence. E1/E2 data are consumed and were not reused as fresh blind evidence. General superiority on real projects remains unproven.
 
-The experiments were first kept as separate archived snapshots, then imported into a Git repository in order. The public commit timestamps show when the snapshots were imported, not when each experiment was originally conceived.
+Mold currently supports **pure, deterministic functions with two integer inputs and one integer output**, within at most 4,225 inputs and 65 values per axis. Arbitrary stateful programs, floating-point behavior, external side effects and general natural-language semantic fidelity are unsupported. Do not assume that a finite grammar can recover failure structures outside that grammar.
 
-The unpublished v0.2.0 tag was finalized after the bilingual documentation and release checks. The original tag and commit hashes are recorded in [the import notice](PUBLIC_IMPORT_NOTICE.md). The v0.1.1 package-version correction remains a separate commit in the history.
+## Safety model
 
-| Version | What changed |
+`--allow-local-execution` records consent, not sandboxing. Targets and Oracles run in the evaluator host with the current user's privileges. Only use code you authored or independently reviewed and trust.
+
+The default `subprocess` generator shares filesystem permissions and is labelled **`LOGICAL_ISOLATION_ONLY`**. The Docker generator receives only public code on a read-only mount, with network, write and privilege restrictions. It does not sandbox the target function against hostile behavior. See [Security](SECURITY.md) for setup and verified isolation scope.
+
+Evidence may contain input values and local paths. Keep `results/` and private research materials out of public commits and release assets.
+
+## Development, contribution and history
+
+```bash
+python -m pip install pytest build twine
+python -m pytest -q
+python -m build
+python -m twine check dist/*
+```
+
+[Contributing](CONTRIBUTING.md) · [Issues](https://github.com/hibou04-ops/antemortem-structural-lab/issues) · [Actions](https://github.com/hibou04-ops/antemortem-structural-lab/actions)
+
+The MRI/CAST names began with the image of revealing an ant nest through a cast. Earlier experiments were imported from archived snapshots; commit timestamps were not backdated to suggest an earlier Git history. Historical tags and import details remain in the [public import notice](PUBLIC_IMPORT_NOTICE.md).
+
+| Version | Change |
 | --- | --- |
-| [v0.1.0](docs/releases/v0.1.0.md) | Initial MRI and CAST branch-feedback experiment with a reference function |
-| [v0.1.1](docs/releases/v0.1.1.md) | Optional TypeSafe Jev connection and provider handling |
-| [v0.2.0](docs/releases/v0.2.0.md) | Early claim-to-witness checks without an executable reference function |
+| [v0.1.0](docs/releases/v0.1.0.md) | MRI/CAST branch exploration with a reference function |
+| [v0.1.1](docs/releases/v0.1.1.md) | Optional TypeSafe Jev adapter |
+| [v0.2.0](docs/releases/v0.2.0.md) | Claim-to-Witness relation checks |
+| [v0.3.0a1](docs/releases/v0.3.0a1.md) | Integrated version-space, active-query and applicability-aware Mold |
 
-This is a separate experimental project from [antemortem-cli](https://github.com/hibou04-ops/antemortem-cli). The source, examples, and tests are public; private research notes and credentials are not part of the repository.
+C1, concerning semantic fidelity between natural-language claims and obligations, is a [separate research PR](https://github.com/hibou04-ops/antemortem-structural-lab/pull/1). It is distinct from this Mold release. This repository is also separate from [antemortem-cli](https://github.com/hibou04-ops/antemortem-cli).
 
-## License
-
-Apache License 2.0. See [LICENSE](LICENSE).
+Apache License 2.0 — [LICENSE](LICENSE).
