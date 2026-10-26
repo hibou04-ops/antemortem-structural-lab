@@ -1,0 +1,11 @@
+{
+  "schema": "tomolab-mold-spec-v1",
+  "task_id": "renamed-public-contract",
+  "variables": [
+    {"name": "amount", "role": "left", "type": "int", "low": -8, "high": 8},
+    {"name": "increment", "role": "right", "type": "int", "low": -8, "high": 8}
+  ],
+  "operation": "integer-addition",
+  "invariant": "result-equals-addition",
+  "semantic_contract": "int-add-v1"
+}
