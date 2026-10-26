@@ -5,6 +5,7 @@ from pathlib import Path
 import re
 import subprocess
 import tarfile
+import tomllib
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -38,6 +39,12 @@ def main():
                               capture_output=True, check=True).stdout
         inspect(name, data)
     assets = []
+    version = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
+    expected_assets = {f"antemortem_structural_lab-{version}-py3-none-any.whl",
+                       f"antemortem_structural_lab-{version}.tar.gz"}
+    actual_assets = {p.name for p in (ROOT / "dist").glob("*") if p.is_file()}
+    if actual_assets != expected_assets:
+        raise ValueError("Expected exactly the current-version wheel and sdist")
     for path in sorted((ROOT / "dist").glob("*")):
         if path.suffix == ".whl":
             with zipfile.ZipFile(path) as archive:
