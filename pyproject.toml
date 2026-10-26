@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "antemortem-structural-lab"
-version = "0.2.0"
+version = "0.3.0a1"
 requires-python = ">=3.11"
-description = "Experimental cross-modal branch and claim-to-witness falsification laboratory"
+description = "Experimental structural falsification and counterexample-guided mold learning"
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
@@ -18,13 +18,17 @@ Changelog = "https://github.com/hibou04-ops/antemortem-structural-lab/blob/main/
 [project.scripts]
 tomolab = "tomolab.cli:main"
 
-[tool.setuptools]
-packages = ["tomolab"]
+[project.optional-dependencies]
+solver = ["z3-solver>=4.13,<6"]
+
+[tool.setuptools.packages.find]
+include = ["tomolab", "tomolab.*"]
 
 [tool.setuptools.data-files]
 "share/antemortem-structural-lab" = ["README.md", "README.ko.md", "SECURITY.md", "PUBLIC_IMPORT_NOTICE.md"]
 "share/antemortem-structural-lab/examples" = ["examples/*.py"]
 "share/antemortem-structural-lab/examples/claim_only" = ["examples/claim_only/*.py"]
+"share/antemortem-structural-lab/examples/mold" = ["examples/mold/*.py", "examples/mold/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

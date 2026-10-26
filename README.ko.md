@@ -1,107 +1,149 @@
 # Antemortem Structural Lab
 
-코드의 구조를 읽는 것과 실제로 실행해 보는 것 사이에서 어떤 정보를 얻을 수 있는지 실험하는 Python 프로젝트입니다.
+신뢰할 수 있는 Python 함수를 검사하고, 실패한 입력을 저장하며, 그 실패를 설명하는 경쟁 가설로 다음 테스트를 선택하는 실험 도구입니다. 코드 구조를 읽는 **MRI**, 실행 결과를 관측하는 **CAST**, 반례를 찾는 **Claim-to-Witness**, 실패 조건을 학습하는 **Mold**를 제공합니다.
 
-[English README](README.md) | [변경 이력](CHANGELOG.md) | [Phase C0 상세 설명](PHASE_C_README_KO.md)
+**한국어 사용자 안내** · [English](README.md) · [변경 이력](CHANGELOG.md) · [검증 기록](docs/RELEASE_VALIDATION.md)
 
-## 시작한 이유
+`0.3.0a1`은 실험적 사전 릴리스입니다. 기능 구현과 실제 프로젝트에서의 성능 우월성은 별개의 문제입니다.
 
-처음에는 보이지 않는 개미집에 거푸집을 떠서 내부 통로의 모양을 드러내는 모습을 떠올렸습니다. 여기서 코드에 대한 질문으로 이어졌습니다. 내부가 보이지 않는 구조라도 적절한 자극을 주고 반응을 관찰하면 어느 정도 윤곽을 알아낼 수 있지 않을까.
+## 어떤 문제를 다루나요?
 
-코드는 여기에 한 가지 방법을 더 쓸 수 있습니다. 소스를 직접 읽어 내부 구조를 살펴보는 겁니다. 그래서 구조를 분석한 결과와 실제 실행에서 관측한 결과를 나란히 놓고, 한쪽이 놓친 부분을 다른 쪽이 찾아낼 수 있는지 확인해 보고 싶었습니다.
+정적 분석은 코드의 조건을 보여 주지만 실제 위반을 확인하려면 실행이 필요합니다. 무작위 테스트는 위반을 찾을 수 있지만 이전 실패에서 얻은 구조를 다음 입력에 사용하지 않을 수 있습니다. 이 도구는 두 정보를 연결하고, 발견한 반례와 가설의 출처를 남깁니다.
 
-이 실험에서 MRI는 내부를 들여다본다는 비유에서 가져온 이름으로, 코드 구조를 읽는 쪽을 뜻합니다. CAST는 입력을 가해 실제 동작을 관측하는 쪽에 붙인 작업 이름입니다. 정적 분석, 심볼릭 실행, 피드백 기반 테스트에는 이미 오랫동안 발전해 온 연구와 도구가 있습니다. 제가 궁금했던 건 두 관점을 연결했을 때 실제로 어떤 정보를 더 얻을 수 있는지, 그리고 발견한 사실을 어디까지 믿어도 되는지였습니다.
+Mold는 실패 좌표 하나를 다른 프로그램에 그대로 적용하지 않습니다. 같은 증거를 설명하는 여러 관계식을 유지하고, 서로 다른 예측을 내는 입력을 선택합니다. 새 대상에서는 변수의 역할과 명시된 계약을 먼저 확인합니다. 계약이 맞더라도 **탐색에 사용할 수 있다는 뜻이며, 같은 결함이 존재한다는 증명은 아닙니다.**
 
-아직 작은 실험판이지만, 생각만 해 둔 구조를 실제 코드와 반례로 확인하기 시작한 상태입니다.
+## 구조와 지원 기능
 
-## 지금 가능한 일
+```mermaid
+flowchart LR
+    S[공개 명세] --> G[Generator]
+    M[MRI: 코드 구조] --> C[기존 CAST 탐사]
+    G --> X[입력 후보]
+    X --> O[별도 Oracle 평가]
+    O --> F[최소 실패·반증 증거]
+    F --> V[경쟁 가설 제거·Mold 버전]
+    V --> Q[정보 획득·다양성 선택]
+    Q --> G
+    V --> Z[동결된 후보 계획]
+    Z --> H[독립 최종 평가]
+```
 
-v0.2.0에서는 제한된 형태의 Python 조건문을 분석하고, 신뢰할 수 있는 예제 함수를 실행해 분기 경로를 관측할 수 있습니다. 관측한 경로를 바탕으로 다음 입력을 제안하고, 결과가 어긋나는 사례를 기록해 다시 실행할 수도 있습니다.
+| 기능 | 구현 범위 |
+| --- | --- |
+| MRI / CAST | 제한된 Python 조건문 분석, 분기 관측, 참조 함수와 결과 비교 |
+| Claim-to-Witness | 한국어·영어의 고정 문장 6개를 관계식 3종에 연결, 반례 저장·재실행 |
+| Mold | 실패 로그 정규화, 유한 관계식 가설 공간, 반례에 의한 후보 제거 |
+| 다음 입력 선택 | 가설 간 불일치가 큰 입력과 주기적인 공간 다양성 탐사 |
+| 제약·이력 | 증거, 반증, 경쟁 가설, 버전, 출처, 범위, 불확실성을 JSON으로 보존 |
+| 적용 검사 | 변수 역할의 일대일 대응, 연산 의미·불변식·계약 일치 확인; 불충분하면 `UNKNOWN` |
+| Solver | 기본 유한 영역 열거; 선택적으로 Z3 사용 |
+| 평가 경계 | 생성기 별도 프로세스, 선택적 Docker 생성기, 동결 후 학습 차단 |
 
-새로 추가한 Phase C0는 정답 역할을 하는 두 번째 함수 없이도 특정 주장을 검사합니다. 예를 들어 두 정수의 입력 순서를 바꿔도 반환값이 같아야 한다면, 실제로 입력을 뒤집어 실행한 결과를 비교하는 방식입니다.
+새 Mold의 관계식은 `left`와 `right` 역할에 대한 합·차·절댓값 관계와 합의 나머지(2·3·5)입니다. 지원하는 정수 임계값과 `eq` / `le` / `ge` 비교로 가설 공간을 구성합니다. 자유로운 프로그램 의미를 자동으로 복원하지 않습니다.
 
-다만 정답 함수가 없다는 것과 검사 기준 자체가 없다는 것은 다릅니다. 지금은 한국어 세 문장과 영어 세 문장을 미리 정해 둔 관계식 세 종류에 연결합니다. 자유로운 자연어 요구사항을 이해하는 기능은 아직 없습니다.
+## 빠른 시작
 
-## 먼저 실행하기
+Python **3.11 이상**이 필요합니다. 기본 실행에는 유료 모델·API나 Z3가 필요하지 않습니다.
 
-Python 3.11 이상이 필요합니다. 기본 실행에는 별도의 유료 API가 필요하지 않습니다.
+GitHub Release의 wheel 설치:
+
+```bash
+python -m pip install https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.3.0a1/antemortem_structural_lab-0.3.0a1-py3-none-any.whl
+python -m tomolab mold-demo --budget 32 --seed 7 --backend subprocess --solver enumeration --output results/mold.json
+```
+
+`mold-demo`는 동봉된 검토 가능한 예제만 실행합니다. 결과의 `status`는 `COUNTEREXAMPLES_FOUND` 또는 `NOT_REFUTED_WITHIN_BUDGET`입니다. `failures`에는 최소 실패 증거, `snapshot`에는 경쟁 가설과 Mold 버전이 들어갑니다. 대상·Oracle 해시, 호출 수, 격리 수준도 기록합니다. 실패를 찾지 못했거나 가설이 하나로 줄었다는 사실만으로 함수의 정확성이 증명되지는 않습니다.
+
+소스와 예제를 함께 받으려면:
 
 ```bash
 git clone https://github.com/hibou04-ops/antemortem-structural-lab.git
 cd antemortem-structural-lab
 python -m pip install -e .
-python -m pip install pytest
-python -m pytest -q
 ```
 
-아래 명령은 대상 코드를 실행하지 않고 지원되는 주장을 관계식으로 바꿉니다.
+PowerShell에서도 명령을 한 줄씩 실행할 수 있습니다. `tomolab` 명령과 `python -m tomolab`은 같은 CLI를 사용합니다. 이 배포는 GitHub Release에 게시하며, PyPI 게시를 전제로 하지 않습니다.
+
+## 사용 예제
+
+### 기존 Claim-to-Witness
+
+첫 명령은 대상 코드를 실행하지 않습니다. 뒤의 실행·재실행 명령은 신뢰하는 로컬 예제를 실행합니다.
 
 ```bash
 python -m tomolab claim-compile --claim "두 정수 입력의 순서를 바꿔도 반환값은 같다"
-```
-
-이제 저장소에 포함된, 일부러 오류를 넣은 예제에 같은 조건을 적용해 봅니다.
-
-```bash
 python -m tomolab claim-run examples/claim_only/symmetry_bug.py --claim "두 정수 입력의 순서를 바꿔도 반환값은 같다" --mode cross --budget 12 --allow-local-execution --output results/symmetry.json
-```
-
-저장한 반례는 다음처럼 재실행할 수 있습니다.
-
-```bash
 python -m tomolab claim-replay results/symmetry.json --allow-local-execution
-```
-
-예제 함수는 (17, -3)에서 15를, (-3, 17)에서 14를 반환합니다. 입력 순서를 바꾸어도 결과가 같아야 한다는 관계식을 위반하는 셈입니다. 재실행 단계에서는 기록된 소스와 계약을 확인한 뒤 같은 위반이 다시 나타나는지 검사합니다.
-
-초기 MRI·CAST 분기 탐사 예제도 남겨 두었습니다.
-
-```bash
 python -m tomolab demo --mode cross --budget 12
 ```
 
-Windows PowerShell에서는 명령어를 한 줄씩 그대로 붙여 넣으면 됩니다.
+대칭성 예제는 `(17, -3)`에서 15, `(-3, 17)`에서 14를 반환합니다. 정의한 관계식의 반례입니다. 원래 자연어 요구사항의 모든 의미가 검증된 것은 아닙니다. 반례가 없으면 `NOT_REFUTED_WITHIN_BUDGET`으로 남습니다. [Phase C0 상세 설명](PHASE_C_README_KO.md)을 참고하세요.
 
-## 현재 한계
+### 별도 Oracle로 Mold 학습
 
-Phase C0는 정수 인자 두 개와 정수 반환값을 다루는 순수하고 결정적인 함수를 전제로 합니다. 입력의 기본 범위는 -25부터 25까지입니다. 지원하지 않는 문장은 억지로 해석하지 않고 거부합니다.
+저장소의 예제 명세·대상·Oracle을 분리해 실행합니다.
 
-반례를 찾았다는 것은 현재 정의된 관계식이 실제 실행 결과와 충돌했다는 뜻입니다. 자연어 원문의 모든 의미가 거짓이라고 바로 단정할 수는 없습니다. 반례를 찾지 못해도 정확하다고 판정하지 않고 `NOT_REFUTED_WITHIN_BUDGET`으로 남깁니다.
+```bash
+python -m tomolab mold-run examples/mold/target.py --oracle-file examples/mold/oracle.py --spec examples/mold/spec.json --function implementation --oracle reference --allow-local-execution --budget 32 --seed 7 --output results/mold-run.json
+```
 
-동봉된 합성 벤치마크는 지금 엔진이 처리하는 분기 형태에 맞춰 만든 사례입니다. 교차 피드백이 작동하는지 확인하는 용도이지 실제 오픈소스 프로젝트에서 더 잘 작동한다는 증거는 아닙니다. 같은 관계식을 받은 CrossHair도 현재 결함 세 종류를 모두 찾아냈습니다. 기존 도구보다 성능이 뛰어나다는 결론은 아직 없습니다.
+Oracle은 생성기와 별도로 정답을 계산합니다. 생성기는 허용된 구조화 증거만 받아 가설을 갱신합니다. 성공 점수나 자연어 평가는 보상으로 사용하지 않습니다. 관측으로 제거된 가설과 남은 가설을 함께 확인해야 합니다.
 
-초기 분기 탐사에는 Jev를 이용해 입력 후보를 선택하는 선택적 연결 기능도 있습니다. Phase C0는 결정적인 정책을 사용하며 Jev를 호출하지 않습니다. Jev가 판단의 참·거짓을 결정하는 것은 아니며, 실제 탐지 성능에 얼마나 기여하는지도 아직 측정하지 않았습니다. 위 예제는 Jev 없이 실행할 수 있습니다.
+### 동결 후 새 명세에 입력 계획
 
-## 실행할 때 주의할 점
+```bash
+python -m tomolab mold-plan --snapshot results/mold-run.json --spec examples/mold/renamed-spec.json --budget 32 --output results/mold-plan.json
+```
 
-`claim-run`, `claim-replay`와 기존 실행 명령은 로컬 Python 코드를 현재 사용자 권한으로 실행합니다. `--allow-local-execution`은 실행에 동의했다는 표시일 뿐, 격리된 보안 환경을 제공하지 않습니다.
+이 명령은 대상 함수를 실행하지 않습니다. 동결한 Mold와 공개 명세로 후보만 만듭니다. 변수 이름이 바뀌어도 역할과 계약이 대응하면 `APPLICABLE_FOR_PROBING`으로 탐색을 허용합니다. 근거가 맞지 않으면 `UNKNOWN`으로 남기고 전이 제약 없이 탐색합니다. 최종 평가 결과는 동결된 생성기로 돌려보내지 않습니다.
 
-직접 작성했거나 내용을 확인한 코드에만 사용하세요. 출처를 알 수 없는 코드를 그대로 실행하면 안 됩니다. 저장된 결과에는 로컬 경로나 테스트 입력값이 들어갈 수 있으니 공유 전에 확인해야 합니다. API 키는 파일이나 Git 이력에 넣지 마세요.
+선택적 Z3 설치는 소스 디렉터리에서 `python -m pip install -e ".[solver]"`로 할 수 있습니다. 이후 `--solver z3`를 사용하세요. Z3가 없으면 해당 선택은 명시적으로 실패하며, Z3로 검사한 것처럼 표시하지 않습니다. 기본 Docker 이미지는 Z3를 포함하지 않습니다.
 
-자세한 내용은 [보안 안내](SECURITY.md)에 있습니다.
+## 기존 도구와의 관계
 
-## 다음에 풀 문제
+- **Hypothesis**는 폭넓은 속성 기반 테스트 도구입니다. 이 패키지가 이를 대체하거나 성능에서 앞선다는 증거는 없습니다.
+- **CrossHair**는 Python의 계약을 심볼릭 실행으로 검사합니다. 기존 비교에서 동일한 합성 결함 세 종류를 모두 찾았습니다. [비교 fixture](baselines/crosshair_claim_contracts.py)는 보존합니다.
+- **Z3**는 선택적인 제약 검사 backend입니다. 기본은 작은 유한 영역을 완전히 열거하는 방식이며, 무제한 정수 공간의 증명을 주장하지 않습니다.
+- **Jev**는 기존 분기 탐사에서 선택할 수 있는 후보 생성 연결입니다. Mold·Claim 경로는 유료 호출 없이 실행됩니다. [연결 이력](JEV_CONNECTION_CHANGELOG.md)과 [외부 기술 안내](docs/THIRD_PARTY.md)를 참고하세요.
 
-지금은 주어진 관계식을 실제 실행으로 반증할 수 있는지 확인했습니다. 다음 문제는 그보다 앞에 있습니다.
+## 연구 결과와 한계
 
-자연어로 적힌 요구사항이 있을 때, 우리가 만들어 낸 검증 조건이 원래 말한 내용을 제대로 보존하고 있는지 어떻게 확인할 것인가.
+E1은 `E1_EXECUTED_NO_IMPROVEMENT`, E2는 `E2_EXECUTED_NO_IMPROVEMENT`였습니다. E2의 후보 평가 26,880회에서 A/B/C/D의 주입 지점×시드 발견 합계는 76/75/72/76이었고, 시드를 합친 고유 주입 지점은 모두 16개였습니다. D와 기준선 A의 최종 후보·결과는 동일했고 새로운 portable constraint는 0개였습니다. 이 숫자는 독립적인 실제 결함 수가 아닙니다.
 
-이것이 Phase C1의 주제인 Claim-to-Obligation Semantic Fidelity입니다. 독립적인 평가 자료를 만들고, 전제 누락과 의미 변경, 판단할 수 없는 경우를 구분하는 과정이 먼저 필요합니다. v0.2.0에는 아직 구현되지 않았습니다.
+E3에서는 새로운 합성 문제로 후보 7,040회를 평가했습니다. 최종 평가에서 uniform/Mold의 주입 지점×시드 발견 수는 **30/30**, 고유 지점은 **6/6**이었습니다. 첫 발견 평균 호출은 21.025에서 17.5로 줄었지만(미발견은 65로 처리), 사전 기준이 요구한 발견 범위 증가는 없어 **`NO_IMPROVEMENT`**, 일반화는 **`GENERALIZATION_UNKNOWN`**입니다. 반복 실패 입력 증가를 새 결함 발견으로 세지 않습니다.
 
-## 개발 기록
+조건·집계는 [E3 평가 설명](docs/E3_EVALUATION.md), 구현·설치 검증은 [릴리스 검증 기록](docs/RELEASE_VALIDATION.md)과 [v0.3.0a1 릴리스 노트](docs/releases/v0.3.0a1.md)에 구분해 기록합니다. E1/E2 평가 자료는 이미 소비된 자료이며 새 블라인드 결과로 재사용하지 않았습니다. 일반적인 실제 프로젝트에 대한 우월성은 입증되지 않았습니다.
 
-초기 실험은 Git 외부에 버전별로 보관했고, 공개 준비 과정에서 이를 순서대로 Git 이력에 가져왔습니다. 커밋 시각을 과거 개발 시각으로 꾸미지 않았습니다.
+현재 Mold는 **순수하고 결정적인 정수 입력 2개·정수 출력 함수**와 최대 4,225개의 유한 입력 영역(각 축 최대 65개)을 대상으로 합니다. 임의의 상태 전이 프로그램, 부동소수점, 외부 부작용, 자유로운 자연어 의미 검증은 지원하지 않습니다. 가설 공간 밖의 실패 구조를 복원할 수 있다고 가정하지 않습니다.
 
-아직 공개되지 않았던 v0.2.0 태그는 두 언어의 문서와 릴리스 검사를 마친 상태에 맞췄습니다. 원래 태그와 커밋 해시는 [가져오기 기록](PUBLIC_IMPORT_NOTICE.md)에 남겼습니다. v0.1.1의 패키지 버전 수정도 별도 커밋으로 보존되어 있습니다.
+## 안전 모델
+
+`--allow-local-execution`은 실행 동의 표시이며 보안 샌드박스가 아닙니다. 대상과 Oracle은 평가기 호스트에서 현재 사용자 권한으로 실행되므로 직접 작성했거나 검토한 코드에만 사용하세요.
+
+기본 `subprocess` backend는 별도 프로세스 통신을 사용하지만 파일 접근 권한은 공유하므로 **`LOGICAL_ISOLATION_ONLY`**입니다. Docker backend는 생성기에 공개 코드만 읽기 전용으로 제공하고 네트워크·쓰기·권한을 제한합니다. 이것이 대상 Python 코드를 적대적 코드용 샌드박스로 바꾸지는 않습니다. Docker 준비와 실제 접근 통제 검증 범위는 [보안 안내](SECURITY.md)를 확인하세요.
+
+결과에는 입력과 로컬 경로가 포함될 수 있습니다. `results/`와 비공개 연구 자료를 공개 저장소나 릴리스에 올리지 마세요.
+
+## 개발·기여·이력
+
+```bash
+python -m pip install pytest build twine
+python -m pytest -q
+python -m build
+python -m twine check dist/*
+```
+
+[기여 안내](CONTRIBUTING.md) · [이슈](https://github.com/hibou04-ops/antemortem-structural-lab/issues) · [Actions](https://github.com/hibou04-ops/antemortem-structural-lab/actions)
+
+보이지 않는 개미집에 거푸집을 떠 내부 통로를 드러내는 모습에서 MRI·CAST라는 비유를 가져왔습니다. 초기 실험은 별도 보관본에서 Git으로 가져왔고, 커밋 시각을 과거 연구 시각으로 꾸미지 않았습니다. 기존 태그와 가져오기 기록은 [공개 이력 안내](PUBLIC_IMPORT_NOTICE.md)에 보존합니다.
 
 | 버전 | 주요 변화 |
 | --- | --- |
-| [v0.1.0](docs/releases/v0.1.0.md) | 참조 함수를 사용하는 MRI·CAST 분기 탐사 실험 |
-| [v0.1.1](docs/releases/v0.1.1.md) | TypeSafe Jev 연결과 제공자 처리 기능 |
-| [v0.2.0](docs/releases/v0.2.0.md) | 참조 함수가 없는 초기 관계식 반례 탐사 |
+| [v0.1.0](docs/releases/v0.1.0.md) | 참조 함수를 사용하는 MRI·CAST 분기 탐사 |
+| [v0.1.1](docs/releases/v0.1.1.md) | 선택적 TypeSafe Jev 연결 |
+| [v0.2.0](docs/releases/v0.2.0.md) | Claim-to-Witness 관계식 반례 탐사 |
+| [v0.3.0a1](docs/releases/v0.3.0a1.md) | 경쟁 가설·능동 질의·적용 검사 기반 Mold 통합 |
 
-이 프로젝트는 기존 [antemortem-cli](https://github.com/hibou04-ops/antemortem-cli)와 분리된 실험 저장소입니다. 공개 대상은 소스, 예제, 테스트 및 개발 기록입니다. 개인적인 연구 자료나 인증 정보는 포함하지 않습니다.
+자연어와 검증 조건 사이의 의미 보존을 다루는 C1은 [별도 연구 PR](https://github.com/hibou04-ops/antemortem-structural-lab/pull/1)입니다. 이 릴리스의 Mold 구현과 혼동하지 마세요. 이 저장소는 [antemortem-cli](https://github.com/hibou04-ops/antemortem-cli)와 별개의 실험 프로젝트입니다.
 
-## 라이선스
-
-Apache License 2.0. 자세한 내용은 [LICENSE](LICENSE)를 확인하세요.
+Apache License 2.0 — [LICENSE](LICENSE).
