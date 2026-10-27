@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "antemortem-structural-lab"
-version = "0.3.0a1"
+version = "0.4.0a1"
 requires-python = ">=3.11"
 description = "Experimental structural falsification and counterexample-guided mold learning"
 readme = "README.md"
@@ -20,6 +20,7 @@ tomolab = "tomolab.cli:main"
 
 [project.optional-dependencies]
 solver = ["z3-solver>=4.13,<6"]
+qa = ["hypothesis>=6.100,<7"]
 
 [tool.setuptools.packages.find]
 include = ["tomolab", "tomolab.*"]

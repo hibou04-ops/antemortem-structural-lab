@@ -5,29 +5,21 @@ import json
 import sys
 
 from . import MoldEngine, transfer
-
-MAX_MESSAGE = 8_000_000
+from .protocol import MAX_MESSAGE, validate_request
 
 
 def main() -> int:
     engine = None
-    for line in sys.stdin:
+    while True:
+        line = sys.stdin.readline(MAX_MESSAGE + 1)
+        if not line:
+            break
         try:
-            if len(line) > MAX_MESSAGE:
-                raise ValueError("message too large")
-            message = json.loads(line)
-            if not isinstance(message, dict):
-                raise ValueError("request must be an object")
-            action = message.get("action")
-            fields = {
-                "init": {"action", "spec", "seed", "strategy", "solver"},
-                "propose": {"action"}, "observe": {"action", "evidence"},
-                "freeze": {"action"}, "snapshot": {"action"},
-                "transfer": {"action", "snapshot", "spec", "seed", "budget", "solver"},
-                "diagnose": {"action", "host_sentinel"}, "close": {"action"},
-            }
-            if action not in fields or set(message) - fields[action]:
-                raise ValueError("unknown action or forbidden request field")
+            if len(line) > MAX_MESSAGE or not line.endswith("\n"):
+                print(json.dumps({"ok": False, "error": "ValueError: message too large or truncated"}), flush=True)
+                return 2
+            message = validate_request(json.loads(line), None if engine is None else engine.spec)
+            action = message["action"]
             if action == "close":
                 return 0
             if action == "init":
@@ -59,11 +51,12 @@ def main() -> int:
                     code_write = True
                 except OSError:
                     code_write = False
-                with socket.socket() as connection:
-                    connection.settimeout(1)
-                    network = connection.connect_ex(("1.1.1.1", 53)) == 0
+                # Inspect this process's interfaces instead of probing a third-
+                # party service. Docker's network=none should expose loopback
+                # only; this does not claim an external connectivity experiment.
+                interfaces = sorted(name for _, name in socket.if_nameindex() if name != "lo")
                 result = {"host_read": host_read, "code_write": code_write,
-                          "network_connected": network, "uid": getattr(os, "getuid", lambda: None)(),
+                          "non_loopback_interfaces": interfaces, "uid": getattr(os, "getuid", lambda: None)(),
                           "private_env_present": "TOMOLAB_PRIVATE_SENTINEL" in os.environ}
             else:
                 if engine is None:
