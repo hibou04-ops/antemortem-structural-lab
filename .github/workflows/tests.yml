@@ -75,6 +75,15 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Preserve reviewed release helper and select immutable E5 source
+        shell: bash
+        run: |
+          cp scripts/publish-e5.py "$RUNNER_TEMP/publish-e5.py"
+          test "$(git rev-parse 'v0.5.0a1^{commit}')" = 473092b529a6593a890a5efc7f492433d269371e
+          git merge-base --is-ancestor 473092b529a6593a890a5efc7f492433d269371e "$GITHUB_SHA"
+          git switch --detach 473092b529a6593a890a5efc7f492433d269371e
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -86,7 +95,8 @@ jobs:
       - name: Verify draft and publish experimental E5 prerelease
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python scripts/publish-e5.py
+          E5_RELEASE_SOURCE_SHA: 473092b529a6593a890a5efc7f492433d269371e
+        run: python "$RUNNER_TEMP/publish-e5.py"
       - uses: actions/upload-artifact@v4
         with:
           name: release-receipt
