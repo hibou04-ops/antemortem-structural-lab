@@ -167,9 +167,120 @@ def main(argv: list[str] | None = None) -> int:
                             choices=("ValueError","TypeError","KeyError","IndexError","ZeroDivisionError","OverflowError"),
                             help="Explicitly approved Oracle exception category; all others propagate")
     discovery_plan.add_argument("--target-evidence", type=Path, help="Approved development counterevidence only; never final labels")
+    stateful_demo = cmd.add_parser("stateful-demo", help="E6 native Hypothesis and learned temporal constraints on reviewed state machines")
+    stateful_demo.add_argument("--case", choices=("stack","renamed","clean"), default="stack")
+    stateful_run = cmd.add_parser("stateful-run", help="E6 discovery on explicitly trusted subject and independent model factories")
+    stateful_run.add_argument("path", type=Path)
+    stateful_run.add_argument("--oracle-file", type=Path, required=True)
+    stateful_run.add_argument("--factory", default="make_subject")
+    stateful_run.add_argument("--oracle-factory", default="make_subject")
+    stateful_run.add_argument("--allow-local-execution", action="store_true")
+    stateful_plan = cmd.add_parser("stateful-plan", help="Transfer frozen state relations using public contracts only")
+    stateful_plan.add_argument("--snapshot", type=Path, required=True)
+    stateful_plan.add_argument("--target-evidence", type=Path)
+    stateful_plan.add_argument("--mapping", type=Path)
+    stateful_inspect = cmd.add_parser("stateful-inspect", help="Validate a public finite-state contract without importing target code")
+    for parser in (stateful_run,stateful_plan,stateful_inspect):
+        parser.add_argument("--contract", type=Path, required=True, help="Public JSON with spec and temporal_contract")
+    for parser in (stateful_demo,stateful_run,stateful_plan):
+        parser.add_argument("--budget", type=int, default=128)
+        parser.add_argument("--seed", type=int, default=7)
+        parser.add_argument("--pool-size", type=int, default=32)
+        parser.add_argument("--backend", choices=("subprocess","docker"), default="subprocess")
+        parser.add_argument("--strategy", choices=("integrated","hypothesis"), default="integrated")
+        parser.add_argument("--public-ir", type=Path, help="Explicitly approved static IR; never a hidden final source")
+    for parser in (stateful_demo,stateful_run):
+        parser.add_argument("--shrink-budget", type=int, default=128)
+        parser.add_argument("--time-budget", type=float, default=15.0)
+        parser.add_argument("--expected-exception", action="append", default=[],
+                            choices=("ValueError","TypeError","KeyError","IndexError","ZeroDivisionError","OverflowError"))
+    for parser in (stateful_demo,stateful_run,stateful_plan,stateful_inspect):
+        parser.add_argument("--output")
+
     args = p.parse_args(argv)
     try:
-        if args.command.startswith("discovery-"):
+        if args.command.startswith("stateful-"):
+            from .discovery.schema import integer, keys, validate_spec
+            from .discovery.temporal import trace_layout, validate_temporal_contract
+            if args.command == "stateful-run" and not args.allow_local_execution:
+                p.error("stateful-run requires --allow-local-execution (trusted callbacks; host has NO sandbox)")
+            folder = EXAMPLES / "temporal"
+            bundle_path = folder / ("renamed-contract.json" if args.case == "renamed" else "stack-contract.json") if args.command == "stateful-demo" else args.contract
+            bundle = json.loads(bundle_path.read_text(encoding="utf-8"))
+            keys(bundle,("spec","temporal_contract"))
+            spec = validate_spec(bundle["spec"])
+            contract = validate_temporal_contract(bundle["temporal_contract"],spec)
+            if args.command == "stateful-inspect":
+                _save({"schema":"tomolab-temporal-inspection-v1","spec":spec,"temporal_contract":contract,
+                       "execution":"NOT_EXECUTED","scope":"APPROVED_BOUNDED_NUMERIC_STATE_PROJECTIONS"},args.output)
+                return 0
+            integer(args.budget,1,4096)
+            integer(args.seed,0,2**32-1)
+            integer(args.pool_size,1,4096)
+            ir = json.loads(args.public_ir.read_text(encoding="utf-8")) if args.public_ir else None
+            if ir is not None:
+                from .discovery.predicates import validate_public_ir
+                validate_public_ir(ir,spec)
+            if args.command == "stateful-plan":
+                from .discovery.temporal_boundary import TemporalBoundary
+                source = json.loads(args.snapshot.read_text(encoding="utf-8"))
+                source = source.get("snapshot",source)
+                options = dict(snapshot=source,spec=spec,temporal_contract=contract,budget=args.budget,
+                               seed=args.seed,pool_size=args.pool_size)
+                if ir is not None:
+                    options["target_ir"] = ir
+                if args.target_evidence:
+                    options["target_evidence"] = json.loads(args.target_evidence.read_text(encoding="utf-8"))
+                if args.mapping:
+                    options["mapping"] = json.loads(args.mapping.read_text(encoding="utf-8"))
+                with TemporalBoundary(backend=args.backend) as generator:
+                    result = generator.request("transfer",**options)
+                    result["information_boundary"] = generator.receipt
+            else:
+                import math
+                integer(args.shrink_budget,0,10000)
+                if not math.isfinite(args.time_budget) or not 0<args.time_budget<=3600:
+                    raise ValueError("stateful time-budget must be finite and in (0,3600]")
+                if len(spec["contract"]["invariants"])!=1:
+                    raise ValueError("stateful evaluator requires one declared reference-comparison invariant")
+                _,_,argument_type = trace_layout(spec)
+                if spec["inputs"][0]["type"]["min_size"] != 0 or spec["inputs"][0]["type"]["max_size"] < 1:
+                    raise ValueError("native stateful adapter requires min_size=0 and a positive step bound")
+                if argument_type["kind"]!="int" or argument_type["max"]-argument_type["min"]>128:
+                    raise ValueError("native stateful adapter supports at most 129 bounded integer arguments")
+                try:
+                    import hypothesis  # noqa: F401
+                except ImportError as error:
+                    raise ValueError("stateful discovery requires the 'qa' extra") from error
+                if args.command == "stateful-demo":
+                    target = folder / ({"stack":"stack_target.py","renamed":"renamed_target.py","clean":"clean_target.py"}[args.case])
+                    oracle = folder / ("renamed_oracle.py" if args.case=="renamed" else "stack_oracle.py")
+                else:
+                    target,oracle = args.path,args.oracle_file
+                if target.resolve()==oracle.resolve():
+                    raise ValueError("stateful discovery requires an independently authored model file")
+                from .mold.service import _load
+                target_factory,target_hash = _load(target,getattr(args,"factory","make_subject"))
+                model_factory,model_hash = _load(oracle,getattr(args,"oracle_factory","make_subject"))
+                def action_callback(action):
+                    def execute(subject,argument):
+                        return subject.step(action,argument)
+                    return execute
+                operations = {action["name"]:{"arguments":argument_type,"target":action_callback(action["name"]),
+                                               "model":action_callback(action["name"])} for action in contract["actions"]}
+                from .discovery.temporal_service import run_temporal
+                result = run_temporal(target_factory,model_factory,operations,snapshot=lambda subject:subject.snapshot(),
+                    spec=spec,temporal_contract=contract,budget=args.budget,shrink_budget=args.shrink_budget,
+                    seed=args.seed,pool_size=args.pool_size,time_budget=args.time_budget,strategy=args.strategy,
+                    backend=args.backend,public_ir=ir,trusted_execution=True,
+                    expected_oracle_exceptions=tuple(getattr(__import__("builtins"),name) for name in args.expected_exception))
+                if (hashlib.sha256(target.read_bytes()).hexdigest()!=target_hash or
+                        hashlib.sha256(oracle.read_bytes()).hexdigest()!=model_hash):
+                    raise ValueError("trusted stateful source changed during execution")
+                result.update(target_sha256=target_hash,oracle_sha256=model_hash)
+            _save(result,args.output)
+        elif args.command.startswith("discovery-"):
+
             from .discovery.service import prepare_public_contract, run_discovery, plan_discovery
             from .discovery.schema import integer, validate_spec
             from .discovery.predicates import validate_public_ir

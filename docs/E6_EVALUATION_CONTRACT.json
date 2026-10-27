@@ -1,0 +1,96 @@
+{
+  "schema": "tomolab-e6-evaluation-contract-v1",
+  "contract_id": "E6-20261027-v1",
+  "baseline_commit": "f269ba9e11dc77e439cf840160c3ab081439e110",
+  "baseline_release": "v0.5.0a1",
+  "scope": "new reviewed bounded scalar EFSM mutations and existing user-owned pure project controls",
+  "external_real_project_generalization": "NOT_EXECUTED",
+  "consumed_E1_to_E5_holdout_access_or_reuse": false,
+  "families": ["snapshot-restoration", "staged-overwrite-order", "remove-one-multiplicity", "lease-reuse-stale-value", "lifo-undo-order"],
+  "controls": ["project-difference-control", "project-text-control"],
+  "seeds": [13, 47, 89],
+  "selection": "All five families, both controls, every seed and applicable method must be retained. Unsupported method domains are explicit NOT_COMPARABLE. No final --case selection.",
+  "state_scope": "Explicit numeric scalar EFSM, finite action names, integer arguments [-2,2], at most eight actions per fresh trace. Public model precondition failure is a declared no-op. Arbitrary Python object inference and container append/remove semantics are unsupported.",
+  "development": {
+    "methods": ["NativeHypothesis", "NativeStateful", "E5", "E6", "CrossHair"],
+    "trace_callback_cap": 128,
+    "actual_model_transition_cap": 1024,
+    "actual_target_transition_cap": 1024,
+    "candidate_budget": 64,
+    "shrink_budget": 62,
+    "pool_size": 128,
+    "max_examples": 128,
+    "stateful_step_count": 8,
+    "wall_cap_seconds": 12.0,
+    "feedback": "approved public development evidence only",
+    "full_native_find_and_rulebased_shrinking": true
+  },
+  "native_parameter_units": {
+    "E5": "64 fresh whole-trace proposals, 62 additional whole-trace shrink predicate calls, two witness replays; independent actual transition caps still apply.",
+    "E6": "128 actual development transitions on each side, 62 native stateful shrink transitions, two bounded witness replays. Native factory episodes are not whole-trace Oracle function callbacks and are separately reported.",
+    "NativeHypothesis": "Native find with up to 128 actual fresh-factory whole-trace predicate callbacks and pure-input memoization.",
+    "NativeStateful": "Native search/shrink with at most 1024 actual transitions on each side, max_examples=128 with native shrinking/replay episodes separately reported; live state transitions are never memoized and factory episodes are not capped as whole-trace function calls.",
+    "comparison": "Native parameter values have different units and are not claimed equal. Independent actual transition/wall ceilings, measured first-discovery invocations and total costs define comparisons. Detection loss is disallowed."
+  },
+  "final": {
+    "methods": ["NativeHypothesis-frozen", "NativeStateful-frozen", "E5-frozen", "E6-frozen"],
+    "trace_callback_cap": 64,
+    "actual_model_transition_cap": 512,
+    "actual_target_transition_cap": 512,
+    "candidate_budget": 64,
+    "pool_size": 128,
+    "max_examples": 64,
+    "stateful_step_count": 8,
+    "wall_cap_seconds": 12.0,
+    "feedback_to_every_generator": 0,
+    "native_stateful_plan": "Actual RuleBasedStateMachine generates traces using public contract simulation and preconditions only; freeze before any target/Oracle callback.",
+    "source_molds": "Fresh E6 public development cases only; E5 and E6 source molds frozen per seed before final.",
+    "final_targets": "Separately authored different implementations and renamed action/state names with declared semantic-role correspondence. No final target source is sent to a generator.",
+    "public_identifiers": "Neutral public API identifiers bind source and target contracts. Benchmark family IDs, expected-fault labels and development/final/control labels are evaluator-only and are not put in generator specs or initialization packets.",
+    "freeze": ["all runtime Python source", "evaluation program", "public fixtures", "contract", "pyproject", "unmodified E5 baseline runtime", "all required source molds", "new private final suite bytes"],
+    "ledger": "exclusive-create same-state append-only ledger; an attempted final consumes the suite even on failure; no post-result tuning or repeated final",
+    "complete_grid": "7 cases x 4 methods x 3 seeds = 84 attempted records; NativeStateful static controls are NOT_COMPARABLE"
+  },
+  "crosshair": {
+    "tier": "source-aware public development only",
+    "actual_installed_CLI": true,
+    "per_condition_seconds": 6.0,
+    "internal_symbolic_oracle_calls": "UNKNOWN",
+    "independent_concrete_replay_required_for_confirmed_fault": true,
+    "not_in_equal_transition_budget_ranking": true,
+    "unsupported_or_unanalyzed": "NOT_COMPARABLE_OR_UNKNOWN"
+  },
+  "measurement": {
+    "primary_work_unit": "Actual reference plus target transition callback invocations, with the two counts also reported separately. A whole-trace function callback is not one transition.",
+    "trace_cap_scope": "Development 128 whole-trace callback cap applies to actual fresh-factory whole-trace predicate APIs (NativeHypothesis/E5), not native RuleBasedStateMachine factory episodes. E6/native state-machine operations share the same hard actual transition and wall ceilings. Final frozen plans all use at most 64 whole-trace callbacks.",
+    "first_failure_calls": "Sum of actually executed model and target primitive transitions at the first independently observed mismatch. Whole-trace trace callbacks and native state-machine steps remain separately reported.",
+    "wall": "Parent launch-to-completion, including process/import, public IR analysis, candidate generation, simulation, solver, updates, serialization, Oracle, shrink and replay. Cleanup grace never expands the execution cap.",
+    "components": "Record measured generator/IR/version-space/solver/process-serialization/Oracle/shrink/replay times when exposed; missing subdivisions remain UNKNOWN rather than inferred by subtraction.",
+    "cpu": "Sum last sampled CPU for each PID/create-time identity in recursive tree; sampled lower bound, evaluator CPU not added twice.",
+    "memory": "10ms sampled maximum of live process-tree RSS sum, not true OS peak.",
+    "unique_faults": "One predefined failure mechanism family once across inputs, seeds and renamed implementations; input failures never become additional independent defects.",
+    "duplicates": "Within-run duplicate typed pure-trace evaluations and duplicate failing traces, with denominators exposed; no cross-seed inflation.",
+    "cache": "Only fresh-factory pure whole-trace results may be memoized identically across methods. Never skip a live state-machine operation on the basis of action/argument alone.",
+    "oracle_errors": "Unexpected reference/factory/projection errors are evaluator failures, never target findings. Target mismatch uses canonical JSON state outcome equality.",
+    "preconditions": "Invalid action preconditions are explicit model no-ops for arbitrary typed traces; native state machines may avoid them using the same public contract. Skipped/invalid operations are reported separately."
+  },
+  "independent_development_audits": {
+    "constraint_inputs_per_family": 64,
+    "candidate_hypotheses_cap": 128,
+    "selection": "canonical ID order, include empty grammar cases, no feedback to generator",
+    "meaning": "Candidate failure-membership contradictions, not proven causal laws.",
+    "transfer": "Declared role/type/action/precondition/invariant correspondences and exact removal of constraints contradicted by checked clean development traces. Applicability is not proof of repeated target defects."
+  },
+  "verdict": {
+    "DISCOVERY_IMPROVED": "All required supported runs complete, zero control false alerts, and E6 finds strictly more unique predefined mechanisms than every jointly supported strong baseline under the preregistered wall and primitive-transition caps. Bounded descriptive result only; not external generalization.",
+    "EFFICIENCY_IMPROVED_ONLY": "No detection loss and zero control false alerts; paired median total wall <=0.80 and paired median first-failure primitive-transition invocations <=0.80 versus every jointly applicable black-box baseline, with at least three stateful families in each primary NativeHypothesis/NativeStateful stratum. Report E5 separately as well.",
+    "NO_IMPROVEMENT": "Complete supported evaluation without the discovery or efficiency criteria. Saturated detection alone is not improvement.",
+    "INCONCLUSIVE": "Required black-box infrastructure, controls or supported runs fail/time out, any required black-box method produces a clean-control false alert, complete-grid/freeze check fails, or fewer than three stateful families are jointly comparable.",
+    "external_generalization": "NOT_EXECUTED"
+  },
+  "publication": {
+    "public": ["this contract", "new public development fixture source", "code/contract/freeze hashes", "aggregate method costs and verdict", "limits"],
+    "never_staged": ["private final source", "private final inputs and answers", "raw final records", "source mold snapshots", "private paths", "attempt ledger"],
+    "logical_boundary": "Local subprocess is LOGICAL_ISOLATION_ONLY. Actual Docker enforcement is separate CI evidence. Trusted evaluator targets are not sandboxed by the generator container."
+  }
+}

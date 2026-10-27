@@ -1,5 +1,25 @@
 # Security model / 보안 모델
 
+## E6 Stateful Mold 경계
+
+E6의 공개 EFSM은 수치 상태·행동·전제조건·동시 갱신·불변식을 담은 data-only 계약입니다. 임의 Python 표현식 실행이나 import를 허용하지 않습니다. Native stateful의 rule 선택·전제조건·Bundle 인자는 공개 계약으로만 결정합니다. 실제 대상·Model 상태는 호스트 평가 비교에만 사용하며 worker에 보내지 않습니다.
+
+E6 생성기는 승인된 공개 입력을 실제 평가 전에 등록하고, 최소 개발 failure/refutation과 첫 실패 전이 위치만 받습니다. 부모 전송 전과 worker 수신 후에 검증합니다. 원시 actual/expected state·Oracle source·비공개 final label·주관적 점수는 금지하며, 동결 후 `register`·`observe`를 전송 전에 차단합니다. 전이 snapshot도 부모에서 상태를 재계산해 검증합니다.
+
+허용된 생성기 파일은 명시적 allowlist입니다. `temporal_service.py`, `native_stateful.py`, 대상·Oracle 파일, source-reading analysis와 CrossHair 평가기는 mount하지 않습니다. native shrinking과 두 번의 독립 재실행은 Generator 동결 뒤 평가기에서 수행합니다. Replay는 임의 프로그램의 결정론성 증명이 아닙니다.
+
+```bash
+docker build -f containers/e6-generator.Dockerfile -t tomolab-e6-generator:local containers
+python -m tomolab stateful-demo --backend docker --budget 128 --pool-size 12 --shrink-budget 64 --output results/e6-container.json
+```
+
+기본 subprocess는 호스트 파일 권한을 공유하는 LOGICAL_ISOLATION_ONLY입니다. Docker는 network none·read-only·uid65534·권한 축소로 Generator를 제한하며 실제 CI 검사 결과로 판정합니다. 대상과 Model의 실행 위치·권한은 바꾸지 않습니다. 로컬 Docker 실행 불가는 컨테이너 경계 통과로 기록하지 않습니다.
+
+Native stateful은 선언된 초기 상태의 일치, 정수 행동 인자 최대129값, trace min_size0/최대16단계를 요구합니다. Oracle·projection 오류는 finding으로 승격하지 않습니다. 내부 예산 중단이 Hypothesis 오류로 감싸진 경우에는 해당 run의 실제 중단 예외 chain을 확인한 경우만 RESOURCE_BUDGET으로 기록합니다. 무관한 nondeterminism은 전파하며 미완료 축소를 성공으로 포장하지 않습니다. 제품 callback 시간 한도는 협력적 검사이고 비정지 함수를 강제 종료하는 격리가 아닙니다.
+
+최종 평가는 별도 source·코드·계약·source molds를 먼저 동결하고 1회 ledger를 사용합니다. Final 실행 baseline 경로도 manifest에 고정합니다. Family/expected-fault label은 공개 Generator 명세에 포함하지 않습니다. Private final source·정답·raw 기록·molds와 기존 소비된 홀드아웃은 공개하지 않습니다. [E6 기록](docs/E6_INTEGRATION.md)을 확인하세요.
+
+
 ## 신뢰하는 코드만 실행
 
 대상 Python 코드와 Oracle은 평가기 호스트에서 현재 사용자 권한으로 실행됩니다. `--allow-local-execution`은 사용자가 실행을 허용했다는 표시이며 **보안 샌드박스가 아닙니다**. 직접 작성했거나 독립적으로 검토한 코드에만 사용하세요. 임의 저장소, 적대적 코드, 권한 없는 시스템을 검사하는 용도로 사용하지 마세요.

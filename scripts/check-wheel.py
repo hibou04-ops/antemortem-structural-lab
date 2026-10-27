@@ -45,6 +45,9 @@ with tempfile.TemporaryDirectory(prefix="structural-wheel-") as folder:
     compiled = json.loads(run("-m", "tomolab", "claim-compile", "--claim", claim))
     assert compiled["claim"]["kind"] == "swap"
     examples = run("-c", "from tomolab.cli import EXAMPLES; print(EXAMPLES)").strip()
+    temporal_contract = str(Path(examples)/"temporal"/"stack-contract.json")
+    inspected = json.loads(run("-m","tomolab","stateful-inspect","--contract",temporal_contract))
+    assert inspected["execution"] == "NOT_EXECUTED"
     evidence = root / "claim.json"
     target = str(Path(examples) / "claim_only" / "symmetry_bug.py")
     run("-m", "tomolab", "claim-run", target, "--claim", claim,
@@ -87,4 +90,18 @@ with tempfile.TemporaryDirectory(prefix="structural-wheel-") as folder:
         state = json.loads(run("-m", "tomolab", "discovery-demo", "--case", "state", "--budget", "16",
                                "--pool-size", "32", "--shrink-budget", "32"))
         assert state["status"] == "COUNTEREXAMPLE_FOUND"
+        temporal = json.loads(run("-m","tomolab","stateful-demo","--budget","128","--pool-size","12",
+                                  "--shrink-budget","64"))
+        assert temporal["status"] == "COUNTEREXAMPLE_FOUND"
+        assert temporal["snapshot"]["status"] == "HYPOTHESES_REMAIN"
+        assert temporal["snapshot"]["frozen"] and temporal["final_feedback_allowed"] is False
+        assert temporal["metrics"]["guided_trace_calls"] > 0
+        assert temporal["counterexample"]["replay"] == "MATCHED_TWICE"
+        temporal_source = root/"temporal-source.json"
+        temporal_source.write_text(json.dumps(temporal),encoding="utf-8")
+        temporal_plan = json.loads(run("-m","tomolab","stateful-plan","--snapshot",str(temporal_source),
+                                      "--contract",str(Path(examples)/"temporal"/"renamed-contract.json"),
+                                      "--budget","8","--pool-size","12"))
+        assert temporal_plan["gate"]["status"] == "APPLICABLE_FOR_PROBING"
+        assert temporal_plan["final_feedback_allowed"] is False
     print(f"Wheel {version}: install, dependency check, bundled demo, claim and replay passed")

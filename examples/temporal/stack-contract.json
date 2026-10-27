@@ -1,0 +1,133 @@
+{
+  "spec": {
+    "schema": "tomolab-discovery-spec-v1",
+    "task_id": "e6-public-stack-regression",
+    "inputs": [
+      {
+        "name": "trace",
+        "role": "transitions",
+        "type": {
+          "kind": "list",
+          "items": {
+            "kind": "tuple",
+            "items": [
+              {
+                "kind": "str",
+                "alphabet": "hopsu",
+                "min_size": 3,
+                "max_size": 4,
+                "choices": [
+                  "push",
+                  "pop"
+                ]
+              },
+              {
+                "kind": "int",
+                "min": -2,
+                "max": 2
+              }
+            ]
+          },
+          "min_size": 0,
+          "max_size": 6
+        }
+      }
+    ],
+    "contract": {
+      "id": "e6-stack-count-v1",
+      "operation": "bounded-state-transitions",
+      "preconditions": [
+        "declared-actions"
+      ],
+      "invariants": [
+        "state-and-output-match"
+      ],
+      "state_model": "e6-stack-count-v1",
+      "graph_signature": "UNKNOWN"
+    }
+  },
+  "temporal_contract": {
+    "schema": "tomolab-temporal-contract-v1",
+    "state": [
+      {
+        "name": "count",
+        "role": "size",
+        "type": {
+          "kind": "int",
+          "min": 0,
+          "max": 6
+        },
+        "initial": 0
+      }
+    ],
+    "actions": [
+      {
+        "name": "push",
+        "role": "insert",
+        "preconditions": [
+          {
+            "op": "lt",
+            "left": {
+              "var": "pre:size"
+            },
+            "right": 6
+          }
+        ],
+        "effects": {
+          "size": {
+            "op": "add",
+            "args": [
+              {
+                "var": "pre:size"
+              },
+              1
+            ]
+          }
+        },
+        "postconditions": [],
+        "dependencies": []
+      },
+      {
+        "name": "pop",
+        "role": "remove",
+        "preconditions": [
+          {
+            "op": "gt",
+            "left": {
+              "var": "pre:size"
+            },
+            "right": 0
+          }
+        ],
+        "effects": {
+          "size": {
+            "op": "sub",
+            "args": [
+              {
+                "var": "pre:size"
+              },
+              1
+            ]
+          }
+        },
+        "postconditions": [],
+        "dependencies": [
+          "insert"
+        ]
+      }
+    ],
+    "invariants": [
+      {
+        "id": "nonnegative-size",
+        "predicate": {
+          "op": "ge",
+          "left": {
+            "var": "post:size"
+          },
+          "right": 0
+        }
+      }
+    ],
+    "disabled_action": "REJECT"
+  }
+}
