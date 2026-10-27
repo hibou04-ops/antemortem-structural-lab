@@ -17,6 +17,7 @@ import zipfile
 REPO = "hibou04-ops/antemortem-structural-lab"
 VERSION = "0.5.0a1"
 TAG = "v"+VERSION
+PRESERVED_SOURCE_COMMIT = "473092b529a6593a890a5efc7f492433d269371e"
 
 
 def command(*args, check=True):
@@ -38,6 +39,19 @@ def api(path,missing=False):
 
 def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def find_release():
+    """The release-by-tag endpoint omits drafts; authenticated listing includes them."""
+    matches = []
+    for page in range(1, 11):
+        releases = api(f"releases?per_page=100&page={page}")
+        matches.extend(release for release in releases if release["tag_name"] == TAG)
+        if len(matches) > 1:
+            raise ValueError("ambiguous release tag; preserve all existing drafts")
+        if len(releases) < 100:
+            return matches[0] if matches else None
+    raise ValueError("release listing exceeded its bound")
 
 
 def resolve_tag(ref):
@@ -106,9 +120,16 @@ def main():
     if (os.environ.get("GITHUB_REPOSITORY") != REPO or os.environ.get("GITHUB_EVENT_NAME") != "push"
             or os.environ.get("GITHUB_REF") != "refs/heads/main"):
         raise ValueError("publication requires the authorized main CI push")
-    head = os.environ["GITHUB_SHA"]
-    if not re.fullmatch(r"[0-9a-f]{40}",head):
+    ci_head = os.environ["GITHUB_SHA"]
+    head = os.environ.get("E5_RELEASE_SOURCE_SHA",ci_head)
+    if not all(re.fullmatch(r"[0-9a-f]{40}",value) for value in (head,ci_head)):
         raise ValueError("invalid main commit")
+    if command("git","rev-parse","HEAD").stdout.strip() != head:
+        raise ValueError("checked-out source differs from release source")
+    if head != ci_head:
+        if head != PRESERVED_SOURCE_COMMIT:
+            raise ValueError("recovery must preserve the validated E5 tag source")
+        command("git","merge-base","--is-ancestor",head,ci_head)
     version = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
     if version != VERSION:
         raise ValueError("version differs from authorized E5 prerelease")
@@ -117,7 +138,7 @@ def main():
     if {p.name for p in dist.iterdir() if p.is_file()} != expected_packages:
         raise ValueError("unexpected build assets")
     expected = expected_packages|{"SHA256SUMS.txt"}
-    existing = api("releases/tags/"+TAG,missing=True)
+    existing = find_release()
     if existing is not None and not existing["draft"]:
         with tempfile.TemporaryDirectory(prefix="e5-existing-release-") as folder:
             hashes = verify_download(existing,head,expected,Path(folder))
@@ -138,13 +159,15 @@ def main():
         if existing is None:
             gh("release","create",TAG,"--repo",REPO,"--verify-tag","--prerelease","--latest=false","--draft",
                "--title",TAG+" (experimental)","--notes-file",f"docs/releases/{TAG}.md")
-            existing = api("releases/tags/"+TAG)
+            existing = find_release()
+            if existing is None:
+                raise ValueError("new draft is missing from authenticated release listing")
         present = {a["name"] for a in existing["assets"]}
         if not present <= expected:
             raise ValueError("unexpected draft assets")
         if expected-present:
             gh("release","upload",TAG,"--repo",REPO,*[str(dist/name) for name in sorted(expected-present)])
-        draft = api("releases/tags/"+TAG)
+        draft = api("releases/"+str(existing["id"]))
         if not draft["draft"]:
             raise ValueError("draft unexpectedly published before validation")
         with tempfile.TemporaryDirectory(prefix="e5-draft-readback-") as folder:
@@ -153,14 +176,15 @@ def main():
             raise ValueError("draft bytes differ from this build; no assets will be overwritten")
         gh("release","edit",TAG,"--repo",REPO,"--draft=false","--prerelease","--latest=false")
         status = "PUBLISHED_AND_BYTE_VERIFIED"
-    published = api("releases/tags/"+TAG)
+    published = find_release()
     if published["draft"] or not published["prerelease"]:
         raise ValueError("release publication readback failed")
     with tempfile.TemporaryDirectory(prefix="e5-public-readback-") as folder:
         final_hashes = verify_download(published,head,expected,Path(folder))
     if hashes != final_hashes:
         raise ValueError("public bytes differ from verified draft")
-    receipt = {"status":status,"commit":head,"tag":TAG,"annotated_tag":True,
+    receipt = {"status":status,"commit":head,"source_commit":head,"ci_commit":ci_head,
+               "publication_helper_sha256":sha(Path(__file__)),"tag":TAG,"annotated_tag":True,
                "url":published["html_url"],"sha256":final_hashes,
                "draft_verified_before_publication":True if status == "PUBLISHED_AND_BYTE_VERIFIED" else "NOT_OBSERVED_IN_THIS_RUN",
                "external_generalization":"NOT_ESTABLISHED"}
