@@ -4,7 +4,9 @@ import hashlib
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
+import subprocess
 import tarfile
 from types import SimpleNamespace
 import zipfile
@@ -14,6 +16,7 @@ import pytest
 
 HEAD = "1" * 40
 TAG_OBJECT = "2" * 40
+RECOVERY_SOURCE = "473092b529a6593a890a5efc7f492433d269371e"
 
 
 class OfflineGitHub:
@@ -22,11 +25,20 @@ class OfflineGitHub:
         self.events, self.assets = [], {}
         self.release = self.ref = None
         self.resolved_head = HEAD
+        self.checkout_head = HEAD
+        self.source_is_ancestor = True
+        self.ancestry_checks, self.api_paths = [], []
         self.download_failure = None
         self.tracked = ["tomolab/audit_fixture.py", "README.md", "README.ko.md", "SECURITY.md"]
 
     def api(self, path, missing=False):
-        if path == "releases/tags/" + self.publish.TAG:
+        self.api_paths.append(path)
+        if path.startswith("releases?per_page=100&page="):
+            page = int(path.rsplit("=", 1)[1])
+            return [deepcopy(self.release)] if self.release is not None and page == 1 else []
+        if path.startswith("releases/tags/"):
+            raise AssertionError("draft lookup must not use the by-tag REST endpoint")
+        if path == "releases/25":
             return deepcopy(self.release)
         if path == "git/ref/tags/" + self.publish.TAG:
             return deepcopy(self.ref)
@@ -35,6 +47,13 @@ class OfflineGitHub:
         raise AssertionError("unexpected offline API path: " + path)
 
     def command(self, *args, check=True):
+        if args == ("git", "rev-parse", "HEAD"):
+            return SimpleNamespace(returncode=0, stdout=self.checkout_head + "\n", stderr="")
+        if args[:3] == ("git", "merge-base", "--is-ancestor"):
+            self.ancestry_checks.append(args[3:])
+            if not self.source_is_ancestor and check:
+                raise subprocess.CalledProcessError(1, args)
+            return SimpleNamespace(returncode=0 if self.source_is_ancestor else 1, stdout="", stderr="")
         if args == ("git", "ls-files", "-z"):
             return SimpleNamespace(stdout="\0".join(self.tracked) + "\0")
         if args[:2] == ("git", "-c") and "tag" in args:
@@ -51,13 +70,13 @@ class OfflineGitHub:
     def set_release(self, *, draft, annotated=True):
         self.ref = {"object": {"type": "tag", "sha": TAG_OBJECT}} if annotated else {
             "object": {"type": "commit", "sha": HEAD}}
-        self.release = {"tag_name": self.publish.TAG, "prerelease": True, "draft": draft,
+        self.release = {"id": 25, "tag_name": self.publish.TAG, "prerelease": True, "draft": draft,
                         "html_url": "https://example.invalid/controlled-release", "assets": []}
         for path in (self.root / "dist").iterdir():
             self.assets[path.name] = path.read_bytes()
         manifest = "".join(f"{hashlib.sha256(data).hexdigest()}  {name}\n"
                            for name, data in sorted(self.assets.items()))
-        self.assets["SHA256SUMS.txt"] = manifest.encode("ascii")
+        self.assets["SHA256SUMS.txt"] = manifest.replace("\n", os.linesep).encode("ascii")
         self._asset_metadata()
 
     def _asset_metadata(self):
@@ -69,7 +88,7 @@ class OfflineGitHub:
         if action == ("release", "create"):
             assert self.ref["object"]["type"] == "tag"
             assert all(flag in args for flag in ("--verify-tag", "--prerelease", "--draft", "--latest=false"))
-            self.release = {"tag_name": self.publish.TAG, "prerelease": True, "draft": True,
+            self.release = {"id": 25, "tag_name": self.publish.TAG, "prerelease": True, "draft": True,
                             "html_url": "https://example.invalid/controlled-release", "assets": []}
             self.events.append("create-draft")
         elif action == ("release", "upload"):
@@ -110,6 +129,7 @@ def publication(tmp_path, monkeypatch):
     monkeypatch.setenv("GITHUB_EVENT_NAME", "push")
     monkeypatch.setenv("GITHUB_REF", "refs/heads/main")
     monkeypatch.setenv("GITHUB_SHA", HEAD)
+    monkeypatch.delenv("E5_RELEASE_SOURCE_SHA", raising=False)
     (tmp_path / "pyproject.toml").write_text(f'[project]\nversion="{publish.VERSION}"\n', encoding="utf-8")
     sources = {"tomolab/audit_fixture.py": b"def identity(value):\n    return value\n",
                "README.md": b"Public release fixture.\n", "README.ko.md": "공개 테스트 자료.\n".encode(),
@@ -197,4 +217,89 @@ def test_published_rerun_rejects_wrong_tag_without_mutation(publication, annotat
     assert "publish" not in fake.events
     assert "upload-assets" not in fake.events
     assert fake.assets == original
+    assert not (root / "release-receipt.json").exists()
+
+
+def test_existing_draft_is_discovered_by_list_without_by_tag_lookup(publication):
+    publish, fake, root = publication
+    fake.set_release(draft=True)
+    original = deepcopy(fake.assets)
+    publish.main()
+    assert fake.events == ["download-draft", "verify-source", "publish", "download-public", "verify-source"]
+    assert fake.assets == original
+    assert any(path.startswith("releases?per_page=100&page=") for path in fake.api_paths)
+    assert not any(path.startswith("releases/tags/") for path in fake.api_paths)
+    assert json.loads((root / "release-receipt.json").read_text(encoding="utf-8"))["status"] == "PUBLISHED_AND_BYTE_VERIFIED"
+
+
+def test_release_listing_paginates_to_draft(publication, monkeypatch):
+    publish, fake, _ = publication
+    fake.set_release(draft=True)
+    pages = []
+
+    def listed(path, missing=False):
+        pages.append(path)
+        return [{"tag_name": "unrelated-tag"}] * 100 if len(pages) == 1 else [deepcopy(fake.release)]
+
+    monkeypatch.setattr(publish, "api", listed)
+    assert publish.find_release() == fake.release
+    assert pages == ["releases?per_page=100&page=1", "releases?per_page=100&page=2"]
+    assert not fake.events
+
+
+def test_ambiguous_draft_tag_is_rejected_without_mutation(publication, monkeypatch):
+    publish, fake, root = publication
+    fake.set_release(draft=True)
+    original = deepcopy(fake.assets)
+    monkeypatch.setattr(publish, "api", lambda path, missing=False: [deepcopy(fake.release), deepcopy(fake.release)])
+    with pytest.raises(ValueError, match="ambiguous"):
+        publish.main()
+    assert fake.assets == original and not fake.events
+    assert not (root / "release-receipt.json").exists()
+
+
+def test_authorized_recovery_verifies_original_source_and_records_ci_provenance(publication, monkeypatch):
+    publish, fake, root = publication
+    monkeypatch.setenv("E5_RELEASE_SOURCE_SHA", RECOVERY_SOURCE)
+    fake.checkout_head = fake.resolved_head = RECOVERY_SOURCE
+    fake.set_release(draft=True)
+    original = deepcopy(fake.assets)
+    publish.main()
+    assert fake.ancestry_checks == [(RECOVERY_SOURCE, HEAD)]
+    assert fake.assets == original
+    assert not {"annotated-tag", "push-tag", "create-draft", "upload-assets"} & set(fake.events)
+    receipt = json.loads((root / "release-receipt.json").read_text(encoding="utf-8"))
+    assert receipt["commit"] == RECOVERY_SOURCE
+    assert receipt["ci_commit"] == HEAD
+    assert receipt["publication_helper_sha256"] == hashlib.sha256(Path(publish.__file__).read_bytes()).hexdigest()
+
+
+def test_unapproved_recovery_source_is_rejected_before_remote_actions(publication, monkeypatch):
+    publish, fake, root = publication
+    monkeypatch.setenv("E5_RELEASE_SOURCE_SHA", "4" * 40)
+    fake.checkout_head = "4" * 40
+    with pytest.raises(ValueError, match="recovery|source|commit|authorized"):
+        publish.main()
+    assert not fake.events and not fake.api_paths
+    assert not (root / "release-receipt.json").exists()
+
+
+def test_checkout_mismatch_is_rejected_before_remote_actions(publication):
+    publish, fake, root = publication
+    fake.checkout_head = "4" * 40
+    with pytest.raises(ValueError, match="checkout|checked.out|source|commit"):
+        publish.main()
+    assert not fake.events and not fake.api_paths
+    assert not (root / "release-receipt.json").exists()
+
+
+def test_recovery_source_must_be_ancestor_of_validated_ci_commit(publication, monkeypatch):
+    publish, fake, root = publication
+    monkeypatch.setenv("E5_RELEASE_SOURCE_SHA", RECOVERY_SOURCE)
+    fake.checkout_head = fake.resolved_head = RECOVERY_SOURCE
+    fake.source_is_ancestor = False
+    with pytest.raises((ValueError, subprocess.CalledProcessError)):
+        publish.main()
+    assert fake.ancestry_checks == [(RECOVERY_SOURCE, HEAD)]
+    assert not fake.events and not fake.api_paths
     assert not (root / "release-receipt.json").exists()
