@@ -1,6 +1,6 @@
 # E6 독립 평가 기록
 
-공개 개발 판정은 **NO_IMPROVEMENT**, 최종 독립 평가는 **NOT_EXECUTED**다. 외부 실제 프로젝트 일반화는 **NOT_EXECUTED**다.
+공개 개발 판정은 **NO_IMPROVEMENT**, 최종 독립 평가는 **NO_IMPROVEMENT**다. 외부 실제 프로젝트 일반화는 **NOT_EXECUTED**다.
 
 ## 사전 계약과 범위
 
@@ -40,7 +40,23 @@
 
 ## 최종 평가
 
-아직 실행하지 않았다. 제품·계약·42개 source molds·새 private final suite를 동결하고, 전체84 records와 exclusive ledger를 강제한 뒤 실행한다.
+| 방법 | 비교 가능/전체 | 발견 계열 | 상태 run 발견 | 상태 primitive 호출 | 총 wall(s) |
+|---|---:|---:|---:|---:|---:|
+| E5-frozen | 21/21 | 5 | 15/15 | 8722 | 38.320 |
+| E6-frozen | 21/21 | 5 | 15/15 | 9486 | 42.748 |
+| NativeHypothesis-frozen | 21/21 | 5 | 15/15 | 9402 | 19.945 |
+| NativeStateful-frozen | 15/21 | 5 | 15/15 | 11758 | 26.318 |
+
+최종 판정: **NO_IMPROVEMENT**. 전체84 records는78 COMPLETE·정적 Native Stateful6 NOT_COMPARABLE이며 오류·timeout·source drift와 실행 가능한 정상 대조군 오탐은0이다. 네 black-box 방법 모두 stateful15/15와5개 계열을 발견했다. 최종 feedback은0이고 ledger START/COMPLETE는각1이다.
+
+동결 SHA-256: `869158af27ab3c928caa0edc00b2375be6de72e1d76ab67bff06b1e0245c97ff`.
+- E6/NativeHypothesis-frozen: paired wall 중앙값비율2.321, 최초발견 실제상태 primitive호출비율0.445.
+- E6/NativeStateful-frozen: paired wall 중앙값비율1.387, 최초발견 실제상태 primitive호출비율0.414.
+- E6/E5-frozen: paired wall 중앙값비율1.123, 최초발견 실제상태 primitive호출비율0.615.
+
+이름과 내부 표현이 다른 새 target에 대한 실제 temporal 가이드 후보는326개였고, 6 runs의 최초 witness가 가이드 후보에서 관측됐다. 이는 frozen 계획에 source 형상이 쓰였다는 실행 증거이며 기존 도구로 불가능했던 발견이나 인과적 우위의 증명이 아니다.
+
+Source 개발비를 포함한 두 track 관측 wall은 E6 87.523s, Native Hypothesis 40.241s다. Source/final 변형을 서로 다른 결함으로 두 번 세지 않는다.
 
 ## 비용과 해석 한계
 

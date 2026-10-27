@@ -5,9 +5,19 @@
   "contract_sha256": "ba780d7c85669aef7f68b1c597a58d0290f10e7d54634c00f7968e2697018d8b",
   "evaluator_sha256": "85ee99967badd0c5313c7669624d7ab5fb90d36a3602331674bb1d6e45be0b1b",
   "public_fixture_sha256": "9c476a940b9f154ef7b433bfe48f29789fa14e00561eac80c801941fb95cab27",
-  "freeze_sha256": null,
-  "frozen_product_files": null,
-  "frozen_source_molds": null,
+  "freeze_sha256": "869158af27ab3c928caa0edc00b2375be6de72e1d76ab67bff06b1e0245c97ff",
+  "execution_environment": {
+    "python": "3.12.10",
+    "platform": "win32",
+    "installed_dependency_versions": {
+      "hypothesis": "6.170.11",
+      "z3-solver": "5.3.2.0",
+      "crosshair-tool": "0.0.112",
+      "psutil": "7.2.2"
+    }
+  },
+  "frozen_product_files": 49,
+  "frozen_source_molds": 42,
   "development": {
     "summary": [
       {
@@ -694,15 +704,349 @@
     "scope": "first seed, canonical-ID bounded temporal membership candidates; static correspondence gates; not causal explanation accuracy or repeated-defect proof"
   },
   "final": {
-    "status": "NOT_EXECUTED",
-    "target_executions": 0
+    "summary": [
+      {
+        "method": "E5-frozen",
+        "attempted_runs": 21,
+        "comparable_runs": 21,
+        "not_comparable": 0,
+        "resource_budget_runs": 0,
+        "incomplete_runs": 0,
+        "unique_fault_families": 5,
+        "control_false_alerts": 0,
+        "actual_model_transition_calls": 4361,
+        "actual_target_transition_calls": 4361,
+        "independent_concrete_replay_invocations": null,
+        "trace_evaluations": 960,
+        "total_wall_seconds": 38.320286200003466,
+        "sampled_process_tree_cpu_seconds_lower_bound": 27.171875,
+        "maximum_sampled_live_tree_rss_bytes": 100339712,
+        "failed_evaluations": 205,
+        "unique_failing_inputs_summed_per_run": 205,
+        "duplicate_failure_rate": 0.0,
+        "stateful_runs_with_confirmed_mismatch": 15,
+        "stateful_supported_runs": 15,
+        "actual_primitive_invocations": 8722,
+        "actual_all_callback_invocations_including_static_controls": 9490,
+        "actual_static_reference_function_calls": 384,
+        "actual_static_target_function_calls": 384,
+        "whole_trace_callbacks": 960,
+        "static_control_function_evaluation_pairs": 384,
+        "stateful_wall_seconds": 29.641755899967393,
+        "native_factory_episodes": 0,
+        "conditional_median_first_failure_wall_seconds": 1.9539319000032265,
+        "conditional_median_first_failure_primitive_invocations": 38,
+        "total_wall_per_unique_mechanism_seconds": 7.664057240000693,
+        "unique_evaluated_inputs_summed_per_run": 1344,
+        "duplicate_evaluation_rate": 0.0,
+        "measured_ir_analysis_seconds": 8.585704900091514,
+        "measured_oracle_callback_seconds": 0.05089330027112737,
+        "library_timing_components_seconds_nonadditive": {},
+        "crosshair_tool_status_counts": null
+      },
+      {
+        "method": "E6-frozen",
+        "attempted_runs": 21,
+        "comparable_runs": 21,
+        "not_comparable": 0,
+        "resource_budget_runs": 0,
+        "incomplete_runs": 0,
+        "unique_fault_families": 5,
+        "control_false_alerts": 0,
+        "actual_model_transition_calls": 4743,
+        "actual_target_transition_calls": 4743,
+        "independent_concrete_replay_invocations": null,
+        "trace_evaluations": 960,
+        "total_wall_seconds": 42.74843070001225,
+        "sampled_process_tree_cpu_seconds_lower_bound": 32.484375,
+        "maximum_sampled_live_tree_rss_bytes": 131764224,
+        "failed_evaluations": 377,
+        "unique_failing_inputs_summed_per_run": 377,
+        "duplicate_failure_rate": 0.0,
+        "stateful_runs_with_confirmed_mismatch": 15,
+        "stateful_supported_runs": 15,
+        "actual_primitive_invocations": 9486,
+        "actual_all_callback_invocations_including_static_controls": 10254,
+        "actual_static_reference_function_calls": 384,
+        "actual_static_target_function_calls": 384,
+        "whole_trace_callbacks": 960,
+        "static_control_function_evaluation_pairs": 384,
+        "stateful_wall_seconds": 33.95762629999081,
+        "native_factory_episodes": 0,
+        "conditional_median_first_failure_wall_seconds": 2.208097499998985,
+        "conditional_median_first_failure_primitive_invocations": 12,
+        "total_wall_per_unique_mechanism_seconds": 8.54968614000245,
+        "unique_evaluated_inputs_summed_per_run": 1344,
+        "duplicate_evaluation_rate": 0.0,
+        "measured_ir_analysis_seconds": 8.599616800056538,
+        "measured_oracle_callback_seconds": 0.05470639909617603,
+        "library_timing_components_seconds_nonadditive": {},
+        "crosshair_tool_status_counts": null
+      },
+      {
+        "method": "NativeHypothesis-frozen",
+        "attempted_runs": 21,
+        "comparable_runs": 21,
+        "not_comparable": 0,
+        "resource_budget_runs": 0,
+        "incomplete_runs": 0,
+        "unique_fault_families": 5,
+        "control_false_alerts": 0,
+        "actual_model_transition_calls": 4701,
+        "actual_target_transition_calls": 4701,
+        "independent_concrete_replay_invocations": null,
+        "trace_evaluations": 960,
+        "total_wall_seconds": 19.944752599898493,
+        "sampled_process_tree_cpu_seconds_lower_bound": 12.4375,
+        "maximum_sampled_live_tree_rss_bytes": 49065984,
+        "failed_evaluations": 223,
+        "unique_failing_inputs_summed_per_run": 223,
+        "duplicate_failure_rate": 0.0,
+        "stateful_runs_with_confirmed_mismatch": 15,
+        "stateful_supported_runs": 15,
+        "actual_primitive_invocations": 9402,
+        "actual_all_callback_invocations_including_static_controls": 10144,
+        "actual_static_reference_function_calls": 371,
+        "actual_static_target_function_calls": 371,
+        "whole_trace_callbacks": 960,
+        "static_control_function_evaluation_pairs": 371,
+        "stateful_wall_seconds": 14.377793099964038,
+        "native_factory_episodes": 0,
+        "conditional_median_first_failure_wall_seconds": 0.9192596999928355,
+        "conditional_median_first_failure_primitive_invocations": 39,
+        "total_wall_per_unique_mechanism_seconds": 3.9889505199796984,
+        "unique_evaluated_inputs_summed_per_run": 1331,
+        "duplicate_evaluation_rate": 0.0,
+        "measured_ir_analysis_seconds": 8.525895900034811,
+        "measured_oracle_callback_seconds": 0.0671964013890829,
+        "library_timing_components_seconds_nonadditive": {},
+        "crosshair_tool_status_counts": null
+      },
+      {
+        "method": "NativeStateful-frozen",
+        "attempted_runs": 21,
+        "comparable_runs": 15,
+        "not_comparable": 6,
+        "resource_budget_runs": 0,
+        "incomplete_runs": 0,
+        "unique_fault_families": 5,
+        "control_false_alerts": 0,
+        "actual_model_transition_calls": 5879,
+        "actual_target_transition_calls": 5879,
+        "independent_concrete_replay_invocations": null,
+        "trace_evaluations": 799,
+        "total_wall_seconds": 26.31786069998634,
+        "sampled_process_tree_cpu_seconds_lower_bound": 20.65625,
+        "maximum_sampled_live_tree_rss_bytes": 52183040,
+        "failed_evaluations": 378,
+        "unique_failing_inputs_summed_per_run": 378,
+        "duplicate_failure_rate": 0.0,
+        "stateful_runs_with_confirmed_mismatch": 15,
+        "stateful_supported_runs": 15,
+        "actual_primitive_invocations": 11758,
+        "actual_all_callback_invocations_including_static_controls": 11758,
+        "actual_static_reference_function_calls": 0,
+        "actual_static_target_function_calls": 0,
+        "whole_trace_callbacks": 799,
+        "static_control_function_evaluation_pairs": 0,
+        "stateful_wall_seconds": 25.186246800003573,
+        "native_factory_episodes": 0,
+        "conditional_median_first_failure_wall_seconds": 1.6228405000001658,
+        "conditional_median_first_failure_primitive_invocations": 31,
+        "total_wall_per_unique_mechanism_seconds": 5.263572139997268,
+        "unique_evaluated_inputs_summed_per_run": 799,
+        "duplicate_evaluation_rate": 0.0,
+        "measured_ir_analysis_seconds": 8.548148599948036,
+        "measured_oracle_callback_seconds": 0.0400901009561494,
+        "library_timing_components_seconds_nonadditive": {},
+        "crosshair_tool_status_counts": null
+      }
+    ],
+    "verdict": {
+      "status": "NO_IMPROVEMENT",
+      "comparisons": [
+        {
+          "baseline": "NativeHypothesis-frozen",
+          "paired_runs": 15,
+          "joint_families": 5,
+          "e6_detected_families": 5,
+          "baseline_detected_families": 5,
+          "no_detection_loss": true,
+          "median_wall_ratio": 2.321497044409953,
+          "median_first_primitive_call_ratio": 0.44534412955465585
+        },
+        {
+          "baseline": "NativeStateful-frozen",
+          "paired_runs": 15,
+          "joint_families": 5,
+          "e6_detected_families": 5,
+          "baseline_detected_families": 5,
+          "no_detection_loss": true,
+          "median_wall_ratio": 1.3869392857197114,
+          "median_first_primitive_call_ratio": 0.41379310344827586
+        },
+        {
+          "baseline": "E5-frozen",
+          "paired_runs": 15,
+          "joint_families": 5,
+          "e6_detected_families": 5,
+          "baseline_detected_families": 5,
+          "no_detection_loss": true,
+          "median_wall_ratio": 1.1227286476203862,
+          "median_first_primitive_call_ratio": 0.6153846153846154
+        }
+      ],
+      "external_generalization": "NOT_EXECUTED",
+      "scope": "bounded authored scalar EFSM software QA"
+    },
+    "per_family_detection": [
+      {
+        "family": "snapshot-restoration",
+        "method": "E5-frozen",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "snapshot-restoration",
+        "method": "E6-frozen",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "snapshot-restoration",
+        "method": "NativeHypothesis-frozen",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "snapshot-restoration",
+        "method": "NativeStateful-frozen",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "staged-overwrite-order",
+        "method": "E5-frozen",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "staged-overwrite-order",
+        "method": "E6-frozen",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "staged-overwrite-order",
+        "method": "NativeHypothesis-frozen",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "staged-overwrite-order",
+        "method": "NativeStateful-frozen",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "remove-one-multiplicity",
+        "method": "E5-frozen",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "remove-one-multiplicity",
+        "method": "E6-frozen",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "remove-one-multiplicity",
+        "method": "NativeHypothesis-frozen",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "remove-one-multiplicity",
+        "method": "NativeStateful-frozen",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "lease-reuse-stale-value",
+        "method": "E5-frozen",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "lease-reuse-stale-value",
+        "method": "E6-frozen",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "lease-reuse-stale-value",
+        "method": "NativeHypothesis-frozen",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "lease-reuse-stale-value",
+        "method": "NativeStateful-frozen",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "lifo-undo-order",
+        "method": "E5-frozen",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "lifo-undo-order",
+        "method": "E6-frozen",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "lifo-undo-order",
+        "method": "NativeHypothesis-frozen",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "lifo-undo-order",
+        "method": "NativeStateful-frozen",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      }
+    ],
+    "evaluator_versions": 1,
+    "fixture_versions": 1,
+    "contract_versions": 1,
+    "scope": "bounded authored scalar EFSM software QA; no external generalization"
+  },
+  "final_record_count": 84,
+  "final_status_counts": {
+    "COMPLETE": 78,
+    "NOT_COMPARABLE": 6
   },
   "final_structural_guidance": {
-    "status": "NOT_EXECUTED"
+    "stateful_gate_status_counts": {
+      "UNKNOWN": 2,
+      "APPLICABLE_FOR_PROBING": 13
+    },
+    "runs_with_actual_temporal_guidance": 6,
+    "actual_temporal_guided_candidates": 326,
+    "runs_first_witness_on_guided_candidate": 6,
+    "families_first_witness_on_guided_candidate": 4,
+    "families_with_confirmed_mismatch": 5,
+    "final_feedback_to_generator": 0,
+    "meaning": "observed guide use and concrete mismatch on a frozen candidate, not proof that guidance caused an otherwise impossible discovery"
   },
-  "final_attempts_started": 0,
-  "final_attempts_completed": 0,
-  "final_feedback_to_generator": null,
+  "final_attempts_started": 1,
+  "final_attempts_completed": 1,
+  "final_feedback_to_generator": 0,
   "external_real_project_generalization": "NOT_EXECUTED",
   "consumed_E1_to_E5_holdout_access_or_reuse": false,
   "limits": [
@@ -728,5 +1072,47 @@
     "검토된 기존 normalization 함수와 reference의 대소문자 의미를 어떤 control benchmark보다 앞서 정렬하고 exhaustive short-string 회귀를 추가했다.",
     "독립 감사의 baseline runtime binding, CrossHair Oracle/projection 예외 전파, 모든 required baseline control 오탐 판정, neutral public API ID 문제를 정식 개발/최종 실행 전에 수정했다.",
     "최종 target/model 함수 본문·새 seeds·primary caps·성과 threshold는 관측 결과에 맞춰 변경하지 않았다."
+  ],
+  "development_plus_final_observed_costs": [
+    {
+      "method": "E5",
+      "development_wall_seconds": 42.3007158000255,
+      "final_transfer_wall_seconds": 38.320286200003466,
+      "development_plus_final_wall_seconds": 80.62100200002897,
+      "distinct_mechanism_families_across_tracks": 5,
+      "observed_wall_per_distinct_mechanism": 16.124200400005794,
+      "combined_stateful_primitive_invocations": 23628,
+      "scope": "all attempted study/control runs; independent audits and engineering QA excluded; source/final variants do not double the fault count"
+    },
+    {
+      "method": "E6",
+      "development_wall_seconds": 44.77430619994993,
+      "final_transfer_wall_seconds": 42.74843070001225,
+      "development_plus_final_wall_seconds": 87.52273689996218,
+      "distinct_mechanism_families_across_tracks": 5,
+      "observed_wall_per_distinct_mechanism": 17.504547379992438,
+      "combined_stateful_primitive_invocations": 13228,
+      "scope": "all attempted study/control runs; independent audits and engineering QA excluded; source/final variants do not double the fault count"
+    },
+    {
+      "method": "NativeHypothesis",
+      "development_wall_seconds": 20.29613029988832,
+      "final_transfer_wall_seconds": 19.944752599898493,
+      "development_plus_final_wall_seconds": 40.24088289978681,
+      "distinct_mechanism_families_across_tracks": 5,
+      "observed_wall_per_distinct_mechanism": 8.048176579957362,
+      "combined_stateful_primitive_invocations": 17738,
+      "scope": "all attempted study/control runs; independent audits and engineering QA excluded; source/final variants do not double the fault count"
+    },
+    {
+      "method": "NativeStateful",
+      "development_wall_seconds": 29.70584820001386,
+      "final_transfer_wall_seconds": 26.31786069998634,
+      "development_plus_final_wall_seconds": 56.0237089000002,
+      "distinct_mechanism_families_across_tracks": 5,
+      "observed_wall_per_distinct_mechanism": 11.20474178000004,
+      "combined_stateful_primitive_invocations": 26902,
+      "scope": "all attempted study/control runs; independent audits and engineering QA excluded; source/final variants do not double the fault count"
+    }
   ]
 }

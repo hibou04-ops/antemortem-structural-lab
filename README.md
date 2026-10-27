@@ -39,7 +39,7 @@ python -m tomolab stateful-demo --backend docker --budget 128 --pool-size 12 --s
 
 Default subprocess isolation is `LOGICAL_ISOLATION_ONLY`. Docker limits only the Generator and is checked separately in CI; targets and models remain trusted host callbacks. Metrics distinguish actual transition calls from whole-trace evaluations, native/pool/Version Space/solver/Oracle/shrink work, dispatch and transport residual. Some phases overlap and RSS samples are not OS peaks. E5 historical whole-function Oracle counts are not interchangeable with E6 transition units.
 
-E1–E5 evidence and negative results are preserved. E5 concluded `NO_IMPROVEMENT`; external real-project generalization was `NOT_EXECUTED`. E6 uses a separate preregistered suite and once-only frozen final evaluation.
+E1–E5 evidence and negative results are preserved. E6's once-only frozen final produced 84 records: 78 COMPLETE and six static Native Stateful NOT_COMPARABLE, with no errors, timeouts, source drift or Generator feedback. All methods found 15/15 stateful runs, but the paired E6/Hypothesis median wall ratio was 2.321. Both development and final conclude **NO_IMPROVEMENT**. Independent development traces refuted 12 of 13 candidate hypotheses and one source remains OUT_OF_GRAMMAR, so grammar resolution is PARTIAL. External real-project generalization remains NOT_EXECUTED. See the [evaluation record](docs/E6_EVALUATION_REPORT.md).
 
 ## Preserved MRI, CAST, Claim and E5 features
 

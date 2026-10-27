@@ -38,7 +38,7 @@ jobs:
         run: python scripts/check-wheel.py
       - name: Check optional QA integration in the installed wheel
         run: python scripts/check-wheel.py --qa
-      - name: Evaluate separate final-validation fixtures
+      - name: Run preserved E4 public regression fixtures
         run: python scripts/evaluate-e4.py --output e4-validation.json
       - uses: actions/upload-artifact@v4
         with:

@@ -67,7 +67,7 @@ docker build -f containers/e6-generator.Dockerfile -t tomolab-e6-generator:local
 python -m tomolab stateful-demo --backend docker --budget 128 --pool-size 12 --shrink-budget 64 --output results/e6-container.json
 ```
 
-E1~E5의 부정적 연구 결과와 소비된 홀드아웃은 보존합니다. E5 최종 연구 판정은 `NO_IMPROVEMENT`, 외부 실제 프로젝트 일반화는 `NOT_EXECUTED`입니다. E6 결과는 새 문제군·사전 계약·동결된 1회 최종 평가로 별도 기록합니다. [보안 모델](SECURITY.md)과 [E6 평가 기록](docs/E6_EVALUATION_REPORT.md)을 함께 확인하세요.
+E1~E5의 부정적 연구 결과와 소비된 홀드아웃은 보존합니다. E6의 새 동결 최종84건은 오류·timeout·drift·Generator feedback0, 78 COMPLETE와 Native Stateful 정적6 NOT_COMPARABLE입니다. 모든 방법이 상태 run15/15를 발견했지만 E6/Hypothesis paired wall 중앙 비율2.321로 **개발·최종 모두 NO_IMPROVEMENT**입니다. 개발 가설13개 중12개가 새 입력에서 반증됐고 OUT_OF_GRAMMAR1건이 남아 표현 해결은 PARTIAL입니다. 외부 실제 프로젝트 일반화는 NOT_EXECUTED입니다. [보안 모델](SECURITY.md)과 [E6 평가 기록](docs/E6_EVALUATION_REPORT.md)을 함께 확인하세요.
 
 ## 보존된 E5 통합 기능
 

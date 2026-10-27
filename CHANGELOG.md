@@ -10,6 +10,7 @@ All versions are experimental. Versions v0.1.0 through v0.2.0 were retrospective
 - 이름·내부 표현이 다른 대상의 4-way 전이 gate와 frozen 계획, 전송 전 등록/feedback 차단 및 별도 E6 Docker 검사를 추가했습니다.
 - `stateful-inspect/demo/run/plan`, 명시적 bounded 지원 범위, 새 독립 평가 계약·강한 기준선 비교·한국어 문서를 추가했습니다.
 - 기존 250개 테스트·E1~E5 결과·태그·자료 경계를 보존합니다. 연구 결과와 일반화 범위는 [E6 평가](docs/E6_EVALUATION_REPORT.md)에 별도로 기록합니다.
+- 새 독립 동결 최종84 records와 개발 모두 NO_IMPROVEMENT입니다. 12/13 개발 후보 반증·OUT_OF_GRAMMAR1건·PARTIAL 표현 해결·외부 실제 프로젝트 NOT_EXECUTED를 공개합니다. 실행 후 제품·계약·가설·설정은 변경하지 않았습니다.
 - 배포는 검증된 E5 draft 목록/ID 조회·해시 검사 구현을 재사용하며 E6 현재 main만 annotated tag/prerelease로 공개합니다. PyPI는 게시하지 않습니다.
 
 ## v0.5.0a1 — Unified structural discovery engine

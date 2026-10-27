@@ -65,13 +65,15 @@ Native Hypothesis full typed traces, Native RuleBasedStateMachine, 변경하지 
 
 91개 기록:85 COMPLETE / static NativeStateful6 NOT_COMPARABLE, 오류·timeout·source drift0, control 오탐0.
 
-| 방법 | 고유 상태 결함 계열 | model+target 실제 호출 | 전체 wall 합계(초) |
+| 방법 | 고유 상태 결함 계열 | 정상 static controls 포함 실제 callback 합계 | 전체 wall 합계(초) |
 | --- | --- | --- | --- |
 | Native Hypothesis | 5 | 9,760 | 20.296 |
 | Native Stateful | 5 | 15,144 | 29.706 |
 | E5 | 5 | 15,674 | 42.301 |
 | E6 | 5 | 4,510 | 44.774 |
-| CrossHair / source-aware | 2 | 내부 UNKNOWN | 별도 집계 |
+| CrossHair / source-aware | 2 | 내부 UNKNOWN / concrete replay 12 | 24.140 |
+
+위 호출 합계는 상태 전이와 static control 함수 평가를 포함합니다. 상태 전이 primitive만 따로 합산하면 Native Hypothesis8,336 / Native Stateful15,144 / E514,906 / E63,742입니다. 두 단위를 같은 상태 전이 횟수로 부르지 않습니다. Native Stateful의 static controls6건은 NOT_COMPARABLE이며, 정상 상태기계 오탐률을 이 자료로 추정하지 않습니다.
 
 E6의 seed별 stateful 발견은14/15, 다른 세 black-box는15/15입니다. E6 paired wall 중앙 비율은 Hypothesis2.514 / NativeStateful1.352 / E51.071이며, 호출 수 감소만으로 효율 향상이라고 하지 않습니다. 개발 판정은 **NO_IMPROVEMENT**입니다.
 
@@ -83,7 +85,9 @@ stateful E6 source15개는 HYPOTHESES_REMAIN13 / OUT_OF_GRAMMAR1 / NO_FAILURE_EV
 
 ## 최종 평가
 
-최종 실행 전 제품 Git blob과 working bytes를 대조하고, 평가 담당자에게 freeze 신호를 보낸 뒤 한 번만 실행합니다. 최종 결과와 hash는 완료 후 이 절 및 공개 집계에 기록합니다. 결과를 보고 grammar/정책/가설/대상/기준을 같은 final에서 다시 조정하지 않습니다.
+최종 실행 전 제품49개 Git blob과 working bytes, 기존 E5 runtime36개, source molds42개·계약·public fixture·새 private final suite를 대조했습니다. Freeze manifest SHA-256은 `869158af27ab3c928caa0edc00b2375be6de72e1d76ab67bff06b1e0245c97ff`입니다. Exclusive ledger로 한 번만 실행한84 records는78 COMPLETE+Native Stateful static6 NOT_COMPARABLE, 오류·timeout·source drift·Generator feedback0입니다. 실행 후 제품·계약·문제·가설·설정 변경과 재실행은0입니다.
+
+모든 black-box가5개 결함 계열과 stateful15/15 runs를 발견했고 실행 가능한 control 오탐은0입니다. 전체 wall 합계는 E642.748초 / Native Hypothesis19.945초 / Native Stateful26.318초 / E538.320초입니다. E6 paired wall 중앙 비율은 Hypothesis2.321 / Native Stateful1.387 / E51.123으로 최종 판정도 **NO_IMPROVEMENT**입니다. 최초 실제 상태 전이 호출 수 비율0.445/0.414/0.615는 호출 감소를 보이지만, 전체 시간 개선을 입증하지 않습니다. 이 작은 scalar EFSM 평가를 실제 외부 프로젝트 일반화로 승격하지 않습니다.
 
 ## 품질·보안·릴리스
 
