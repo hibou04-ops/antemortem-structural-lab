@@ -2,6 +2,17 @@
 
 All versions are experimental. Versions v0.1.0 through v0.2.0 were retrospective imports of archived snapshots; those commit timestamps **do not** represent the dates when the experiments were originally performed. Later changes are developed in the public repository without rewriting historical tags.
 
+## v0.5.0a1 — Unified structural discovery engine
+
+- 공개 typed AST guard를 실제 Version Space·Active Query에 연결하고 반증에 따라 다음 query가 바뀌는 통합 discovery 엔진을 추가했습니다.
+- native Hypothesis 복합 Strategy·fresh 후보·축소, 실제 선택되는 Z3 witness, typed/role/graph/contract 전이와 counterevidence를 연결했습니다.
+- int/finite float/str/list/tuple/dict 입력, bounded state trace, 명시적 예외 계약, 동결 snapshot과 실제 호출·시간·process tree 계측을 제공합니다.
+- `discovery-inspect`, `discovery-demo`, `discovery-run`, `discovery-plan`, `analysis` extra와 dependency-only Docker 생성기 이미지를 추가했습니다.
+- 기존 145개 포함 로컬 243 tests 통과; 기존 MRI·CAST·Claim·E4 API와 E1~E4 증거·태그를 보존했습니다.
+- 개발 비교는 `NO_IMPROVEMENT`: E5/Hypothesis paired wall 중앙 비율 2.660 / 최초 발견 호출 비율 1.0. 외적 일반화는 미입증입니다.
+- 최종 source·코드·계약·mold 동결, once-only 독립 평가, annotated tag와 검증된 draft 후 prerelease 공개를 강제합니다. 비공개 final source·원시 기록은 공개하지 않습니다.
+- [E5 구현·평가·한계](docs/E5_INTEGRATION.md) · [릴리스 노트](docs/releases/v0.5.0a1.md).
+
 ## v0.4.0a1 — E4 Structural QA integration
 
 - 기존 Mold·Version Space에 Hypothesis 생성·축소, 중복 평가 캐시와 실제 호출·다양성·시간 계측을 연결했습니다.

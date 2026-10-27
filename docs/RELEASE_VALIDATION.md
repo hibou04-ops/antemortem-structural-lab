@@ -1,5 +1,29 @@
 # Release validation
 
+## v0.5.0a1 — E5 unified engine
+
+2026-10-27 KST, Windows/Python 3.12에서 실제 실행한 local gate입니다. 연구 결과는 [평가 aggregate](E5_RESULTS.json)와 [한국어 평가 보고](E5_EVALUATION_REPORT.md)로 분리합니다.
+
+| Gate | 실제 local 결과 |
+| --- | --- |
+| 기존 기능 회귀 | 기존 145 tests 보존·통과 |
+| 전체 source tests | 243 passed / failures 0 / errors 0 / skips 0, 17.965s |
+| 실제 README CLI | 영문 15 + 한국어 15 = 30/30; Docker와 설치 URL은 local CLI 검사에서 제외 |
+| E5 end-to-end | sequence native/Z3 + state trace + frozen renamed plan; 실제 call/축소/재실행 포함 |
+| 배포 실패 차단 | offline 6 tests: draft hash/download 실패 시 publish 금지, 기존 annotated tag·assets 보존 |
+| wheel/sdist | 0.5.0a1 build 및 twine metadata check PASS |
+| base wheel | 깨끗한 별도 환경의 no-index 설치, pip check, 기존 bundled CLI·Claim·Mold PASS |
+| optional QA wheel | 정상 CI에서 새 환경 설치·native discovery/Z3/state 검사를 필수 실행 |
+| 공개 범위 | source·명시 staged blobs·wheel/sdist의 credential/private-path scan; raw final source/answers/logs 미포함 |
+| 최종 동결 평가 | 63 attempts: 48 COMPLETE / E4 15 NOT_COMPARABLE; 오류·timeout 0, feedback 0, once-only |
+| 연구 판정 | 개발·최종 모두 NO_IMPROVEMENT, 외부 실제 프로젝트 generalization NOT_EXECUTED |
+| 실제 Docker 접근 통제 | local daemon 사용 불가; E4/E5 별도 Actions job의 결과로 판정 |
+
+Generator strict protocol·allowlist·동결 차단은 local 통합 테스트로 검사했습니다. 기본 subprocess는 LOGICAL_ISOLATION_ONLY이며 Docker 통과를 local 실행으로 주장하지 않습니다. source 40 files·계약·fixture·27 source molds·새 final suite가 동결됐고 최종 결과에 따라 제품을 변경하거나 같은 suite를 재평가하지 않았습니다. 독립감사에서 평가 전체성·deadline 버그 2건을 최종 실행 전에 수정했습니다. source/contract/holdout은 동결 후 보존됐습니다.
+
+공개 릴리스는 [CI](https://github.com/hibou04-ops/antemortem-structural-lab/actions)의 main 8개 필수 검사 성공 후 별도 job에서 annotated tag·verified draft·public asset download를 검사하도록 강제합니다. 해당 release job의 실제 성공 여부와 [v0.5.0a1](https://github.com/hibou04-ops/antemortem-structural-lab/releases/tag/v0.5.0a1) 원격 자산은 release readback 증거로 따로 확인합니다. 과거 태그와 E1~E4 원본은 덮어쓰지 않습니다.
+
+
 ## v0.3.0a1 — E3 integration
 
 This section separates implementation, bounded research performance, packaging and public-release status. Checks below were executed on Windows with Python 3.12.10 on 2026-10-27 KST. A passing unit suite alone is not a generalization result.

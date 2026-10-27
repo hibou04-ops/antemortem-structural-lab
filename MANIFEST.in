@@ -4,8 +4,13 @@ include VALIDATION_REPORT.md JEV_CONNECTION_CHANGELOG.md
 recursive-include examples *.py
 recursive-include examples/mold *.json
 recursive-include baselines *.py
+recursive-include benchmarks *.py
 recursive-include tests *.py
 recursive-include docs *.md
+include docs/E5_EVALUATION_CONTRACT.json
+include docs/E5_RESULTS.json
+recursive-include examples/discovery *.json
+recursive-include containers *.Dockerfile
 recursive-include scripts *.ps1
 recursive-include scripts *.py
 recursive-include .github *.yml
@@ -13,4 +18,5 @@ prune research/e1
 prune research/e2
 prune research/e3
 prune research/e4
+prune research/e5
 global-exclude PRIVATE_* *EVIDENCE*.zip

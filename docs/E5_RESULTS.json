@@ -1,0 +1,291 @@
+{
+  "schema": "tomolab-e5-public-aggregate-v1",
+  "baseline": {
+    "release": "v0.4.0a1",
+    "commit": "514a7ac6a10995b5ec1f8b706e4afe0bb8570fb2"
+  },
+  "contract_sha256": "290391f054213f7205c1121ceb4a6771d0c28b075d6b182ee0ff7738cc4368a1",
+  "freeze_sha256": "3e143df698f7fcb2fde5dedfbce9622ba7fea6970c1364e38d18601059e71d8b",
+  "frozen_product_files": 40,
+  "frozen_source_molds": 27,
+  "final_runs": 63,
+  "final_feedback_to_generator": 0,
+  "cost_scopes": {
+    "summary_wall_seconds": "all attempted method runs including NOT_COMPARABLE declaration checks",
+    "resources": "COMPLETE runs only",
+    "duplicate_failure_rate": "sum of duplicate failing evaluations within each run divided by sum of failing evaluations; no cross-seed input deduplication"
+  },
+  "final_status_counts": {
+    "COMPLETE": 48,
+    "NOT_COMPARABLE": 15
+  },
+  "development": {
+    "summary": [
+      {
+        "method": "CrossHair",
+        "runs": 7,
+        "comparable_runs": 7,
+        "confirmed_unique_fault_families": 5,
+        "control_false_alerts": 0,
+        "oracle_calls": null,
+        "independent_concrete_replay_calls": 7,
+        "wall_seconds": 5.754782500007423,
+        "not_comparable": 0,
+        "incomplete_runs": 0
+      },
+      {
+        "method": "E4",
+        "runs": 21,
+        "comparable_runs": 6,
+        "confirmed_unique_fault_families": 1,
+        "control_false_alerts": 0,
+        "oracle_calls": 275,
+        "independent_concrete_replay_calls": null,
+        "wall_seconds": 10.583253300050274,
+        "not_comparable": 15,
+        "incomplete_runs": 0
+      },
+      {
+        "method": "E5",
+        "runs": 21,
+        "comparable_runs": 21,
+        "confirmed_unique_fault_families": 5,
+        "control_false_alerts": 0,
+        "oracle_calls": 1524,
+        "independent_concrete_replay_calls": null,
+        "wall_seconds": 42.60734459999367,
+        "not_comparable": 0,
+        "incomplete_runs": 0
+      },
+      {
+        "method": "Hypothesis",
+        "runs": 21,
+        "comparable_runs": 21,
+        "confirmed_unique_fault_families": 5,
+        "control_false_alerts": 0,
+        "oracle_calls": 919,
+        "independent_concrete_replay_calls": null,
+        "wall_seconds": 18.376149699935922,
+        "not_comparable": 0,
+        "incomplete_runs": 0
+      }
+    ],
+    "verdict": {
+      "status": "NO_IMPROVEMENT",
+      "comparisons": [
+        {
+          "baseline": "Hypothesis",
+          "paired_runs": 15,
+          "joint_families": 5,
+          "no_detection_loss": true,
+          "median_wall_ratio": 2.659612383640735,
+          "median_first_call_ratio": 1.0
+        },
+        {
+          "baseline": "E4",
+          "paired_runs": 3,
+          "joint_families": 1,
+          "no_detection_loss": true,
+          "median_wall_ratio": 1.9582048696404277,
+          "median_first_call_ratio": 1.0
+        }
+      ],
+      "generalization": "NOT_EXECUTED",
+      "scope": "descriptive bounded synthetic/user-owned-control software QA"
+    },
+    "resources": [
+      {
+        "method": "CrossHair",
+        "completed_runs": 7,
+        "sampled_process_tree_cpu_seconds_lower_bound": 4.265625,
+        "maximum_sampled_live_tree_rss_bytes": 98308096,
+        "failing_evaluations": 5,
+        "unique_failing_inputs_summed_per_run": 5,
+        "duplicate_failure_rate": 0.0,
+        "transition_steps": 1
+      },
+      {
+        "method": "E4",
+        "completed_runs": 6,
+        "sampled_process_tree_cpu_seconds_lower_bound": 5.375,
+        "maximum_sampled_live_tree_rss_bytes": 71921664,
+        "failing_evaluations": 36,
+        "unique_failing_inputs_summed_per_run": 30,
+        "duplicate_failure_rate": 0.16666666666666663,
+        "transition_steps": 0
+      },
+      {
+        "method": "E5",
+        "completed_runs": 21,
+        "sampled_process_tree_cpu_seconds_lower_bound": 29.046875,
+        "maximum_sampled_live_tree_rss_bytes": 109514752,
+        "failing_evaluations": 729,
+        "unique_failing_inputs_summed_per_run": 699,
+        "duplicate_failure_rate": 0.04115226337448563,
+        "transition_steps": 785
+      },
+      {
+        "method": "Hypothesis",
+        "completed_runs": 21,
+        "sampled_process_tree_cpu_seconds_lower_bound": 10.828125,
+        "maximum_sampled_live_tree_rss_bytes": 48205824,
+        "failing_evaluations": 67,
+        "unique_failing_inputs_summed_per_run": 67,
+        "duplicate_failure_rate": 0.0,
+        "transition_steps": 65
+      }
+    ]
+  },
+  "final": {
+    "summary": [
+      {
+        "method": "E4-frozen",
+        "runs": 21,
+        "comparable_runs": 6,
+        "confirmed_unique_fault_families": 1,
+        "control_false_alerts": 0,
+        "oracle_calls": 384,
+        "independent_concrete_replay_calls": null,
+        "wall_seconds": 5.280801199929556,
+        "not_comparable": 15,
+        "incomplete_runs": 0
+      },
+      {
+        "method": "E5-frozen",
+        "runs": 21,
+        "comparable_runs": 21,
+        "confirmed_unique_fault_families": 5,
+        "control_false_alerts": 0,
+        "oracle_calls": 1344,
+        "independent_concrete_replay_calls": null,
+        "wall_seconds": 30.81491410007584,
+        "not_comparable": 0,
+        "incomplete_runs": 0
+      },
+      {
+        "method": "Hypothesis-strategy-plan",
+        "runs": 21,
+        "comparable_runs": 21,
+        "confirmed_unique_fault_families": 5,
+        "control_false_alerts": 0,
+        "oracle_calls": 1312,
+        "independent_concrete_replay_calls": null,
+        "wall_seconds": 19.87633030003053,
+        "not_comparable": 0,
+        "incomplete_runs": 0
+      }
+    ],
+    "verdict": {
+      "status": "NO_IMPROVEMENT",
+      "comparisons": [
+        {
+          "baseline": "Hypothesis-strategy-plan",
+          "paired_runs": 15,
+          "joint_families": 5,
+          "no_detection_loss": true,
+          "median_wall_ratio": 1.5396322070204826,
+          "median_first_call_ratio": 1.0
+        },
+        {
+          "baseline": "E4-frozen",
+          "paired_runs": 3,
+          "joint_families": 1,
+          "no_detection_loss": true,
+          "median_wall_ratio": 3.6363850348087126,
+          "median_first_call_ratio": 5.0
+        }
+      ],
+      "generalization": "NOT_EXECUTED",
+      "scope": "descriptive bounded synthetic/user-owned-control software QA"
+    },
+    "resources": [
+      {
+        "method": "E4-frozen",
+        "completed_runs": 6,
+        "sampled_process_tree_cpu_seconds_lower_bound": 1.90625,
+        "maximum_sampled_live_tree_rss_bytes": 53968896,
+        "failing_evaluations": 144,
+        "unique_failing_inputs_summed_per_run": 144,
+        "duplicate_failure_rate": 0.0,
+        "transition_steps": 0
+      },
+      {
+        "method": "E5-frozen",
+        "completed_runs": 21,
+        "sampled_process_tree_cpu_seconds_lower_bound": 28.125,
+        "maximum_sampled_live_tree_rss_bytes": 99729408,
+        "failing_evaluations": 407,
+        "unique_failing_inputs_summed_per_run": 407,
+        "duplicate_failure_rate": 0.0,
+        "transition_steps": 728
+      },
+      {
+        "method": "Hypothesis-strategy-plan",
+        "completed_runs": 21,
+        "sampled_process_tree_cpu_seconds_lower_bound": 12.453125,
+        "maximum_sampled_live_tree_rss_bytes": 48283648,
+        "failing_evaluations": 360,
+        "unique_failing_inputs_summed_per_run": 360,
+        "duplicate_failure_rate": 0.0,
+        "transition_steps": 744
+      }
+    ]
+  },
+  "independent_development_constraint_audit": {
+    "validation_inputs": 440,
+    "candidate_hypotheses": 5,
+    "contradicted_candidates": 2,
+    "feedback_to_generator": 0,
+    "scope": "bounded membership candidates, not causal laws"
+  },
+  "independent_development_transfer_audit": {
+    "correct": 28,
+    "checked": 28,
+    "expected_acceptances": 2,
+    "expected_rejections": 26,
+    "counterevidence_checks": 5,
+    "exact_constraint_removal_checks_passed": 5,
+    "scope": "static typed correspondence and one-input constraint filtering; failure recurrence UNKNOWN"
+  },
+  "public_development_shrink_receipt_check": {
+    "case": "dev-add-order",
+    "seed": 17,
+    "E4": {
+      "initial_integer_L1": 12,
+      "returned_integer_L1": 3,
+      "status": "NOT_REDUCED_WITHIN_SEARCH_BUDGET"
+    },
+    "Hypothesis": {
+      "initial_integer_L1": 1,
+      "returned_integer_L1": 1,
+      "status": "NATIVE_COMPLETED"
+    },
+    "E5": {
+      "initial_integer_L1": 13,
+      "returned_integer_L1": 1,
+      "status": "COUNTEREXAMPLE_FOUND"
+    },
+    "global_minimality_established": false,
+    "separate_functionality_check_not_used_in_efficiency_ranking": true
+  },
+  "limits": [
+    "새로 작성한 작은 mutation 5계열과 기존 프로젝트의 정상 함수 2개에 한정된 기술적 QA다.",
+    "최종 함수와 원본 기록은 Generator에 보내지 않았으며, 개발 source molds와 공개 reference IR만 사용했다.",
+    "최종 1회 실행 ledger는 소비됐으며, 결과를 본 뒤 제품·계약·대상·몰드를 수정하거나 같은 suite를 재평가하지 않았다.",
+    "개발용 비교는 구현 통합 및 난도 점검 자료다. 최종 비교만 code/contract/mold freeze와 전체성 검사를 적용했다.",
+    "기존 E1/E2/E3/E4 비공개 holdout을 읽거나 새 blind 평가로 재사용하지 않았다.",
+    "CrossHair는 공개 개발 함수 source-aware tier다. 내부 symbolic Oracle 횟수는 UNKNOWN이며, 표의 concrete replay만 별도 계측했다.",
+    "CPU는 10ms 표본의 process-tree 하한, RSS는 살아 있는 tree의 표본 최댓값이다. 실제 OS peak 또는 과금 CPU가 아니다.",
+    "로컬 subprocess 정보 경계는 LOGICAL_ONLY다. Docker 접근제어의 실제 CI 검증은 별도 증거로 보고한다.",
+    "callback time_budget은 제품의 협조적 검사이며 임의 함수의 강제 종료 보장이 아니다. 평가 worker는 전체 wall cap을 별도 강제한다.",
+    "입력 failure 수와 독립 결함 family 수를 구분한다. 축소 status는 전역 최소성 증거가 아니다.",
+    "외부 실제 프로젝트 평가와 외적 일반화는 NOT_EXECUTED다."
+  ],
+  "pre_final_evaluator_corrections": [
+    "정답 비교를 서비스의 canonical JSON 동치와 일치시키고 float 절댓값의 양의 zero를 사용했다.",
+    "Windows launcher와 worker의 CPU를 process identity별로 계측해 중복 합산을 막았다.",
+    "한 clean 개발 입력의 반증은 활성 constraint 제거로 검사했으며 전체 mold 거절을 요구하지 않았다.",
+    "부분 final 선택, 누락 control/seed/method/source mold 및 timeout grace를 이용한 완료 판정을 차단했다.",
+    "성능 임계값·최종 source bytes·seed·typed domain·최종 결과는 변경하지 않았다."
+  ]
+}

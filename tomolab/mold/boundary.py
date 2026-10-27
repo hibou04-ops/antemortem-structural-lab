@@ -21,6 +21,13 @@ GENERATOR_FILES = ("__init__.py", "engine.py", "relations.py", "schema.py", "pro
 
 
 class GeneratorBoundary:
+    module_root = Path(__file__).parent
+    package_name = "mold"
+    generator_files = GENERATOR_FILES
+    worker_entry = "tomolab.mold.worker"
+    protocol_name = PROTOCOL
+    validate_message = staticmethod(validate_request)
+
     def __init__(self, backend="subprocess", image="python:3.12-slim", timeout=60):
         if backend not in ("subprocess", "docker"):
             raise ValueError("backend must be subprocess or docker")
@@ -33,12 +40,12 @@ class GeneratorBoundary:
         self._frozen = False
         self._request_lock = threading.Lock()
         self._accepted_requests = 0
-        package = self.root / "tomolab" / "mold"
+        package = self.root / "tomolab" / self.package_name
         package.mkdir(parents=True)
         (package.parent / "__init__.py").write_text("", encoding="utf-8")
         self.code_hashes = {}
-        for name in GENERATOR_FILES:
-            source = Path(__file__).with_name(name)
+        for name in self.generator_files:
+            source = self.module_root / name
             if not source.is_file():
                 self.folder.cleanup()
                 raise ValueError(f"generator module missing: {name}")
@@ -46,7 +53,7 @@ class GeneratorBoundary:
             (package / name).write_bytes(data)
             self.code_hashes[name] = hashlib.sha256(data).hexdigest()
         # -I ignores ambient Python paths; only the reviewed public package is added.
-        bootstrap = "import sys;sys.path.insert(0,sys.argv[1]);from tomolab.mold.worker import main;raise SystemExit(main())"
+        bootstrap = f"import sys;sys.path.insert(0,sys.argv[1]);from {self.worker_entry} import main;raise SystemExit(main())"
         self.image_id = None
         if backend == "docker":
             executable = shutil.which("docker")
@@ -101,7 +108,7 @@ class GeneratorBoundary:
         return {"isolation": "CONTAINER_BOUNDARY" if self.backend == "docker" else "LOGICAL_ISOLATION_ONLY",
                 "backend": self.backend, "generator_sha256": self.code_hashes,
                 "container_image_id": self.image_id,
-                "protocol": PROTOCOL,
+                "protocol": self.protocol_name,
                 "validated_requests": self._accepted_requests,
                 "transmitted_data": "PUBLIC_SPEC_STRUCTURED_EVIDENCE_OR_EXPLICIT_DIAGNOSTIC_SENTINEL",
                 "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED"}
@@ -115,7 +122,7 @@ class GeneratorBoundary:
     def _request(self, action, **fields):
         if action == "observe" and self._frozen:
             raise ValueError("frozen generators reject all feedback before transport")
-        clean = validate_request({"action": action, **fields}, self._spec)
+        clean = self.validate_message({"action": action, **fields}, self._spec)
         payload = json.dumps(clean, ensure_ascii=True, allow_nan=False)
         if len(payload) + 1 > MAX_MESSAGE:
             raise ValueError("generator message exceeds size limit")
