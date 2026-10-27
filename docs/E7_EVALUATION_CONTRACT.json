@@ -1,0 +1,389 @@
+{
+  "schema": "tomolab-e7-evaluation-contract-v2",
+  "baseline_release": "v0.6.0a1",
+  "baseline_commit": "7ff77fa3ca9aa724c468a9ef473dd135e29c0b84",
+  "declared_before_target_execution": false,
+  "seeds": [
+    11,
+    37,
+    73
+  ],
+  "source_cases": 3,
+  "final_cases": 6,
+  "real_project_functions": 9,
+  "source_final_identical_functions": 0,
+  "reviewed_projects": [
+    {
+      "case": "source-01",
+      "split": "development",
+      "project": "omega-lock",
+      "revision": "14ff508b2974298305d74c1c90bb43d3c0c13b82",
+      "path": "src/omega_lock/walk_forward.py",
+      "functions": [
+        "PearsonResult",
+        "pearson_result"
+      ],
+      "original_file_sha256": "25e8b722b824f15d9607b28158533e618afaf4cb9c80783df5084f3f5265fd1a",
+      "function_ast_sha256": {
+        "PearsonResult": "087d9d5087041d3286cb2a90e6d33d58de69a7d556cac33f62390856702b6204",
+        "pearson_result": "b5f7c457f2c8ef0c9f5da9d1a35075f167da0d6dd32cab6e03f9205c3e5f8ede"
+      },
+      "extracted_sha256": "a87f8b23fb526cea8f7e55961c40051c67e0c690acf34a2a096f442dc01b6272",
+      "authority": "USER_OWNED_LOCAL_REPOSITORY_EXPLICIT_E7_AUTHORIZATION",
+      "review": "FUNCTION_AND_DEPENDENCY_AST_STATIC_REVIEW_NO_TOPLEVEL_PROJECT_IMPORTS",
+      "mutation": false
+    },
+    {
+      "case": "source-02",
+      "split": "development",
+      "project": "mini-antemortem-cli",
+      "revision": "42e4da0a6db57e23b3e5778c97b44e26f54e7659",
+      "path": "src/mini_antemortem_cli/traps.py",
+      "functions": [
+        "_tokenize_for_jaccard",
+        "_max_pairwise_jaccard"
+      ],
+      "original_file_sha256": "9603a3f5f28236755b973d2746c52fd7550ffce2ebee72aaebed946628a9034c",
+      "function_ast_sha256": {
+        "_tokenize_for_jaccard": "6d6b759b622deeca5370cdea868b812ec1fa9f2c9f92c0f4cba2046a74dcae8d",
+        "_max_pairwise_jaccard": "5ea32782839abb6dbb4129e31d11aa8d5e68ba69aa2e5c392922da43b4d2146b"
+      },
+      "extracted_sha256": "ce28eaac925a63d09caa500cdcc6392fe1276b94cef2f6b33efe9a77c90d3a37",
+      "authority": "USER_OWNED_LOCAL_REPOSITORY_EXPLICIT_E7_AUTHORIZATION",
+      "review": "FUNCTION_AND_DEPENDENCY_AST_STATIC_REVIEW_NO_TOPLEVEL_PROJECT_IMPORTS",
+      "mutation": false
+    },
+    {
+      "case": "source-03",
+      "split": "development",
+      "project": "mini-omega-lock",
+      "revision": "73f4701a2e4d59000b9e1c9bb500121d6d2ca877",
+      "path": "src/mini_omega_lock/probes.py",
+      "functions": [
+        "compute_context_margin"
+      ],
+      "original_file_sha256": "e17b17ba8bb7685ed966bc206bf08167a3e5f6284d6703d48dd674d2bc30ba8d",
+      "function_ast_sha256": {
+        "compute_context_margin": "72c5afb912e1495b075a111eccf958796098ff7dd3ba67adfdf040b2ecf2ec4a"
+      },
+      "extracted_sha256": "e2504273096220c5e9c0f2acfc0f26e8b501f8f6e51bcb39b2867606607cf9af",
+      "authority": "USER_OWNED_LOCAL_REPOSITORY_EXPLICIT_E7_AUTHORIZATION",
+      "review": "FUNCTION_AND_DEPENDENCY_AST_STATIC_REVIEW_NO_TOPLEVEL_PROJECT_IMPORTS",
+      "mutation": false
+    },
+    {
+      "case": "target-01",
+      "split": "final",
+      "project": "omega-lock",
+      "revision": "14ff508b2974298305d74c1c90bb43d3c0c13b82",
+      "path": "src/omega_lock/benchmark.py",
+      "functions": [
+        "compute_spearman"
+      ],
+      "original_file_sha256": "bab2a3629a3c5217540e2c06dea1d6a10a71ab1c48680dcb8961ef2967cf8b43",
+      "function_ast_sha256": {
+        "compute_spearman": "622ca508d3419d32b05c8e3338be4938cab599947d35c698d2504cf21f387ea9"
+      },
+      "extracted_sha256": "7538746189cc405ffb428ac83f616f61d0f3faf362e7b4360f8d8c645877bfe0",
+      "authority": "USER_OWNED_LOCAL_REPOSITORY_EXPLICIT_E7_AUTHORIZATION",
+      "review": "FUNCTION_AND_DEPENDENCY_AST_STATIC_REVIEW_NO_TOPLEVEL_PROJECT_IMPORTS",
+      "mutation": false
+    },
+    {
+      "case": "target-02",
+      "split": "final",
+      "project": "omegaprompt",
+      "revision": "9df2ae50636d6ae3d15d968d7761f2d5b9526cd5",
+      "path": "src/omegaprompt/core/walkforward.py",
+      "functions": [
+        "_pearson"
+      ],
+      "original_file_sha256": "a7896eb5c4706c03672791f06e75bc5f61a97428eaced8df73f621a05c2d04a7",
+      "function_ast_sha256": {
+        "_pearson": "739391a567f80b3e33c2bb5d13393e7fa3e7cb19f8bba2b233eaeae179696393"
+      },
+      "extracted_sha256": "37168462e65fec13b41ab47033afb4dc8a25cd64d6c83162e1c5598d38f7b6e0",
+      "authority": "USER_OWNED_LOCAL_REPOSITORY_EXPLICIT_E7_AUTHORIZATION",
+      "review": "FUNCTION_AND_DEPENDENCY_AST_STATIC_REVIEW_NO_TOPLEVEL_PROJECT_IMPORTS",
+      "mutation": false
+    },
+    {
+      "case": "target-03",
+      "split": "final",
+      "project": "omega-lock",
+      "revision": "14ff508b2974298305d74c1c90bb43d3c0c13b82",
+      "path": "src/omega_lock/stress.py",
+      "functions": [
+        "gini_coefficient"
+      ],
+      "original_file_sha256": "96a8b93d4962a4a73158ffe9cf74f18c0acf80caf91d20559e85d63a8f2d092b",
+      "function_ast_sha256": {
+        "gini_coefficient": "9976e01d07431f2391b27046b5b74fea6a16ff5a077f12ddc0e7e0b488755e51"
+      },
+      "extracted_sha256": "189c1b60f1bc57649aebe4cef16c046ab8f89d0957fa97b0c014f0f09e7a6f3d",
+      "authority": "USER_OWNED_LOCAL_REPOSITORY_EXPLICIT_E7_AUTHORIZATION",
+      "review": "FUNCTION_AND_DEPENDENCY_AST_STATIC_REVIEW_NO_TOPLEVEL_PROJECT_IMPORTS",
+      "mutation": false
+    },
+    {
+      "case": "target-04",
+      "split": "final",
+      "project": "antemortem-cli",
+      "revision": "717bae3a1b8200daf355c7030447699cced0a82b",
+      "path": "src/antemortem/citations.py",
+      "functions": [
+        "normalize_evidence_text"
+      ],
+      "original_file_sha256": "98c1f7c4fcdca42334f9743b40e70448847b4a3379c4557cd4e3f6f0a8eaf0ba",
+      "function_ast_sha256": {
+        "normalize_evidence_text": "70d01e483757510decb531bd259bada869ebcbe0130c5a408a0ae2c998f8884e"
+      },
+      "extracted_sha256": "ce51c145bcdd17f1a87dd2c956fa13547513d232a37237c95e7e3a422fef069a",
+      "authority": "USER_OWNED_LOCAL_REPOSITORY_EXPLICIT_E7_AUTHORIZATION",
+      "review": "FUNCTION_AND_DEPENDENCY_AST_STATIC_REVIEW_NO_TOPLEVEL_PROJECT_IMPORTS",
+      "mutation": false
+    },
+    {
+      "case": "target-05",
+      "split": "final",
+      "project": "omegaprompt",
+      "revision": "9df2ae50636d6ae3d15d968d7761f2d5b9526cd5",
+      "path": "src/omegaprompt/domain/judge.py",
+      "functions": [
+        "JudgeRubric.normalized_weights"
+      ],
+      "original_file_sha256": "4e5dae4f0a5f8bdc83a0c608480e4f70a356605f7edffc16a74ce550f92e6b50",
+      "function_ast_sha256": {
+        "JudgeRubric.normalized_weights": "c541111f15c0c90da7ca627eefd5b910feb17773b66072c576c276fe50f650f9"
+      },
+      "extracted_sha256": "edf18cd583a17409f56344a83cf1ef1c6b6696b7c63033f973641fc3e6ad110a",
+      "authority": "USER_OWNED_LOCAL_REPOSITORY_EXPLICIT_E7_AUTHORIZATION",
+      "review": "FUNCTION_AND_DEPENDENCY_AST_STATIC_REVIEW_NO_TOPLEVEL_PROJECT_IMPORTS",
+      "mutation": false
+    },
+    {
+      "case": "target-06",
+      "split": "final",
+      "project": "mini-omega-lock",
+      "revision": "73f4701a2e4d59000b9e1c9bb500121d6d2ca877",
+      "path": "src/mini_omega_lock/probes.py",
+      "functions": [
+        "noise_floor_estimate"
+      ],
+      "original_file_sha256": "e17b17ba8bb7685ed966bc206bf08167a3e5f6284d6703d48dd674d2bc30ba8d",
+      "function_ast_sha256": {
+        "noise_floor_estimate": "eaf41e52e3d97e3848f50b431e8eb5c7538e4c24895acde4be170c8bd9be6d6a"
+      },
+      "extracted_sha256": "85bc600f17b8175d0700b47044c67aa1dbb4344df75e0e848845d8387d2f3f1a",
+      "authority": "USER_OWNED_LOCAL_REPOSITORY_EXPLICIT_E7_AUTHORIZATION",
+      "review": "FUNCTION_AND_DEPENDENCY_AST_STATIC_REVIEW_NO_TOPLEVEL_PROJECT_IMPORTS",
+      "mutation": false
+    }
+  ],
+  "reviewed_source_manifest_sha256": "b17991e3ebb78eca1bfbe585411ace9cdc5dfca95fcd41fdecb8790c6d18e685",
+  "private_suite_sha256": "0ad475f9e1210637183632a1ace1511dec38f8c53649bf2ff0601f98005790b8",
+  "scope": {
+    "execution": "reviewed exact function/class AST extraction with standard-library dependencies; not whole-project integration",
+    "target_ownership": "user-owned local repositories; HEAD blob pinned, dirty working-tree code excluded",
+    "originals_modified": false,
+    "network_or_provider_execution": false,
+    "external_collection": false,
+    "source_target_project_disjoint": false,
+    "source_target_function_disjoint": true,
+    "implementation_lineage_independence": "PARTIAL; shared author and standard algorithm lineage not independently established",
+    "existing_E1_E6_consumed_holdouts_accessed": false,
+    "synthetic_mutated_targets": 0,
+    "known_bug_status_before_execution": "DEVELOPMENT already observed in retired v1: one production mechanism and one Oracle error known; FINAL not executed and no final outcome used",
+    "external_generalization_claim": "actual-project QA scope only; useful source-to-target transfer and marginal benefit assessed separately"
+  },
+  "oracle_contract": {
+    "authority": "pre-existing function docstrings/tests and independent mathematical definitions",
+    "arithmetic": "Fraction.from_float exact centered variance/covariance and zero/epsilon decisions; Decimal100 only final positive sqrt conversion; existing Decimal100 Gini/weights and independent Fraction rank/count references unchanged",
+    "float_tolerance": {
+      "relative": 1e-08,
+      "absolute": 1e-10
+    },
+    "domains": "finite bounded E6 typed domains; ASCII evidence text; unique rank lists; nonnegative weights with positive total",
+    "invalid_inputs": "rejected before target/Oracle invocation; never fakeREFUTATION or sourceknowledge evidence; report generation/rejection counts",
+    "oracle_errors": "propagate as execution failure; never target bug or successful improvement",
+    "failure_mechanism_count": "one independent equivalence mechanism per reviewed function, not each input/seed/status",
+    "positive_controls": "unmodified production functions may be clean; no injected defects or expected positives manufactured",
+    "normal_control_status": "determined by exhaustive finite checks where feasible, otherwise no observed mismatch, not globally correct",
+    "preselected_normal_control_functions": 4,
+    "unexpected_control_mismatch": "INCONCLUSIVE pending independent semantic/Oracle review; no improvement verdict",
+    "correlation_degeneracy_policies": "Original exact-zero and epsilon policies differ outside evaluated domain. Shared robust mathematical subset: alignedlen3..6, each series exactconstant OR exactFractionvariance>=1e-6. Compare value/computability only; no diagnostic labels. This avoids epsilon ambiguity and permits one legitimate typed contract pair without source mutation.",
+    "peer_review_corrections": {
+      "jaccard_source_domain": "alphanumeric+whitespace only; punctuation policy not inferred from implementation",
+      "correlation": "aligned series; compare numeric value/computability, no undocumented diagnostic-string precedence; target minimum3",
+      "variance_ambiguity": "both correlation cases restrict to exactconstant or exactFractionvariance>=1e-6; epsilon neighborhood excluded",
+      "noise_floor": "declared population-equivalence compatibility control, NOT production-defect-eligible; any mismatch makes verdict INCONCLUSIVE",
+      "defect_eligible_final_functions": 5,
+      "compatibility_only_final_functions": 1,
+      "empty_conventions": "Jaccard excludes any empty-token-set pair, while documentedfewerthan2prompt0 remains. FinalGini minlistlength1 excludes undocumentedempty convention; nonemptyallzero0 retained perdoc."
+    },
+    "primary_math_sources": [
+      "https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.spearmanr.html",
+      "https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html",
+      "https://docs.python.org/3/library/statistics.html#statistics.pstdev"
+    ]
+  },
+  "methods": [
+    "NativeHypothesis",
+    "NativeStateful",
+    "E6",
+    "E7"
+  ],
+  "source_aware_tier": [
+    "CrossHair"
+  ],
+  "NativeStateful": "NOT_COMPARABLE: every selected production function is stateless; no fake temporal wrapper introduced",
+  "development": {
+    "runs": 36,
+    "blackbox_comparable_runs": 27,
+    "native_stateful_not_comparable": 9,
+    "hypothesis": "actual native find/generate/shrink, database=None, deadline=None, 256 max_examples matching common actual-pair cap, uncached target/Oracle calls",
+    "E6": "unmodified frozen runtime, 64 development candidates,128 native shrink predicate calls, pool128, enumeration solver, public_ir=None",
+    "E7": "same typed spec, evidence-gated native path; at most64 guided/native search candidates plus128 native shrink calls",
+    "wall_seconds_per_run": 12,
+    "target_and_oracle_calls_each": 256,
+    "contrastive_audit": "source cases only; seed101, at most64 distinct fresh proposals each; archive evidence remains DEVELOPMENT; no final source results read",
+    "causal_ablation": "same public source cases and seed; E7 archive enabled vs empty archive; all costs reported, no tuning from outcomes"
+  },
+  "final": {
+    "attempts": 1,
+    "rows": 72,
+    "blackbox_comparable_rows": 54,
+    "native_stateful_not_comparable": 18,
+    "track": "frozen public-spec plans, no final callback or labels to any Generator",
+    "plans_per_case_method_seed": 64,
+    "pool_size": 128,
+    "guidance_budget": 16,
+    "max_generated_proposals": 512,
+    "wall_seconds_per_run": 12,
+    "target_and_oracle_calls_each": 64,
+    "public_ir": null,
+    "E6": "DiscoveryEngine from frozen baseline, no target IR, generate then freeze",
+    "E7": "frozen source archive only; plan_knowledge using public spec/provenance; no final evidence assimilation",
+    "NativeHypothesis": "native public typed strategy draw before target execution; no final feedback or shrink optimization",
+    "independent_replay": "a discovered witness is replayed twice within the same64 pair budget; counts included",
+    "secret_evaluation_source": "kept outside repository and never sent to Generator",
+    "exclusive_ledger": "Atomic original pinned FINAL_TARGET_SET identity claim from sorted project/revision/path/functionAST hashes, independent of Oracle/suite/case aliases/bundle/output; manifest-adjacent START/COMPLETE ledger also retained",
+    "root_authorization_required": "only after ten mandatory PR CI jobs and explicit code/archive/contract/suite freeze"
+  },
+  "CrossHair": {
+    "runs": "once per reviewed case, development and final separately, source-aware privileged tier",
+    "wall_seconds_per_case": 3,
+    "per_condition_seconds": 0.6,
+    "internal_symbolic_target_calls": "UNKNOWN; never compared as equal Oracle budget",
+    "concrete_candidates": "parse bounded literals only and independently replay within common domain; malformed/out-of-scope candidates rejected",
+    "unsupported_or_timeout": "NOT_COMPARABLE or UNKNOWN, never proof of correctness",
+    "final_use": "separate final record tier, no symbolic target information to E6/E7/Hypothesis"
+  },
+  "timing": {
+    "primary": "end-to-end parent-observed worker wall, includes import/source load/public spec preparation/gating/plan/IPC/evaluation/shrink/replay",
+    "source_acquisition": "separate one-time source read/static review/capture cost ledger; no unmeasured total human/reasoning time claim",
+    "source_cost": "charge full observed development+audit archive cost, report combined source+target cost and target-only",
+    "CPU": "10ms sampled process-tree cumulative lower bound",
+    "memory": "maximum10ms sampled live-tree RSS, not true OS peak",
+    "components": "measured only, overlapping components nonadditive; unavailable components UNKNOWN",
+    "duplicate_evaluation_rate": "duplicates across ALL actual evaluations including shrink and mandatory independent replay; not pure generation duplicate rate or wasted-search metric",
+    "retired_development": "v1 observed costs and posthoc API processing retained in separate ledger; never imply mission spent only v2 measured time; human/LLM UNKNOWN"
+  },
+  "verdict_rules": {
+    "IMPROVED": "at least one independently confirmed extra final mechanism with no detection loss and no required-method control false alert/error, OR same detection with paired median end-to-end wall ratio<=0.80 against NativeHypothesis and E6 plus actual qualified temporal/static guidance affecting at least one final discovered witness; source-inclusive cost also<=0.80; otherwise do not claim improvement",
+    "qualified_zero": "never IMPROVED; baseline fallback is safety/engineering evidence only",
+    "no_final_failures": "INCONCLUSIVE for discovery advantage; no relative first-failure metric fabricated",
+    "NO_IMPROVEMENT": "complete valid comparison with no preregistered marginal benefit",
+    "INCONCLUSIVE": "required method errors/false alerts/incomplete grid/source drift or no comparable final positives",
+    "external": "VERIFIED only scope-bounded actual qualified source-to-different-project useful transfer, otherwise INCONCLUSIVE if actual project execution performed; NOT_EXECUTED only no authorized safe execution"
+  },
+  "no_after_result_changes": [
+    "product",
+    "suite",
+    "oracle",
+    "contract",
+    "seed",
+    "budget",
+    "source_archive",
+    "target_scope"
+  ],
+  "private_not_published": [
+    "target implementation extraction",
+    "final raw inputs/outputs",
+    "source archive and evidence",
+    "ledger",
+    "original private research materials"
+  ],
+  "apriori_applicability_design": {
+    "potential_compatible_crossproject_contract_pairs": 1,
+    "pairs": [
+      {
+        "source": "source-01",
+        "target": "target-02",
+        "basis": "same independently reviewed robust mathematical correlation subset; different original source code projects"
+      }
+    ],
+    "independent_contrastive_development_qualification_lineages": 0,
+    "qualified_utility_opportunity": "APRIORI_EVIDENCE_GAP: one compatiblecontractpair does not create independent positive-and-negative development support; if no claim qualifies this study cannot test qualified knowledge utility, and no baseline fallback improvement is counted"
+  },
+  "evaluation_generation": 2,
+  "preregistration_timing": "after retired generation1 DEVELOPMENT outcomes and Oracle-only repair diagnostics; before all primary generation2 calls and any FINAL target observation",
+  "declared_before_this_generation_primary_execution": true,
+  "declared_before_any_final_execution": true,
+  "declared_before_v2_reexecution": true,
+  "before_any_final_observation": true,
+  "development_is_blind": false,
+  "development_sources_previously_consumed_in_generation1": true,
+  "final_targets_unconsumed": true,
+  "registered_utc": "2026-10-27T11:28:57.525804+00:00",
+  "oracle_math_helper_evaluator_sha256": "14412b88f5dd0ef5d46b0c461ea47679be32eb28f160af74f487fa90b8c95139",
+  "oracle_identity": "67f5677cb06220ea835620f4ef1ea6cf04fcb990a2c990c15b3d2b5dad4d88e9",
+  "final_target_set_identity": "c8a342774c3e38c3e58e386ad87040d7512c771b5363b48218b32d31ce8e03cf",
+  "retired_generation_v1": {
+    "status": "INVALID_ORACLE_INCONCLUSIVE",
+    "contract_sha256": "22abade2c41fbcccd02ce898a2591f67dcefaa1f23700c72284688c423eacfe5",
+    "suite_sha256": "02ca6e20e3f511e9063ae805aa7d75ead06ddee34537ff474a9de8da9af5f0f1",
+    "evaluator_sha256": "02abd14ee19883fcc8a923821478171f4b026251d5f41474b6e3bd805d0917ae",
+    "original_public_results_sha256": "09df0781ed1e8dcfdf006cf0bc7b2699f441ed643ec308ff05840265f5cd9d4d",
+    "original_public_report_sha256": "541e8a212db34e4c4b03550d369425aefc3b007395577142a826a3ed9a7f61f5",
+    "preservation_receipt_sha256": "a0549d3de1ee693526e0d0b593380b72a8ae3d89ae0f3cc5bf0a534f2894194b",
+    "preserved_development_files": 127,
+    "raw_mismatch_runs": 6,
+    "independently_confirmed_production_mismatch_runs": 2,
+    "production_mismatch_rows": 15,
+    "oracle_false_alert_runs": 4,
+    "oracle_false_alert_rows": 42,
+    "production_unique_function_mechanisms": 1,
+    "prior_static_review_missed": "finite-precision Decimal variance zero decision for exact constant floats",
+    "observed_primary_source_wall_seconds": 55.88462949990642,
+    "supplemental_api_ingestion_wall_seconds": 109.45017019999796,
+    "supplemental_archive_used_in_v2": false,
+    "source_collector": "E6 only; zero source failures selected; policy unchanged",
+    "same_generation_corrected_rerun": false,
+    "final_target_calls": 0,
+    "final_attempts": 0,
+    "historical_known_bug_status_before_v1_execution": "NOT_MEASURED; reviewer inspected code, no target callback executed",
+    "novelty": "UNKNOWN",
+    "operational_impact": "UNKNOWN"
+  },
+  "oracle_repair_review": {
+    "status": "PASS",
+    "independent_auditor_receipt_sha256": "67fe1b0a70120f1a01215fbb6671a4c4366abccf279bf8d068bed2e6c70b7019",
+    "diagnostic_receipt_sha256": "4bdf40fb9e9c96eeea8c1ada5b9292aa86e91c9bceb21b35de0b46dbda8e0ab1",
+    "static_bridge_sha256": "a6fd3747e7167384a0f675d7adc36ce7457ac8c347746dc5e3c4a3d6086c571e",
+    "direct_human_approval": "독립 감사 근거를 첨부한 정상 재검토 승인",
+    "approved_minimal_patch_sha256": "787b908f06ec45be00f8bad9953f31d11b16246340a035ea81a1c2214caf6e94",
+    "normal_direct_resubmissions_after_new_approval": 1,
+    "bypass_used": false,
+    "oracle_only_diagnostic_calls": 62,
+    "already_recorded_development_rows": 57,
+    "authored_math_fixtures": 5,
+    "diagnostic_wall_seconds": 0.027264899981673807,
+    "production_target_calls": 0,
+    "final_calls": 0,
+    "scope": "Oracle correctness only; no primary performance or generalization result",
+    "only_correctness_deviation": "exact Fraction binary-float centered variance/covariance/zero/fixed-threshold arithmetic; same Decimal100 final sqrt and same tolerance",
+    "production_runtime_files_unchanged": 54,
+    "target_scope_domain_seed_budget_source_capture_generator_changed": false
+  }
+}

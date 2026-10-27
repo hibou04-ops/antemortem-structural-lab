@@ -4,7 +4,51 @@ An experimental Python tool that tests trusted functions, records failing inputs
 
 **[한국어 사용자 안내](README.ko.md)** · [Changelog](CHANGELOG.md) · [Validation record](docs/RELEASE_VALIDATION.md)
 
-`0.6.0a1` adds an experimental **Stateful Structural Mold**. Public finite-state contracts, observed failure positions and competing temporal relations now share E5's actual Version Space. Native Hypothesis remains the default search; useful evidence qualifies extra guidance. Product integration, efficiency and external generalization are separate claims. See [E6 integration](docs/E6_INTEGRATION.md) and [independent evaluation](docs/E6_EVALUATION_REPORT.md).
+`0.7.0a1` adds experimental **Evidence-Gated Structural Knowledge**. Failure-membership hypotheses retain their supporting and contradicting evidence. Independently reviewed contrastive development evidence and compatible typed/semantic contracts qualify limited extra probes. Hypothesis performs ordinary generation and shrinking. See [knowledge contracts](docs/E7_KNOWLEDGE.md) and the [E7 evaluation record](docs/E7_EVALUATION_REPORT.md).
+
+## E7 evidence-gated discovery
+
+Claims distinguish `HYPOTHESIS`, `SUPPORTED_WITHIN_SCOPE`, `CONTRADICTED`, `APPLICABILITY_UNKNOWN` and `QUALIFIED_FOR_PROBING`. Qualification requires both positive and negative observations from the same separately reviewed implementation/Oracle identity, plus typed roles, operation semantics and applicable state/IR contracts. Hashes bind identity and integrity; semantic independence remains a reviewed host attestation.
+
+Without qualified claims, native Hypothesis runs without starting a worker, pool or solver. Qualified plans limit guidance to at most half the total plan budget and preserve the native search path; exhaustion of a finite domain can change the actual candidate proportions. They use a bounded guidance prefix, freeze, native search/shrinking and independent replay. Stateful Python APIs also reuse native RuleBasedStateMachine; the existing E6 CLI remains available. CI covers Python 3.11–3.13; package metadata allows 3.11+, with later Python versions outside this validation. Local QA uses Hypothesis6.170.11/Z35.3.2.0.
+
+```bash
+python -m pip install "antemortem-structural-lab[qa,solver] @ https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.7.0a1/antemortem_structural_lab-0.7.0a1-py3-none-any.whl"
+python -m tomolab knowledge-demo --budget 16 --guidance-budget 4 --pool-size 16 --shrink-budget 16 --output results/e7.json
+python -m tomolab knowledge-demo --case clean --budget 12 --guidance-budget 4 --pool-size 8 --shrink-budget 0 --output results/e7-clean.json
+```
+
+The authored directed-width fixture tests an actual `lower > upper` structural probe and its refutation. Its IR describes an explicitly public reference model, not a hidden target implementation. Separately written forms of this curated failure are functional evidence, not real-project generalization evidence.
+
+From a checkout or the wheel's bundled example directory:
+
+```bash
+python -m tomolab knowledge-inspect --spec examples/knowledge/target-spec.json
+python -m tomolab knowledge-learn --spec examples/knowledge/source-spec.json --failure-log examples/knowledge/source-failures.json --provenance examples/knowledge/source-provenance.json --public-ir examples/knowledge/source-ir.json --observations examples/knowledge/observations.json --approve-development-evidence --store results/e7-journal.jsonl --record-id development-1 --output results/e7-mold.json
+python -m tomolab knowledge-plan --archive results/e7-mold.json --spec examples/knowledge/target-spec.json --target-provenance examples/knowledge/target-provenance.json --public-ir examples/knowledge/target-ir.json --budget 8 --guidance-budget 4 --pool-size 16 --output results/e7-plan.json
+python -m tomolab knowledge-run examples/knowledge/target.py --oracle-file examples/knowledge/target_oracle.py --archive results/e7-mold.json --spec examples/knowledge/target-spec.json --target-provenance examples/knowledge/target-provenance.json --public-ir examples/knowledge/target-ir.json --failure-signature directed-width --allow-local-execution --budget 16 --guidance-budget 4 --pool-size 16 --shrink-budget 16 --output results/e7-run.json
+python -m tomolab knowledge-update --archive results/e7-mold.json --observations examples/knowledge/counterevidence.json --generation-id development-2 --approve-development-evidence --store results/e7-journal.jsonl --record-id development-2 --output results/e7-updated.json
+python -m tomolab knowledge-inspect --archive results/e7-updated.json --spec examples/knowledge/target-spec.json --target-provenance examples/knowledge/target-provenance.json --public-ir examples/knowledge/target-ir.json --output results/e7-updated-gate.json
+```
+
+Learning consumes JSON evidence without executing its target. Approval flags identify trusted development evidence; they cannot authenticate arbitrary labels. External runs require separately reviewed `implementation(**inputs)` and `reference(**inputs)` files and explicit local execution consent. That consent does not sandbox those files.
+
+The append-only store preserves each frozen parent, full evidence and contradiction history. Explicit new generations accept only new development receipts. Identical record IDs are idempotent; rollback, corrupt appends and cooperating-writer lock collisions fail closed. Source and independent development events are each bounded to 256 total, with at most 32 forks. Final observations remain forbidden.
+
+```bash
+docker build -f containers/e7-generator.Dockerfile -t tomolab-e7-generator:local containers
+python -m tomolab knowledge-demo --backend docker --budget 16 --guidance-budget 4 --pool-size 16 --shrink-budget 16 --output results/e7-container.json
+```
+
+Default subprocess isolation remains `LOGICAL_ISOLATION_ONLY`; Docker limits the Generator only. Targets and Oracles are trusted host code. Full wall cost includes gating, generation, solver, IPC, Oracle and native search/shrink; overlapping phases are not additive. Engine snapshot replay is verified with matching Hypothesis/Z3 versions, not arbitrary library upgrades.
+
+E1–E6 evidence and negative results are preserved. E6's 12 refuted representative candidates out of 13 are not an accuracy estimate for every Mold. E7 development v1 is `INVALID_ORACLE / INCONCLUSIVE` following an Oracle precision error. The exact-arithmetic correction passed independent review and the v2 contract is registered; actual execution results are reported separately. Rechecking previously observed development cases is not a new blind evaluation. Rejecting every prior and matching the baseline does not establish marginal discovery value.
+
+The new once-only final comparison recorded 54 COMPLETE and 18 Stateful NOT_COMPARABLE rows. Required-method errors, timeouts, control false alerts and Generator feedback were zero. Native Hypothesis, E6 and E7 each found zero mismatches; primary qualified claims and guidance were also zero. Discovery advantage, useful knowledge transfer and external generalization remain **INCONCLUSIVE**. This compares at most64 frozen public-spec candidates without final feedback, not full adaptive Hypothesis PBT. Automatic semantic correspondence learning for arbitrary Python programs is unimplemented; transfer depends on reviewed role and semantic contracts.
+
+## Preserved E6 implementation
+
+The `v0.6.0a1` Stateful Structural Mold and typed EFSM support remain available. See [E6 integration](docs/E6_INTEGRATION.md) and its [frozen evaluation](docs/E6_EVALUATION_REPORT.md).
 
 ## E6 stateful discovery
 

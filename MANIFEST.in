@@ -12,8 +12,12 @@ include docs/E5_RESULTS.json
 include docs/E6_EVALUATION_CONTRACT.json
 include docs/E6_RESULTS.json
 include docs/E6_CODE_FREEZE.json
+include docs/E7_EVALUATION_CONTRACT.json
+include docs/E7_RESULTS.json
+include docs/E7_CODE_FREEZE.json
 recursive-include examples/discovery *.json
 recursive-include examples/temporal *.json
+recursive-include examples/knowledge *.json
 recursive-include containers *.Dockerfile
 recursive-include scripts *.ps1
 recursive-include scripts *.py
@@ -24,4 +28,5 @@ prune research/e3
 prune research/e4
 prune research/e5
 prune research/e6
+prune research/e7
 global-exclude PRIVATE_* *EVIDENCE*.zip

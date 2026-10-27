@@ -1,0 +1,10 @@
+{
+  "project": "authored-e7-functional-fixtures",
+  "lineage": "isqrt-target",
+  "revision": "public-fixture-v1",
+  "oracle_id": "isqrt-target-reference",
+  "semantics": "nonnegative-directed-width",
+  "independence_id": "reviewed-isqrt-target",
+  "implementation_sha256": "41b0eee08c1decd14b94316260caf7e4a2f71ffe3c43eba708f4d9564ce2457f",
+  "oracle_sha256": "4197756df8af4f91d0ace004c7c7a9b022a2ba3e963f442b10359c9dec26bffa"
+}

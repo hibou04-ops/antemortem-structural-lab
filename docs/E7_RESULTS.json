@@ -1,0 +1,867 @@
+{
+  "schema": "tomolab-e7-public-evaluation-v2",
+  "evaluation_generation": 2,
+  "evaluation_generation_status": "EXECUTED_DEVELOPMENT_AND_FINAL_ONCE",
+  "retired_generation_v1": {
+    "status": "INVALID_ORACLE_INCONCLUSIVE",
+    "contract_sha256": "22abade2c41fbcccd02ce898a2591f67dcefaa1f23700c72284688c423eacfe5",
+    "suite_sha256": "02ca6e20e3f511e9063ae805aa7d75ead06ddee34537ff474a9de8da9af5f0f1",
+    "evaluator_sha256": "02abd14ee19883fcc8a923821478171f4b026251d5f41474b6e3bd805d0917ae",
+    "original_public_results_sha256": "09df0781ed1e8dcfdf006cf0bc7b2699f441ed643ec308ff05840265f5cd9d4d",
+    "original_public_report_sha256": "541e8a212db34e4c4b03550d369425aefc3b007395577142a826a3ed9a7f61f5",
+    "preservation_receipt_sha256": "a0549d3de1ee693526e0d0b593380b72a8ae3d89ae0f3cc5bf0a534f2894194b",
+    "preserved_development_files": 127,
+    "raw_mismatch_runs": 6,
+    "independently_confirmed_production_mismatch_runs": 2,
+    "production_mismatch_rows": 15,
+    "oracle_false_alert_runs": 4,
+    "oracle_false_alert_rows": 42,
+    "production_unique_function_mechanisms": 1,
+    "prior_static_review_missed": "finite-precision Decimal variance zero decision for exact constant floats",
+    "observed_primary_source_wall_seconds": 55.88462949990642,
+    "supplemental_api_ingestion_wall_seconds": 109.45017019999796,
+    "supplemental_archive_used_in_v2": false,
+    "source_collector": "E6 only; zero source failures selected; policy unchanged",
+    "same_generation_corrected_rerun": false,
+    "final_target_calls": 0,
+    "final_attempts": 0,
+    "historical_known_bug_status_before_v1_execution": "NOT_MEASURED; reviewer inspected code, no target callback executed",
+    "novelty": "UNKNOWN",
+    "operational_impact": "UNKNOWN"
+  },
+  "oracle_repair_review": {
+    "status": "PASS",
+    "independent_auditor_receipt_sha256": "67fe1b0a70120f1a01215fbb6671a4c4366abccf279bf8d068bed2e6c70b7019",
+    "diagnostic_receipt_sha256": "4bdf40fb9e9c96eeea8c1ada5b9292aa86e91c9bceb21b35de0b46dbda8e0ab1",
+    "static_bridge_sha256": "a6fd3747e7167384a0f675d7adc36ce7457ac8c347746dc5e3c4a3d6086c571e",
+    "direct_human_approval": "독립 감사 근거를 첨부한 정상 재검토 승인",
+    "approved_minimal_patch_sha256": "787b908f06ec45be00f8bad9953f31d11b16246340a035ea81a1c2214caf6e94",
+    "normal_direct_resubmissions_after_new_approval": 1,
+    "bypass_used": false,
+    "oracle_only_diagnostic_calls": 62,
+    "already_recorded_development_rows": 57,
+    "authored_math_fixtures": 5,
+    "diagnostic_wall_seconds": 0.027264899981673807,
+    "production_target_calls": 0,
+    "final_calls": 0,
+    "scope": "Oracle correctness only; no primary performance or generalization result",
+    "only_correctness_deviation": "exact Fraction binary-float centered variance/covariance/zero/fixed-threshold arithmetic; same Decimal100 final sqrt and same tolerance",
+    "production_runtime_files_unchanged": 54,
+    "target_scope_domain_seed_budget_source_capture_generator_changed": false
+  },
+  "oracle_only_repair_diagnostic_calls_not_production_pairs": 62,
+  "final_target_set_identity": "c8a342774c3e38c3e58e386ad87040d7512c771b5363b48218b32d31ce8e03cf",
+  "baseline_release": "v0.6.0a1",
+  "baseline_commit": "7ff77fa3ca9aa724c468a9ef473dd135e29c0b84",
+  "contract_sha256": "32b77dfca5abdd465f32f664460d94677da4c276dd7b3a4a64ae09afb09b6c35",
+  "evaluator_sha256": "14412b88f5dd0ef5d46b0c461ea47679be32eb28f160af74f487fa90b8c95139",
+  "scope": {
+    "execution": "reviewed exact function/class AST extraction with standard-library dependencies; not whole-project integration",
+    "target_ownership": "user-owned local repositories; HEAD blob pinned, dirty working-tree code excluded",
+    "originals_modified": false,
+    "network_or_provider_execution": false,
+    "external_collection": false,
+    "source_target_project_disjoint": false,
+    "source_target_function_disjoint": true,
+    "implementation_lineage_independence": "PARTIAL; shared author and standard algorithm lineage not independently established",
+    "existing_E1_E6_consumed_holdouts_accessed": false,
+    "synthetic_mutated_targets": 0,
+    "known_bug_status_before_execution": "DEVELOPMENT already observed in retired v1: one production mechanism and one Oracle error known; FINAL not executed and no final outcome used",
+    "external_generalization_claim": "actual-project QA scope only; useful source-to-target transfer and marginal benefit assessed separately"
+  },
+  "actual_call_unit": "original extracted top-level production function + independent reference calls; not state transitions, predicate attempts, or symbolic internals",
+  "apriori_applicability_design": {
+    "potential_compatible_crossproject_contract_pairs": 1,
+    "pairs": [
+      {
+        "source": "source-01",
+        "target": "target-02",
+        "basis": "same independently reviewed robust mathematical correlation subset; different original source code projects"
+      }
+    ],
+    "independent_contrastive_development_qualification_lineages": 0,
+    "qualified_utility_opportunity": "APRIORI_EVIDENCE_GAP: one compatiblecontractpair does not create independent positive-and-negative development support; if no claim qualifies this study cannot test qualified knowledge utility, and no baseline fallback improvement is counted"
+  },
+  "development": {
+    "schema": "e7-evaluation-track-v2",
+    "evaluation_generation": 2,
+    "split": "development",
+    "summary": [
+      {
+        "method": "NativeHypothesis",
+        "attempted": 9,
+        "complete": 9,
+        "not_comparable": 0,
+        "errors": 0,
+        "control_false_alerts": 0,
+        "runs_with_mismatch": 1,
+        "distinct_function_mechanisms": 1,
+        "defect_eligible_runs": 9,
+        "declared_compatibility_control_runs": 0,
+        "actual_target_calls": 1897,
+        "actual_oracle_calls": 1897,
+        "wall_seconds": 9.61800289992243,
+        "sampled_cpu_lower_bound": 6.6875,
+        "maximum_sampled_live_tree_rss_bytes": 52969472,
+        "conditional_median_first_failure_wall_seconds": 1.016,
+        "guided_candidates": 0,
+        "first_witness_guided_runs": 0,
+        "duplicate_evaluation_rate_mean": 0.0032210015786244828
+      },
+      {
+        "method": "NativeStateful",
+        "attempted": 9,
+        "complete": 0,
+        "not_comparable": 9,
+        "errors": 0,
+        "control_false_alerts": 0,
+        "runs_with_mismatch": 0,
+        "distinct_function_mechanisms": 0,
+        "defect_eligible_runs": 0,
+        "declared_compatibility_control_runs": 0,
+        "actual_target_calls": 0,
+        "actual_oracle_calls": 0,
+        "wall_seconds": 1.7050296999805141,
+        "sampled_cpu_lower_bound": 1.140625,
+        "maximum_sampled_live_tree_rss_bytes": 28700672,
+        "conditional_median_first_failure_wall_seconds": null,
+        "guided_candidates": 0,
+        "first_witness_guided_runs": 0,
+        "duplicate_evaluation_rate_mean": null
+      },
+      {
+        "method": "E6",
+        "attempted": 9,
+        "complete": 9,
+        "not_comparable": 0,
+        "errors": 0,
+        "control_false_alerts": 0,
+        "runs_with_mismatch": 0,
+        "distinct_function_mechanisms": 0,
+        "defect_eligible_runs": 9,
+        "declared_compatibility_control_runs": 0,
+        "actual_target_calls": 486,
+        "actual_oracle_calls": 486,
+        "wall_seconds": 19.166165599948727,
+        "sampled_cpu_lower_bound": 13.046875,
+        "maximum_sampled_live_tree_rss_bytes": 100810752,
+        "conditional_median_first_failure_wall_seconds": null,
+        "guided_candidates": 0,
+        "first_witness_guided_runs": 0,
+        "duplicate_evaluation_rate_mean": 0.0
+      },
+      {
+        "method": "E7",
+        "attempted": 9,
+        "complete": 9,
+        "not_comparable": 0,
+        "errors": 0,
+        "control_false_alerts": 0,
+        "runs_with_mismatch": 1,
+        "distinct_function_mechanisms": 1,
+        "defect_eligible_runs": 9,
+        "declared_compatibility_control_runs": 0,
+        "actual_target_calls": 1415,
+        "actual_oracle_calls": 1415,
+        "wall_seconds": 9.673615500039887,
+        "sampled_cpu_lower_bound": 6.34375,
+        "maximum_sampled_live_tree_rss_bytes": 52772864,
+        "conditional_median_first_failure_wall_seconds": 1.078,
+        "guided_candidates": 0,
+        "first_witness_guided_runs": 0,
+        "duplicate_evaluation_rate_mean": 0.00607161159752624
+      }
+    ],
+    "records": 36,
+    "symbolic_records": 3,
+    "symbolic_status_counts": {
+      "NO_COUNTEREXAMPLE_WITHIN_BUDGET": 3
+    },
+    "symbolic_wall_seconds": 4.4477602999832015,
+    "symbolic_actual_concrete_replay_pairs": 0,
+    "evaluator_sha256": "14412b88f5dd0ef5d46b0c461ea47679be32eb28f160af74f487fa90b8c95139",
+    "contract_sha256": "32b77dfca5abdd465f32f664460d94677da4c276dd7b3a4a64ae09afb09b6c35",
+    "suite_sha256": "0ad475f9e1210637183632a1ace1511dec38f8c53649bf2ff0601f98005790b8",
+    "oracle_identity": "67f5677cb06220ea835620f4ef1ea6cf04fcb990a2c990c15b3d2b5dad4d88e9",
+    "full_grid": true,
+    "generator_final_feedback": 0
+  },
+  "source_knowledge": {
+    "status_counts": {},
+    "archives": 9,
+    "counterevidence_target_calls": 153,
+    "counterevidence_oracle_calls": 153,
+    "audits": [
+      {
+        "case": "source-01",
+        "seed": 11,
+        "before_status_counts": {},
+        "after_status_counts": {},
+        "claims": 0,
+        "counterevidence_events": 45,
+        "independent_implementation_claimed": false,
+        "meaning": "fresh development observations on same pinned implementation; not cross-project positive/negative qualification",
+        "snapshot_sha256": "04a7a29d123ead2a311005894658d43c4f7257cb93e8e67d04ff2de52861733f"
+      },
+      {
+        "case": "source-01",
+        "seed": 37,
+        "before_status_counts": {},
+        "after_status_counts": {},
+        "claims": 0,
+        "counterevidence_events": 45,
+        "independent_implementation_claimed": false,
+        "meaning": "fresh development observations on same pinned implementation; not cross-project positive/negative qualification",
+        "snapshot_sha256": "003e3a2471c0b2a7ea06b44db6ea70c56823beba5bff923645305f0875aad3dc"
+      },
+      {
+        "case": "source-01",
+        "seed": 73,
+        "before_status_counts": {},
+        "after_status_counts": {},
+        "claims": 0,
+        "counterevidence_events": 45,
+        "independent_implementation_claimed": false,
+        "meaning": "fresh development observations on same pinned implementation; not cross-project positive/negative qualification",
+        "snapshot_sha256": "12fde317dd58cc6a90457d579df3560fc6667569dcf5f9310b52d9c2ec79b8f1"
+      },
+      {
+        "case": "source-02",
+        "seed": 11,
+        "before_status_counts": {},
+        "after_status_counts": {},
+        "claims": 0,
+        "counterevidence_events": 44,
+        "independent_implementation_claimed": false,
+        "meaning": "fresh development observations on same pinned implementation; not cross-project positive/negative qualification",
+        "snapshot_sha256": "1414561a5e26891610838a18b0f9cc9cc420e6c0ac5e0a19caf8772a619ffd17"
+      },
+      {
+        "case": "source-02",
+        "seed": 37,
+        "before_status_counts": {},
+        "after_status_counts": {},
+        "claims": 0,
+        "counterevidence_events": 44,
+        "independent_implementation_claimed": false,
+        "meaning": "fresh development observations on same pinned implementation; not cross-project positive/negative qualification",
+        "snapshot_sha256": "7b3b3bd98a746b52546bbfa093d91521d454df1981d3b9a8ed8ef7cc1eeb4093"
+      },
+      {
+        "case": "source-02",
+        "seed": 73,
+        "before_status_counts": {},
+        "after_status_counts": {},
+        "claims": 0,
+        "counterevidence_events": 44,
+        "independent_implementation_claimed": false,
+        "meaning": "fresh development observations on same pinned implementation; not cross-project positive/negative qualification",
+        "snapshot_sha256": "5d9c18b38ab7a5e9ee3f4e9b1c1fe6c8812d90f63990015747930f585f968d8a"
+      },
+      {
+        "case": "source-03",
+        "seed": 11,
+        "before_status_counts": {},
+        "after_status_counts": {},
+        "claims": 0,
+        "counterevidence_events": 64,
+        "independent_implementation_claimed": false,
+        "meaning": "fresh development observations on same pinned implementation; not cross-project positive/negative qualification",
+        "snapshot_sha256": "997fe93f4ab36fa3e5c090ace4ae3c36ecab1095b54cde93fabb49aab4191bb5"
+      },
+      {
+        "case": "source-03",
+        "seed": 37,
+        "before_status_counts": {},
+        "after_status_counts": {},
+        "claims": 0,
+        "counterevidence_events": 64,
+        "independent_implementation_claimed": false,
+        "meaning": "fresh development observations on same pinned implementation; not cross-project positive/negative qualification",
+        "snapshot_sha256": "beff97e5e3911c15c06e61067213781361b9570ddd34a459dcac0985587aed3c"
+      },
+      {
+        "case": "source-03",
+        "seed": 73,
+        "before_status_counts": {},
+        "after_status_counts": {},
+        "claims": 0,
+        "counterevidence_events": 64,
+        "independent_implementation_claimed": false,
+        "meaning": "fresh development observations on same pinned implementation; not cross-project positive/negative qualification",
+        "snapshot_sha256": "e3ccae2a8c38a118c0bf47a41ea3fe7be674319750efa36354a0bae26e79e715"
+      }
+    ],
+    "ablation_summary": [
+      {
+        "method": "NativeHypothesis",
+        "attempted": 0,
+        "complete": 0,
+        "not_comparable": 0,
+        "errors": 0,
+        "control_false_alerts": 0,
+        "runs_with_mismatch": 0,
+        "distinct_function_mechanisms": 0,
+        "defect_eligible_runs": 0,
+        "declared_compatibility_control_runs": 0,
+        "actual_target_calls": 0,
+        "actual_oracle_calls": 0,
+        "wall_seconds": 0,
+        "sampled_cpu_lower_bound": 0,
+        "maximum_sampled_live_tree_rss_bytes": 0,
+        "conditional_median_first_failure_wall_seconds": null,
+        "guided_candidates": 0,
+        "first_witness_guided_runs": 0,
+        "duplicate_evaluation_rate_mean": null
+      },
+      {
+        "method": "NativeStateful",
+        "attempted": 0,
+        "complete": 0,
+        "not_comparable": 0,
+        "errors": 0,
+        "control_false_alerts": 0,
+        "runs_with_mismatch": 0,
+        "distinct_function_mechanisms": 0,
+        "defect_eligible_runs": 0,
+        "declared_compatibility_control_runs": 0,
+        "actual_target_calls": 0,
+        "actual_oracle_calls": 0,
+        "wall_seconds": 0,
+        "sampled_cpu_lower_bound": 0,
+        "maximum_sampled_live_tree_rss_bytes": 0,
+        "conditional_median_first_failure_wall_seconds": null,
+        "guided_candidates": 0,
+        "first_witness_guided_runs": 0,
+        "duplicate_evaluation_rate_mean": null
+      },
+      {
+        "method": "E6",
+        "attempted": 0,
+        "complete": 0,
+        "not_comparable": 0,
+        "errors": 0,
+        "control_false_alerts": 0,
+        "runs_with_mismatch": 0,
+        "distinct_function_mechanisms": 0,
+        "defect_eligible_runs": 0,
+        "declared_compatibility_control_runs": 0,
+        "actual_target_calls": 0,
+        "actual_oracle_calls": 0,
+        "wall_seconds": 0,
+        "sampled_cpu_lower_bound": 0,
+        "maximum_sampled_live_tree_rss_bytes": 0,
+        "conditional_median_first_failure_wall_seconds": null,
+        "guided_candidates": 0,
+        "first_witness_guided_runs": 0,
+        "duplicate_evaluation_rate_mean": null
+      },
+      {
+        "method": "E7",
+        "attempted": 6,
+        "complete": 6,
+        "not_comparable": 0,
+        "errors": 0,
+        "control_false_alerts": 0,
+        "runs_with_mismatch": 2,
+        "distinct_function_mechanisms": 1,
+        "defect_eligible_runs": 6,
+        "declared_compatibility_control_runs": 0,
+        "actual_target_calls": 958,
+        "actual_oracle_calls": 958,
+        "wall_seconds": 7.08715239999583,
+        "sampled_cpu_lower_bound": 4.734375,
+        "maximum_sampled_live_tree_rss_bytes": 58470400,
+        "conditional_median_first_failure_wall_seconds": 1.117,
+        "guided_candidates": 0,
+        "first_witness_guided_runs": 0,
+        "duplicate_evaluation_rate_mean": 0.007692307692307702
+      }
+    ],
+    "ablation_rows": [
+      {
+        "case": "source-01",
+        "archive_enabled": false,
+        "status": "COMPLETE",
+        "found": true,
+        "wall_seconds": 1.1216872000077274,
+        "actual_target_calls": 130,
+        "actual_oracle_calls": 130
+      },
+      {
+        "case": "source-01",
+        "archive_enabled": true,
+        "status": "COMPLETE",
+        "found": true,
+        "wall_seconds": 1.3030522000044584,
+        "actual_target_calls": 130,
+        "actual_oracle_calls": 130
+      },
+      {
+        "case": "source-02",
+        "archive_enabled": false,
+        "status": "COMPLETE",
+        "found": false,
+        "wall_seconds": 1.062587699998403,
+        "actual_target_calls": 157,
+        "actual_oracle_calls": 157
+      },
+      {
+        "case": "source-02",
+        "archive_enabled": true,
+        "status": "COMPLETE",
+        "found": false,
+        "wall_seconds": 1.1271050999930594,
+        "actual_target_calls": 157,
+        "actual_oracle_calls": 157
+      },
+      {
+        "case": "source-03",
+        "archive_enabled": false,
+        "status": "COMPLETE",
+        "found": false,
+        "wall_seconds": 1.0519241000001784,
+        "actual_target_calls": 192,
+        "actual_oracle_calls": 192
+      },
+      {
+        "case": "source-03",
+        "archive_enabled": true,
+        "status": "COMPLETE",
+        "found": false,
+        "wall_seconds": 1.4207960999920033,
+        "actual_target_calls": 192,
+        "actual_oracle_calls": 192
+      }
+    ],
+    "source_cost_wall_seconds_observed": 55.28258289985822,
+    "source_capture_wall_seconds": 1.0729024,
+    "human_and_llm_reasoning_cost": "UNKNOWN_NOT_MEASURED",
+    "same_implementation_counterevidence_is_independence": false,
+    "predeclared_failure_log_capture_policy": "E6 only; NativeHypothesis/E7 source logs never substituted after outcomes",
+    "selected_E6_mismatch_runs": 0,
+    "native_hypothesis_mismatch_runs": 1,
+    "E7_native_mismatch_runs": 1,
+    "primary_candidate_claims": 0
+  },
+  "cost_ledger": {
+    "v2_source_comparison_preparation_wall_seconds": 55.28258289985822,
+    "retired_v1_primary_source_wall_seconds": 55.88462949990642,
+    "posthoc_v1_api_ingestion_wall_seconds_excluded_from_primary": 109.45017019999796,
+    "oracle_only_repair_diagnostic_wall_seconds": 0.027264899981673807,
+    "human_and_llm_reasoning": "UNKNOWN_NOT_MEASURED",
+    "prior_costs_not_silently_erased": true,
+    "v2_source_processing_excluding_retained_capture_wall_seconds": 54.20968049985822,
+    "supplemental_v2_offline_API_QA_wall_seconds_excluded_from_primary": 38.0338281999866,
+    "final_target_comparison_wall_seconds_by_method": {
+      "NativeHypothesis": 17.785968700045487,
+      "NativeStateful": 3.197344200016232,
+      "E6": 35.052237800031435,
+      "E7": 33.46730439996463
+    },
+    "e7_final_plus_v2_source_cost_wall_seconds": 88.74988729982286
+  },
+  "metric_definitions": {
+    "duplicate_evaluation_rate": "duplicates across all actual evaluations, including shrink and mandatory independent replay; not pure generation duplication or wasted-search rate",
+    "retained_capture_cost": "1.0729024s is the originally measured static source capture charged to both source-cost views; it is shared with retired-v1 cost, not a fresh second capture or additive mission total",
+    "final_comparison_scope": "at most64 frozen public-spec plans for every method; NativeHypothesis has no final-feedback adaptation/shrink; tests marginal pre-existing-knowledge value under frozen plans, not superiority over full adaptive PBT"
+  },
+  "final": {
+    "schema": "e7-evaluation-track-v2",
+    "evaluation_generation": 2,
+    "split": "final",
+    "summary": [
+      {
+        "method": "NativeHypothesis",
+        "attempted": 18,
+        "complete": 18,
+        "not_comparable": 0,
+        "errors": 0,
+        "control_false_alerts": 0,
+        "runs_with_mismatch": 0,
+        "distinct_function_mechanisms": 0,
+        "defect_eligible_runs": 15,
+        "declared_compatibility_control_runs": 3,
+        "actual_target_calls": 929,
+        "actual_oracle_calls": 929,
+        "wall_seconds": 17.785968700045487,
+        "sampled_cpu_lower_bound": 11.34375,
+        "maximum_sampled_live_tree_rss_bytes": 55255040,
+        "conditional_median_first_failure_wall_seconds": null,
+        "guided_candidates": 0,
+        "first_witness_guided_runs": 0,
+        "duplicate_evaluation_rate_mean": 0.0
+      },
+      {
+        "method": "NativeStateful",
+        "attempted": 18,
+        "complete": 0,
+        "not_comparable": 18,
+        "errors": 0,
+        "control_false_alerts": 0,
+        "runs_with_mismatch": 0,
+        "distinct_function_mechanisms": 0,
+        "defect_eligible_runs": 0,
+        "declared_compatibility_control_runs": 0,
+        "actual_target_calls": 0,
+        "actual_oracle_calls": 0,
+        "wall_seconds": 3.197344200016232,
+        "sampled_cpu_lower_bound": 1.984375,
+        "maximum_sampled_live_tree_rss_bytes": 27160576,
+        "conditional_median_first_failure_wall_seconds": null,
+        "guided_candidates": 0,
+        "first_witness_guided_runs": 0,
+        "duplicate_evaluation_rate_mean": null
+      },
+      {
+        "method": "E6",
+        "attempted": 18,
+        "complete": 18,
+        "not_comparable": 0,
+        "errors": 0,
+        "control_false_alerts": 0,
+        "runs_with_mismatch": 0,
+        "distinct_function_mechanisms": 0,
+        "defect_eligible_runs": 15,
+        "declared_compatibility_control_runs": 3,
+        "actual_target_calls": 939,
+        "actual_oracle_calls": 939,
+        "wall_seconds": 35.052237800031435,
+        "sampled_cpu_lower_bound": 22.109375,
+        "maximum_sampled_live_tree_rss_bytes": 101543936,
+        "conditional_median_first_failure_wall_seconds": null,
+        "guided_candidates": 0,
+        "first_witness_guided_runs": 0,
+        "duplicate_evaluation_rate_mean": 0.0
+      },
+      {
+        "method": "E7",
+        "attempted": 18,
+        "complete": 18,
+        "not_comparable": 0,
+        "errors": 0,
+        "control_false_alerts": 0,
+        "runs_with_mismatch": 0,
+        "distinct_function_mechanisms": 0,
+        "defect_eligible_runs": 15,
+        "declared_compatibility_control_runs": 3,
+        "actual_target_calls": 933,
+        "actual_oracle_calls": 933,
+        "wall_seconds": 33.46730439996463,
+        "sampled_cpu_lower_bound": 20.65625,
+        "maximum_sampled_live_tree_rss_bytes": 104366080,
+        "conditional_median_first_failure_wall_seconds": null,
+        "guided_candidates": 0,
+        "first_witness_guided_runs": 0,
+        "duplicate_evaluation_rate_mean": 0.0
+      }
+    ],
+    "records": 72,
+    "symbolic_records": 6,
+    "symbolic_status_counts": {
+      "NO_COUNTEREXAMPLE_WITHIN_BUDGET": 5,
+      "NOT_COMPARABLE": 1
+    },
+    "symbolic_wall_seconds": 7.668212200020207,
+    "symbolic_actual_concrete_replay_pairs": 0,
+    "evaluator_sha256": "14412b88f5dd0ef5d46b0c461ea47679be32eb28f160af74f487fa90b8c95139",
+    "contract_sha256": "32b77dfca5abdd465f32f664460d94677da4c276dd7b3a4a64ae09afb09b6c35",
+    "suite_sha256": "0ad475f9e1210637183632a1ace1511dec38f8c53649bf2ff0601f98005790b8",
+    "oracle_identity": "67f5677cb06220ea835620f4ef1ea6cf04fcb990a2c990c15b3d2b5dad4d88e9",
+    "full_grid": true,
+    "generator_final_feedback": 0,
+    "verdict": {
+      "status": "INCONCLUSIVE",
+      "reason": "no-comparable-positive-mechanism",
+      "qualified_use": 0
+    },
+    "per_problem": [
+      {
+        "case": "target-01",
+        "method": "NativeHypothesis",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-01",
+        "method": "NativeStateful",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-01",
+        "method": "E6",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-01",
+        "method": "E7",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-02",
+        "method": "NativeHypothesis",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-02",
+        "method": "NativeStateful",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-02",
+        "method": "E6",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-02",
+        "method": "E7",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-03",
+        "method": "NativeHypothesis",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-03",
+        "method": "NativeStateful",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-03",
+        "method": "E6",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-03",
+        "method": "E7",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-04",
+        "method": "NativeHypothesis",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-04",
+        "method": "NativeStateful",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-04",
+        "method": "E6",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-04",
+        "method": "E7",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-05",
+        "method": "NativeHypothesis",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-05",
+        "method": "NativeStateful",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-05",
+        "method": "E6",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-05",
+        "method": "E7",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-06",
+        "method": "NativeHypothesis",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-06",
+        "method": "NativeStateful",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-06",
+        "method": "E6",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-06",
+        "method": "E7",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      }
+    ],
+    "qualified_claims_summed": 0,
+    "guided_candidates": 0,
+    "actual_production_defect_eligible_functions": 5,
+    "compatibility_only_functions_not_defect_denominator": 1,
+    "generator_frozen_before_target_execution": true,
+    "replay_status_counts": {
+      "NO_WITNESS": 54
+    },
+    "execution_status": "COMPLETE_ONCE",
+    "comparison_limit": "all three baselines/engine observed zero final mismatch; sensitivity, recall and discovery advantage are unestimated; no first-failure metric fabricated"
+  },
+  "final_attempts_started": 1,
+  "final_attempts_completed": 1,
+  "final_feedback_to_generator": 0,
+  "external_generalization": "INCONCLUSIVE",
+  "consumed_E1_E6_holdouts_accessed": false,
+  "limits": [
+    "exact pure-function extraction, not whole-project execution",
+    "static reviewer inspected all candidate code before preregistration; generator never received final target implementation",
+    "shared author, some shared repositories and standard mathematical algorithm ancestry; no claim of fully independent mechanism lineage",
+    "native Stateful is NOT_COMPARABLE on every stateless case; no invented state-machine wrappers",
+    "CrossHair receives source in its separate privileged tier; internal calls UNKNOWN",
+    "fresh same-implementation development evidence can refute claims but cannot satisfy independent positive-and-negative promotion",
+    "confidence applies only to declared finite domains and reviewed math/documentation Oracles; no population base-rate claim",
+    "sampled CPU is lower bound and RSS is not actual OS peak; overlapping phase times are not additive",
+    "retrospective source/target function selection is not random real-project sampling; no claims of novelty or operational exploitability",
+    "generation1 retired after finite-precision Oracle false alerts; earlier static authority review missed that numerical implementation error",
+    "duplicate_evaluation_rate includes shrink and mandatory replay, not pure generator duplication or wasted search",
+    "final frozen-plan comparison is not a full-adaptive-native-Hypothesis superiority test; development native find/shrink is reported separately",
+    "all final methods observed zero mismatch: no final positive mechanism, no sensitivity/recall estimate or proof of correctness, no first-failure superiority claim"
+  ],
+  "freeze_manifest_sha256": "0222c42c605e3b8cf77615b1cc49aec13e5844292a933d8a1e87d804b0990df4",
+  "frozen_product_files": 57,
+  "frozen_baseline_runtime_files": 45,
+  "frozen_source_archives": 9,
+  "final_records_sha256_ledger_binding": "692d49bb2c0e3255a9968eefc8f89477ef0bc6edbe8fb322e27ef9b8e92e4e96",
+  "external_generalization_reason": "actual reviewed project functions executed; qualified transferable knowledge and marginal source-to-target advantage not established",
+  "development_boundary_readback": {
+    "per_method": [
+      {
+        "method": "NativeHypothesis",
+        "runs": 9,
+        "statuses": {
+          "COMPLETE": 9
+        },
+        "actual_target_calls": 1897,
+        "actual_oracle_calls": 1897,
+        "invalid_inputs_rejected_before_execution": 407,
+        "native_predicate_attempts_reported": 2305,
+        "predicate_count_unavailable_runs": 0,
+        "unexecuted_precondition_rejections_observed_as_clean_evidence": 0
+      },
+      {
+        "method": "NativeStateful",
+        "runs": 9,
+        "statuses": {
+          "NOT_COMPARABLE": 9
+        },
+        "actual_target_calls": 0,
+        "actual_oracle_calls": 0,
+        "invalid_inputs_rejected_before_execution": 0,
+        "native_predicate_attempts_reported": 0,
+        "predicate_count_unavailable_runs": 9,
+        "unexecuted_precondition_rejections_observed_as_clean_evidence": 0
+      },
+      {
+        "method": "E6",
+        "runs": 9,
+        "statuses": {
+          "COMPLETE": 9
+        },
+        "actual_target_calls": 486,
+        "actual_oracle_calls": 486,
+        "invalid_inputs_rejected_before_execution": 90,
+        "native_predicate_attempts_reported": 0,
+        "predicate_count_unavailable_runs": 9,
+        "unexecuted_precondition_rejections_observed_as_clean_evidence": 0
+      },
+      {
+        "method": "E7",
+        "runs": 9,
+        "statuses": {
+          "COMPLETE": 9
+        },
+        "actual_target_calls": 1415,
+        "actual_oracle_calls": 1415,
+        "invalid_inputs_rejected_before_execution": 315,
+        "native_predicate_attempts_reported": 1728,
+        "predicate_count_unavailable_runs": 0,
+        "unexecuted_precondition_rejections_observed_as_clean_evidence": 0
+      }
+    ],
+    "invalid_input_guard_scope": "same predeclared public guard on all methods; rejected proposals receive no actual target/Oracle calls or clean evidence",
+    "predicate_attempts_are_not_actual_oracle_calls": true
+  },
+  "source_archive_manifest_sha256": "1b7d20f67c55566311d9ecedae0cfe78327e8003b02ddc17b8f5ec10294da95d",
+  "supplemental_v2_noncomparative_public_api_QA": {
+    "status": "PASS",
+    "receipt_sha256": "c001c575b65b8172d1cadd6b6f07c10292a853b3a2ad8e12bd1dcbd677e57401",
+    "cached_correct_development_log_sets": 2,
+    "rows": [
+      {
+        "method": "NativeHypothesis",
+        "already_recorded_valid_observations_ingested": 32,
+        "already_recorded_same_implementation_counterevidence": 45,
+        "candidate_claims": 265,
+        "before_status_counts": {
+          "CONTRADICTED": 260,
+          "HYPOTHESIS": 5
+        },
+        "after_status_counts": {
+          "CONTRADICTED": 260,
+          "HYPOTHESIS": 5
+        },
+        "qualified_claims": 0,
+        "independent_implementation_evidence": false
+      },
+      {
+        "method": "E7",
+        "already_recorded_valid_observations_ingested": 32,
+        "already_recorded_same_implementation_counterevidence": 45,
+        "candidate_claims": 271,
+        "before_status_counts": {
+          "CONTRADICTED": 268,
+          "HYPOTHESIS": 3
+        },
+        "after_status_counts": {
+          "CONTRADICTED": 268,
+          "HYPOTHESIS": 3
+        },
+        "qualified_claims": 0,
+        "independent_implementation_evidence": false
+      }
+    ],
+    "new_production_calls": 0,
+    "new_oracle_calls": 0,
+    "final_access": false,
+    "primary_E6_only_source_archives_modified": false,
+    "primary_archive_before_and_after_sha256": "261bf69237872216fea5387b909555fd67d9ba4211167eb98dd9b3aa3db9e564",
+    "used_in_final": false,
+    "research_performance_or_transfer_claim": false,
+    "scope": "cached valid-development public API ingestion/refutation functionality; independent qualification not established"
+  }
+}

@@ -1,0 +1,90 @@
+[
+  {
+    "kind": "FAILURE",
+    "evidence_id": "source-0",
+    "inputs": {
+      "start": 2,
+      "stop": 1
+    },
+    "invariant": "reference",
+    "category": "mismatch",
+    "signature": "directed-width"
+  },
+  {
+    "kind": "FAILURE",
+    "evidence_id": "source-1",
+    "inputs": {
+      "start": 1,
+      "stop": -1
+    },
+    "invariant": "reference",
+    "category": "mismatch",
+    "signature": "directed-width"
+  },
+  {
+    "kind": "FAILURE",
+    "evidence_id": "source-2",
+    "inputs": {
+      "start": 3,
+      "stop": -2
+    },
+    "invariant": "reference",
+    "category": "mismatch",
+    "signature": "directed-width"
+  },
+  {
+    "kind": "FAILURE",
+    "evidence_id": "source-3",
+    "inputs": {
+      "start": -1,
+      "stop": -2
+    },
+    "invariant": "reference",
+    "category": "mismatch",
+    "signature": "directed-width"
+  },
+  {
+    "kind": "REFUTATION",
+    "evidence_id": "source-4",
+    "inputs": {
+      "start": 1,
+      "stop": 2
+    },
+    "invariant": "reference",
+    "category": "mismatch",
+    "signature": "directed-width"
+  },
+  {
+    "kind": "REFUTATION",
+    "evidence_id": "source-5",
+    "inputs": {
+      "start": -1,
+      "stop": 1
+    },
+    "invariant": "reference",
+    "category": "mismatch",
+    "signature": "directed-width"
+  },
+  {
+    "kind": "REFUTATION",
+    "evidence_id": "source-6",
+    "inputs": {
+      "start": -2,
+      "stop": -1
+    },
+    "invariant": "reference",
+    "category": "mismatch",
+    "signature": "directed-width"
+  },
+  {
+    "kind": "REFUTATION",
+    "evidence_id": "source-7",
+    "inputs": {
+      "start": 0,
+      "stop": 0
+    },
+    "invariant": "reference",
+    "category": "mismatch",
+    "signature": "directed-width"
+  }
+]
