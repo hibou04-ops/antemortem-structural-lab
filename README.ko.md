@@ -4,7 +4,56 @@
 
 **한국어 사용자 안내** · [English](README.md) · [변경 이력](CHANGELOG.md) · [검증 기록](docs/RELEASE_VALIDATION.md)
 
-`0.6.0a1`은 **Stateful Structural Mold**를 추가한 실험적 사전 릴리스입니다. E5의 미표현 상태 관계를 제한된 EFSM과 경쟁 가설로 학습하고, Hypothesis를 기본 탐색으로 유지합니다. 제품 기능·계산 효율·외적 일반화는 따로 판정합니다. [E6 구현과 검증](docs/E6_INTEGRATION.md) · [독립 평가](docs/E6_EVALUATION_REPORT.md).
+`0.7.0a1`은 **Evidence-Gated Structural Knowledge**를 추가한 실험적 사전 릴리스입니다. 과거 실패에서 만든 가설을 반증·적용 계약과 함께 보존하고, 검토된 별도 구현의 대조 증거가 있는 관계만 새 탐색에 사용합니다. 범용 생성·축소는 Hypothesis에 맡깁니다. [실제 구조와 신뢰 계약](docs/E7_KNOWLEDGE.md) · [E7 독립 평가](docs/E7_EVALUATION_REPORT.md).
+
+## E7: 증거가 있는 구조적 지식 사용하기
+
+지식은 `HYPOTHESIS → SUPPORTED_WITHIN_SCOPE → QUALIFIED_FOR_PROBING`으로 구분하고, 반증은 `CONTRADICTED`, 적용 근거 부족은 `APPLICABILITY_UNKNOWN`으로 남깁니다. 승격에는 동일한 별도 검토 구현에서 얻은 실패·정상 대조 관측과 호환되는 역할·타입·연산·상태/IR 계약이 필요합니다. 출처 해시는 신원을 결속하며 의미적 독립성·원인을 증명하지 않습니다.
+
+자격 있는 지식이 없으면 worker·후보 풀·solver를 시작하지 않고 native Hypothesis를 실행합니다. 자격 있는 경우 guidance를 전체 계획 예산의 최대 절반으로 제한하고 native 탐색 경로를 유지합니다. 유한 도메인이 소진되면 실제 후보 비율은 달라질 수 있습니다. bounded prefix 뒤 동결하고 native search/shrinking과 독립 replay를 수행합니다. 새 시간 가설·상태 API는 기존 E6와 함께 사용할 수 있습니다.
+
+이번 CI 검증 범위는 Python 3.11~3.13입니다. 패키지 메타데이터는 3.11 이상을 허용하며 더 최신 Python은 이번 검증 범위에 포함하지 않습니다. 로컬 QA는 Hypothesis6.170.11·Z35.3.2.0으로 실행했습니다.
+
+```bash
+python -m pip install "antemortem-structural-lab[qa,solver] @ https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.7.0a1/antemortem_structural_lab-0.7.0a1-py3-none-any.whl"
+python -m tomolab knowledge-demo --budget 16 --guidance-budget 4 --pool-size 16 --shrink-budget 16 --output results/e7.json
+python -m tomolab knowledge-demo --case clean --budget 12 --guidance-budget 4 --pool-size 8 --shrink-budget 0 --output results/e7-clean.json
+```
+
+동봉된 directed-width 예제는 직접 작성한 기능 검사입니다. 공개 참조 모델의 `lower > upper` 관계가 실제 후보 순서를 바꾸는지 확인합니다. 이 IR은 **공개 참조 모델**의 구조이며 비공개 대상 구현을 분석한 결과가 아닙니다. 예제의 같은 실패 형태를 다른 코드로 표현한 결과를 실제 프로젝트 일반화로 계산하지 않습니다.
+
+소스 checkout 또는 wheel에 동봉된 예제 폴더에서 최소 개발 로그를 학습하고 동결 계획을 생성하려면:
+
+```bash
+python -m tomolab knowledge-inspect --spec examples/knowledge/target-spec.json
+python -m tomolab knowledge-learn --spec examples/knowledge/source-spec.json --failure-log examples/knowledge/source-failures.json --provenance examples/knowledge/source-provenance.json --public-ir examples/knowledge/source-ir.json --observations examples/knowledge/observations.json --approve-development-evidence --store results/e7-journal.jsonl --record-id development-1 --output results/e7-mold.json
+python -m tomolab knowledge-plan --archive results/e7-mold.json --spec examples/knowledge/target-spec.json --target-provenance examples/knowledge/target-provenance.json --public-ir examples/knowledge/target-ir.json --budget 8 --guidance-budget 4 --pool-size 16 --output results/e7-plan.json
+python -m tomolab knowledge-run examples/knowledge/target.py --oracle-file examples/knowledge/target_oracle.py --archive results/e7-mold.json --spec examples/knowledge/target-spec.json --target-provenance examples/knowledge/target-provenance.json --public-ir examples/knowledge/target-ir.json --failure-signature directed-width --allow-local-execution --budget 16 --guidance-budget 4 --pool-size 16 --shrink-budget 16 --output results/e7-run.json
+```
+
+`knowledge-learn`은 JSON 증거를 해석하고 대상 코드를 실행하지 않습니다. `--approve-development-evidence`는 출처와 독립 Oracle를 검토한 호스트의 명시적 확인이며, 임의 로그를 사실로 인증하는 장치가 아닙니다. `knowledge-run`은 별도 파일의 신뢰된 `implementation(**inputs)`·`reference(**inputs)`만 실행합니다. 실행 동의는 대상 코드의 보안 격리가 아닙니다.
+
+새 반증을 축적할 때는 동결 부모를 보존한 새 개발 세대를 만듭니다:
+
+```bash
+python -m tomolab knowledge-update --archive results/e7-mold.json --observations examples/knowledge/counterevidence.json --generation-id development-2 --approve-development-evidence --store results/e7-journal.jsonl --record-id development-2 --output results/e7-updated.json
+python -m tomolab knowledge-inspect --archive results/e7-updated.json --spec examples/knowledge/target-spec.json --target-provenance examples/knowledge/target-provenance.json --public-ir examples/knowledge/target-ir.json --output results/e7-updated-gate.json
+```
+
+append-only 저장소는 같은 record ID의 동일 입력을 중복 추가하지 않으며, 기존 반증을 버리는 과거 snapshot 복귀를 거부합니다. 세대는 최대32번, source/개발 관측은 각각 총256개로 제한합니다. 중단된 append·충돌 lock은 자동 삭제하거나 덮어쓰지 않습니다. 최종 평가 자료를 개발 관측으로 재사용하지 않습니다.
+
+기본 subprocess는 `LOGICAL_ISOLATION_ONLY`. 선택적 Docker는 Generator만 제한하고, 대상·Oracle는 신뢰된 호스트 코드입니다:
+
+```bash
+docker build -f containers/e7-generator.Dockerfile -t tomolab-e7-generator:local containers
+python -m tomolab knowledge-demo --backend docker --budget 16 --guidance-budget 4 --pool-size 16 --shrink-budget 16 --output results/e7-container.json
+```
+
+기존 E1~E6 동결 결과는 보존합니다. E6의 `NO_IMPROVEMENT`·대표 후보12/13 반증을 전체 가설 정확도로 확대하지 않습니다. E7의 개발 v1은 Oracle 정밀도 오류로 `INVALID_ORACLE / INCONCLUSIVE` 처리했습니다. 정확 산술로 수정한 Oracle의 독립 검토와 v2 계약 등록을 마쳤으며, 실제 검증 결과는 [별도 기록](docs/E7_EVALUATION_REPORT.md)에 구분해 공개합니다. 이미 관측한 개발 문제의 재검증은 새 블라인드 평가가 아닙니다. 가설을 모두 보류하고 baseline과 같아진 결과는 추가 발견 성과가 아닙니다. 계획 snapshot의 재생은 같은 Hypothesis/Z3 환경에서 검증하며 버전 간 동일 재생을 보장하지 않습니다.
+
+## 보존된 E6 기능과 결과
+
+`0.6.0a1`의 Stateful Structural Mold와 typed 입력·EFSM 지원은 유지합니다. [E6 구현](docs/E6_INTEGRATION.md) · [E6 독립 평가](docs/E6_EVALUATION_REPORT.md).
 
 ## E6: 실패 시퀀스에서 관계를 배우기
 

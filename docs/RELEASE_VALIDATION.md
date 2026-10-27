@@ -1,5 +1,19 @@
 # Release validation
 
+## v0.7.0a1 — Evidence-Gated Structural Knowledge
+
+원격 main·annotated v0.6.0a1을 확인한 별도 브랜치에서 구현했습니다. 기존 E6 baseline과 소비된 E1~E6 holdout은 보존합니다. [지식 신뢰·API 계약](E7_KNOWLEDGE.md), [독립 평가](E7_EVALUATION_REPORT.md), [공개 집계](E7_RESULTS.json)를 구분합니다.
+
+- 기존322개 baseline PASS. 이후 신규 기능을 포함한 로컬387 tests PASS / failure·error·skip0 / JUnit47.803초입니다. 실제 최신 CI 수량·결과는 별도 readback으로 확인합니다.
+- 설치된 후보 wheel에서 영문28·한국어28개, README CLI56/56 통과했습니다. 소스 checkout import는 하지 않았고 wheel의 공개 bundled examples만 복사했습니다. Optional QA는 승인된 기존 의존성을 재사용했습니다.
+- wheel/sdist build·twine metadata·공개 범위195 source files PASS. 실제 최종 공개 자산 hash는 이후 Release readback에서 따로 검증합니다.
+- 새 base wheel의 fresh no-index/no-deps 환경에서 기존 MRI/CAST/Claim/Mold·E6 inspect·E7 inspect를 실행했습니다. 새 QA 환경은 정상 CI에서 설치합니다.
+- 반증 보존·same-context rollback·frozen thaw·캐시 입력 경합·전송 입력 경합·기록 확장/fork·final feedback·Oracle 오류·실제 query 변경과 replay를 검사했습니다.
+- 평가의 한 번만 실행하는 authority는 caller output 경로와 분리합니다. 복사한 manifest/다른 output 경로·재해시·replay mismatch·실제 guided witness 없는 개선 승격을 사전 검사했습니다.
+- local Docker daemon을 실행한 것으로 주장하지 않습니다. CI는 matrix6개와 E4/E5/E6/E7 container4개, 총10개 필수 job을 실행하고 main publication은 별도11번째 job입니다.
+
+최종 평가 전 제품57개 working bytes와 Git blobs·E6 runtime45개·계약·새 private suite·source archives를 동결합니다. 명시적 신호 이후에만 final을 한 차례 실행하고 결과를 보고 같은 세대 코드를 다시 조정하지 않습니다. 원시 평가·비공개 대상·정답은 공개 배포에 넣지 않습니다. 실제 평가·릴리스 완료 여부는 위 보고서와 최종 검증 영수증을 따릅니다.
+
 ## v0.6.0a1 — E6 Stateful Mold
 
 원격 기준 main f269ba9와 v0.5.0a1 tag를 확인한 뒤 별도 작업 사본·브랜치를 사용했습니다. 기존250개 회귀는 보존했습니다. 실제 결과와 범위는 [E6 구현](E6_INTEGRATION.md), [평가 보고](E6_EVALUATION_REPORT.md), [공개 집계](E6_RESULTS.json)로 구분합니다.

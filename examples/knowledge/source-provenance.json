@@ -1,0 +1,10 @@
+{
+  "project": "authored-e7-functional-fixtures",
+  "lineage": "absolute-width-source",
+  "revision": "public-fixture-v1",
+  "oracle_id": "absolute-width-source-reference",
+  "semantics": "nonnegative-directed-width",
+  "independence_id": "reviewed-absolute-width-source",
+  "implementation_sha256": "6836ffd4a7fbb178ab4d4b98a1aaccf13e53eab0bf86e243dede8b9bbbd682db",
+  "oracle_sha256": "85e9ed08fd394b7276aa2a825bb1b85fdfc3b8756fd07556d095bb17460fa889"
+}

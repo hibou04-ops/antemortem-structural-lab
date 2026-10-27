@@ -112,6 +112,14 @@ API 키는 환경변수로만 전달하고 코드, 로그, 이슈, 지원 요청
 
 ## English summary
 
+E7의 지식 승격은 검토된 호스트가 확인한 별도 구현·Oracle의 positive/negative 개발 영수증과 명시적 계약에 의존합니다. 해시는 그 확인의 신원·일관성을 결속하며 의미적 독립성을 인증하지 않습니다. `HYPOTHESIS`와 `QUALIFIED_FOR_PROBING`은 검증된 원인이나 대상 결함의 증명이 아닙니다.
+
+E7 Generator allowlist는 실행 서비스·파일 저장소·예제·CrossHair·대상·Oracle 모듈을 포함하지 않습니다. 입력은 한 번 캡처한 JSON을 전송 전과 worker에서 검증하며 raw Oracle 결과·주관적 점수·최종 split을 거부합니다. 동결 후 feedback, 재해시한 상태 조작, 과거 snapshot 복귀와 검증 캐시 경합을 검사합니다. 검증 캐시는 전체 내용·검증 버전에 묶이며 별도 복사본만 반환합니다.
+
+영속 저장은 협력 writer의 exclusive lock·fsync·해시 체인·전체 journal prefix를 사용합니다. 기존 반증·동결 부모를 보존한 명시적 새 세대만 개발 영수증으로 확장합니다. final split은 새 세대에서도 허용하지 않습니다. 깨진 append나 남은 lock은 자동 삭제하지 않습니다. 호스트가 거짓으로 선언한 Oracle 독립성이나 적대적 파일시스템 전체를 보장하지 않습니다.
+
+실제 프로젝트 평가의 private source·입력·정답·raw records·학습 archive·holdout ledger는 공개 저장소와 배포 자산 밖에 보존합니다. CrossHair는 평가기의 별도 source-aware tier이며 그 결과를 final Generator에 피드백하지 않습니다. 공개 참조 모델 IR을 비공개 대상에서 추출한 구조라고 표현하지 않습니다.
+
 Only run authored or independently trusted targets and Oracles. They execute with evaluator-host privileges; consent flags are not a hostile-code sandbox. The default subprocess generator has logical isolation only. The optional Docker generator limits its filesystem, network and privileges, but does not isolate target execution. Pre-pull the trusted image explicitly. Inspect actual validation and CI boundary tests rather than inferring isolation from a process name. Snapshot hashes and state reconstruction check consistency, not authorship or the truth of Oracle evidence; callers must approve external snapshots. Review evidence before sharing, keep private research and credentials out of artifacts, and preserve `UNKNOWN` and bounded-search limitations.
 
 E5 runs native candidate generation and supported Z3 checks inside the generator; Oracle execution, shrinking and CrossHair stay in the evaluator. Only explicitly approved public source is converted to validated IR. Unknown nested fields and unsupported protocol data are rejected before transport and again in the worker. These checks do not turn a host subprocess into an access-control boundary. Oracle exceptions propagate unless their category is explicitly approved. Time budgets are cooperative and cannot interrupt a running trusted function. Prepare the dependency image with `containers/e5-generator.Dockerfile` before selecting the E5 Docker backend; runtime failures do not trigger an automatic backend fallback.
