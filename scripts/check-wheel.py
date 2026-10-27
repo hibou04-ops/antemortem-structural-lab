@@ -79,4 +79,12 @@ with tempfile.TemporaryDirectory(prefix="structural-wheel-") as folder:
                                  str(Path(examples) / "mold" / "spec.json"),
                                  "--expression", "x + y == 0", "--solver", "z3"))
         assert checked["status"] == "SAT"
+        unified = json.loads(run("-m", "tomolab", "discovery-demo", "--budget", "12", "--pool-size", "32",
+                                 "--shrink-budget", "16", "--solver", "z3"))
+        assert unified["status"] == "COUNTEREXAMPLE_FOUND"
+        assert unified["snapshot"]["frozen"] is True
+        assert unified["snapshot"]["query_metrics"]["solver_calls"] > 0
+        state = json.loads(run("-m", "tomolab", "discovery-demo", "--case", "state", "--budget", "16",
+                               "--pool-size", "32", "--shrink-budget", "32"))
+        assert state["status"] == "COUNTEREXAMPLE_FOUND"
     print(f"Wheel {version}: install, dependency check, bundled demo, claim and replay passed")

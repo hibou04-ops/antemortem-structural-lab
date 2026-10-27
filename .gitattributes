@@ -1,1 +1,4 @@
 * text=auto eol=lf
+# Preserve the exact E5 once-only evaluation source bytes in all checkouts.
+tomolab/discovery/analysis.py -text whitespace=cr-at-eol
+tomolab/discovery/transfer.py -text whitespace=cr-at-eol

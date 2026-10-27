@@ -131,9 +131,104 @@ def main(argv: list[str] | None = None) -> int:
         parser.add_argument("--backend", choices=("subprocess", "docker"), default="subprocess")
         parser.add_argument("--solver", choices=("enumeration", "z3"), default="enumeration")
         parser.add_argument("--output")
+    discovery_demo = cmd.add_parser("discovery-demo", help="Run the reviewed E5 integrated sequence or state-trace example")
+    discovery_demo.add_argument("--case", choices=("sequence", "state"), default="sequence")
+    discovery_run = cmd.add_parser("discovery-run", help="Integrated discovery with reviewed target and independent Oracle")
+    discovery_run.add_argument("path", type=Path)
+    discovery_run.add_argument("--oracle-file", type=Path, required=True)
+    discovery_run.add_argument("--function", default="implementation")
+    discovery_run.add_argument("--oracle", default="reference")
+    discovery_run.add_argument("--allow-local-execution", action="store_true")
+    discovery_plan = cmd.add_parser("discovery-plan", help="Freeze structural probes without executing a target or receiving final feedback")
+    discovery_plan.add_argument("--snapshot", type=Path, required=True)
+    discovery_inspect = cmd.add_parser("discovery-inspect", help="Parse an explicitly public source into typed structural IR; no execution")
+    discovery_inspect.add_argument("path", type=Path)
+    discovery_inspect.add_argument("--function", default="implementation")
+    discovery_inspect.add_argument("--spec", type=Path, required=True)
+    discovery_inspect.add_argument("--output")
+    for parser in (discovery_run, discovery_plan):
+        parser.add_argument("--spec", type=Path, required=True)
+        public = parser.add_mutually_exclusive_group(required=True)
+        public.add_argument("--public-source", type=Path, help="Explicitly approved source for Generator IR; never a private final target")
+        public.add_argument("--public-ir", type=Path)
+        parser.add_argument("--public-function", default="implementation")
+    for parser in (discovery_demo, discovery_run, discovery_plan):
+        parser.add_argument("--budget", type=int, default=32)
+        parser.add_argument("--seed", type=int, default=7)
+        parser.add_argument("--pool-size", type=int, default=128)
+        parser.add_argument("--backend", choices=("subprocess", "docker"), default="subprocess")
+        parser.add_argument("--solver", choices=("enumeration", "z3"), default="enumeration")
+        parser.add_argument("--output")
+    for parser in (discovery_demo, discovery_run):
+        parser.add_argument("--shrink-budget", type=int, default=64)
+        parser.add_argument("--time-budget", type=float, default=10.0)
+        parser.add_argument("--strategy", choices=("integrated", "hypothesis"), default="integrated")
+        parser.add_argument("--expected-exception", action="append", default=[],
+                            choices=("ValueError","TypeError","KeyError","IndexError","ZeroDivisionError","OverflowError"),
+                            help="Explicitly approved Oracle exception category; all others propagate")
+    discovery_plan.add_argument("--target-evidence", type=Path, help="Approved development counterevidence only; never final labels")
     args = p.parse_args(argv)
     try:
-        if args.command == "constraints-check":
+        if args.command.startswith("discovery-"):
+            from .discovery.service import prepare_public_contract, run_discovery, plan_discovery
+            from .discovery.schema import integer, validate_spec
+            from .discovery.predicates import validate_public_ir
+            if args.command == "discovery-run" and not args.allow_local_execution:
+                p.error("discovery-run requires --allow-local-execution (reviewed code; evaluator has NO sandbox)")
+            if args.command == "discovery-inspect":
+                spec = json.loads(args.spec.read_text(encoding="utf-8"))
+                spec, ir = prepare_public_contract(spec,args.path,function=args.function)
+                _save({"spec":spec,"public_ir":ir},args.output)
+                return 0
+            integer(args.budget,1,4096)
+            integer(args.seed,0,2**32-1)
+            integer(args.pool_size,1,4096)
+            if args.command != "discovery-plan":
+                integer(args.shrink_budget,0,10000)
+                if not 0 < args.time_budget <= 3600:
+                    raise ValueError("time-budget must be in (0,3600]")
+            folder = EXAMPLES / "discovery"
+            spec_path = folder / f"{args.case}-spec.json" if args.command == "discovery-demo" else args.spec
+            spec = validate_spec(json.loads(spec_path.read_text(encoding="utf-8")))
+            public_source = folder / f"{args.case}_target.py" if args.command == "discovery-demo" else args.public_source
+            if public_source is not None:
+                spec, ir = prepare_public_contract(spec,public_source,function=getattr(args,"public_function","implementation"))
+            else:
+                ir = json.loads(args.public_ir.read_text(encoding="utf-8"))
+                if spec["contract"]["graph_signature"] == "UNKNOWN":
+                    spec["contract"]["graph_signature"] = ir["graph_signature"]
+                validate_public_ir(ir,spec)
+            options = dict(budget=args.budget,seed=args.seed,pool_size=args.pool_size,solver=args.solver,backend=args.backend)
+            if args.command == "discovery-plan":
+                snapshot = json.loads(args.snapshot.read_text(encoding="utf-8"))
+                evidence = json.loads(args.target_evidence.read_text(encoding="utf-8")) if args.target_evidence else None
+                result = plan_discovery(snapshot,spec,target_ir=ir,target_evidence=evidence,**options)
+            else:
+                if len(spec["contract"]["invariants"]) != 1:
+                    raise ValueError("this reference evaluator requires exactly one declared invariant")
+                try:
+                    import hypothesis  # noqa: F401
+                    if args.solver == "z3":
+                        import z3  # noqa: F401
+                except ImportError as error:
+                    raise ValueError("E5 search requires the 'qa' extra; Z3 also requires 'solver'") from error
+                target = folder / f"{args.case}_target.py" if args.command == "discovery-demo" else args.path
+                oracle = folder / f"{args.case}_oracle.py" if args.command == "discovery-demo" else args.oracle_file
+                if target.resolve() == oracle.resolve():
+                    raise ValueError("discovery requires a separately authored Oracle file")
+                from .mold.service import _load
+                fn, target_hash = _load(target,getattr(args,"function","implementation"))
+                ref, oracle_hash = _load(oracle,getattr(args,"oracle","reference"))
+                result = run_discovery(fn,ref,spec,public_ir=ir,trusted_execution=True,
+                                       shrink_budget=args.shrink_budget,time_budget=args.time_budget,
+                                       strategy=args.strategy,
+                                       expected_oracle_exceptions=tuple(getattr(__import__("builtins"),name) for name in args.expected_exception),**options)
+                if (hashlib.sha256(target.read_bytes()).hexdigest() != target_hash or
+                        hashlib.sha256(oracle.read_bytes()).hexdigest() != oracle_hash):
+                    raise ValueError("trusted source changed during discovery")
+                result.update(target_sha256=target_hash,oracle_sha256=oracle_hash)
+            _save(result,args.output)
+        elif args.command == "constraints-check":
             from .mold.structural import compile_relation, check_consistency
             spec = json.loads(args.spec.read_text(encoding="utf-8"))
             relations = [compile_relation(expression, spec) for expression in args.expression]

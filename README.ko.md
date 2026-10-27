@@ -4,7 +4,73 @@
 
 **한국어 사용자 안내** · [English](README.md) · [변경 이력](CHANGELOG.md) · [검증 기록](docs/RELEASE_VALIDATION.md)
 
-`0.4.0a1`은 Hypothesis·AST·Z3를 통합한 실험적 사전 릴리스입니다. 기능 구현과 실제 프로젝트에서의 성능 우월성은 별개의 문제입니다.
+`0.5.0a1`은 AST·Version Space·Active Learning·Hypothesis·Z3를 실제 학습·전이 루프에 연결한 **실험적 사전 릴리스**입니다. 개발 비교 판정은 `NO_IMPROVEMENT`이며 외부 실제 프로젝트에서의 우위는 입증되지 않았습니다. [E5 구현과 평가](docs/E5_INTEGRATION.md)를 확인하세요.
+
+## E5 통합 엔진
+
+기존 E4의 두 정수용 Mold는 그대로 사용할 수 있습니다. 새 `discovery-*` 명령은 유한 범위의 정수·실수·문자열·리스트·튜플·문자열 키 사전과 제한된 상태 전이 trace를 지원합니다. 복합 자료형은 명세의 크기·깊이·값 범위 안에서 생성합니다.
+
+```mermaid
+flowchart LR
+    P[공개 타입·역할·계약] --> IR[승인된 공개 AST → typed IR]
+    IR --> VS[경쟁 구조 가설 / Version Space]
+    VS --> Q[불일치·다양성·공개 비용 선택]
+    H[Hypothesis native Strategy] --> Q
+    Z[지원된 정수 Z3 witness] --> Q
+    Q --> O[호스트의 신뢰된 대상 + 독립 Oracle]
+    O --> E[최소 개발 실패·반증]
+    E --> VS
+    VS --> F[동결 snapshot / 역할·타입·계약 전이]
+    F --> V[피드백 없는 최종 검증]
+    O --> S[평가기 전용 native shrinking·재실행]
+```
+
+AST 조건식은 가설 문법과 실제 입력 선택에 사용됩니다. 실패·반증은 경쟁 가설을 제거하고 다음 질문을 바꿉니다. fresh Hypothesis Strategy와 지원된 Z3 판별 입력도 실제 후보 풀에 들어갑니다. SAT는 프로그램 정답의 증명이 아닙니다. 반례 축소는 동결 후 평가기에서 수행하며 최종 결과를 Generator에 돌려보내지 않습니다.
+
+한 실패로 형상을 확정하지 않습니다. 예를 들어 리스트 합이 0일 때 실패했다면 `sum(items) == 0`과 다른 경쟁 관계를 함께 유지하고 추가 관측으로 반박된 관계만 제거합니다. typed 역할, 조건·의존성·상태 관계, 증거와 버전은 snapshot/IR에 남습니다. 선언된 구조의 대응은 탐색 허용 근거이며 결함 재현의 보증이 아닙니다.
+
+### 설치 후 바로 실행
+
+Python 3.11 이상에서 다음 명령은 동봉된 직접 작성 예제만 실행합니다. 유료 모델 호출은 없습니다.
+
+```bash
+python -m pip install "antemortem-structural-lab[qa,solver] @ https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.5.0a1/antemortem_structural_lab-0.5.0a1-py3-none-any.whl"
+python -m tomolab discovery-demo --case sequence --budget 12 --pool-size 32 --shrink-budget 16 --solver z3 --output results/discovery.json
+python -m tomolab discovery-demo --case state --budget 16 --pool-size 32 --shrink-budget 32 --output results/state.json
+```
+
+`sequence`는 리스트와 offset을 검사하고, `state`는 push/pop trace의 상태 불변식을 검사합니다. 결과에는 실제 호출 수, 생성·평가·축소를 포함한 시간, 동결 상태, native Strategy/Z3 계측, 축소 반례와 재실행 결과가 들어갑니다. CPU는 평가기와 관측 가능한 worker process tree를 나누고 RSS는 동결 시점 표본이며 peak가 아닙니다. 시간 예산은 협력적 검사여서 종료하지 않는 대상 함수를 중단하지 않습니다.
+
+소스 checkout에서 승인된 공개 구조와 전이를 확인하려면:
+
+```bash
+python -m pip install -e ".[qa,solver,analysis]"
+python -m tomolab discovery-inspect examples/discovery/sequence_target.py --spec examples/discovery/sequence-spec.json --output results/public-ir.json
+python -m tomolab discovery-run examples/discovery/sequence_target.py --oracle-file examples/discovery/sequence_oracle.py --spec examples/discovery/sequence-spec.json --public-source examples/discovery/sequence_target.py --allow-local-execution --budget 12 --pool-size 32 --shrink-budget 16 --solver z3 --output results/discovery.json
+python -m tomolab discovery-plan --snapshot results/discovery.json --spec examples/discovery/sequence-renamed-spec.json --public-source examples/discovery/sequence_renamed.py --budget 8 --pool-size 32 --solver z3 --output results/transfer.json
+```
+
+`--public-source`는 사용자가 Generator에 제공하도록 승인한 개발 소스입니다. 생략하면 대상 소스를 자동 공개하지 않습니다. `discovery-inspect`는 import/실행 없이 AST를 읽습니다. 실행 어댑터는 한 개의 명시적 불변식과 서로 다른 신뢰된 대상·Oracle callable을 요구합니다. Oracle 예외는 기본 전파하며, 승인한 내장 예외 종류만 `--expected-exception ValueError` 등으로 계약에 포함할 수 있습니다.
+
+### 정보 경계와 기존 도구의 역할
+
+기본 `subprocess`는 `LOGICAL_ISOLATION_ONLY`입니다. JSON 필드 검증과 동결 후 feedback 차단은 부모·worker 양쪽에서 강제하지만 같은 호스트 파일 권한을 공유합니다. 선택적 Docker는 Generator allowlist만 읽기 전용 mount하고 네트워크·권한을 제한합니다. 대상과 Oracle은 호스트에서 실행되므로 반드시 신뢰해야 합니다. [보안 모델](SECURITY.md)을 먼저 확인하세요.
+
+```bash
+docker build -f containers/e5-generator.Dockerfile -t tomolab-e5-generator:local containers
+python -m tomolab discovery-demo --backend docker --solver z3 --budget 12 --pool-size 32 --output results/container-discovery.json
+```
+
+Hypothesis는 본래의 복합 Strategy와 shrinking을 담당합니다. Z3는 지원된 유한 정수 관계의 일관성·판별 witness를 담당합니다. CrossHair는 `analysis` extra의 **소스 접근형 별도 평가 기준선**이며 Generator에 포함되지 않습니다. CrossHair의 내부 호출 수는 관측되지 않으면 `UNKNOWN`입니다. E5는 이 도구들의 보편적 대체나 우월성을 주장하지 않습니다.
+
+### 검증 결과와 한계
+
+E1·E2·E3의 `NO_IMPROVEMENT`와 E4의 외적 일반화 미입증 기록, 기존 태그와 MRI·CAST·Claim-to-Witness 기능은 보존합니다. E5 개발 비교는 새로 작성한 다섯 mutation 계열과 두 clean control을 사용했습니다. 적용 가능한 Hypothesis·E5·CrossHair는 모두 다섯 계열을 찾았고 control 오탐은 없었습니다. E4는 두 정수 이외 영역을 `NOT_COMPARABLE`로 처리했습니다. E5/Hypothesis 개발 wall time 중앙 비율은 2.660, 최초 발견 호출 비율은 1.0이며 효율 개선 판정은 `NO_IMPROVEMENT`입니다.
+
+440개 새 개발 입력의 후보 제약 점검에서 5개 대표 후보 중 2개가 반증됐습니다. 반증된 후보를 확정 제약으로 승격하지 않습니다. 전이 gate 28/28은 타입·역할·정적 계약의 허용/거부 검사이며 새 대상의 결함 재현 정확도가 아닙니다. 최종 검증은 코드·계약·source mold를 먼저 동결하고 한 번만 실행하며, 이전 E1~E4 소비 홀드아웃은 재사용하지 않습니다. 자세한 결과와 미검증 범위는 [E5 평가 기록](docs/E5_INTEGRATION.md)에 있습니다.
+
+동적 import, async, 임의 부작용 코드, 무제한 상태 객체·반복문 의미 복원, 전역 최소 반례 보장, 임의 자연어 계약 증명은 지원하지 않습니다. finite float는 Python 실행으로 확인하며 Z3 실수 근사로 float 정답을 증명하지 않습니다. 정적 graph 일치는 의미 동치가 아니고, 개발 로그의 진실성은 해시만으로 인증되지 않습니다.
+
 
 ## 어떤 문제를 다루나요?
 
@@ -50,7 +116,7 @@ Python **3.11 이상**이 필요합니다. 기본 실행에는 유료 모델·AP
 GitHub Release의 wheel 설치:
 
 ```bash
-python -m pip install https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.4.0a1/antemortem_structural_lab-0.4.0a1-py3-none-any.whl
+python -m pip install https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.5.0a1/antemortem_structural_lab-0.5.0a1-py3-none-any.whl
 python -m tomolab mold-demo --budget 32 --seed 7 --backend subprocess --solver enumeration --output results/mold.json
 ```
 

@@ -4,7 +4,7 @@ An experimental Python tool that tests trusted functions, records failing inputs
 
 **[한국어 사용자 안내](README.ko.md)** · [Changelog](CHANGELOG.md) · [Validation record](docs/RELEASE_VALIDATION.md)
 
-`0.4.0a1` is an experimental prerelease integrating Hypothesis, AST relations and Z3. Implemented functionality and demonstrated superiority on real projects are separate claims.
+`0.5.0a1` adds the **E5 Unified Structural Discovery Engine** alongside the existing MRI, CAST, Claim-to-Witness and E4 Mold commands. Approved public AST predicates now participate in hypothesis learning and actual test selection, with native Hypothesis generation and optional Z3 witnesses. The public development comparison concluded **`NO_IMPROVEMENT`**. Implemented functionality and demonstrated superiority on real projects are separate claims.
 
 ## The problem
 
@@ -16,7 +16,9 @@ The Mold engine does not assume that a failing coordinate transfers to another p
 
 ```mermaid
 flowchart LR
-    S[Public specification] --> G[Generator]
+    S[Public typed specification] --> G[Generator]
+    P[Explicitly approved public source] --> I[Validated structural IR and predicates]
+    I --> G
     M[MRI: source structure] --> C[Existing CAST exploration]
     G --> X[Candidate]
     X --> O[Separate Oracle evaluation]
@@ -32,39 +34,64 @@ flowchart LR
 | --- | --- |
 | MRI / CAST | Restricted Python condition analysis, branch observations, executable reference comparison |
 | Claim-to-Witness | Six fixed Korean/English sentences, three relations, saved counterexamples and replay |
-| Mold | Normalized evidence, finite relation grammar, counterexample-guided hypothesis elimination |
-| Query selection | Disagreement queries with periodic spatial-diversity exploration |
+| E4 Mold | Preserved two-integer relation grammar, evidence and counterexample-guided hypothesis elimination |
+| E5 Discovery | Typed inputs, public AST predicates and competing failure-membership hypotheses in one learning loop |
+| Query selection | Disagreement and diversity selection; E5 adds fresh native Strategy candidates and supported Z3 witnesses to actual selection |
 | Provenance | Evidence, refutations, competing hypotheses, versions, scope and uncertainty in JSON |
 | Applicability | Bijective variable-role mapping and matching operation, invariant and semantic contract; otherwise `UNKNOWN` |
-| Constraint checking | Bounded enumeration by default; optional Z3 backend |
+| Constraint checking | E4 bounded enumeration; E5 concrete predicate checks and optional Z3 over an explicitly supported subset |
 | Evaluation boundary | Separate generator process, optional Docker generator, frozen learning state |
 
-The current relation grammar covers sums, differences, absolute-value relations and sum residues modulo 2, 3 or 5 over `left` and `right` roles. It uses a fixed finite threshold library and `eq` / `le` / `ge` comparisons. It does not infer arbitrary program semantics.
+The preserved E4 relation grammar covers sums, differences, absolute-value relations and sum residues modulo 2, 3 or 5 over `left` and `right` roles. E5 extends the grammar with typed measurements and supported input-dependent AST guards. Neither grammar infers arbitrary program semantics.
 
 ## Quick start
 
-Requires **Python 3.11+**. The default runtime needs no paid model, API or Z3 installation.
+Requires **Python 3.11+**. E5 search uses the `qa` extra; select the `solver` extra for Z3. MRI, CAST, Claim and E4 Mold remain available without a paid model or API.
 
 Install the GitHub Release wheel:
 
 ```bash
-python -m pip install https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.4.0a1/antemortem_structural_lab-0.4.0a1-py3-none-any.whl
+python -m pip install "antemortem-structural-lab[qa,solver] @ https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.5.0a1/antemortem_structural_lab-0.5.0a1-py3-none-any.whl"
+python -m tomolab discovery-demo --case sequence --solver z3 --budget 32 --output results/discovery.json
+python -m tomolab discovery-demo --case state --budget 32 --output results/state.json
 python -m tomolab mold-demo --budget 32 --seed 7 --backend subprocess --solver enumeration --output results/mold.json
 ```
 
-The demo runs only the bundled reviewable fixture. Its `status` is `COUNTEREXAMPLES_FOUND` or `NOT_REFUTED_WITHIN_BUDGET`. The JSON includes minimal `failures`, a `snapshot` of competing hypotheses and Mold versions, source hashes, call counts and isolation level. Finding no failure, or retaining one hypothesis, does not establish target correctness.
+These demos run only bundled reviewable fixtures. Results include failures, a snapshot of competing hypotheses, provenance, actual call counts and isolation level. Finding no failure, or retaining one hypothesis, does not establish target correctness.
 
 To obtain the source and examples:
 
 ```bash
 git clone https://github.com/hibou04-ops/antemortem-structural-lab.git
 cd antemortem-structural-lab
-python -m pip install -e .
+python -m pip install -e ".[qa,solver]"
 ```
 
 Each command also works as a single line in PowerShell. `tomolab` and `python -m tomolab` use the same CLI. This release is distributed on GitHub; it does not imply a PyPI publication.
 
 ## Examples
+
+### E5: inspect, learn and freeze structural probes
+
+Run these commands from the source checkout. The sequence example is a reviewed public development fixture, so its source may be explicitly approved for structural analysis. For other tasks, supply an approved public reference skeleton; private target and Oracle source must not be used as public IR.
+
+```bash
+python -m tomolab discovery-inspect examples/discovery/sequence_target.py --spec examples/discovery/sequence-spec.json --output results/sequence-public.json
+python -m tomolab discovery-run examples/discovery/sequence_target.py --oracle-file examples/discovery/sequence_oracle.py --spec examples/discovery/sequence-spec.json --public-source examples/discovery/sequence_target.py --allow-local-execution --solver z3 --budget 32 --shrink-budget 64 --time-budget 10 --output results/sequence-run.json
+python -m tomolab discovery-plan --snapshot results/sequence-run.json --spec examples/discovery/sequence-renamed-spec.json --public-source examples/discovery/sequence_renamed.py --solver z3 --budget 32 --output results/sequence-plan.json
+```
+
+`discovery-inspect` parses without importing or executing the source and saves the bound `spec` and `public_ir` together. `--public-ir` accepts the inner IR object, not that combined inspection document. `--public-source` is an explicit approval to expose its validated structural representation to the generator. A declared `UNKNOWN` graph signature is bound to this approved IR; conflicting signatures are rejected.
+
+During learning, supported public guards become real hypothesis terms. Failure and refutation evidence eliminate inconsistent alternatives. Active selection combines disagreement and input diversity with fresh native Hypothesis Strategy draws; supported Z3 solutions are concretely checked and enter the candidate pool. Hypothesis shrinking runs separately in the evaluator after freezing. A solver witness establishes consistency of encoded constraints, not the existence of a target bug.
+
+The typed schema supports 1–6 named inputs: bounded integers, finite floats, strings with declared alphabets or choices, lists, fixed tuples and dictionaries with declared finite string keys. Strings have at most 64 characters, lists/dictionaries at most 16 entries, tuples at most 8 slots, and nested types have a bounded depth. State examples encode finite operation traces as typed values passed to trusted functions. This does not establish support for arbitrary live state, unbounded loops or external effects. The integrated reference evaluator currently accepts exactly one declared invariant.
+
+Z3 supports a narrower subset: bounded integers, selected ASCII string lengths/content and integer sequence operations. Floats, general nested/dictionary predicates and unsupported arithmetic return `UNKNOWN`; they remain available to native generation and concrete evaluation. AST extraction also records unsupported guards rather than inventing constraints for them. Static IR support is a syntax result, not a semantic equivalence proof.
+
+`discovery-plan` runs a fresh generator with a frozen source snapshot, public target contract and approved target IR. Role mappings, type/domain inclusion, operation, declared preconditions/invariants, normalized graph and supported guard predicates constrain transfer. Approved development counterevidence can remove contradicted priors via `--target-evidence`. Applicability permits probing; failure recurrence remains `UNKNOWN`. The literal-free graph does not prove all return-value semantics. Final labels must never be supplied as development counterevidence or sent back to the frozen generator.
+
+The generator receives public typed contracts, validated IR and minimal structured development evidence. Target/Oracle callables, source, expected outputs, evaluator shrinking and CrossHair execution stay outside its supplied package and protocol. The default subprocess boundary remains `LOGICAL_ISOLATION_ONLY`; see [Security](SECURITY.md) and [E5 implementation and evaluation](docs/E5_INTEGRATION.md).
 
 ### Existing Claim-to-Witness path
 
@@ -97,7 +124,7 @@ This command does not execute target code. It produces candidates from a frozen 
 
 For optional Z3 support, run `python -m pip install -e ".[solver]"` from the source directory and select `--solver z3`. If Z3 is absent, that choice fails explicitly rather than being reported as a solver-backed check. The default Docker image does not contain Z3.
 
-### Hypothesis generation, shrinking and AST constraints
+### E4: Hypothesis generation, shrinking and AST constraints
 
 ```bash
 python -m pip install -e ".[qa,solver]"
@@ -106,21 +133,21 @@ python -m tomolab constraints-check --spec examples/mold/spec.json --expression 
 python -m tomolab pbt-run examples/mold/target.py --oracle-file examples/mold/oracle.py --spec examples/mold/spec.json --allow-local-execution --output results/pbt-run.json
 ```
 
-Hypothesis searches fixed Mold candidate batches, then performs numeric shrinking
+E4 searches fixed Mold candidate batches with Hypothesis, then performs numeric shrinking
 inside the evaluator after freezing. Candidate count and actual Oracle calls are
 reported separately; repeated search attempts use a pure-function cache. Public
 AST expressions support arithmetic, comparisons and Boolean composition, with
 bounded enumeration/Z3 consistency and structured-evidence filtering APIs. AST
-predicates do not replace the existing Mold selection grammar. Only two bounded
-integer inputs are supported. See [E4 implementation and limits](docs/E4_IMPLEMENTATION.md).
+predicates do not replace the existing E4 Mold selection grammar. E4 supports only
+two bounded integer inputs. See [E4 implementation and limits](docs/E4_IMPLEMENTATION.md).
 The new public final fixtures are separate from development, nonblind, and do not
 establish external generalization or superiority. Old E1/E2/E3 evidence is preserved.
 
 ## Relationship to established tools
 
-- **Hypothesis** offers general property-based testing and is directly integrated in E4. This project does not replace it or demonstrate superiority over it.
+- **Hypothesis** offers general property-based testing. E4 integrates batch search and shrinking; E5 also uses native typed strategies for fresh structural candidate generation. This project does not replace it or demonstrate superiority over it.
 - **CrossHair** checks Python contracts through symbolic execution. In the earlier comparison, it found all three supplied synthetic violations. The [comparison fixture](baselines/crosshair_claim_contracts.py) remains available.
-- **Z3** is an optional constraint-checking backend. The default exhaustively checks a small finite domain; neither option establishes correctness over an undeclared, unbounded domain.
+- **Z3** is an optional constraint-checking backend. E4 can exhaustively check its small finite integer domain; E5 uses a documented symbolic subset and concretely validates witnesses. Neither establishes correctness over an undeclared, unbounded domain.
 - **Jev** remains an optional candidate-selection adapter for the older branch experiment. Mold and Claim commands require no paid calls. See the [connection history](JEV_CONNECTION_CHANGELOG.md) and [third-party notes](docs/THIRD_PARTY.md).
 
 ## Research results and limits
@@ -131,7 +158,21 @@ E3 evaluated 7,040 candidates on new synthetic problems. Final uniform/Mold task
 
 See the [E3 protocol and aggregates](docs/E3_EVALUATION.md), [release validation](docs/RELEASE_VALIDATION.md) and [v0.3.0a1 notes](docs/releases/v0.3.0a1.md) for separate research, implementation and packaging evidence. E1/E2 data are consumed and were not reused as fresh blind evidence. General superiority on real projects remains unproven.
 
-Mold currently supports **pure, deterministic functions with two integer inputs and one integer output**, within at most 4,225 inputs and 65 values per axis. Arbitrary stateful programs, floating-point behavior, external side effects and general natural-language semantic fidelity are unsupported. Do not assume that a finite grammar can recover failure structures outside that grammar.
+The E5 public development comparison executed **70 runs** over **five authored fault families and two unchanged project controls**. E5, native Hypothesis and source-aware CrossHair each found all five fault families. E4 supports only the two-integer stratum; 15 E4 runs were `NOT_COMPARABLE`, not failed detections.
+
+| Public development metric | E5 | Native Hypothesis |
+| --- | --- | --- |
+| Actual Oracle calls | 1,524 | 919 |
+| Total observed wall time | 42.607 s | 18.376 s |
+| Distinct authored fault families found | 5/5 | 5/5 |
+
+The paired median E5/Hypothesis total-wall ratio was **2.660**, and the paired median first-failure Oracle-call ratio was **1.0**. E5 did not meet the preregistered efficiency criterion: **`NO_IMPROVEMENT`**. CrossHair is reported in a separate source-aware tier because its internal symbolic Oracle-call count is unavailable.
+
+Independent development audits contradicted **2 of 5 checked candidate hypotheses** using **440 additional validation inputs**. The **28/28** declared correspondence checks concern static contract gating, not target-bug recurrence or semantic equivalence.
+
+The once-only frozen final evaluation completed **63 runs**: 48 `COMPLETE` and 15 E4 `NOT_COMPARABLE`. Its verdict was also **`NO_IMPROVEMENT`**. E5 used **1,344 Oracle calls and 30.815 s**, compared with **1,312 calls and 19.876 s** for the native Hypothesis Strategy plan. Both found all five authored fault families; the paired median E5/Hypothesis wall ratio was **1.540** and first-failure call ratio **1.0**. Final results supplied no feedback to the generator. See the [evaluation report](docs/E5_EVALUATION_REPORT.md), [public aggregate](docs/E5_RESULTS.json) and [E5 integration record](docs/E5_INTEGRATION.md) for the frozen protocol and limits. Existing consumed E1/E2/E3 holdouts are not fresh blind evidence. External real-project generalization remains `NOT_EXECUTED`.
+
+The preserved E4 Mold supports **pure, deterministic functions with two integer inputs and one integer output**, within at most 4,225 inputs and 65 values per axis. E5 broadens declared input types and bounded trace testing, but arbitrary stateful programs, external side effects and general natural-language semantic fidelity remain unsupported. Do not assume that a finite grammar can recover failure structures outside that grammar.
 
 ## Safety model
 
@@ -161,6 +202,7 @@ The MRI/CAST names began with the image of revealing an ant nest through a cast.
 | [v0.2.0](docs/releases/v0.2.0.md) | Claim-to-Witness relation checks |
 | [v0.3.0a1](docs/releases/v0.3.0a1.md) | Integrated version-space, active-query and applicability-aware Mold |
 | [v0.4.0a1](docs/releases/v0.4.0a1.md) | Hypothesis generation/shrinking, AST/Z3 checks and stricter typed boundaries |
+| [v0.5.0a1](docs/releases/v0.5.0a1.md) | Unified typed structural discovery, native candidate generation, active Z3 witnesses and contradiction-aware frozen transfer |
 
 C1, concerning semantic fidelity between natural-language claims and obligations, is a [separate research PR](https://github.com/hibou04-ops/antemortem-structural-lab/pull/1). It is distinct from this Mold release. This repository is also separate from [antemortem-cli](https://github.com/hibou04-ops/antemortem-cli).
 

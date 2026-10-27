@@ -1,0 +1,9 @@
+{
+  "schema": "tomolab-discovery-spec-v1",
+  "task_id": "public-sequence-development",
+  "inputs": [
+    {"name": "values", "role": "items", "type": {"kind": "list", "min_size": 0, "max_size": 6, "items": {"kind": "int", "min": -8, "max": 8}}},
+    {"name": "offset", "role": "offset", "type": {"kind": "int", "min": -4, "max": 4}}
+  ],
+  "contract": {"id": "sequence-total-v1", "operation": "sequence-sum-offset", "preconditions": [], "invariants": ["reference"], "state_model": "stateless", "graph_signature": "UNKNOWN"}
+}
