@@ -4,7 +4,7 @@ An experimental Python tool that tests trusted functions, records failing inputs
 
 **[한국어 사용자 안내](README.ko.md)** · [Changelog](CHANGELOG.md) · [Validation record](docs/RELEASE_VALIDATION.md)
 
-`0.3.0a1` is an experimental prerelease. Implemented functionality and demonstrated superiority on real projects are separate claims.
+`0.4.0a1` is an experimental prerelease integrating Hypothesis, AST relations and Z3. Implemented functionality and demonstrated superiority on real projects are separate claims.
 
 ## The problem
 
@@ -48,7 +48,7 @@ Requires **Python 3.11+**. The default runtime needs no paid model, API or Z3 in
 Install the GitHub Release wheel:
 
 ```bash
-python -m pip install https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.3.0a1/antemortem_structural_lab-0.3.0a1-py3-none-any.whl
+python -m pip install https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.4.0a1/antemortem_structural_lab-0.4.0a1-py3-none-any.whl
 python -m tomolab mold-demo --budget 32 --seed 7 --backend subprocess --solver enumeration --output results/mold.json
 ```
 
@@ -97,9 +97,28 @@ This command does not execute target code. It produces candidates from a frozen 
 
 For optional Z3 support, run `python -m pip install -e ".[solver]"` from the source directory and select `--solver z3`. If Z3 is absent, that choice fails explicitly rather than being reported as a solver-backed check. The default Docker image does not contain Z3.
 
+### Hypothesis generation, shrinking and AST constraints
+
+```bash
+python -m pip install -e ".[qa,solver]"
+python -m tomolab pbt-demo --budget 32 --shrink-budget 128 --output results/pbt.json
+python -m tomolab constraints-check --spec examples/mold/spec.json --expression "abs(x - y) <= 3 and x + y >= 2" --solver z3
+python -m tomolab pbt-run examples/mold/target.py --oracle-file examples/mold/oracle.py --spec examples/mold/spec.json --allow-local-execution --output results/pbt-run.json
+```
+
+Hypothesis searches fixed Mold candidate batches, then performs numeric shrinking
+inside the evaluator after freezing. Candidate count and actual Oracle calls are
+reported separately; repeated search attempts use a pure-function cache. Public
+AST expressions support arithmetic, comparisons and Boolean composition, with
+bounded enumeration/Z3 consistency and structured-evidence filtering APIs. AST
+predicates do not replace the existing Mold selection grammar. Only two bounded
+integer inputs are supported. See [E4 implementation and limits](docs/E4_IMPLEMENTATION.md).
+The new public final fixtures are separate from development, nonblind, and do not
+establish external generalization or superiority. Old E1/E2/E3 evidence is preserved.
+
 ## Relationship to established tools
 
-- **Hypothesis** offers general property-based testing. This project does not replace it or demonstrate superiority over it.
+- **Hypothesis** offers general property-based testing and is directly integrated in E4. This project does not replace it or demonstrate superiority over it.
 - **CrossHair** checks Python contracts through symbolic execution. In the earlier comparison, it found all three supplied synthetic violations. The [comparison fixture](baselines/crosshair_claim_contracts.py) remains available.
 - **Z3** is an optional constraint-checking backend. The default exhaustively checks a small finite domain; neither option establishes correctness over an undeclared, unbounded domain.
 - **Jev** remains an optional candidate-selection adapter for the older branch experiment. Mold and Claim commands require no paid calls. See the [connection history](JEV_CONNECTION_CHANGELOG.md) and [third-party notes](docs/THIRD_PARTY.md).
@@ -141,6 +160,7 @@ The MRI/CAST names began with the image of revealing an ant nest through a cast.
 | [v0.1.1](docs/releases/v0.1.1.md) | Optional TypeSafe Jev adapter |
 | [v0.2.0](docs/releases/v0.2.0.md) | Claim-to-Witness relation checks |
 | [v0.3.0a1](docs/releases/v0.3.0a1.md) | Integrated version-space, active-query and applicability-aware Mold |
+| [v0.4.0a1](docs/releases/v0.4.0a1.md) | Hypothesis generation/shrinking, AST/Z3 checks and stricter typed boundaries |
 
 C1, concerning semantic fidelity between natural-language claims and obligations, is a [separate research PR](https://github.com/hibou04-ops/antemortem-structural-lab/pull/1). It is distinct from this Mold release. This repository is also separate from [antemortem-cli](https://github.com/hibou04-ops/antemortem-cli).
 

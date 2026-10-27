@@ -12,4 +12,5 @@ recursive-include .github *.yml
 prune research/e1
 prune research/e2
 prune research/e3
+prune research/e4
 global-exclude PRIVATE_* *EVIDENCE*.zip

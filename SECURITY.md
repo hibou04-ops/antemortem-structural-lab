@@ -8,6 +8,12 @@
 
 ## Generator와 Oracle의 경계
 
+E4는 허용 필드 검증을 부모 전송 전과 worker 수신 후에 모두 수행하고 동결 후
+feedback은 전송 전에 차단합니다. Hypothesis 실행·반례 축소와 정답 출력은 평가기에만
+있습니다. 두 번의 반례 재실행은 임의 함수의 순수성·결정론성 증명이 아닙니다.
+Docker 경계 검사는 외부 서비스에 접속하지 않고 실제 network mode와 인터페이스를
+확인합니다. 외부 연결 실행 검사는 `NOT_TESTED`입니다.
+
 | Backend | 실제 경계 | 기록되는 수준 |
 | --- | --- | --- |
 | `subprocess` | JSON 메시지를 주고받는 별도 프로세스. 호스트 파일 권한 공유 | `LOGICAL_ISOLATION_ONLY` |

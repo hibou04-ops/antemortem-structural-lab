@@ -4,7 +4,7 @@
 
 **한국어 사용자 안내** · [English](README.md) · [변경 이력](CHANGELOG.md) · [검증 기록](docs/RELEASE_VALIDATION.md)
 
-`0.3.0a1`은 실험적 사전 릴리스입니다. 기능 구현과 실제 프로젝트에서의 성능 우월성은 별개의 문제입니다.
+`0.4.0a1`은 Hypothesis·AST·Z3를 통합한 실험적 사전 릴리스입니다. 기능 구현과 실제 프로젝트에서의 성능 우월성은 별개의 문제입니다.
 
 ## 어떤 문제를 다루나요?
 
@@ -38,6 +38,8 @@ flowchart LR
 | 적용 검사 | 변수 역할의 일대일 대응, 연산 의미·불변식·계약 일치 확인; 불충분하면 `UNKNOWN` |
 | Solver | 기본 유한 영역 열거; 선택적으로 Z3 사용 |
 | 평가 경계 | 생성기 별도 프로세스, 선택적 Docker 생성기, 동결 후 학습 차단 |
+| 속성 기반 테스트 | 기존 Mold 후보를 Hypothesis로 검사, 평가기 전용 수치 반례 축소, 중복 평가 캐시 |
+| 확장 구조 관계 | 공개 AST 산술·비교·Boolean 관계식, enum/Z3 일관성, 구조 증거 기반 후보 필터 |
 
 새 Mold의 관계식은 `left`와 `right` 역할에 대한 합·차·절댓값 관계와 합의 나머지(2·3·5)입니다. 지원하는 정수 임계값과 `eq` / `le` / `ge` 비교로 가설 공간을 구성합니다. 자유로운 프로그램 의미를 자동으로 복원하지 않습니다.
 
@@ -48,7 +50,7 @@ Python **3.11 이상**이 필요합니다. 기본 실행에는 유료 모델·AP
 GitHub Release의 wheel 설치:
 
 ```bash
-python -m pip install https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.3.0a1/antemortem_structural_lab-0.3.0a1-py3-none-any.whl
+python -m pip install https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.4.0a1/antemortem_structural_lab-0.4.0a1-py3-none-any.whl
 python -m tomolab mold-demo --budget 32 --seed 7 --backend subprocess --solver enumeration --output results/mold.json
 ```
 
@@ -99,9 +101,25 @@ python -m tomolab mold-plan --snapshot results/mold-run.json --spec examples/mol
 
 선택적 Z3 설치는 소스 디렉터리에서 `python -m pip install -e ".[solver]"`로 할 수 있습니다. 이후 `--solver z3`를 사용하세요. Z3가 없으면 해당 선택은 명시적으로 실패하며, Z3로 검사한 것처럼 표시하지 않습니다. 기본 Docker 이미지는 Z3를 포함하지 않습니다.
 
+### Hypothesis 반례 생성·축소와 AST 제약 검사
+
+```bash
+python -m pip install -e ".[qa,solver]"
+python -m tomolab pbt-demo --budget 32 --shrink-budget 128 --output results/pbt.json
+python -m tomolab constraints-check --spec examples/mold/spec.json --expression "abs(x - y) <= 3 and x + y >= 2" --solver z3
+python -m tomolab pbt-run examples/mold/target.py --oracle-file examples/mold/oracle.py --spec examples/mold/spec.json --allow-local-execution --output results/pbt-run.json
+```
+
+Hypothesis는 고정된 Mold 후보에서 검사·인덱스 축소를 수행하고, 동결 후 평가기에서
+정수 반례를 추가로 축소합니다. `budget`은 후보 수이며 실제 호출수는 JSON의
+`metrics.oracle_calls`입니다. 반복 검색은 캐시로 제거합니다. AST 관계식은 별도 API로
+확장하며 기존 Mold 선택 문법은 유지합니다. 두 정수 입력과 유한 범위만 지원합니다.
+Oracle 판정과 주관적 평가를 분리하고 최종 피드백은 차단합니다.
+[E4 구현·검증·미구현 범위](docs/E4_IMPLEMENTATION.md)에 측정 정의와 한계를 기록했습니다.
+
 ## 기존 도구와의 관계
 
-- **Hypothesis**는 폭넓은 속성 기반 테스트 도구입니다. 이 패키지가 이를 대체하거나 성능에서 앞선다는 증거는 없습니다.
+- **Hypothesis**는 폭넓은 속성 기반 테스트 도구이며 E4에서 직접 통합합니다. 이 패키지가 이를 대체하거나 성능에서 앞선다는 증거는 없습니다.
 - **CrossHair**는 Python의 계약을 심볼릭 실행으로 검사합니다. 기존 비교에서 동일한 합성 결함 세 종류를 모두 찾았습니다. [비교 fixture](baselines/crosshair_claim_contracts.py)는 보존합니다.
 - **Z3**는 선택적인 제약 검사 backend입니다. 기본은 작은 유한 영역을 완전히 열거하는 방식이며, 무제한 정수 공간의 증명을 주장하지 않습니다.
 - **Jev**는 기존 분기 탐사에서 선택할 수 있는 후보 생성 연결입니다. Mold·Claim 경로는 유료 호출 없이 실행됩니다. [연결 이력](JEV_CONNECTION_CHANGELOG.md)과 [외부 기술 안내](docs/THIRD_PARTY.md)를 참고하세요.
@@ -143,6 +161,7 @@ python -m twine check dist/*
 | [v0.1.1](docs/releases/v0.1.1.md) | 선택적 TypeSafe Jev 연결 |
 | [v0.2.0](docs/releases/v0.2.0.md) | Claim-to-Witness 관계식 반례 탐사 |
 | [v0.3.0a1](docs/releases/v0.3.0a1.md) | 경쟁 가설·능동 질의·적용 검사 기반 Mold 통합 |
+| [v0.4.0a1](docs/releases/v0.4.0a1.md) | Hypothesis 생성·축소, AST/Z3 검사, typed 정보 경계 강화 |
 
 자연어와 검증 조건 사이의 의미 보존을 다루는 C1은 [별도 연구 PR](https://github.com/hibou04-ops/antemortem-structural-lab/pull/1)입니다. 이 릴리스의 Mold 구현과 혼동하지 마세요. 이 저장소는 [antemortem-cli](https://github.com/hibou04-ops/antemortem-cli)와 별개의 실험 프로젝트입니다.
 
