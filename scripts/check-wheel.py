@@ -8,8 +8,10 @@ import tempfile
 import tomllib
 import venv
 
-if len(sys.argv) > 1:
-    wheel = Path(sys.argv[1]).resolve(strict=True)
+qa = "--qa" in sys.argv
+arguments = [arg for arg in sys.argv[1:] if arg != "--qa"]
+if arguments:
+    wheel = Path(arguments[0]).resolve(strict=True)
 else:
     version = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
     matches = list(Path("dist").glob(f"antemortem_structural_lab-{version}-*.whl"))
@@ -31,6 +33,8 @@ with tempfile.TemporaryDirectory(prefix="structural-wheel-") as folder:
         return result.stdout
 
     run("-m", "pip", "install", "--no-index", "--no-deps", str(wheel))
+    if qa:
+        run("-m", "pip", "install", f"{wheel}[qa,solver]")
     run("-m", "pip", "check")
     version = run("-c", "from importlib.metadata import version; print(version('antemortem-structural-lab'))").strip()
     assert version == wheel.name.split("-")[1]
@@ -63,4 +67,16 @@ with tempfile.TemporaryDirectory(prefix="structural-wheel-") as folder:
     assert len(planned["candidates"]) == 12
     assert planned["gate"]["status"] == "APPLICABLE_FOR_PROBING"
     assert planned["final_feedback_allowed"] is False
+    checked = json.loads(run("-m", "tomolab", "constraints-check", "--spec",
+                             str(Path(examples) / "mold" / "spec.json"),
+                             "--expression", "x + y == 0", "--expression", "x > 0"))
+    assert checked["status"] == "SAT"
+    if qa:
+        pbt = json.loads(run("-m", "tomolab", "pbt-demo", "--budget", "32"))
+        assert pbt["schema"] == "tomolab-property-run-v1"
+        assert pbt["snapshot"]["frozen"] is True
+        checked = json.loads(run("-m", "tomolab", "constraints-check", "--spec",
+                                 str(Path(examples) / "mold" / "spec.json"),
+                                 "--expression", "x + y == 0", "--solver", "z3"))
+        assert checked["status"] == "SAT"
     print(f"Wheel {version}: install, dependency check, bundled demo, claim and replay passed")

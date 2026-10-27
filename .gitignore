@@ -34,5 +34,10 @@ OMEGA_AILE_PRIVATE_RESEARCH_HANDOFF*
 research/e1/
 research/e2/
 research/e3/
+research/e4/
+.hypothesis/
+test-results.xml
+e4-validation.json
+release-receipt.json
 PRIVATE_*
 *EVIDENCE*.zip

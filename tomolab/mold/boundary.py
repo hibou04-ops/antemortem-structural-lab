@@ -13,9 +13,11 @@ import tempfile
 import threading
 import uuid
 
+from .protocol import MAX_MESSAGE, PROTOCOL, validate_request
+
 # Only these reviewed modules enter the generator workspace. No evaluator, target,
 # reference, credentials, repository checkout, evidence folder or Docker socket.
-GENERATOR_FILES = ("__init__.py", "engine.py", "relations.py", "schema.py", "worker.py")
+GENERATOR_FILES = ("__init__.py", "engine.py", "relations.py", "schema.py", "protocol.py", "worker.py")
 
 
 class GeneratorBoundary:
@@ -27,6 +29,10 @@ class GeneratorBoundary:
         self.root = Path(self.folder.name)
         self.name = "tomolab-generator-" + uuid.uuid4().hex
         self.process = None
+        self._spec = None
+        self._frozen = False
+        self._request_lock = threading.Lock()
+        self._accepted_requests = 0
         package = self.root / "tomolab" / "mold"
         package.mkdir(parents=True)
         (package.parent / "__init__.py").write_text("", encoding="utf-8")
@@ -75,8 +81,13 @@ class GeneratorBoundary:
         self.messages = queue.Queue()
         self.errors = []
         def read_output():
-            for line in self.process.stdout:
+            while True:
+                line = self.process.stdout.readline(MAX_MESSAGE + 1)
+                if not line:
+                    break
                 self.messages.put(line)
+                if len(line) > MAX_MESSAGE:
+                    break
             self.messages.put(None)
         def read_errors():
             for line in self.process.stderr:
@@ -90,11 +101,23 @@ class GeneratorBoundary:
         return {"isolation": "CONTAINER_BOUNDARY" if self.backend == "docker" else "LOGICAL_ISOLATION_ONLY",
                 "backend": self.backend, "generator_sha256": self.code_hashes,
                 "container_image_id": self.image_id,
+                "protocol": PROTOCOL,
+                "validated_requests": self._accepted_requests,
+                "transmitted_data": "PUBLIC_SPEC_STRUCTURED_EVIDENCE_OR_EXPLICIT_DIAGNOSTIC_SENTINEL",
                 "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED"}
 
     def request(self, action, **fields):
-        payload = json.dumps({"action": action, **fields}, ensure_ascii=True)
-        if len(payload) > 8_000_000:
+        # Validate on the evaluator side too: worker rejection alone would mean
+        # forbidden information had already crossed the process boundary.
+        with self._request_lock:
+            return self._request(action, **fields)
+
+    def _request(self, action, **fields):
+        if action == "observe" and self._frozen:
+            raise ValueError("frozen generators reject all feedback before transport")
+        clean = validate_request({"action": action, **fields}, self._spec)
+        payload = json.dumps(clean, ensure_ascii=True, allow_nan=False)
+        if len(payload) + 1 > MAX_MESSAGE:
             raise ValueError("generator message exceeds size limit")
         sent = queue.Queue()
         def write_request():
@@ -115,9 +138,25 @@ class GeneratorBoundary:
             raise ValueError("generator failed or timed out: " + "".join(self.errors)[-2000:]) from exc
         if line is None:
             raise ValueError("generator terminated: " + "".join(self.errors)[-2000:])
-        response = json.loads(line)
+        if len(line) > MAX_MESSAGE or not line.endswith("\n"):
+            self.close()
+            raise ValueError("invalid or oversized generator response")
+        try:
+            response = json.loads(line)
+            if not isinstance(response, dict) or type(response.get("ok")) is not bool:
+                raise ValueError("invalid response envelope")
+            if set(response) != ({"ok", "result"} if response["ok"] else {"ok", "error"}):
+                raise ValueError("invalid response fields")
+        except (ValueError, TypeError) as exc:
+            self.close()
+            raise ValueError("invalid generator response") from exc
         if not response.get("ok"):
             raise ValueError(response.get("error", "generator rejected request"))
+        self._accepted_requests += 1
+        if action == "init":
+            self._spec = clean["spec"]
+        elif action in ("freeze", "transfer"):
+            self._frozen = True
         return response["result"]
 
     def close(self):
