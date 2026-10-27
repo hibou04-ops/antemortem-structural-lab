@@ -10,6 +10,7 @@ All versions are experimental. Versions v0.1.0 through v0.2.0 were retrospective
 - `knowledge-inspect/learn/update/plan/run/demo`, 전송 전·worker 검증, 실제 E7 Docker 접근 통제·설치된 wheel 검사를 추가했습니다.
 - 기존322개 검사·E1~E6 동결 결과와 태그를 보존하며 실제 프로젝트의 새 독립 평가를 별도 사전 계약으로 수행합니다. [구현과 신뢰 계약](docs/E7_KNOWLEDGE.md) · [평가·한계](docs/E7_EVALUATION_REPORT.md).
 - E5의 검증된 draft/source/hash 검사와 E6 현재 main 정책을 재사용합니다. 새 Draft 생성 후 성공한 빈 목록 조회만 유한 재확인하며 API/권한 오류는 재시도하지 않습니다.
+- 개발 v1의 Oracle 오류와 과장된 발견 해석을 철회하고 원본127개 파일을 보존했습니다. 정확 산술 Oracle를 독립 검토한 v2 최종 비교72건은 54 COMPLETE·18 NOT_COMPARABLE, 필수 방법 오류·오탐·feedback0, 모든 방법 발견0·qualified0으로 연구 판정은 INCONCLUSIVE입니다. 이 결과를 성능 향상이나 일반화 성공으로 홍보하지 않습니다.
 
 ## v0.6.0a1 — Stateful structural mold and Hypothesis-first discovery
 

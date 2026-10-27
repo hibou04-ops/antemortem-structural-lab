@@ -44,6 +44,8 @@ Default subprocess isolation remains `LOGICAL_ISOLATION_ONLY`; Docker limits the
 
 E1–E6 evidence and negative results are preserved. E6's 12 refuted representative candidates out of 13 are not an accuracy estimate for every Mold. E7 development v1 is `INVALID_ORACLE / INCONCLUSIVE` following an Oracle precision error. The exact-arithmetic correction passed independent review and the v2 contract is registered; actual execution results are reported separately. Rechecking previously observed development cases is not a new blind evaluation. Rejecting every prior and matching the baseline does not establish marginal discovery value.
 
+The new once-only final comparison recorded 54 COMPLETE and 18 Stateful NOT_COMPARABLE rows. Required-method errors, timeouts, control false alerts and Generator feedback were zero. Native Hypothesis, E6 and E7 each found zero mismatches; primary qualified claims and guidance were also zero. Discovery advantage, useful knowledge transfer and external generalization remain **INCONCLUSIVE**. This compares at most64 frozen public-spec candidates without final feedback, not full adaptive Hypothesis PBT. Automatic semantic correspondence learning for arbitrary Python programs is unimplemented; transfer depends on reviewed role and semantic contracts.
+
 ## Preserved E6 implementation
 
 The `v0.6.0a1` Stateful Structural Mold and typed EFSM support remain available. See [E6 integration](docs/E6_INTEGRATION.md) and its [frozen evaluation](docs/E6_EVALUATION_REPORT.md).

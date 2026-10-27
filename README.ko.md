@@ -51,6 +51,8 @@ python -m tomolab knowledge-demo --backend docker --budget 16 --guidance-budget 
 
 기존 E1~E6 동결 결과는 보존합니다. E6의 `NO_IMPROVEMENT`·대표 후보12/13 반증을 전체 가설 정확도로 확대하지 않습니다. E7의 개발 v1은 Oracle 정밀도 오류로 `INVALID_ORACLE / INCONCLUSIVE` 처리했습니다. 정확 산술로 수정한 Oracle의 독립 검토와 v2 계약 등록을 마쳤으며, 실제 검증 결과는 [별도 기록](docs/E7_EVALUATION_REPORT.md)에 구분해 공개합니다. 이미 관측한 개발 문제의 재검증은 새 블라인드 평가가 아닙니다. 가설을 모두 보류하고 baseline과 같아진 결과는 추가 발견 성과가 아닙니다. 계획 snapshot의 재생은 같은 Hypothesis/Z3 환경에서 검증하며 버전 간 동일 재생을 보장하지 않습니다.
 
+새 최종 비교72건은 54 COMPLETE·18 Stateful NOT_COMPARABLE이며 필수 방법의 오류·시간 초과·대조군 오탐·Generator feedback은0입니다. Native Hypothesis·E6·E7 모두 발견0이었고, 주평가 archive의 qualified/guided도0이었습니다. 발견 우위·지식 전이 효용·외적 일반화 판정은 **INCONCLUSIVE**입니다. 최종 비교는 피드백 없는 최대64개 동결 계획에 한정하며 Hypothesis 전체 적응형 PBT 능력을 평가한 것이 아닙니다. 임의 Python 프로그램의 의미 대응을 자동 학습하는 기능은 아직 없고, 검토된 역할·의미 계약에 의존합니다.
+
 ## 보존된 E6 기능과 결과
 
 `0.6.0a1`의 Stateful Structural Mold와 typed 입력·EFSM 지원은 유지합니다. [E6 구현](docs/E6_INTEGRATION.md) · [E6 독립 평가](docs/E6_EVALUATION_REPORT.md).

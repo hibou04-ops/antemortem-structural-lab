@@ -4,15 +4,15 @@
 
 원격 main·annotated v0.6.0a1을 확인한 별도 브랜치에서 구현했습니다. 기존 E6 baseline과 소비된 E1~E6 holdout은 보존합니다. [지식 신뢰·API 계약](E7_KNOWLEDGE.md), [독립 평가](E7_EVALUATION_REPORT.md), [공개 집계](E7_RESULTS.json)를 구분합니다.
 
-- 기존322개 baseline PASS. 이후 신규 기능을 포함한 로컬387 tests PASS / failure·error·skip0 / JUnit47.803초입니다. 실제 최신 CI 수량·결과는 별도 readback으로 확인합니다.
+- 기존322개 baseline을 보존했고 신규87개를 포함한 로컬409 tests가 통과했습니다. failure·error·skip0, JUnit50.916초이며 기존22개 테스트 파일도 기준 Git blob과 바이트가 같습니다.
 - 설치된 후보 wheel에서 영문28·한국어28개, README CLI56/56 통과했습니다. 소스 checkout import는 하지 않았고 wheel의 공개 bundled examples만 복사했습니다. Optional QA는 승인된 기존 의존성을 재사용했습니다.
-- wheel/sdist build·twine metadata·공개 범위195 source files PASS. 실제 최종 공개 자산 hash는 이후 Release readback에서 따로 검증합니다.
+- 후보 wheel/sdist build·twine metadata·공개 범위196 source files와 명시한55개 staged blob 검사가 통과했습니다. 실제 최종 공개 자산 hash는 Release readback에서 따로 검증합니다.
 - 새 base wheel의 fresh no-index/no-deps 환경에서 기존 MRI/CAST/Claim/Mold·E6 inspect·E7 inspect를 실행했습니다. 새 QA 환경은 정상 CI에서 설치합니다.
 - 반증 보존·same-context rollback·frozen thaw·캐시 입력 경합·전송 입력 경합·기록 확장/fork·final feedback·Oracle 오류·실제 query 변경과 replay를 검사했습니다.
 - 평가의 한 번만 실행하는 authority는 caller output 경로와 분리합니다. 복사한 manifest/다른 output 경로·재해시·replay mismatch·실제 guided witness 없는 개선 승격을 사전 검사했습니다.
-- local Docker daemon을 실행한 것으로 주장하지 않습니다. CI는 matrix6개와 E4/E5/E6/E7 container4개, 총10개 필수 job을 실행하고 main publication은 별도11번째 job입니다.
+- 최종 평가 전 [PR CI](https://github.com/hibou04-ops/antemortem-structural-lab/actions/runs/40498432506)에서 matrix6개와 E4/E5/E6/E7 container4개, 총10개 필수 job이 통과했습니다. 실제 E7 Docker는 uid65534·호스트 더미 파일/환경변수 차단·코드 쓰기 차단·network=none·non-loopback interface 없음과 기능 fixture 실행을 확인했습니다. 제3자 연결 probe는 하지 않았습니다. local Docker daemon을 실행한 것으로 주장하지 않으며 대상/Oracle은 신뢰된 host code입니다. main publication은 별도11번째 job입니다.
 
-최종 평가 전 제품57개 working bytes와 Git blobs·E6 runtime45개·계약·새 private suite·source archives를 동결합니다. 명시적 신호 이후에만 final을 한 차례 실행하고 결과를 보고 같은 세대 코드를 다시 조정하지 않습니다. 원시 평가·비공개 대상·정답은 공개 배포에 넣지 않습니다. 실제 평가·릴리스 완료 여부는 위 보고서와 최종 검증 영수증을 따릅니다.
+최종 평가 전 제품57개 working bytes와 Git blobs·E6 runtime45개·계약·새 private suite·주평가 source archive9개를 동결했습니다. 명시적 신호 뒤 final을 한 차례 실행했고 제품·평가기·계약·suite·archive·예산·seed를 변경하지 않았습니다. 72건 중54 COMPLETE·18 Stateful NOT_COMPARABLE, 필수 방법 오류·시간 초과·대조군 오탐·Generator feedback0이며 모든 방법 발견0·qualified0으로 연구 판정은 INCONCLUSIVE입니다. 개발 v1의 Oracle 오류·철회·127파일 원본 보존과 v2 개발 재검증의 nonblind 상태도 공개했습니다. 원시 평가·비공개 대상·정답은 공개 배포에 넣지 않습니다. 실제 릴리스 완료와 자산 readback은 최종 검증 영수증을 따릅니다.
 
 ## v0.6.0a1 — E6 Stateful Mold
 

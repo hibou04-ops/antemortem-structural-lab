@@ -1,7 +1,7 @@
 {
   "schema": "tomolab-e7-public-evaluation-v2",
   "evaluation_generation": 2,
-  "evaluation_generation_status": "REGISTERED_EXECUTED_DEVELOPMENT",
+  "evaluation_generation_status": "EXECUTED_DEVELOPMENT_AND_FINAL_ONCE",
   "retired_generation_v1": {
     "status": "INVALID_ORACLE_INCONCLUSIVE",
     "contract_sha256": "22abade2c41fbcccd02ce898a2591f67dcefaa1f23700c72284688c423eacfe5",
@@ -452,7 +452,14 @@
     "human_and_llm_reasoning": "UNKNOWN_NOT_MEASURED",
     "prior_costs_not_silently_erased": true,
     "v2_source_processing_excluding_retained_capture_wall_seconds": 54.20968049985822,
-    "supplemental_v2_offline_API_QA_wall_seconds_excluded_from_primary": 38.0338281999866
+    "supplemental_v2_offline_API_QA_wall_seconds_excluded_from_primary": 38.0338281999866,
+    "final_target_comparison_wall_seconds_by_method": {
+      "NativeHypothesis": 17.785968700045487,
+      "NativeStateful": 3.197344200016232,
+      "E6": 35.052237800031435,
+      "E7": 33.46730439996463
+    },
+    "e7_final_plus_v2_source_cost_wall_seconds": 88.74988729982286
   },
   "metric_definitions": {
     "duplicate_evaluation_rate": "duplicates across all actual evaluations, including shrink and mandatory independent replay; not pure generation duplication or wasted-search rate",
@@ -460,12 +467,275 @@
     "final_comparison_scope": "at most64 frozen public-spec plans for every method; NativeHypothesis has no final-feedback adaptation/shrink; tests marginal pre-existing-knowledge value under frozen plans, not superiority over full adaptive PBT"
   },
   "final": {
-    "status": "NOT_EXECUTED"
+    "schema": "e7-evaluation-track-v2",
+    "evaluation_generation": 2,
+    "split": "final",
+    "summary": [
+      {
+        "method": "NativeHypothesis",
+        "attempted": 18,
+        "complete": 18,
+        "not_comparable": 0,
+        "errors": 0,
+        "control_false_alerts": 0,
+        "runs_with_mismatch": 0,
+        "distinct_function_mechanisms": 0,
+        "defect_eligible_runs": 15,
+        "declared_compatibility_control_runs": 3,
+        "actual_target_calls": 929,
+        "actual_oracle_calls": 929,
+        "wall_seconds": 17.785968700045487,
+        "sampled_cpu_lower_bound": 11.34375,
+        "maximum_sampled_live_tree_rss_bytes": 55255040,
+        "conditional_median_first_failure_wall_seconds": null,
+        "guided_candidates": 0,
+        "first_witness_guided_runs": 0,
+        "duplicate_evaluation_rate_mean": 0.0
+      },
+      {
+        "method": "NativeStateful",
+        "attempted": 18,
+        "complete": 0,
+        "not_comparable": 18,
+        "errors": 0,
+        "control_false_alerts": 0,
+        "runs_with_mismatch": 0,
+        "distinct_function_mechanisms": 0,
+        "defect_eligible_runs": 0,
+        "declared_compatibility_control_runs": 0,
+        "actual_target_calls": 0,
+        "actual_oracle_calls": 0,
+        "wall_seconds": 3.197344200016232,
+        "sampled_cpu_lower_bound": 1.984375,
+        "maximum_sampled_live_tree_rss_bytes": 27160576,
+        "conditional_median_first_failure_wall_seconds": null,
+        "guided_candidates": 0,
+        "first_witness_guided_runs": 0,
+        "duplicate_evaluation_rate_mean": null
+      },
+      {
+        "method": "E6",
+        "attempted": 18,
+        "complete": 18,
+        "not_comparable": 0,
+        "errors": 0,
+        "control_false_alerts": 0,
+        "runs_with_mismatch": 0,
+        "distinct_function_mechanisms": 0,
+        "defect_eligible_runs": 15,
+        "declared_compatibility_control_runs": 3,
+        "actual_target_calls": 939,
+        "actual_oracle_calls": 939,
+        "wall_seconds": 35.052237800031435,
+        "sampled_cpu_lower_bound": 22.109375,
+        "maximum_sampled_live_tree_rss_bytes": 101543936,
+        "conditional_median_first_failure_wall_seconds": null,
+        "guided_candidates": 0,
+        "first_witness_guided_runs": 0,
+        "duplicate_evaluation_rate_mean": 0.0
+      },
+      {
+        "method": "E7",
+        "attempted": 18,
+        "complete": 18,
+        "not_comparable": 0,
+        "errors": 0,
+        "control_false_alerts": 0,
+        "runs_with_mismatch": 0,
+        "distinct_function_mechanisms": 0,
+        "defect_eligible_runs": 15,
+        "declared_compatibility_control_runs": 3,
+        "actual_target_calls": 933,
+        "actual_oracle_calls": 933,
+        "wall_seconds": 33.46730439996463,
+        "sampled_cpu_lower_bound": 20.65625,
+        "maximum_sampled_live_tree_rss_bytes": 104366080,
+        "conditional_median_first_failure_wall_seconds": null,
+        "guided_candidates": 0,
+        "first_witness_guided_runs": 0,
+        "duplicate_evaluation_rate_mean": 0.0
+      }
+    ],
+    "records": 72,
+    "symbolic_records": 6,
+    "symbolic_status_counts": {
+      "NO_COUNTEREXAMPLE_WITHIN_BUDGET": 5,
+      "NOT_COMPARABLE": 1
+    },
+    "symbolic_wall_seconds": 7.668212200020207,
+    "symbolic_actual_concrete_replay_pairs": 0,
+    "evaluator_sha256": "14412b88f5dd0ef5d46b0c461ea47679be32eb28f160af74f487fa90b8c95139",
+    "contract_sha256": "32b77dfca5abdd465f32f664460d94677da4c276dd7b3a4a64ae09afb09b6c35",
+    "suite_sha256": "0ad475f9e1210637183632a1ace1511dec38f8c53649bf2ff0601f98005790b8",
+    "oracle_identity": "67f5677cb06220ea835620f4ef1ea6cf04fcb990a2c990c15b3d2b5dad4d88e9",
+    "full_grid": true,
+    "generator_final_feedback": 0,
+    "verdict": {
+      "status": "INCONCLUSIVE",
+      "reason": "no-comparable-positive-mechanism",
+      "qualified_use": 0
+    },
+    "per_problem": [
+      {
+        "case": "target-01",
+        "method": "NativeHypothesis",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-01",
+        "method": "NativeStateful",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-01",
+        "method": "E6",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-01",
+        "method": "E7",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-02",
+        "method": "NativeHypothesis",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-02",
+        "method": "NativeStateful",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-02",
+        "method": "E6",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-02",
+        "method": "E7",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-03",
+        "method": "NativeHypothesis",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-03",
+        "method": "NativeStateful",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-03",
+        "method": "E6",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-03",
+        "method": "E7",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-04",
+        "method": "NativeHypothesis",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-04",
+        "method": "NativeStateful",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-04",
+        "method": "E6",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-04",
+        "method": "E7",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-05",
+        "method": "NativeHypothesis",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-05",
+        "method": "NativeStateful",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-05",
+        "method": "E6",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-05",
+        "method": "E7",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-06",
+        "method": "NativeHypothesis",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-06",
+        "method": "NativeStateful",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-06",
+        "method": "E6",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      },
+      {
+        "case": "target-06",
+        "method": "E7",
+        "runs": 3,
+        "runs_with_mismatch": 0
+      }
+    ],
+    "qualified_claims_summed": 0,
+    "guided_candidates": 0,
+    "actual_production_defect_eligible_functions": 5,
+    "compatibility_only_functions_not_defect_denominator": 1,
+    "generator_frozen_before_target_execution": true,
+    "replay_status_counts": {
+      "NO_WITNESS": 54
+    },
+    "execution_status": "COMPLETE_ONCE",
+    "comparison_limit": "all three baselines/engine observed zero final mismatch; sensitivity, recall and discovery advantage are unestimated; no first-failure metric fabricated"
   },
-  "final_attempts_started": 0,
-  "final_attempts_completed": 0,
+  "final_attempts_started": 1,
+  "final_attempts_completed": 1,
   "final_feedback_to_generator": 0,
-  "external_generalization": "NOT_EXECUTED",
+  "external_generalization": "INCONCLUSIVE",
   "consumed_E1_E6_holdouts_accessed": false,
   "limits": [
     "exact pure-function extraction, not whole-project execution",
@@ -479,8 +749,15 @@
     "retrospective source/target function selection is not random real-project sampling; no claims of novelty or operational exploitability",
     "generation1 retired after finite-precision Oracle false alerts; earlier static authority review missed that numerical implementation error",
     "duplicate_evaluation_rate includes shrink and mandatory replay, not pure generator duplication or wasted search",
-    "final frozen-plan comparison is not a full-adaptive-native-Hypothesis superiority test; development native find/shrink is reported separately"
+    "final frozen-plan comparison is not a full-adaptive-native-Hypothesis superiority test; development native find/shrink is reported separately",
+    "all final methods observed zero mismatch: no final positive mechanism, no sensitivity/recall estimate or proof of correctness, no first-failure superiority claim"
   ],
+  "freeze_manifest_sha256": "0222c42c605e3b8cf77615b1cc49aec13e5844292a933d8a1e87d804b0990df4",
+  "frozen_product_files": 57,
+  "frozen_baseline_runtime_files": 45,
+  "frozen_source_archives": 9,
+  "final_records_sha256_ledger_binding": "692d49bb2c0e3255a9968eefc8f89477ef0bc6edbe8fb322e27ef9b8e92e4e96",
+  "external_generalization_reason": "actual reviewed project functions executed; qualified transferable knowledge and marginal source-to-target advantage not established",
   "development_boundary_readback": {
     "per_method": [
       {

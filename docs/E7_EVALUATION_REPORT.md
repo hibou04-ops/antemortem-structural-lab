@@ -1,6 +1,6 @@
 # E7 실제 프로젝트 독립 평가
 
-최종 판정: **NOT_EXECUTED**. 외적 일반화: **NOT_EXECUTED**.
+최종 판정: **INCONCLUSIVE**. 외적 일반화: **INCONCLUSIVE**.
 
 현재 수치는 명시적으로 재등록한 generation-v2다. v1은 INVALID_ORACLE / INCONCLUSIVE로 원본·127개 개발 파일·해시를 보존했다. 원래 역사적 계약 SHA-256은 `22abade2c41fbcccd02ce898a2591f67dcefaa1f23700c72284688c423eacfe5`이며 현재 v2 계약의 해시와 구분한다.
 
@@ -58,9 +58,22 @@ Oracle가 교정된 v2에서 이미 기록된 유효 source 실패 로그 두 �
 
 ## 최종 동결 평가
 
-아직 실행하지 않았다. 정상 CI·제품·source archive·계약·suite 동결 및 root의 명시 신호 뒤 한 번만 실행한다.
+전체72 records: 실제 비교54개와 Native Stateful18 NOT_COMPARABLE. 비교 가능한54개 중45개는 생산 결함 판정 범위5함수,9개는 사전 계약에서 production-defect-eligible가 아닌 것으로 선언한 population-equivalence 호환성 대조군1함수다. 이 대조군의 불일치는 결함 발견 분자·분모에 넣지 않고 전체 개선 판정을 보류시킨다. 각 방법의64개 이하 계획을 대상 실행 전에 동결하고 최종 피드백0으로 실행했다. 원래 pinned final project/revision/path/function-AST identity에 대한 canonical exclusive claim과 manifest 인접 ledger의 START/COMPLETE 각1회로 재소비를 차단했다. Oracle·suite·case alias·출력 경로를 바꿔도 같은 최종 대상은 재사용할 수 없다.
+
+| 방법 | COMPLETE/전체 | 불일치 run | 함수별 메커니즘 | target/Oracle 호출 | 전체 wall(s) |
+|---|---:|---:|---:|---:|---:|
+| NativeHypothesis | 18/18 | 0 | 0 | 929/929 | 17.786 |
+| NativeStateful | 0/18 | 0 | 0 | 0/0 | 3.197 |
+| E6 | 18/18 | 0 | 0 | 939/939 | 35.052 |
+| E7 | 18/18 | 0 | 0 | 933/933 | 33.467 |
+
+실제 qualified guidance 후보 0개. 판정 `INCONCLUSIVE`. 비용 감소가 보이더라도 가이드의 실제 재생된 발견 기여·source 포함 비용 기준을 충족하지 못하면 개선이라고 하지 않는다. 발견이 없는 문제에서 최초 발견 시간을 만들어내지 않는다.
+
+동결 manifest SHA-256: `0222c42c605e3b8cf77615b1cc49aec13e5844292a933d8a1e87d804b0990df4`. 최종 입력·출력·구현·원시 기록·archive·ledger는 저장소 밖에 보존한다. Generator에는 predeclared spec·역할·검토된 provenance·개발 archive만 전달했고, 비공개 target IR/정답/구현/최종 labels는 전달하지 않았다.
 
 ## 해석 한계
+
+모든 비교 방법에서 최종 불일치0이므로 판정은 INCONCLUSIVE다. 발견 민감도·재현율·최초 발견 시간 우위를 계산하거나 정확성을 증명했다고 하지 않는다. E7의 최종 실행 비용33.467초와 v2 source 비용을 합친 charge는 88.750초이며, 앞의 퇴역 v1·보충 비용은 별도 장부로 남긴다.
 
 최종 비교의 범위는 모든 방법의 최대64개 public-spec 동결 계획에 사전 지식이 주는 추가 가치다. Native Hypothesis도 최종 feedback으로 적응하거나 shrink하지 않는다. 개발 단계의 native find/shrink는 별도 실험이며, native Hypothesis 전체 적응형 PBT 능력에 대한 우월성은 검증하지 않는다. qualified0이라는 사전 증거 부족과 함께 해석한다.
 
