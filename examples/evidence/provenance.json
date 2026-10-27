@@ -1,0 +1,10 @@
+{
+  "project": "authored-functional-fixtures",
+  "lineage": "authored-identity-fixture",
+  "revision": "authored-v1",
+  "oracle_id": "authored-identity-oracle",
+  "semantics": "integer-identity-v1",
+  "implementation_sha256": "b6dc83e6374b48819d9f062796d1ba417222c0880d323a2d191f8ab5bae06dc0",
+  "oracle_sha256": "cd332cc20374d04a05b502c2670cc333ec4889b439199bd0c34903dffd0f7c2e",
+  "independence_id": "authored-functional-review"
+}

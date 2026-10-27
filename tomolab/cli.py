@@ -199,9 +199,17 @@ def main(argv: list[str] | None = None) -> int:
 
     from .knowledge_cli import register as register_knowledge
     register_knowledge(cmd)
+    from .e8_cli import register as register_e8
+    register_e8(cmd)
     args = p.parse_args(argv)
     try:
-        if args.command.startswith("knowledge-"):
+        if args.command.startswith(("evidence-", "readiness-")):
+            from .e8_cli import dispatch
+            result = dispatch(args, p, EXAMPLES)
+            _save(result, args.output)
+            if args.command == "readiness-check":
+                return 0 if result["status"] == "PASS" else 3
+        elif args.command.startswith("knowledge-"):
             from .knowledge_cli import dispatch
             _save(dispatch(args, p, EXAMPLES), args.output)
         elif args.command.startswith("stateful-"):
