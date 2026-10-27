@@ -4,7 +4,74 @@
 
 **한국어 사용자 안내** · [English](README.md) · [변경 이력](CHANGELOG.md) · [검증 기록](docs/RELEASE_VALIDATION.md)
 
-`0.5.0a1`은 AST·Version Space·Active Learning·Hypothesis·Z3를 실제 학습·전이 루프에 연결한 **실험적 사전 릴리스**입니다. 개발 비교 판정은 `NO_IMPROVEMENT`이며 외부 실제 프로젝트에서의 우위는 입증되지 않았습니다. [E5 구현과 평가](docs/E5_INTEGRATION.md)를 확인하세요.
+`0.6.0a1`은 **Stateful Structural Mold**를 추가한 실험적 사전 릴리스입니다. E5의 미표현 상태 관계를 제한된 EFSM과 경쟁 가설로 학습하고, Hypothesis를 기본 탐색으로 유지합니다. 제품 기능·계산 효율·외적 일반화는 따로 판정합니다. [E6 구현과 검증](docs/E6_INTEGRATION.md) · [독립 평가](docs/E6_EVALUATION_REPORT.md).
+
+## E6: 실패 시퀀스에서 관계를 배우기
+
+단순히 `push(0), pop(0)`을 저장하는 대신, 공개 모델의 전이 전후 상태·행동 역할·순서와 실제 첫 실패 위치를 결합합니다. `remove` 행동의 직전 크기가 1인 관계, 이전 행동이 `insert`인 관계, 인자 조건 등 여러 후보를 같은 Version Space에 유지하고 개발 반증으로 제거합니다. 이는 검증 가능한 **실패 소속 가설**이며 원인의 증명이 아닙니다.
+
+```mermaid
+flowchart LR
+    C[공개 EFSM / typed 계약] --> H[Native Hypothesis RuleBasedStateMachine]
+    H --> R[평가 전 public 입력 등록]
+    R --> O[신뢰된 대상 / 독립 Model 평가]
+    O --> E[최소 개발 증거 / 첫 실패 전이]
+    E --> V[E5 공유 Version Space + temporal 관계]
+    V --> Q[적용 가능·새로운 판별 입력만 선택]
+    Q --> O
+    V --> F[동결 snapshot / 역할·행동 전이]
+    F --> P[피드백 없는 새 대상 계획]
+    O --> S[동결 후 평가기 전용 native shrinking / 재실행]
+```
+
+E5의 정적·AST 가설과 E6 시간 관계는 같은 가설 그룹·반증 제거 루프를 사용합니다. 상태·행동 이름, 전제조건, 동시 상태 갱신식, 불변식, 행동 의존성, 근거·반증·버전을 JSON으로 보존합니다. 초기 상태는 선언과 일치해야 합니다. `APPLICABLE_FOR_PROBING`, `NOT_APPLICABLE`, `UNKNOWN`, `CONTRADICTED`를 구별하며 전이 허용은 결함 재현 보장이 아닙니다.
+
+### 설치와 실제 CLI
+
+Python 3.11 이상. GitHub wheel에서 시작할 수 있습니다.
+
+```bash
+python -m pip install "antemortem-structural-lab[qa,solver] @ https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.6.0a1/antemortem_structural_lab-0.6.0a1-py3-none-any.whl"
+python -m tomolab stateful-demo --budget 128 --pool-size 12 --shrink-budget 64 --output results/e6.json
+python -m tomolab stateful-demo --case clean --budget 24 --pool-size 8 --shrink-budget 0 --output results/e6-clean.json
+```
+
+동봉된 stack 예제는 E5에서 알려진 마지막 항목 삭제 문제의 **기능 회귀용**입니다. 새 독립 연구 결함으로 계산하지 않습니다. 별도 Oracle는 크기 불변식만 검사하며 모든 stack 내용·순서를 검증하지 않습니다. 결과의 실제 전이 호출 수, `snapshot`, 경쟁 제약, 비용 범위, `counterexample.replay`를 확인하세요. `RESOURCE_BUDGET`은 미완료 축소이며 최소성·정확성 증명이 아닙니다.
+
+소스 checkout의 명세를 검사하고 이름과 구현이 다른 대상으로 계획을 옮기려면:
+
+```bash
+python -m tomolab stateful-inspect --contract examples/temporal/stack-contract.json --output results/e6-contract.json
+python -m tomolab stateful-run examples/temporal/stack_target.py --oracle-file examples/temporal/stack_oracle.py --contract examples/temporal/stack-contract.json --allow-local-execution --budget 128 --pool-size 12 --shrink-budget 64 --output results/e6.json
+python -m tomolab stateful-plan --snapshot results/e6.json --contract examples/temporal/renamed-contract.json --budget 8 --pool-size 12 --output results/e6-plan.json
+```
+
+외부 `stateful-run` 파일은 각각 `make_subject()` factory를 제공하고, 반환 객체는 `step(action, argument)`와 `snapshot()`을 구현합니다. snapshot은 선언한 상태 역할을 키로 갖는 수치 사전입니다. 대상과 Oracle는 직접 작성하거나 검토한 별도 파일만 사용하세요. `--allow-local-execution`은 실행 동의이며 보안 격리가 아닙니다. 검사·예산·선택 의존성 확인 후에만 파일을 import합니다.
+
+### Hypothesis-First와 비용 범위
+
+조건에 맞는 실패 증거가 없으면 native `rule`·`precondition`·`invariant`·`Bundle` 경로를 유지합니다. cold 초기화는 빈 유효 seed만 보존하고, 첫 실패나 승인된 prior가 생길 때 후보 풀과 시간 가설을 한 번 활성화합니다. 실제 query 순서에 영향을 주지 않는 제약을 반복 적용하지 않습니다. Z3의 incremental `push/pop`·정규화 캐시와 새 정수 인자 witness를 사용하고, 이미 선택할 SAT witness가 있으면 중복 후보 생성을 생략합니다.
+
+캐시는 명세·엔진 버전·실제 입력을 포함합니다. 상태 객체의 변이를 캐시로 생략하지 않습니다. 서비스는 개발·축소·재실행의 **실제 model/target 전이 호출**을 셉니다. E5의 whole-trace 함수 호출과 단위를 섞지 마세요. 시간은 전체 wall을 기본으로 하고 worker 계산, pool, Version Space, solver, Oracle, 축소, transport 잔차를 구분합니다. 일부 phase는 겹치며 RSS 표본은 실제 peak가 아닙니다.
+
+### 지원 범위와 안전 모델
+
+- EFSM: 최대 4개 유한 int/float 상태 투영, 최대 16개 행동, 공개 산술·조건부 동시 갱신, 전제·사후 조건과 불변식.
+- native stateful 실행: 정수 행동 인자 최대 129개 값, trace 최대 16단계, `min_size=0`. Float 인자·임의 객체 의미·무한 반복은 명시적 미지원입니다.
+- 기존 E5의 int/float/str/list/tuple/dict 검증과 MRI·CAST·Claim·Mold CLI는 보존합니다.
+- Generator에는 공개 계약·승인된 IR·최소 개발 label만 보냅니다. raw Oracle 상태·정답·비공개 최종 source·주관적 점수는 보내지 않으며 동결 후 등록·feedback을 전송 전에 차단합니다.
+- 기본 subprocess는 `LOGICAL_ISOLATION_ONLY`. 선택적 Docker는 Generator의 파일·네트워크·권한 접근을 제한하고 실제 CI에서 따로 검사합니다. 대상·Model은 계속 신뢰된 호스트 코드입니다.
+
+```bash
+docker build -f containers/e6-generator.Dockerfile -t tomolab-e6-generator:local containers
+python -m tomolab stateful-demo --backend docker --budget 128 --pool-size 12 --shrink-budget 64 --output results/e6-container.json
+```
+
+E1~E5의 부정적 연구 결과와 소비된 홀드아웃은 보존합니다. E5 최종 연구 판정은 `NO_IMPROVEMENT`, 외부 실제 프로젝트 일반화는 `NOT_EXECUTED`입니다. E6 결과는 새 문제군·사전 계약·동결된 1회 최종 평가로 별도 기록합니다. [보안 모델](SECURITY.md)과 [E6 평가 기록](docs/E6_EVALUATION_REPORT.md)을 함께 확인하세요.
+
+## 보존된 E5 통합 기능
+
+
 
 ## E5 통합 엔진
 
@@ -34,7 +101,7 @@ AST 조건식은 가설 문법과 실제 입력 선택에 사용됩니다. 실�
 Python 3.11 이상에서 다음 명령은 동봉된 직접 작성 예제만 실행합니다. 유료 모델 호출은 없습니다.
 
 ```bash
-python -m pip install "antemortem-structural-lab[qa,solver] @ https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.5.0a1/antemortem_structural_lab-0.5.0a1-py3-none-any.whl"
+python -m pip install "antemortem-structural-lab[qa,solver] @ https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.6.0a1/antemortem_structural_lab-0.6.0a1-py3-none-any.whl"
 python -m tomolab discovery-demo --case sequence --budget 12 --pool-size 32 --shrink-budget 16 --solver z3 --output results/discovery.json
 python -m tomolab discovery-demo --case state --budget 16 --pool-size 32 --shrink-budget 32 --output results/state.json
 ```
@@ -116,7 +183,7 @@ Python **3.11 이상**이 필요합니다. 기본 실행에는 유료 모델·AP
 GitHub Release의 wheel 설치:
 
 ```bash
-python -m pip install https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.5.0a1/antemortem_structural_lab-0.5.0a1-py3-none-any.whl
+python -m pip install https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.6.0a1/antemortem_structural_lab-0.6.0a1-py3-none-any.whl
 python -m tomolab mold-demo --budget 32 --seed 7 --backend subprocess --solver enumeration --output results/mold.json
 ```
 

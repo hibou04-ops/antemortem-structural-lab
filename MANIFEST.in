@@ -9,7 +9,11 @@ recursive-include tests *.py
 recursive-include docs *.md
 include docs/E5_EVALUATION_CONTRACT.json
 include docs/E5_RESULTS.json
+include docs/E6_EVALUATION_CONTRACT.json
+include docs/E6_RESULTS.json
+include docs/E6_CODE_FREEZE.json
 recursive-include examples/discovery *.json
+recursive-include examples/temporal *.json
 recursive-include containers *.Dockerfile
 recursive-include scripts *.ps1
 recursive-include scripts *.py
@@ -19,4 +23,5 @@ prune research/e2
 prune research/e3
 prune research/e4
 prune research/e5
+prune research/e6
 global-exclude PRIVATE_* *EVIDENCE*.zip

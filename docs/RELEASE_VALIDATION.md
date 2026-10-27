@@ -1,5 +1,23 @@
 # Release validation
 
+## v0.6.0a1 — E6 Stateful Mold
+
+원격 기준 main f269ba9와 v0.5.0a1 tag를 확인한 뒤 별도 작업 사본·브랜치를 사용했습니다. 기존250개 회귀는 보존했습니다. 실제 결과와 범위는 [E6 구현](E6_INTEGRATION.md), [평가 보고](E6_EVALUATION_REPORT.md), [공개 집계](E6_RESULTS.json)로 구분합니다.
+
+- Native stateful → 평가 전 등록 → 최소 개발 증거 → 공유 Version Space → qualified query → freeze → native shrink/2replay의 CLI를 실제 실행했습니다.
+- list와 deque의 다른 이름·내부 구현에서 frozen 계획을 별도 독립 Model로 검사했습니다.
+- cold clean profile은 동일 spec/contract/target/Model hash·입력 순서·각24회 전이에서 불필요 pool 생성0.245초→0을 확인했습니다. 단일 기능 프로파일이며 연구 속도 우위는 아닙니다.
+- 전체 source tests는 기존250개와 신규 temporal/native/efficiency/CLI/boundary/evaluator/publication 검사를 포함합니다. 최종 실행 수·시간은 실제 JUnit과 CI에서 확인합니다.
+- 정보 경계 독립 감사는 raw source/actual/expected/final label/subjective score, frozen 등록·feedback, 재해시한 snapshot 변조를 전송 전에 차단했습니다.
+- 최종 전 평가기의 baseline 경로 동결·모든 기준선 control 오탐·CrossHair Oracle 오류 전파를 수정해 독립 재감사했습니다. 모델 family·expected fault·case label은 Generator public specification에 포함하지 않습니다.
+- 로컬 Docker daemon은 미가용입니다. 실제 E4/E5/E6 container 검증은 각각 정상 CI job으로 수행합니다. 기본 subprocess는 LOGICAL_ISOLATION_ONLY, 대상·Model은 신뢰된 host code입니다.
+- wheel/sdist·installed-wheel CLI·README·공개 범위·annotated tag/draft/asset hash 검증을 별도 게이트로 실행합니다. E5의 draft 조회 회귀도 재사용합니다.
+
+개발 연구 결과는 NO_IMPROVEMENT입니다. E6 stateful14/15 vs강한 black-box15/15, source OUT_OF_GRAMMAR1·NO_FAILURE1, 대표 후보12/13 반증을 모두 보존했습니다. 알려진 last-pop 표현 회귀와 전체 문법·외적 일반화를 구분합니다. 기존 소비 holdout은 새 blind evidence로 재사용하지 않습니다.
+
+[릴리스 노트](releases/v0.6.0a1.md) · [CI](https://github.com/hibou04-ops/antemortem-structural-lab/actions). 최종 gate 결과와 원격 자산은 완료 보고서와 release receipt로 readback합니다.
+
+
 ## v0.5.0a1 — E5 unified engine
 
 2026-10-27 KST, Windows/Python 3.12에서 실제 실행한 local gate입니다. 연구 결과는 [평가 aggregate](E5_RESULTS.json)와 [한국어 평가 보고](E5_EVALUATION_REPORT.md)로 분리합니다.

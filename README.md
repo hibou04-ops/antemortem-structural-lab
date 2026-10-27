@@ -4,7 +4,46 @@ An experimental Python tool that tests trusted functions, records failing inputs
 
 **[한국어 사용자 안내](README.ko.md)** · [Changelog](CHANGELOG.md) · [Validation record](docs/RELEASE_VALIDATION.md)
 
-`0.5.0a1` adds the **E5 Unified Structural Discovery Engine** alongside the existing MRI, CAST, Claim-to-Witness and E4 Mold commands. Approved public AST predicates now participate in hypothesis learning and actual test selection, with native Hypothesis generation and optional Z3 witnesses. The public development comparison concluded **`NO_IMPROVEMENT`**. Implemented functionality and demonstrated superiority on real projects are separate claims.
+`0.6.0a1` adds an experimental **Stateful Structural Mold**. Public finite-state contracts, observed failure positions and competing temporal relations now share E5's actual Version Space. Native Hypothesis remains the default search; useful evidence qualifies extra guidance. Product integration, efficiency and external generalization are separate claims. See [E6 integration](docs/E6_INTEGRATION.md) and [independent evaluation](docs/E6_EVALUATION_REPORT.md).
+
+## E6 stateful discovery
+
+The engine relates semantic actions, public before/after state, order, preconditions and the first failing transition. It retains competing membership hypotheses and removes refuted alternatives. Initial projections must match the public contract. Transfer distinguishes `APPLICABLE_FOR_PROBING`, `NOT_APPLICABLE`, `UNKNOWN` and `CONTRADICTED`; permission to probe is not proof of repeated defects.
+
+Native `RuleBasedStateMachine`, `rule`, `precondition`, `invariant` and `Bundle` preserve ordinary generation. Cold initialization avoids a precomputed pool; checked failure or approved prior activates constraints once. Qualified disagreement and incremental integer Z3 `push/pop` witnesses affect actual query selection. A selected SAT witness avoids a redundant generated batch. Caches include specification, engine version and actual input; live state mutation is never skipped.
+
+```bash
+python -m pip install "antemortem-structural-lab[qa,solver] @ https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.6.0a1/antemortem_structural_lab-0.6.0a1-py3-none-any.whl"
+python -m tomolab stateful-demo --budget 128 --pool-size 12 --shrink-budget 64 --output results/e6.json
+python -m tomolab stateful-demo --case clean --budget 24 --pool-size 8 --shrink-budget 0 --output results/e6-clean.json
+```
+
+The bundled two-action stack is a regression for E5's known last-element omission, not a new independent research defect. Its separate model checks size, not arbitrary stack contents/order. In a source checkout:
+
+```bash
+python -m tomolab stateful-inspect --contract examples/temporal/stack-contract.json --output results/e6-contract.json
+python -m tomolab stateful-run examples/temporal/stack_target.py --oracle-file examples/temporal/stack_oracle.py --contract examples/temporal/stack-contract.json --allow-local-execution --budget 128 --pool-size 12 --shrink-budget 64 --output results/e6.json
+python -m tomolab stateful-plan --snapshot results/e6.json --contract examples/temporal/renamed-contract.json --budget 8 --pool-size 12 --output results/e6-plan.json
+```
+
+Subject and independent model files each export `make_subject()`; objects implement `step(action, argument)` and `snapshot()`. Projections contain exactly the declared numeric state roles. Controls are checked before target import, and `stateful-inspect` executes no target.
+
+The EFSM supports up to four finite numeric projections and sixteen actions, bounded arithmetic/conditional simultaneous assignments, pre/postconditions, dependencies and invariants. Native stateful execution supports at most 129 integer argument values, sixteen steps and `min_size=0`. Float action arguments, arbitrary live-object semantics and nonterminating callbacks are unsupported. E5's broader typed APIs remain available.
+
+Only public contracts, approved IR and minimal development labels cross the Generator boundary. Raw expected/actual states, hidden final source and subjective scores are excluded. Frozen registration and feedback are blocked before transport. Native shrinking and independent replay run in the trusted evaluator after freeze; resource exhaustion does not establish completed shrinking or minimality.
+
+```bash
+docker build -f containers/e6-generator.Dockerfile -t tomolab-e6-generator:local containers
+python -m tomolab stateful-demo --backend docker --budget 128 --pool-size 12 --shrink-budget 64 --output results/e6-container.json
+```
+
+Default subprocess isolation is `LOGICAL_ISOLATION_ONLY`. Docker limits only the Generator and is checked separately in CI; targets and models remain trusted host callbacks. Metrics distinguish actual transition calls from whole-trace evaluations, native/pool/Version Space/solver/Oracle/shrink work, dispatch and transport residual. Some phases overlap and RSS samples are not OS peaks. E5 historical whole-function Oracle counts are not interchangeable with E6 transition units.
+
+E1–E5 evidence and negative results are preserved. E5 concluded `NO_IMPROVEMENT`; external real-project generalization was `NOT_EXECUTED`. E6 uses a separate preregistered suite and once-only frozen final evaluation.
+
+## Preserved MRI, CAST, Claim and E5 features
+
+
 
 ## The problem
 
@@ -51,7 +90,7 @@ Requires **Python 3.11+**. E5 search uses the `qa` extra; select the `solver` ex
 Install the GitHub Release wheel:
 
 ```bash
-python -m pip install "antemortem-structural-lab[qa,solver] @ https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.5.0a1/antemortem_structural_lab-0.5.0a1-py3-none-any.whl"
+python -m pip install "antemortem-structural-lab[qa,solver] @ https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.6.0a1/antemortem_structural_lab-0.6.0a1-py3-none-any.whl"
 python -m tomolab discovery-demo --case sequence --solver z3 --budget 32 --output results/discovery.json
 python -m tomolab discovery-demo --case state --budget 32 --output results/state.json
 python -m tomolab mold-demo --budget 32 --seed 7 --backend subprocess --solver enumeration --output results/mold.json

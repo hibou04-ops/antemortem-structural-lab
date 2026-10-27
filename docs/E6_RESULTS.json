@@ -1,0 +1,732 @@
+{
+  "schema": "tomolab-e6-public-aggregate-v1",
+  "baseline_release": "v0.5.0a1",
+  "baseline_commit": "f269ba9e11dc77e439cf840160c3ab081439e110",
+  "contract_sha256": "ba780d7c85669aef7f68b1c597a58d0290f10e7d54634c00f7968e2697018d8b",
+  "evaluator_sha256": "85ee99967badd0c5313c7669624d7ab5fb90d36a3602331674bb1d6e45be0b1b",
+  "public_fixture_sha256": "9c476a940b9f154ef7b433bfe48f29789fa14e00561eac80c801941fb95cab27",
+  "freeze_sha256": null,
+  "frozen_product_files": null,
+  "frozen_source_molds": null,
+  "development": {
+    "summary": [
+      {
+        "method": "CrossHair",
+        "attempted_runs": 7,
+        "comparable_runs": 7,
+        "not_comparable": 0,
+        "resource_budget_runs": 0,
+        "incomplete_runs": 0,
+        "unique_fault_families": 2,
+        "control_false_alerts": 0,
+        "actual_model_transition_calls": null,
+        "actual_target_transition_calls": null,
+        "independent_concrete_replay_invocations": 12,
+        "trace_evaluations": 2,
+        "total_wall_seconds": 24.140176100016106,
+        "sampled_process_tree_cpu_seconds_lower_bound": 21.546875,
+        "maximum_sampled_live_tree_rss_bytes": 118951936,
+        "failed_evaluations": 2,
+        "unique_failing_inputs_summed_per_run": 2,
+        "duplicate_failure_rate": 0.0,
+        "stateful_runs_with_confirmed_mismatch": 2,
+        "stateful_supported_runs": 5,
+        "actual_primitive_invocations": null,
+        "actual_all_callback_invocations_including_static_controls": null,
+        "actual_static_reference_function_calls": null,
+        "actual_static_target_function_calls": null,
+        "whole_trace_callbacks": 2,
+        "static_control_function_evaluation_pairs": 0,
+        "stateful_wall_seconds": 16.588913999992656,
+        "native_factory_episodes": 0,
+        "conditional_median_first_failure_wall_seconds": 2.4477251500065904,
+        "conditional_median_first_failure_primitive_invocations": 6.0,
+        "total_wall_per_unique_mechanism_seconds": 12.070088050008053,
+        "unique_evaluated_inputs_summed_per_run": 2,
+        "duplicate_evaluation_rate": 0.0,
+        "measured_ir_analysis_seconds": 2.8182464000128675,
+        "measured_oracle_callback_seconds": 3.930003731511533e-05,
+        "library_timing_components_seconds_nonadditive": {},
+        "crosshair_tool_status_counts": {
+          "NO_COUNTEREXAMPLE_WITHIN_BUDGET": 3,
+          "SYMBOLIC_COUNTEREXAMPLE_CANDIDATE": 4
+        }
+      },
+      {
+        "method": "E5",
+        "attempted_runs": 21,
+        "comparable_runs": 21,
+        "not_comparable": 0,
+        "resource_budget_runs": 0,
+        "incomplete_runs": 0,
+        "unique_fault_families": 5,
+        "control_false_alerts": 0,
+        "actual_model_transition_calls": 7453,
+        "actual_target_transition_calls": 7453,
+        "independent_concrete_replay_invocations": null,
+        "trace_evaluations": 1641,
+        "total_wall_seconds": 42.3007158000255,
+        "sampled_process_tree_cpu_seconds_lower_bound": 29.03125,
+        "maximum_sampled_live_tree_rss_bytes": 124743680,
+        "failed_evaluations": 401,
+        "unique_failing_inputs_summed_per_run": 371,
+        "duplicate_failure_rate": 0.07481296758104738,
+        "stateful_runs_with_confirmed_mismatch": 15,
+        "stateful_supported_runs": 15,
+        "actual_primitive_invocations": 14906,
+        "actual_all_callback_invocations_including_static_controls": 15674,
+        "actual_static_reference_function_calls": 384,
+        "actual_static_target_function_calls": 384,
+        "whole_trace_callbacks": 1641,
+        "static_control_function_evaluation_pairs": 384,
+        "stateful_wall_seconds": 33.8718407000124,
+        "native_factory_episodes": 0,
+        "conditional_median_first_failure_wall_seconds": 1.7942059000197332,
+        "conditional_median_first_failure_primitive_invocations": 16,
+        "total_wall_per_unique_mechanism_seconds": 8.4601431600051,
+        "unique_evaluated_inputs_summed_per_run": 1995,
+        "duplicate_evaluation_rate": 0.014814814814814836,
+        "measured_ir_analysis_seconds": 8.46880040000542,
+        "measured_oracle_callback_seconds": 0.07637179919402115,
+        "library_timing_components_seconds_nonadditive": {
+          "wall_seconds": 29.447126500017475,
+          "generation_seconds": 24.621551699761767,
+          "oracle_seconds": 0.3437912998488173,
+          "shrink_seconds": 3.422629400040023,
+          "evaluator_cpu_seconds": 5.203125,
+          "worker_cpu_seconds": 16.609375
+        },
+        "crosshair_tool_status_counts": null
+      },
+      {
+        "method": "E6",
+        "attempted_runs": 21,
+        "comparable_runs": 21,
+        "not_comparable": 0,
+        "resource_budget_runs": 0,
+        "incomplete_runs": 0,
+        "unique_fault_families": 5,
+        "control_false_alerts": 0,
+        "actual_model_transition_calls": 1871,
+        "actual_target_transition_calls": 1871,
+        "independent_concrete_replay_invocations": null,
+        "trace_evaluations": 334,
+        "total_wall_seconds": 44.77430619994993,
+        "sampled_process_tree_cpu_seconds_lower_bound": 31.0625,
+        "maximum_sampled_live_tree_rss_bytes": 127127552,
+        "failed_evaluations": 124,
+        "unique_failing_inputs_summed_per_run": 47,
+        "duplicate_failure_rate": 0.6209677419354839,
+        "stateful_runs_with_confirmed_mismatch": 14,
+        "stateful_supported_runs": 15,
+        "actual_primitive_invocations": 3742,
+        "actual_all_callback_invocations_including_static_controls": 4510,
+        "actual_static_reference_function_calls": 384,
+        "actual_static_target_function_calls": 384,
+        "whole_trace_callbacks": 0,
+        "static_control_function_evaluation_pairs": 384,
+        "stateful_wall_seconds": 36.34518429997843,
+        "native_factory_episodes": 334,
+        "conditional_median_first_failure_wall_seconds": 1.759342999997898,
+        "conditional_median_first_failure_primitive_invocations": 62.0,
+        "total_wall_per_unique_mechanism_seconds": 8.954861239989986,
+        "unique_evaluated_inputs_summed_per_run": 498,
+        "duplicate_evaluation_rate": 0.30640668523676884,
+        "measured_ir_analysis_seconds": 8.491393699980108,
+        "measured_oracle_callback_seconds": 0.0519702001765836,
+        "library_timing_components_seconds_nonadditive": {
+          "startup_seconds": 0.3213862999691628,
+          "worker_roundtrip_seconds": 18.516608399775578,
+          "registration_seconds": 0.22701359976781532,
+          "version_update_roundtrip_seconds": 6.622134800156346,
+          "proposal_roundtrip_seconds": 0.2875697999552358,
+          "local_serialization_probe_seconds": 0.003899699862813577,
+          "oracle_seconds": 0.19284179914393462,
+          "shrink_seconds": 1.6214808000659104,
+          "replay_seconds": 0.02636400004848838,
+          "contract_ir_validation_seconds": 0.010042500012787059,
+          "wall_seconds": 31.7890651000489,
+          "evaluator_cpu_seconds": 6.84375,
+          "worker_cpu_seconds": 16.984375,
+          "worker_costs.pool_generation_seconds": 5.028064099984476,
+          "worker_costs.version_update_seconds": 1.4348135997424833,
+          "worker_costs.solver_seconds": 0.2538069000293035,
+          "worker_costs.selection_seconds": 0.023752399953082204,
+          "native_generation_inclusive_seconds": 10.500548899988644,
+          "version_space_update_seconds": 1.4348135997424833,
+          "solver_seconds": 0.2538069000293035,
+          "worker_dispatch.wall_seconds": 7.038467899837997,
+          "worker_dispatch.cpu_seconds": 6.578125,
+          "worker_dispatch.actions.init.wall_seconds": 0.06435470003634691,
+          "worker_dispatch.actions.init.cpu_seconds": 0.046875,
+          "worker_dispatch.actions.register.wall_seconds": 0.11901590001070872,
+          "worker_dispatch.actions.register.cpu_seconds": 0.015625,
+          "worker_dispatch.actions.observe.wall_seconds": 6.509152299695415,
+          "worker_dispatch.actions.observe.cpu_seconds": 6.25,
+          "worker_dispatch.actions.freeze.wall_seconds": 0.06710210008895956,
+          "worker_dispatch.actions.freeze.cpu_seconds": 0.015625,
+          "startup_transport_residual_seconds": 11.799526799906744,
+          "worker_dispatch.actions.propose.wall_seconds": 0.2788429000065662,
+          "worker_dispatch.actions.propose.cpu_seconds": 0.25,
+          "generation_seconds": 6.760334800113924
+        },
+        "crosshair_tool_status_counts": null
+      },
+      {
+        "method": "NativeHypothesis",
+        "attempted_runs": 21,
+        "comparable_runs": 21,
+        "not_comparable": 0,
+        "resource_budget_runs": 0,
+        "incomplete_runs": 0,
+        "unique_fault_families": 5,
+        "control_false_alerts": 0,
+        "actual_model_transition_calls": 4168,
+        "actual_target_transition_calls": 4168,
+        "independent_concrete_replay_invocations": null,
+        "trace_evaluations": 1058,
+        "total_wall_seconds": 20.29613029988832,
+        "sampled_process_tree_cpu_seconds_lower_bound": 13.046875,
+        "maximum_sampled_live_tree_rss_bytes": 50159616,
+        "failed_evaluations": 200,
+        "unique_failing_inputs_summed_per_run": 200,
+        "duplicate_failure_rate": 0.0,
+        "stateful_runs_with_confirmed_mismatch": 15,
+        "stateful_supported_runs": 15,
+        "actual_primitive_invocations": 8336,
+        "actual_all_callback_invocations_including_static_controls": 9760,
+        "actual_static_reference_function_calls": 712,
+        "actual_static_target_function_calls": 712,
+        "whole_trace_callbacks": 1058,
+        "static_control_function_evaluation_pairs": 712,
+        "stateful_wall_seconds": 14.615642499935348,
+        "native_factory_episodes": 0,
+        "conditional_median_first_failure_wall_seconds": 0.877830699988408,
+        "conditional_median_first_failure_primitive_invocations": 140,
+        "total_wall_per_unique_mechanism_seconds": 4.0592260599776635,
+        "unique_evaluated_inputs_summed_per_run": 1770,
+        "duplicate_evaluation_rate": 0.0,
+        "measured_ir_analysis_seconds": 8.418618000025162,
+        "measured_oracle_callback_seconds": 0.05646890035131946,
+        "library_timing_components_seconds_nonadditive": {},
+        "crosshair_tool_status_counts": null
+      },
+      {
+        "method": "NativeStateful",
+        "attempted_runs": 21,
+        "comparable_runs": 15,
+        "not_comparable": 6,
+        "resource_budget_runs": 0,
+        "incomplete_runs": 0,
+        "unique_fault_families": 5,
+        "control_false_alerts": 0,
+        "actual_model_transition_calls": 7572,
+        "actual_target_transition_calls": 7572,
+        "independent_concrete_replay_invocations": null,
+        "trace_evaluations": 2587,
+        "total_wall_seconds": 29.70584820001386,
+        "sampled_process_tree_cpu_seconds_lower_bound": 23.890625,
+        "maximum_sampled_live_tree_rss_bytes": 57356288,
+        "failed_evaluations": 310,
+        "unique_failing_inputs_summed_per_run": 221,
+        "duplicate_failure_rate": 0.2870967741935484,
+        "stateful_runs_with_confirmed_mismatch": 15,
+        "stateful_supported_runs": 15,
+        "actual_primitive_invocations": 15144,
+        "actual_all_callback_invocations_including_static_controls": 15144,
+        "actual_static_reference_function_calls": 0,
+        "actual_static_target_function_calls": 0,
+        "whole_trace_callbacks": 0,
+        "static_control_function_evaluation_pairs": 0,
+        "stateful_wall_seconds": 28.606944800005294,
+        "native_factory_episodes": 2587,
+        "conditional_median_first_failure_wall_seconds": 0.9515207999793347,
+        "conditional_median_first_failure_primitive_invocations": 62,
+        "total_wall_per_unique_mechanism_seconds": 5.941169640002772,
+        "unique_evaluated_inputs_summed_per_run": 584,
+        "duplicate_evaluation_rate": 0.77425589485891,
+        "measured_ir_analysis_seconds": 8.563123599917162,
+        "measured_oracle_callback_seconds": 0.04963719891384244,
+        "library_timing_components_seconds_nonadditive": {},
+        "crosshair_tool_status_counts": null
+      }
+    ],
+    "verdict": {
+      "status": "NO_IMPROVEMENT",
+      "comparisons": [
+        {
+          "baseline": "NativeHypothesis",
+          "paired_runs": 15,
+          "joint_families": 5,
+          "e6_detected_families": 5,
+          "baseline_detected_families": 5,
+          "no_detection_loss": false,
+          "median_wall_ratio": 2.5137780198438104,
+          "median_first_primitive_call_ratio": 0.5566022544283413
+        },
+        {
+          "baseline": "NativeStateful",
+          "paired_runs": 15,
+          "joint_families": 5,
+          "e6_detected_families": 5,
+          "baseline_detected_families": 5,
+          "no_detection_loss": false,
+          "median_wall_ratio": 1.352079884112506,
+          "median_first_primitive_call_ratio": 1.0
+        },
+        {
+          "baseline": "E5",
+          "paired_runs": 15,
+          "joint_families": 5,
+          "e6_detected_families": 5,
+          "baseline_detected_families": 5,
+          "no_detection_loss": false,
+          "median_wall_ratio": 1.071168827424433,
+          "median_first_primitive_call_ratio": 4.082417582417582
+        }
+      ],
+      "external_generalization": "NOT_EXECUTED",
+      "scope": "bounded authored scalar EFSM software QA"
+    },
+    "per_family_detection": [
+      {
+        "family": "snapshot-restoration",
+        "method": "CrossHair",
+        "supported_runs": 1,
+        "runs_with_confirmed_mismatch": 0
+      },
+      {
+        "family": "snapshot-restoration",
+        "method": "E5",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "snapshot-restoration",
+        "method": "E6",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 2
+      },
+      {
+        "family": "snapshot-restoration",
+        "method": "NativeHypothesis",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "snapshot-restoration",
+        "method": "NativeStateful",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "staged-overwrite-order",
+        "method": "CrossHair",
+        "supported_runs": 1,
+        "runs_with_confirmed_mismatch": 0
+      },
+      {
+        "family": "staged-overwrite-order",
+        "method": "E5",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "staged-overwrite-order",
+        "method": "E6",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "staged-overwrite-order",
+        "method": "NativeHypothesis",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "staged-overwrite-order",
+        "method": "NativeStateful",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "remove-one-multiplicity",
+        "method": "CrossHair",
+        "supported_runs": 1,
+        "runs_with_confirmed_mismatch": 1
+      },
+      {
+        "family": "remove-one-multiplicity",
+        "method": "E5",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "remove-one-multiplicity",
+        "method": "E6",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "remove-one-multiplicity",
+        "method": "NativeHypothesis",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "remove-one-multiplicity",
+        "method": "NativeStateful",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "lease-reuse-stale-value",
+        "method": "CrossHair",
+        "supported_runs": 1,
+        "runs_with_confirmed_mismatch": 1
+      },
+      {
+        "family": "lease-reuse-stale-value",
+        "method": "E5",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "lease-reuse-stale-value",
+        "method": "E6",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "lease-reuse-stale-value",
+        "method": "NativeHypothesis",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "lease-reuse-stale-value",
+        "method": "NativeStateful",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "lifo-undo-order",
+        "method": "CrossHair",
+        "supported_runs": 1,
+        "runs_with_confirmed_mismatch": 0
+      },
+      {
+        "family": "lifo-undo-order",
+        "method": "E5",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "lifo-undo-order",
+        "method": "E6",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "lifo-undo-order",
+        "method": "NativeHypothesis",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      },
+      {
+        "family": "lifo-undo-order",
+        "method": "NativeStateful",
+        "supported_runs": 3,
+        "runs_with_confirmed_mismatch": 3
+      }
+    ],
+    "evaluator_versions": 1,
+    "fixture_versions": 1,
+    "contract_versions": 1,
+    "scope": "bounded authored scalar EFSM software QA; no external generalization"
+  },
+  "development_shrinking": [
+    {
+      "method": "NativeHypothesis",
+      "actual_returned_witness_comparisons": 15,
+      "native_status_counts": {
+        "NATIVE_COMPLETED": 15
+      },
+      "shorter_sequences": 13,
+      "same_length_sequences": 2,
+      "longer_sequences": 0,
+      "median_initial_action_count": 8,
+      "median_returned_action_count": 3,
+      "same_first_failure_action_role": 15,
+      "global_minimality_or_causal_identity_proved": false,
+      "extra_target_or_model_execution": 0
+    },
+    {
+      "method": "NativeStateful",
+      "actual_returned_witness_comparisons": 15,
+      "native_status_counts": {
+        "NATIVE_SHRINK_COMPLETED": 15
+      },
+      "shorter_sequences": 12,
+      "same_length_sequences": 3,
+      "longer_sequences": 0,
+      "median_initial_action_count": 5,
+      "median_returned_action_count": 3,
+      "same_first_failure_action_role": 15,
+      "global_minimality_or_causal_identity_proved": false,
+      "extra_target_or_model_execution": 0
+    },
+    {
+      "method": "E5",
+      "actual_returned_witness_comparisons": 15,
+      "native_status_counts": {
+        "RESOURCE_BUDGET": 6,
+        "NO_WITNESS_WITHIN_SEARCH": 1,
+        "COMPLETE": 8
+      },
+      "shorter_sequences": 11,
+      "same_length_sequences": 4,
+      "longer_sequences": 0,
+      "median_initial_action_count": 8,
+      "median_returned_action_count": 3,
+      "same_first_failure_action_role": 15,
+      "global_minimality_or_causal_identity_proved": false,
+      "extra_target_or_model_execution": 0
+    },
+    {
+      "method": "E6",
+      "actual_returned_witness_comparisons": 14,
+      "native_status_counts": {
+        "RESOURCE_BUDGET": 14
+      },
+      "shorter_sequences": 8,
+      "same_length_sequences": 6,
+      "longer_sequences": 0,
+      "median_initial_action_count": 5.5,
+      "median_returned_action_count": 4.0,
+      "same_first_failure_action_role": 14,
+      "global_minimality_or_causal_identity_proved": false,
+      "extra_target_or_model_execution": 0
+    }
+  ],
+  "source_mold_status_counts": {
+    "HYPOTHESES_REMAIN": 13,
+    "OUT_OF_GRAMMAR": 1,
+    "NO_FAILURE_EVIDENCE": 1,
+    "INCONSISTENT": 0
+  },
+  "stateful_source_coverage": {
+    "source_runs": 15,
+    "with_failure_evidence": 14,
+    "with_remaining_temporal_hypotheses": 13,
+    "source_hypothesis_occurrences_generated": 1139,
+    "source_hypothesis_occurrences_remaining": 36,
+    "actual_temporal_guided_queries": 23,
+    "per_source_counts": [
+      {
+        "family": "snapshot-restoration",
+        "seed": 13,
+        "status": "NO_FAILURE_EVIDENCE",
+        "temporal_hypotheses_generated": 0,
+        "temporal_hypotheses_remaining": 0,
+        "source_failure_events": 0,
+        "temporal_activation_count": 0,
+        "temporal_guided_queries": 0
+      },
+      {
+        "family": "snapshot-restoration",
+        "seed": 47,
+        "status": "HYPOTHESES_REMAIN",
+        "temporal_hypotheses_generated": 124,
+        "temporal_hypotheses_remaining": 9,
+        "source_failure_events": 4,
+        "temporal_activation_count": 1,
+        "temporal_guided_queries": 4
+      },
+      {
+        "family": "snapshot-restoration",
+        "seed": 89,
+        "status": "HYPOTHESES_REMAIN",
+        "temporal_hypotheses_generated": 124,
+        "temporal_hypotheses_remaining": 4,
+        "source_failure_events": 1,
+        "temporal_activation_count": 1,
+        "temporal_guided_queries": 1
+      },
+      {
+        "family": "staged-overwrite-order",
+        "seed": 13,
+        "status": "HYPOTHESES_REMAIN",
+        "temporal_hypotheses_generated": 79,
+        "temporal_hypotheses_remaining": 4,
+        "source_failure_events": 1,
+        "temporal_activation_count": 1,
+        "temporal_guided_queries": 1
+      },
+      {
+        "family": "staged-overwrite-order",
+        "seed": 47,
+        "status": "OUT_OF_GRAMMAR",
+        "temporal_hypotheses_generated": 79,
+        "temporal_hypotheses_remaining": 0,
+        "source_failure_events": 2,
+        "temporal_activation_count": 1,
+        "temporal_guided_queries": 2
+      },
+      {
+        "family": "staged-overwrite-order",
+        "seed": 89,
+        "status": "HYPOTHESES_REMAIN",
+        "temporal_hypotheses_generated": 79,
+        "temporal_hypotheses_remaining": 3,
+        "source_failure_events": 1,
+        "temporal_activation_count": 1,
+        "temporal_guided_queries": 1
+      },
+      {
+        "family": "remove-one-multiplicity",
+        "seed": 13,
+        "status": "HYPOTHESES_REMAIN",
+        "temporal_hypotheses_generated": 39,
+        "temporal_hypotheses_remaining": 1,
+        "source_failure_events": 3,
+        "temporal_activation_count": 1,
+        "temporal_guided_queries": 3
+      },
+      {
+        "family": "remove-one-multiplicity",
+        "seed": 47,
+        "status": "HYPOTHESES_REMAIN",
+        "temporal_hypotheses_generated": 39,
+        "temporal_hypotheses_remaining": 1,
+        "source_failure_events": 2,
+        "temporal_activation_count": 1,
+        "temporal_guided_queries": 1
+      },
+      {
+        "family": "remove-one-multiplicity",
+        "seed": 89,
+        "status": "HYPOTHESES_REMAIN",
+        "temporal_hypotheses_generated": 39,
+        "temporal_hypotheses_remaining": 2,
+        "source_failure_events": 1,
+        "temporal_activation_count": 1,
+        "temporal_guided_queries": 1
+      },
+      {
+        "family": "lease-reuse-stale-value",
+        "seed": 13,
+        "status": "HYPOTHESES_REMAIN",
+        "temporal_hypotheses_generated": 80,
+        "temporal_hypotheses_remaining": 1,
+        "source_failure_events": 4,
+        "temporal_activation_count": 1,
+        "temporal_guided_queries": 4
+      },
+      {
+        "family": "lease-reuse-stale-value",
+        "seed": 47,
+        "status": "HYPOTHESES_REMAIN",
+        "temporal_hypotheses_generated": 80,
+        "temporal_hypotheses_remaining": 1,
+        "source_failure_events": 1,
+        "temporal_activation_count": 1,
+        "temporal_guided_queries": 0
+      },
+      {
+        "family": "lease-reuse-stale-value",
+        "seed": 89,
+        "status": "HYPOTHESES_REMAIN",
+        "temporal_hypotheses_generated": 80,
+        "temporal_hypotheses_remaining": 1,
+        "source_failure_events": 2,
+        "temporal_activation_count": 1,
+        "temporal_guided_queries": 1
+      },
+      {
+        "family": "lifo-undo-order",
+        "seed": 13,
+        "status": "HYPOTHESES_REMAIN",
+        "temporal_hypotheses_generated": 99,
+        "temporal_hypotheses_remaining": 7,
+        "source_failure_events": 1,
+        "temporal_activation_count": 1,
+        "temporal_guided_queries": 1
+      },
+      {
+        "family": "lifo-undo-order",
+        "seed": 47,
+        "status": "HYPOTHESES_REMAIN",
+        "temporal_hypotheses_generated": 99,
+        "temporal_hypotheses_remaining": 1,
+        "source_failure_events": 2,
+        "temporal_activation_count": 1,
+        "temporal_guided_queries": 2
+      },
+      {
+        "family": "lifo-undo-order",
+        "seed": 89,
+        "status": "HYPOTHESES_REMAIN",
+        "temporal_hypotheses_generated": 99,
+        "temporal_hypotheses_remaining": 1,
+        "source_failure_events": 2,
+        "temporal_activation_count": 1,
+        "temporal_guided_queries": 1
+      }
+    ],
+    "meaning": "representation and query use on observed source evidence, not proof of general validity"
+  },
+  "independent_development_audit": {
+    "runs": 5,
+    "complete": 5,
+    "new_validation_traces": 320,
+    "candidate_hypotheses_checked": 13,
+    "candidate_hypotheses_contradicted": 12,
+    "gate_checks": 25,
+    "gate_correct": 25,
+    "expected_acceptances": 8,
+    "expected_rejections": 17,
+    "actually_checked_clean_counterevidence": 4,
+    "exact_constraint_removal_checks_passed": 4,
+    "actual_primitive_invocations": 3332,
+    "wall_seconds": 11.416839500016067,
+    "feedback_to_generator": 0,
+    "scope": "first seed, canonical-ID bounded temporal membership candidates; static correspondence gates; not causal explanation accuracy or repeated-defect proof"
+  },
+  "final": {
+    "status": "NOT_EXECUTED",
+    "target_executions": 0
+  },
+  "final_structural_guidance": {
+    "status": "NOT_EXECUTED"
+  },
+  "final_attempts_started": 0,
+  "final_attempts_completed": 0,
+  "final_feedback_to_generator": null,
+  "external_real_project_generalization": "NOT_EXECUTED",
+  "consumed_E1_to_E5_holdout_access_or_reuse": false,
+  "limits": [
+    "새 mutation 5계열은 bounded scalar EFSM의 합성 QA다. 정상 대조군2개는 기존 프로젝트의 정적 pure 함수이며 외부 실제 프로젝트의 결함 발견이 아니다.",
+    "최종 target variants는 같은 공개 API 의미에서 이름·내부 표현이 다른 새 구현이다. 다른 문제 계열 전반의 외적 일반화 평가가 아니다.",
+    "Native Stateful은 정적 정상 대조군6 runs에서 NOT_COMPARABLE이다. 상태형 정상 구현의 광범위한 오탐률은 이 suite로 추정하지 않는다.",
+    "서로 다른 native parameter 단위를 같다고 주장하지 않는다. 독립 actual model/target transition 상한과 wall cap은 공통이며 whole-trace callbacks와 native factory episodes를 분리했다.",
+    "상태 전이 primitive 수와 정적 control의 일반 함수 호출은 별도 필드다. 전체 callback 합계는 검증 비용 보존용이며 상태 전이 횟수로 부르지 않는다.",
+    "총 wall에는 시작/import/IR/generation/solver/update/serialization/Oracle/shrink/replay가 포함된다. 노출되지 않은 native 세부 단계는 UNKNOWN이다. 제공된 component 시간은 중첩될 수 있어 더하지 않는다.",
+    "CPU는 recursive process identity 표본의 하한, RSS는 10ms live-tree 표본 최댓값이다. true OS peak 또는 billing CPU가 아니다.",
+    "조건부 최초발견 중앙값은 실제 발견 run만의 기술통계다. 미발견·seed별 검출손실도 별도 포함했고 연구 우위를 입증하지 않는다.",
+    "Source HYPOTHESES_REMAIN은 관측 증거와의 일관성이다. 독립 320개 개발 trace에서 후보13개 중12개가 반증됐으며 원인 법칙으로 승격하지 않는다.",
+    "독립 후보 감사는 Generator feedback 0이다. 실제 clean counterevidence 제거 기능4건은 별도 기능 검증이며 일반화 성과가 아니다.",
+    "CrossHair는 실제 공식 CLI로 공개 source-aware tier에서 실행했다. 내부 symbolic Oracle 호출은 UNKNOWN이고 concrete witness만 독립적으로 재실행했다.",
+    "중복율은 각 run 안의 입력/실패 trace 중복을 합친 값이며 native shrink/replay도 실제 비용으로 포함한다. 서로 다른 seeds를 독립 결함으로 세지 않는다.",
+    "최종 원본·입력·정답·source molds·원본 ledger와 private 경로는 공개하지 않는다. Generator에는 중립 public API ID만 보내며 평가 family/expected_fault/control/final label을 보내지 않는다.",
+    "로컬 subprocess는 LOGICAL_ISOLATION_ONLY다. Docker 강제 경계는 별도 CI 증거이며 trusted target/Oracle 실행을 sandbox한다고 주장하지 않는다.",
+    "기존 E5 known-last-pop 기능 회귀의 해결과 신규 문제 전체 OUT_OF_GRAMMAR 해결은 다르다. 현재 source 결과는 PARTIAL이다.",
+    "최종 결과 후 target/Oracle/spec/grammar/gate/budget/seed/threshold를 튜닝하지 않으며 동일 suite를 다시 실행하지 않는다."
+  ],
+  "pre_final_engineering_corrections": [
+    "Native factory episodes를 whole-trace callback으로 잘못 제한한 평가기 오류를 정정했다. 강한 native baseline의 primitive/wall 상한은 그대로이며 원본 ERROR 영수증을 보존했다.",
+    "검토된 기존 normalization 함수와 reference의 대소문자 의미를 어떤 control benchmark보다 앞서 정렬하고 exhaustive short-string 회귀를 추가했다.",
+    "독립 감사의 baseline runtime binding, CrossHair Oracle/projection 예외 전파, 모든 required baseline control 오탐 판정, neutral public API ID 문제를 정식 개발/최종 실행 전에 수정했다.",
+    "최종 target/model 함수 본문·새 seeds·primary caps·성과 threshold는 관측 결과에 맞춰 변경하지 않았다."
+  ]
+}

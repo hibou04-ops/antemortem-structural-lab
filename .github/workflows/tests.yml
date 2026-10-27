@@ -32,6 +32,8 @@ jobs:
         run: python -m twine check dist/*
       - name: Check public source and artifact contents
         run: python scripts/check-public-scope.py
+      - name: Verify committed E6 research product bytes
+        run: python scripts/check-e6-freeze.py
       - name: Check wheel outside the source checkout
         run: python scripts/check-wheel.py
       - name: Check optional QA integration in the installed wheel
@@ -67,23 +69,26 @@ jobs:
         run: docker build -f containers/e5-generator.Dockerfile -t tomolab-e5-generator:local containers
       - name: Verify actual E5 access control and integrated discovery
         run: python scripts/check-discovery-isolation.py
+  temporal-generator-isolation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e ".[qa,solver]"
+      - name: Build reviewed dependency-only E6 generator image
+        run: docker build -f containers/e6-generator.Dockerfile -t tomolab-e6-generator:local containers
+      - name: Verify E6 access controls, native state learning and replay
+        run: python scripts/check-temporal-isolation.py
   prerelease:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [tests, generator-isolation, unified-generator-isolation]
+    needs: [tests, generator-isolation, unified-generator-isolation, temporal-generator-isolation]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Preserve reviewed release helper and select immutable E5 source
-        shell: bash
-        run: |
-          cp scripts/publish-e5.py "$RUNNER_TEMP/publish-e5.py"
-          test "$(git rev-parse 'v0.5.0a1^{commit}')" = 473092b529a6593a890a5efc7f492433d269371e
-          git merge-base --is-ancestor 473092b529a6593a890a5efc7f492433d269371e "$GITHUB_SHA"
-          git switch --detach 473092b529a6593a890a5efc7f492433d269371e
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -92,11 +97,11 @@ jobs:
       - run: python -m twine check dist/*
       - run: python scripts/check-public-scope.py
       - run: python scripts/check-wheel.py
-      - name: Verify draft and publish experimental E5 prerelease
+      - run: python scripts/check-e6-freeze.py
+      - name: Verify draft and publish experimental E6 prerelease
         env:
           GH_TOKEN: ${{ github.token }}
-          E5_RELEASE_SOURCE_SHA: 473092b529a6593a890a5efc7f492433d269371e
-        run: python "$RUNNER_TEMP/publish-e5.py"
+        run: python scripts/publish-e6.py
       - uses: actions/upload-artifact@v4
         with:
           name: release-receipt
