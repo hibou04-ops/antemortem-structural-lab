@@ -1,0 +1,5 @@
+{
+  "schema": "tomolab-discovery-spec-v1", "task_id": "public-stack-development",
+  "inputs": [{"name": "trace", "role": "transitions", "type": {"kind": "list", "min_size": 0, "max_size": 6, "items": {"kind": "tuple", "items": [{"kind": "str", "alphabet": "pushop", "min_size": 3, "max_size": 4, "choices": ["push", "pop"]}, {"kind": "int", "min": -3, "max": 3}]}}}],
+  "contract": {"id": "stack-final-state-v1", "operation": "bounded-stack-trace", "preconditions": [], "invariants": ["reference"], "state_model": "stack-push-pop-v1", "graph_signature": "UNKNOWN"}
+}

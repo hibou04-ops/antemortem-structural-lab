@@ -20,8 +20,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install package and optional solver
-        run: python -m pip install -e ".[solver,qa]"
+      - name: Install package and optional QA, solver and analysis integrations
+        run: python -m pip install -e ".[solver,qa,analysis]"
       - name: Install test and build tools
         run: python -m pip install pytest build twine
       - name: Test
@@ -55,9 +55,21 @@ jobs:
       - run: docker pull python:3.12-slim
       - name: Verify restricted generator filesystem and network
         run: python scripts/check-isolation.py
+  unified-generator-isolation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e ".[qa,solver]"
+      - name: Build reviewed dependency-only E5 generator image
+        run: docker build -f containers/e5-generator.Dockerfile -t tomolab-e5-generator:local containers
+      - name: Verify actual E5 access control and integrated discovery
+        run: python scripts/check-discovery-isolation.py
   prerelease:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [tests, generator-isolation]
+    needs: [tests, generator-isolation, unified-generator-isolation]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -71,10 +83,10 @@ jobs:
       - run: python -m twine check dist/*
       - run: python scripts/check-public-scope.py
       - run: python scripts/check-wheel.py
-      - name: Publish verified E4 prerelease
+      - name: Verify draft and publish experimental E5 prerelease
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python scripts/publish-e4.py
+        run: python scripts/publish-e5.py
       - uses: actions/upload-artifact@v4
         with:
           name: release-receipt

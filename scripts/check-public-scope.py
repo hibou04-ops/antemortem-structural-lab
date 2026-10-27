@@ -9,7 +9,7 @@ import tomllib
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-FORBIDDEN_PATH = re.compile(r"(^|/)(PRIVATE_[^/]*|research/(e1|e2|e3|e4)(/|$)|SYNC(/|$)|HISTORY(/|$))", re.I)
+FORBIDDEN_PATH = re.compile(r"(^|/)(PRIVATE_[^/]*|research/(e1|e2|e3|e4|e5)(/|$)|SYNC(/|$)|HISTORY(/|$)|e5-evaluation(/|$)|final_suite\.py$)", re.I)
 SECRET = re.compile(rb"gh[pousr]_[A-Za-z0-9]{24,}|github_pat_[A-Za-z0-9_]{30,}|sk-[A-Za-z0-9]{30,}")
 PERSONAL_PATH = re.compile(rb"[A-Za-z]:[/\\]+Users[/\\]+[A-Za-z0-9_.-]+", re.I)
 
@@ -52,6 +52,8 @@ def main():
                     inspect(name, archive.read(name))
                 assert "tomolab/mold/engine.py" in archive.namelist()
                 assert "tomolab/mold/worker.py" in archive.namelist()
+                assert "tomolab/discovery/worker.py" in archive.namelist()
+                assert "tomolab/discovery/service.py" in archive.namelist()
         elif path.name.endswith(".tar.gz"):
             with tarfile.open(path) as archive:
                 for member in archive.getmembers():

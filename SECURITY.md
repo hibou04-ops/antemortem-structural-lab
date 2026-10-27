@@ -32,6 +32,52 @@ python -m tomolab mold-demo --backend docker --solver enumeration --budget 32 --
 
 이미지 다운로드는 위의 명시적 단계입니다. 런타임이 실패한 Docker 실행을 일반 subprocess로 조용히 바꾸거나 이미지를 자동으로 받지 않습니다. 기본 이미지는 Z3를 포함하지 않습니다. 이미지와 Docker 호스트도 신뢰 경계에 포함됩니다. 컨테이너는 완벽한 보안 증명이 아닙니다. 실제 접근 거부 검증은 [릴리스 검증 기록](docs/RELEASE_VALIDATION.md)과 해당 Actions 결과를 확인하세요.
 
+## E5의 공개 IR과 실행 경계
+
+E5 생성기는 승인된 공개 명세·IR과 개발 증거만 받아 native Hypothesis Strategy로
+새 입력을 만들고, 지원되는 제약에 한해 Z3 후보를 구합니다. 이 후보 생성은
+생성기 안에서 수행됩니다. 대상·Oracle 실행, 기대 반환값, Oracle을 호출하는
+Hypothesis 반례 축소와 CrossHair 실행은 평가기에 남습니다. 생성기에 복사하는
+모듈 목록은 명시적으로 제한하며, 소스 파일을 읽는 AST 분석기, 서비스,
+평가기와 CrossHair 모듈을 포함하지 않습니다. 별도 프로세스만으로 이 파일들을
+읽을 권한까지 없어지는 것은 아니므로 subprocess는 계속 `LOGICAL_ISOLATION_ONLY`입니다.
+
+`--public-source`와 `discovery-inspect`의 입력은 호출자가 공개를 승인한 소스입니다.
+분석은 이 소스를 import하거나 실행하지 않습니다. 비공개 대상·Oracle을 이 경로에
+넣지 마세요. 공개 IR은 타입·역할·그래프 해시·지원 predicate·출처를 검사하며,
+중첩된 임의 필드와 원시 소스, 임의 실행 코드를 거부합니다. 명세의 `UNKNOWN`
+그래프 서명은 승인 IR에 연결하고 기존 서명이 다르면 거부합니다. 프로토콜 검사는
+부모 전송 전과 worker 수신 후에 적용됩니다. 이 검사는 공개 계약의 일관성을
+확인하며 소스가 실제로 공개 가능한지, 선언한 계약이 참인지까지 판단하지 않습니다.
+
+Oracle 예외는 기본적으로 호출자에게 전파됩니다. 검토한 계약이 예외를 허용할
+때만 `--expected-exception`으로 CLI의 허용 목록 중 정확한 범주를 명시하세요.
+명세·함수 서명 오류와 직렬화할 수 없는 결과는 대상의 반례로 바꾸지 않습니다.
+결과 비교는 canonical JSON 계약을 사용하며, 모든 Python 반환 자료형의 의미적
+동등성을 보증하지 않습니다. 두 번의 재실행도 결정론성 증명은 아닙니다.
+
+`--time-budget`은 호출 사이에 확인하는 협력적 실행 예산입니다. 실행 중인 대상이나
+Oracle 함수를 강제로 중단하는 제한이 아니므로, 무한 루프나 외부 효과가 없는
+검토된 함수에만 사용하세요. 상태 예제는 길이가 제한된 trace 입력을 실행하는
+방식이며 임의의 장기 실행 상태 시스템에 대한 격리를 제공하지 않습니다.
+`discovery-plan`은 새 worker에서 동결된 후보를 만들고 최종 feedback을 차단합니다.
+`--target-evidence`에는 승인된 개발 반증만 넣으며 최종 검증 정답을 재사용하지 않습니다.
+
+E5 Docker 생성기에는 Hypothesis와 선택할 Z3의 의존성이 필요합니다. 저장소의
+의존성 전용 Dockerfile은 버전을 고정하며 대상·Oracle·비공개 평가 자료를
+이미지에 복사하지 않습니다. 신뢰한 Docker 호스트에서 명시적으로 준비합니다.
+
+```bash
+docker pull python:3.12-slim
+docker build -f containers/e5-generator.Dockerfile -t tomolab-e5-generator:local containers
+python -m tomolab discovery-demo --case sequence --backend docker --solver z3 --budget 32 --output results/discovery-container.json
+```
+
+E5 CLI는 `tomolab-e5-generator:local` 이미지를 사용합니다. 호스트에도 `qa` extra와
+Z3 선택 시 `solver` extra를 설치하세요. 이미지 준비 실패나 실행 실패를 의존성 없는
+이미지 또는 subprocess 실행으로 자동 대체하지 않습니다. Docker 경계의 실제 검증
+상태와 평가의 범위는 [E5 통합 기록](docs/E5_INTEGRATION.md)과 해당 CI 결과를 확인하세요.
+
 ## 자료와 비밀정보
 
 실행 결과에는 로컬 경로, 입력, 반환값, 소스 해시가 포함될 수 있습니다. 공유 전에 확인하세요. `results/`, 비공개 연구 디렉터리, `PRIVATE_*`, 이전 E1/E2 증거 ZIP, 원시 홀드아웃과 인증정보를 Git·wheel·sdist·Release 자산에 넣지 않습니다.
@@ -47,3 +93,5 @@ API 키는 환경변수로만 전달하고 코드, 로그, 이슈, 지원 요청
 ## English summary
 
 Only run authored or independently trusted targets and Oracles. They execute with evaluator-host privileges; consent flags are not a hostile-code sandbox. The default subprocess generator has logical isolation only. The optional Docker generator limits its filesystem, network and privileges, but does not isolate target execution. Pre-pull the trusted image explicitly. Inspect actual validation and CI boundary tests rather than inferring isolation from a process name. Snapshot hashes and state reconstruction check consistency, not authorship or the truth of Oracle evidence; callers must approve external snapshots. Review evidence before sharing, keep private research and credentials out of artifacts, and preserve `UNKNOWN` and bounded-search limitations.
+
+E5 runs native candidate generation and supported Z3 checks inside the generator; Oracle execution, shrinking and CrossHair stay in the evaluator. Only explicitly approved public source is converted to validated IR. Unknown nested fields and unsupported protocol data are rejected before transport and again in the worker. These checks do not turn a host subprocess into an access-control boundary. Oracle exceptions propagate unless their category is explicitly approved. Time budgets are cooperative and cannot interrupt a running trusted function. Prepare the dependency image with `containers/e5-generator.Dockerfile` before selecting the E5 Docker backend; runtime failures do not trigger an automatic backend fallback.

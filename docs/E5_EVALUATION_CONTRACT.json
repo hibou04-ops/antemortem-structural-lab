@@ -1,0 +1,97 @@
+{
+  "schema": "tomolab-e5-evaluation-contract-v1",
+  "contract_id": "E5-20261027-v1",
+  "selection_frozen_before_final_execution": true,
+  "claim_scope": "bounded user-owned software QA and newly authored synthetic mutation families",
+  "external_real_project_generalization": "NOT_EXECUTED",
+  "historical_holdout_reuse": false,
+  "selection_rules": [
+    "Use all five predefined mutation families and both unchanged user-project controls; do not drop losses.",
+    "One fault family counts once regardless of seeds, inputs, source/target variants, or replay calls.",
+    "Only public development cases may be used to fix implementation or assess run feasibility.",
+    "Final cases are newly authored separately and executed once after code, contract, suite and source molds are frozen.",
+    "Do not replace final cases, thresholds, seeds, tool settings or verdict criteria after outcomes are observed."
+  ],
+  "tracks": {
+    "development_search": {
+      "methods": ["E4", "Hypothesis", "CrossHair", "E5"],
+      "seeds": [17, 43, 101],
+      "oracle_call_cap": 128,
+      "generator_candidate_budget": 64,
+      "native_shrink_call_budget": 62,
+      "max_examples": 128,
+      "pool_size": 128,
+      "total_wall_cap_seconds": 10.0,
+      "time_includes": ["process startup", "imports", "IR analysis", "candidate generation", "solver", "Oracle", "shrinking", "replay"],
+      "feedback": "development labels only",
+      "generalization_claim": false
+    },
+    "frozen_final_transfer": {
+      "methods": ["E4-frozen", "Hypothesis-strategy-plan", "E5-frozen"],
+      "seeds": [17, 43, 101],
+      "oracle_call_cap": 64,
+      "candidate_budget": 64,
+      "pool_size": 128,
+      "total_wall_cap_seconds": 10.0,
+      "feedback_to_generator": 0,
+      "freeze_checks": ["product source bytes", "contract bytes", "public fixtures", "private final suite", "source mold snapshots"],
+      "ledger": "exclusive-create append-only run ledger; an attempted final run consumes the suite",
+      "blinding": "withheld from generator, not a broad real-world blind benchmark",
+      "final_case_families": ["addition-order-guard", "whitespace-normalization", "stable-deduplication-order", "negative-float-sign", "reset-state-transition"],
+      "controls": ["project-addition-control", "project-normalization-control"]
+    },
+    "source_aware_symbolic": {
+      "method": "CrossHair",
+      "phase": "public development only",
+      "source_access": true,
+      "oracle_call_cap": "internal symbolic calls are not exposed by CLI; UNKNOWN",
+      "total_wall_cap_seconds": 10.0,
+      "per_condition_seconds": 6.0,
+      "independent_concrete_witness_replay": true,
+      "not_combined_with_equal_oracle_call_ranking": true,
+      "unsupported_types_or_unanalyzed_contracts": "NOT_COMPARABLE_OR_UNKNOWN"
+    }
+  },
+  "method_rules": {
+    "E4": "Unmodified v0.4.0a1 APIs, only supported two-integer domains; other domains NOT_COMPARABLE.",
+    "Hypothesis": "Native typed strategies and find/shrink on development; native Strategy generation without Oracle for frozen final planning. Use explicit seed, no database, cache repeated pure-input callbacks when adapter supports it.",
+    "CrossHair": "Actual installed CLI on the same trusted target/model contract, source-aware tier, no weakening of preconditions to favor E5.",
+    "E5": "Integrated service on the same public typed spec and approved reference IR; frozen transfer uses development source molds and target public reference IR only."
+  },
+  "oracle_equivalence": "Canonical JSON outcome equality as used by the integrated service; dictionary key order is ignored, tuple/list serialize identically, and numeric encodings are compared explicitly. Reference functions return canonical positive zero for absolute-value floating results. Output nominal-type equivalence beyond this JSON contract is not established.",
+  "metrics": {
+    "unique_faults": "Distinct predefined fault-family IDs with independently confirmed concrete mismatches; seeds and repeated inputs never count as separate faults.",
+    "first_failure_oracle_calls": "Actual reference invocations through the independent meter before first mismatch; includes repeated calls when actually executed.",
+    "first_failure_wall_seconds": "Time from worker process launch to first independently observed mismatch, including candidate generation and imports.",
+    "wall_seconds": "Observed parent wall time, including complete search/shrink/replay and generator startup.",
+    "cpu_seconds": "Worker process_time is a separate metric. Process-tree CPU is a sampled lower bound formed by summing the last observed CPU times for each PID/create-time identity, including launcher and descendants. Worker CPU is not added again. Short-lived unseen processes may be missed; not billing-grade accounting.",
+    "peak_rss_bytes": "Sampled peak sum of worker and descendant RSS at 10 ms intervals; sampled and platform-dependent.",
+    "failure_diversity": "Predeclared semantic fault families, not scalar model scores.",
+    "duplicate_failure_rate": "Duplicate confirmed input/signature pairs divided by confirmed failing evaluations.",
+    "wrong_constraints": "Supported source constraints contradicted by separately evaluated validation inputs, reported as unconfirmed membership hypotheses rather than proved causal rules.",
+    "structural_transfer_accuracy": "Acceptance/rejection of declared type-role-operation-contract-graph correspondences, including explicit validation rejection of malformed declarations. Separately check exact removal of constraints contradicted by an actually evaluated clean development input; that input does not imply rejection of every source hypothesis. Bug recurrence remains UNKNOWN.",
+    "false_alerts": "Confirmed mismatch reports on unchanged project clean controls.",
+    "state_cost": "Trace invariant evaluations count as Oracle calls; individual transition count is reported separately."
+  },
+  "constraint_validation": {
+    "phase": "public development only",
+    "inputs": 64,
+    "candidate_hypotheses_cap": 128,
+    "candidate_selection": "sorted canonical constraint IDs; report bounded subset coverage",
+    "oracle_calls_accounted_separately": true,
+    "feedback_to_generator": 0,
+    "unsupported_predicate_evaluation": "NOT_MEASURED"
+  },
+  "verdict_rules": {
+    "GENERALIZATION_IMPROVED": "Unavailable for this bounded synthetic/user-owned-control suite; requires a separately authorized independent real-project benchmark.",
+    "EFFICIENCY_IMPROVED_ONLY": "E5 detects no fewer unique families and has zero control false alerts, with paired median total wall <=0.80 and paired median first-failure Oracle calls <=0.80 versus every applicable black-box baseline in their shared domain. At least three families must be jointly comparable with the full-type Hypothesis baseline; the narrow E4 stratum is reported separately. Report bounded descriptive evidence only.",
+    "NO_IMPROVEMENT": "Required supported runs completed but the efficiency criterion is not met. Saturated detection alone is not an improvement.",
+    "INCONCLUSIVE": "Required comparable runs time out, tool/Oracle infrastructure fails, source freeze drifts, or fewer than three families are jointly comparable.",
+    "NOT_EXECUTED": "A requested evaluation scope is not actually executed."
+  },
+  "publication": {
+    "public": ["this contract", "public development fixtures", "aggregate results", "code and contract SHA-256", "documented limits"],
+    "private_not_staged": ["new final source", "raw final inputs and Oracle outputs", "raw per-run final records", "final source molds and planning ledger"],
+    "repeat_ci_runs": "Public development reproduction is software QA. Previously consumed final results are not presented as new blind evaluations."
+  }
+}
