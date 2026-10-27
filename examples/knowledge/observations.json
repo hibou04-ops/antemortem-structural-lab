@@ -1,0 +1,1682 @@
+[
+  {
+    "spec": {
+      "schema": "tomolab-discovery-spec-v1",
+      "task_id": "public-e7-range-demo",
+      "inputs": [
+        {
+          "name": "lo",
+          "role": "lower",
+          "type": {
+            "kind": "int",
+            "min": -4,
+            "max": 4
+          }
+        },
+        {
+          "name": "hi",
+          "role": "upper",
+          "type": {
+            "kind": "int",
+            "min": -4,
+            "max": 4
+          }
+        }
+      ],
+      "contract": {
+        "id": "directed-width-v1",
+        "operation": "nonnegative-directed-width",
+        "preconditions": [],
+        "invariants": [
+          "reference"
+        ],
+        "state_model": "stateless",
+        "graph_signature": "14de70ab9c901c84a1ac95acd1679a4f0f2ce00dd924a7b1f754c860ca30a777"
+      }
+    },
+    "temporal_contract": null,
+    "public_ir": {
+      "schema": "tomolab-structural-ir-v1",
+      "source_sha256": "c6eba144703c3ee4e905bc360c2b9936de6156fb0ea150fc72174fedc79c4b74",
+      "function": "reference",
+      "parameters": [
+        {
+          "name": "lo",
+          "role": "lower",
+          "annotation": "int"
+        },
+        {
+          "name": "hi",
+          "role": "upper",
+          "annotation": "int"
+        }
+      ],
+      "return_annotation": "int",
+      "semantic_roles": "DECLARED",
+      "graph": {
+        "node": "FunctionDef",
+        "args": {
+          "node": "arguments",
+          "posonlyargs": [],
+          "args": [
+            {
+              "node": "arg",
+              "role": "lower",
+              "annotation": "int"
+            },
+            {
+              "node": "arg",
+              "role": "upper",
+              "annotation": "int"
+            }
+          ],
+          "kwonlyargs": [],
+          "kw_defaults": [],
+          "defaults": []
+        },
+        "body": [
+          {
+            "node": "If",
+            "test": {
+              "node": "Compare",
+              "left": {
+                "node": "Name",
+                "role": "lower",
+                "context": "Load"
+              },
+              "ops": [
+                {
+                  "node": "Gt"
+                }
+              ],
+              "comparators": [
+                {
+                  "node": "Name",
+                  "role": "upper",
+                  "context": "Load"
+                }
+              ]
+            },
+            "body": [
+              {
+                "node": "Return",
+                "value": {
+                  "node": "Constant",
+                  "type": "int"
+                }
+              }
+            ],
+            "orelse": []
+          },
+          {
+            "node": "Return",
+            "value": {
+              "node": "BinOp",
+              "left": {
+                "node": "Name",
+                "role": "upper",
+                "context": "Load"
+              },
+              "op": {
+                "node": "Sub"
+              },
+              "right": {
+                "node": "Name",
+                "role": "lower",
+                "context": "Load"
+              }
+            }
+          }
+        ]
+      },
+      "graph_signature": "14de70ab9c901c84a1ac95acd1679a4f0f2ce00dd924a7b1f754c860ca30a777",
+      "control": {
+        "If": 1
+      },
+      "operators": [
+        "Gt",
+        "Sub"
+      ],
+      "calls": [],
+      "dependencies": [],
+      "state_effects": [],
+      "exception_conditions": [],
+      "unsupported": [],
+      "status": "SUPPORTED_STATIC_IR",
+      "claim": "syntactic correspondence only; constants omitted; no semantic or purity proof",
+      "predicates": [
+        {
+          "op": "gt",
+          "left": {
+            "var": "lower"
+          },
+          "right": {
+            "var": "upper"
+          }
+        }
+      ],
+      "predicate_origins": [
+        {
+          "index": 0,
+          "kind": "If",
+          "line": 3
+        }
+      ],
+      "predicate_rejections": [],
+      "constraint_graph": {
+        "nodes": [
+          {
+            "id": "AST-3bdadd15cb342ba44dce",
+            "kind": "public-ast-guard"
+          }
+        ],
+        "edges": [
+          {
+            "from": "AST-3bdadd15cb342ba44dce",
+            "to": "lower",
+            "kind": "depends-on-role"
+          },
+          {
+            "from": "AST-3bdadd15cb342ba44dce",
+            "to": "upper",
+            "kind": "depends-on-role"
+          }
+        ]
+      }
+    },
+    "evidence": {
+      "kind": "FAILURE",
+      "evidence_id": "independent-0",
+      "inputs": {
+        "hi": 1,
+        "lo": 3
+      },
+      "invariant": "reference",
+      "category": "mismatch",
+      "signature": "directed-width"
+    },
+    "origin": {
+      "project": "authored-e7-functional-fixtures",
+      "lineage": "conditional-width-validation",
+      "revision": "public-fixture-v1",
+      "oracle_id": "conditional-width-validation-reference",
+      "semantics": "nonnegative-directed-width",
+      "independence_id": "reviewed-conditional-width-validation",
+      "implementation_sha256": "63f09d6835c0d472e0a4c626b16f4c3a143a65e4f5fed0107cfd49c8b2efd69e",
+      "oracle_sha256": "44c36171da25b6af48ce928527e0875924a9a363cf2ff55e84f0c2fcff710c43"
+    },
+    "split": "development",
+    "implementation_sha256": "63f09d6835c0d472e0a4c626b16f4c3a143a65e4f5fed0107cfd49c8b2efd69e",
+    "receipt_sha256": "b5c4c8d4b2265657f365022428bcc57258d0ef8e17db01b55a0663010f90a0b2"
+  },
+  {
+    "spec": {
+      "schema": "tomolab-discovery-spec-v1",
+      "task_id": "public-e7-range-demo",
+      "inputs": [
+        {
+          "name": "lo",
+          "role": "lower",
+          "type": {
+            "kind": "int",
+            "min": -4,
+            "max": 4
+          }
+        },
+        {
+          "name": "hi",
+          "role": "upper",
+          "type": {
+            "kind": "int",
+            "min": -4,
+            "max": 4
+          }
+        }
+      ],
+      "contract": {
+        "id": "directed-width-v1",
+        "operation": "nonnegative-directed-width",
+        "preconditions": [],
+        "invariants": [
+          "reference"
+        ],
+        "state_model": "stateless",
+        "graph_signature": "14de70ab9c901c84a1ac95acd1679a4f0f2ce00dd924a7b1f754c860ca30a777"
+      }
+    },
+    "temporal_contract": null,
+    "public_ir": {
+      "schema": "tomolab-structural-ir-v1",
+      "source_sha256": "c6eba144703c3ee4e905bc360c2b9936de6156fb0ea150fc72174fedc79c4b74",
+      "function": "reference",
+      "parameters": [
+        {
+          "name": "lo",
+          "role": "lower",
+          "annotation": "int"
+        },
+        {
+          "name": "hi",
+          "role": "upper",
+          "annotation": "int"
+        }
+      ],
+      "return_annotation": "int",
+      "semantic_roles": "DECLARED",
+      "graph": {
+        "node": "FunctionDef",
+        "args": {
+          "node": "arguments",
+          "posonlyargs": [],
+          "args": [
+            {
+              "node": "arg",
+              "role": "lower",
+              "annotation": "int"
+            },
+            {
+              "node": "arg",
+              "role": "upper",
+              "annotation": "int"
+            }
+          ],
+          "kwonlyargs": [],
+          "kw_defaults": [],
+          "defaults": []
+        },
+        "body": [
+          {
+            "node": "If",
+            "test": {
+              "node": "Compare",
+              "left": {
+                "node": "Name",
+                "role": "lower",
+                "context": "Load"
+              },
+              "ops": [
+                {
+                  "node": "Gt"
+                }
+              ],
+              "comparators": [
+                {
+                  "node": "Name",
+                  "role": "upper",
+                  "context": "Load"
+                }
+              ]
+            },
+            "body": [
+              {
+                "node": "Return",
+                "value": {
+                  "node": "Constant",
+                  "type": "int"
+                }
+              }
+            ],
+            "orelse": []
+          },
+          {
+            "node": "Return",
+            "value": {
+              "node": "BinOp",
+              "left": {
+                "node": "Name",
+                "role": "upper",
+                "context": "Load"
+              },
+              "op": {
+                "node": "Sub"
+              },
+              "right": {
+                "node": "Name",
+                "role": "lower",
+                "context": "Load"
+              }
+            }
+          }
+        ]
+      },
+      "graph_signature": "14de70ab9c901c84a1ac95acd1679a4f0f2ce00dd924a7b1f754c860ca30a777",
+      "control": {
+        "If": 1
+      },
+      "operators": [
+        "Gt",
+        "Sub"
+      ],
+      "calls": [],
+      "dependencies": [],
+      "state_effects": [],
+      "exception_conditions": [],
+      "unsupported": [],
+      "status": "SUPPORTED_STATIC_IR",
+      "claim": "syntactic correspondence only; constants omitted; no semantic or purity proof",
+      "predicates": [
+        {
+          "op": "gt",
+          "left": {
+            "var": "lower"
+          },
+          "right": {
+            "var": "upper"
+          }
+        }
+      ],
+      "predicate_origins": [
+        {
+          "index": 0,
+          "kind": "If",
+          "line": 3
+        }
+      ],
+      "predicate_rejections": [],
+      "constraint_graph": {
+        "nodes": [
+          {
+            "id": "AST-3bdadd15cb342ba44dce",
+            "kind": "public-ast-guard"
+          }
+        ],
+        "edges": [
+          {
+            "from": "AST-3bdadd15cb342ba44dce",
+            "to": "lower",
+            "kind": "depends-on-role"
+          },
+          {
+            "from": "AST-3bdadd15cb342ba44dce",
+            "to": "upper",
+            "kind": "depends-on-role"
+          }
+        ]
+      }
+    },
+    "evidence": {
+      "kind": "FAILURE",
+      "evidence_id": "independent-1",
+      "inputs": {
+        "hi": 0,
+        "lo": 2
+      },
+      "invariant": "reference",
+      "category": "mismatch",
+      "signature": "directed-width"
+    },
+    "origin": {
+      "project": "authored-e7-functional-fixtures",
+      "lineage": "conditional-width-validation",
+      "revision": "public-fixture-v1",
+      "oracle_id": "conditional-width-validation-reference",
+      "semantics": "nonnegative-directed-width",
+      "independence_id": "reviewed-conditional-width-validation",
+      "implementation_sha256": "63f09d6835c0d472e0a4c626b16f4c3a143a65e4f5fed0107cfd49c8b2efd69e",
+      "oracle_sha256": "44c36171da25b6af48ce928527e0875924a9a363cf2ff55e84f0c2fcff710c43"
+    },
+    "split": "development",
+    "implementation_sha256": "63f09d6835c0d472e0a4c626b16f4c3a143a65e4f5fed0107cfd49c8b2efd69e",
+    "receipt_sha256": "598f4cd2a122bcad2a111903ca364834a694a7833d4b61a835f939b05a341d97"
+  },
+  {
+    "spec": {
+      "schema": "tomolab-discovery-spec-v1",
+      "task_id": "public-e7-range-demo",
+      "inputs": [
+        {
+          "name": "lo",
+          "role": "lower",
+          "type": {
+            "kind": "int",
+            "min": -4,
+            "max": 4
+          }
+        },
+        {
+          "name": "hi",
+          "role": "upper",
+          "type": {
+            "kind": "int",
+            "min": -4,
+            "max": 4
+          }
+        }
+      ],
+      "contract": {
+        "id": "directed-width-v1",
+        "operation": "nonnegative-directed-width",
+        "preconditions": [],
+        "invariants": [
+          "reference"
+        ],
+        "state_model": "stateless",
+        "graph_signature": "14de70ab9c901c84a1ac95acd1679a4f0f2ce00dd924a7b1f754c860ca30a777"
+      }
+    },
+    "temporal_contract": null,
+    "public_ir": {
+      "schema": "tomolab-structural-ir-v1",
+      "source_sha256": "c6eba144703c3ee4e905bc360c2b9936de6156fb0ea150fc72174fedc79c4b74",
+      "function": "reference",
+      "parameters": [
+        {
+          "name": "lo",
+          "role": "lower",
+          "annotation": "int"
+        },
+        {
+          "name": "hi",
+          "role": "upper",
+          "annotation": "int"
+        }
+      ],
+      "return_annotation": "int",
+      "semantic_roles": "DECLARED",
+      "graph": {
+        "node": "FunctionDef",
+        "args": {
+          "node": "arguments",
+          "posonlyargs": [],
+          "args": [
+            {
+              "node": "arg",
+              "role": "lower",
+              "annotation": "int"
+            },
+            {
+              "node": "arg",
+              "role": "upper",
+              "annotation": "int"
+            }
+          ],
+          "kwonlyargs": [],
+          "kw_defaults": [],
+          "defaults": []
+        },
+        "body": [
+          {
+            "node": "If",
+            "test": {
+              "node": "Compare",
+              "left": {
+                "node": "Name",
+                "role": "lower",
+                "context": "Load"
+              },
+              "ops": [
+                {
+                  "node": "Gt"
+                }
+              ],
+              "comparators": [
+                {
+                  "node": "Name",
+                  "role": "upper",
+                  "context": "Load"
+                }
+              ]
+            },
+            "body": [
+              {
+                "node": "Return",
+                "value": {
+                  "node": "Constant",
+                  "type": "int"
+                }
+              }
+            ],
+            "orelse": []
+          },
+          {
+            "node": "Return",
+            "value": {
+              "node": "BinOp",
+              "left": {
+                "node": "Name",
+                "role": "upper",
+                "context": "Load"
+              },
+              "op": {
+                "node": "Sub"
+              },
+              "right": {
+                "node": "Name",
+                "role": "lower",
+                "context": "Load"
+              }
+            }
+          }
+        ]
+      },
+      "graph_signature": "14de70ab9c901c84a1ac95acd1679a4f0f2ce00dd924a7b1f754c860ca30a777",
+      "control": {
+        "If": 1
+      },
+      "operators": [
+        "Gt",
+        "Sub"
+      ],
+      "calls": [],
+      "dependencies": [],
+      "state_effects": [],
+      "exception_conditions": [],
+      "unsupported": [],
+      "status": "SUPPORTED_STATIC_IR",
+      "claim": "syntactic correspondence only; constants omitted; no semantic or purity proof",
+      "predicates": [
+        {
+          "op": "gt",
+          "left": {
+            "var": "lower"
+          },
+          "right": {
+            "var": "upper"
+          }
+        }
+      ],
+      "predicate_origins": [
+        {
+          "index": 0,
+          "kind": "If",
+          "line": 3
+        }
+      ],
+      "predicate_rejections": [],
+      "constraint_graph": {
+        "nodes": [
+          {
+            "id": "AST-3bdadd15cb342ba44dce",
+            "kind": "public-ast-guard"
+          }
+        ],
+        "edges": [
+          {
+            "from": "AST-3bdadd15cb342ba44dce",
+            "to": "lower",
+            "kind": "depends-on-role"
+          },
+          {
+            "from": "AST-3bdadd15cb342ba44dce",
+            "to": "upper",
+            "kind": "depends-on-role"
+          }
+        ]
+      }
+    },
+    "evidence": {
+      "kind": "FAILURE",
+      "evidence_id": "independent-2",
+      "inputs": {
+        "hi": -1,
+        "lo": 0
+      },
+      "invariant": "reference",
+      "category": "mismatch",
+      "signature": "directed-width"
+    },
+    "origin": {
+      "project": "authored-e7-functional-fixtures",
+      "lineage": "conditional-width-validation",
+      "revision": "public-fixture-v1",
+      "oracle_id": "conditional-width-validation-reference",
+      "semantics": "nonnegative-directed-width",
+      "independence_id": "reviewed-conditional-width-validation",
+      "implementation_sha256": "63f09d6835c0d472e0a4c626b16f4c3a143a65e4f5fed0107cfd49c8b2efd69e",
+      "oracle_sha256": "44c36171da25b6af48ce928527e0875924a9a363cf2ff55e84f0c2fcff710c43"
+    },
+    "split": "development",
+    "implementation_sha256": "63f09d6835c0d472e0a4c626b16f4c3a143a65e4f5fed0107cfd49c8b2efd69e",
+    "receipt_sha256": "635e48751145578fa1f898ca02cf91f1e642209272e558f3f85a43bfe87fa897"
+  },
+  {
+    "spec": {
+      "schema": "tomolab-discovery-spec-v1",
+      "task_id": "public-e7-range-demo",
+      "inputs": [
+        {
+          "name": "lo",
+          "role": "lower",
+          "type": {
+            "kind": "int",
+            "min": -4,
+            "max": 4
+          }
+        },
+        {
+          "name": "hi",
+          "role": "upper",
+          "type": {
+            "kind": "int",
+            "min": -4,
+            "max": 4
+          }
+        }
+      ],
+      "contract": {
+        "id": "directed-width-v1",
+        "operation": "nonnegative-directed-width",
+        "preconditions": [],
+        "invariants": [
+          "reference"
+        ],
+        "state_model": "stateless",
+        "graph_signature": "14de70ab9c901c84a1ac95acd1679a4f0f2ce00dd924a7b1f754c860ca30a777"
+      }
+    },
+    "temporal_contract": null,
+    "public_ir": {
+      "schema": "tomolab-structural-ir-v1",
+      "source_sha256": "c6eba144703c3ee4e905bc360c2b9936de6156fb0ea150fc72174fedc79c4b74",
+      "function": "reference",
+      "parameters": [
+        {
+          "name": "lo",
+          "role": "lower",
+          "annotation": "int"
+        },
+        {
+          "name": "hi",
+          "role": "upper",
+          "annotation": "int"
+        }
+      ],
+      "return_annotation": "int",
+      "semantic_roles": "DECLARED",
+      "graph": {
+        "node": "FunctionDef",
+        "args": {
+          "node": "arguments",
+          "posonlyargs": [],
+          "args": [
+            {
+              "node": "arg",
+              "role": "lower",
+              "annotation": "int"
+            },
+            {
+              "node": "arg",
+              "role": "upper",
+              "annotation": "int"
+            }
+          ],
+          "kwonlyargs": [],
+          "kw_defaults": [],
+          "defaults": []
+        },
+        "body": [
+          {
+            "node": "If",
+            "test": {
+              "node": "Compare",
+              "left": {
+                "node": "Name",
+                "role": "lower",
+                "context": "Load"
+              },
+              "ops": [
+                {
+                  "node": "Gt"
+                }
+              ],
+              "comparators": [
+                {
+                  "node": "Name",
+                  "role": "upper",
+                  "context": "Load"
+                }
+              ]
+            },
+            "body": [
+              {
+                "node": "Return",
+                "value": {
+                  "node": "Constant",
+                  "type": "int"
+                }
+              }
+            ],
+            "orelse": []
+          },
+          {
+            "node": "Return",
+            "value": {
+              "node": "BinOp",
+              "left": {
+                "node": "Name",
+                "role": "upper",
+                "context": "Load"
+              },
+              "op": {
+                "node": "Sub"
+              },
+              "right": {
+                "node": "Name",
+                "role": "lower",
+                "context": "Load"
+              }
+            }
+          }
+        ]
+      },
+      "graph_signature": "14de70ab9c901c84a1ac95acd1679a4f0f2ce00dd924a7b1f754c860ca30a777",
+      "control": {
+        "If": 1
+      },
+      "operators": [
+        "Gt",
+        "Sub"
+      ],
+      "calls": [],
+      "dependencies": [],
+      "state_effects": [],
+      "exception_conditions": [],
+      "unsupported": [],
+      "status": "SUPPORTED_STATIC_IR",
+      "claim": "syntactic correspondence only; constants omitted; no semantic or purity proof",
+      "predicates": [
+        {
+          "op": "gt",
+          "left": {
+            "var": "lower"
+          },
+          "right": {
+            "var": "upper"
+          }
+        }
+      ],
+      "predicate_origins": [
+        {
+          "index": 0,
+          "kind": "If",
+          "line": 3
+        }
+      ],
+      "predicate_rejections": [],
+      "constraint_graph": {
+        "nodes": [
+          {
+            "id": "AST-3bdadd15cb342ba44dce",
+            "kind": "public-ast-guard"
+          }
+        ],
+        "edges": [
+          {
+            "from": "AST-3bdadd15cb342ba44dce",
+            "to": "lower",
+            "kind": "depends-on-role"
+          },
+          {
+            "from": "AST-3bdadd15cb342ba44dce",
+            "to": "upper",
+            "kind": "depends-on-role"
+          }
+        ]
+      }
+    },
+    "evidence": {
+      "kind": "FAILURE",
+      "evidence_id": "independent-3",
+      "inputs": {
+        "hi": -3,
+        "lo": -1
+      },
+      "invariant": "reference",
+      "category": "mismatch",
+      "signature": "directed-width"
+    },
+    "origin": {
+      "project": "authored-e7-functional-fixtures",
+      "lineage": "conditional-width-validation",
+      "revision": "public-fixture-v1",
+      "oracle_id": "conditional-width-validation-reference",
+      "semantics": "nonnegative-directed-width",
+      "independence_id": "reviewed-conditional-width-validation",
+      "implementation_sha256": "63f09d6835c0d472e0a4c626b16f4c3a143a65e4f5fed0107cfd49c8b2efd69e",
+      "oracle_sha256": "44c36171da25b6af48ce928527e0875924a9a363cf2ff55e84f0c2fcff710c43"
+    },
+    "split": "development",
+    "implementation_sha256": "63f09d6835c0d472e0a4c626b16f4c3a143a65e4f5fed0107cfd49c8b2efd69e",
+    "receipt_sha256": "a8b743bd96d89176942b29888266060a2d76e9a5ea9a0d42ec554faccc6d2ba0"
+  },
+  {
+    "spec": {
+      "schema": "tomolab-discovery-spec-v1",
+      "task_id": "public-e7-range-demo",
+      "inputs": [
+        {
+          "name": "lo",
+          "role": "lower",
+          "type": {
+            "kind": "int",
+            "min": -4,
+            "max": 4
+          }
+        },
+        {
+          "name": "hi",
+          "role": "upper",
+          "type": {
+            "kind": "int",
+            "min": -4,
+            "max": 4
+          }
+        }
+      ],
+      "contract": {
+        "id": "directed-width-v1",
+        "operation": "nonnegative-directed-width",
+        "preconditions": [],
+        "invariants": [
+          "reference"
+        ],
+        "state_model": "stateless",
+        "graph_signature": "14de70ab9c901c84a1ac95acd1679a4f0f2ce00dd924a7b1f754c860ca30a777"
+      }
+    },
+    "temporal_contract": null,
+    "public_ir": {
+      "schema": "tomolab-structural-ir-v1",
+      "source_sha256": "c6eba144703c3ee4e905bc360c2b9936de6156fb0ea150fc72174fedc79c4b74",
+      "function": "reference",
+      "parameters": [
+        {
+          "name": "lo",
+          "role": "lower",
+          "annotation": "int"
+        },
+        {
+          "name": "hi",
+          "role": "upper",
+          "annotation": "int"
+        }
+      ],
+      "return_annotation": "int",
+      "semantic_roles": "DECLARED",
+      "graph": {
+        "node": "FunctionDef",
+        "args": {
+          "node": "arguments",
+          "posonlyargs": [],
+          "args": [
+            {
+              "node": "arg",
+              "role": "lower",
+              "annotation": "int"
+            },
+            {
+              "node": "arg",
+              "role": "upper",
+              "annotation": "int"
+            }
+          ],
+          "kwonlyargs": [],
+          "kw_defaults": [],
+          "defaults": []
+        },
+        "body": [
+          {
+            "node": "If",
+            "test": {
+              "node": "Compare",
+              "left": {
+                "node": "Name",
+                "role": "lower",
+                "context": "Load"
+              },
+              "ops": [
+                {
+                  "node": "Gt"
+                }
+              ],
+              "comparators": [
+                {
+                  "node": "Name",
+                  "role": "upper",
+                  "context": "Load"
+                }
+              ]
+            },
+            "body": [
+              {
+                "node": "Return",
+                "value": {
+                  "node": "Constant",
+                  "type": "int"
+                }
+              }
+            ],
+            "orelse": []
+          },
+          {
+            "node": "Return",
+            "value": {
+              "node": "BinOp",
+              "left": {
+                "node": "Name",
+                "role": "upper",
+                "context": "Load"
+              },
+              "op": {
+                "node": "Sub"
+              },
+              "right": {
+                "node": "Name",
+                "role": "lower",
+                "context": "Load"
+              }
+            }
+          }
+        ]
+      },
+      "graph_signature": "14de70ab9c901c84a1ac95acd1679a4f0f2ce00dd924a7b1f754c860ca30a777",
+      "control": {
+        "If": 1
+      },
+      "operators": [
+        "Gt",
+        "Sub"
+      ],
+      "calls": [],
+      "dependencies": [],
+      "state_effects": [],
+      "exception_conditions": [],
+      "unsupported": [],
+      "status": "SUPPORTED_STATIC_IR",
+      "claim": "syntactic correspondence only; constants omitted; no semantic or purity proof",
+      "predicates": [
+        {
+          "op": "gt",
+          "left": {
+            "var": "lower"
+          },
+          "right": {
+            "var": "upper"
+          }
+        }
+      ],
+      "predicate_origins": [
+        {
+          "index": 0,
+          "kind": "If",
+          "line": 3
+        }
+      ],
+      "predicate_rejections": [],
+      "constraint_graph": {
+        "nodes": [
+          {
+            "id": "AST-3bdadd15cb342ba44dce",
+            "kind": "public-ast-guard"
+          }
+        ],
+        "edges": [
+          {
+            "from": "AST-3bdadd15cb342ba44dce",
+            "to": "lower",
+            "kind": "depends-on-role"
+          },
+          {
+            "from": "AST-3bdadd15cb342ba44dce",
+            "to": "upper",
+            "kind": "depends-on-role"
+          }
+        ]
+      }
+    },
+    "evidence": {
+      "kind": "REFUTATION",
+      "evidence_id": "independent-4",
+      "inputs": {
+        "hi": -1,
+        "lo": -3
+      },
+      "invariant": "reference",
+      "category": "mismatch",
+      "signature": "directed-width"
+    },
+    "origin": {
+      "project": "authored-e7-functional-fixtures",
+      "lineage": "conditional-width-validation",
+      "revision": "public-fixture-v1",
+      "oracle_id": "conditional-width-validation-reference",
+      "semantics": "nonnegative-directed-width",
+      "independence_id": "reviewed-conditional-width-validation",
+      "implementation_sha256": "63f09d6835c0d472e0a4c626b16f4c3a143a65e4f5fed0107cfd49c8b2efd69e",
+      "oracle_sha256": "44c36171da25b6af48ce928527e0875924a9a363cf2ff55e84f0c2fcff710c43"
+    },
+    "split": "development",
+    "implementation_sha256": "63f09d6835c0d472e0a4c626b16f4c3a143a65e4f5fed0107cfd49c8b2efd69e",
+    "receipt_sha256": "d9d3eac9a7a330c228eb90e5953197e87c7b49ca32cde85050b014f1999ffba5"
+  },
+  {
+    "spec": {
+      "schema": "tomolab-discovery-spec-v1",
+      "task_id": "public-e7-range-demo",
+      "inputs": [
+        {
+          "name": "lo",
+          "role": "lower",
+          "type": {
+            "kind": "int",
+            "min": -4,
+            "max": 4
+          }
+        },
+        {
+          "name": "hi",
+          "role": "upper",
+          "type": {
+            "kind": "int",
+            "min": -4,
+            "max": 4
+          }
+        }
+      ],
+      "contract": {
+        "id": "directed-width-v1",
+        "operation": "nonnegative-directed-width",
+        "preconditions": [],
+        "invariants": [
+          "reference"
+        ],
+        "state_model": "stateless",
+        "graph_signature": "14de70ab9c901c84a1ac95acd1679a4f0f2ce00dd924a7b1f754c860ca30a777"
+      }
+    },
+    "temporal_contract": null,
+    "public_ir": {
+      "schema": "tomolab-structural-ir-v1",
+      "source_sha256": "c6eba144703c3ee4e905bc360c2b9936de6156fb0ea150fc72174fedc79c4b74",
+      "function": "reference",
+      "parameters": [
+        {
+          "name": "lo",
+          "role": "lower",
+          "annotation": "int"
+        },
+        {
+          "name": "hi",
+          "role": "upper",
+          "annotation": "int"
+        }
+      ],
+      "return_annotation": "int",
+      "semantic_roles": "DECLARED",
+      "graph": {
+        "node": "FunctionDef",
+        "args": {
+          "node": "arguments",
+          "posonlyargs": [],
+          "args": [
+            {
+              "node": "arg",
+              "role": "lower",
+              "annotation": "int"
+            },
+            {
+              "node": "arg",
+              "role": "upper",
+              "annotation": "int"
+            }
+          ],
+          "kwonlyargs": [],
+          "kw_defaults": [],
+          "defaults": []
+        },
+        "body": [
+          {
+            "node": "If",
+            "test": {
+              "node": "Compare",
+              "left": {
+                "node": "Name",
+                "role": "lower",
+                "context": "Load"
+              },
+              "ops": [
+                {
+                  "node": "Gt"
+                }
+              ],
+              "comparators": [
+                {
+                  "node": "Name",
+                  "role": "upper",
+                  "context": "Load"
+                }
+              ]
+            },
+            "body": [
+              {
+                "node": "Return",
+                "value": {
+                  "node": "Constant",
+                  "type": "int"
+                }
+              }
+            ],
+            "orelse": []
+          },
+          {
+            "node": "Return",
+            "value": {
+              "node": "BinOp",
+              "left": {
+                "node": "Name",
+                "role": "upper",
+                "context": "Load"
+              },
+              "op": {
+                "node": "Sub"
+              },
+              "right": {
+                "node": "Name",
+                "role": "lower",
+                "context": "Load"
+              }
+            }
+          }
+        ]
+      },
+      "graph_signature": "14de70ab9c901c84a1ac95acd1679a4f0f2ce00dd924a7b1f754c860ca30a777",
+      "control": {
+        "If": 1
+      },
+      "operators": [
+        "Gt",
+        "Sub"
+      ],
+      "calls": [],
+      "dependencies": [],
+      "state_effects": [],
+      "exception_conditions": [],
+      "unsupported": [],
+      "status": "SUPPORTED_STATIC_IR",
+      "claim": "syntactic correspondence only; constants omitted; no semantic or purity proof",
+      "predicates": [
+        {
+          "op": "gt",
+          "left": {
+            "var": "lower"
+          },
+          "right": {
+            "var": "upper"
+          }
+        }
+      ],
+      "predicate_origins": [
+        {
+          "index": 0,
+          "kind": "If",
+          "line": 3
+        }
+      ],
+      "predicate_rejections": [],
+      "constraint_graph": {
+        "nodes": [
+          {
+            "id": "AST-3bdadd15cb342ba44dce",
+            "kind": "public-ast-guard"
+          }
+        ],
+        "edges": [
+          {
+            "from": "AST-3bdadd15cb342ba44dce",
+            "to": "lower",
+            "kind": "depends-on-role"
+          },
+          {
+            "from": "AST-3bdadd15cb342ba44dce",
+            "to": "upper",
+            "kind": "depends-on-role"
+          }
+        ]
+      }
+    },
+    "evidence": {
+      "kind": "REFUTATION",
+      "evidence_id": "independent-5",
+      "inputs": {
+        "hi": 2,
+        "lo": 0
+      },
+      "invariant": "reference",
+      "category": "mismatch",
+      "signature": "directed-width"
+    },
+    "origin": {
+      "project": "authored-e7-functional-fixtures",
+      "lineage": "conditional-width-validation",
+      "revision": "public-fixture-v1",
+      "oracle_id": "conditional-width-validation-reference",
+      "semantics": "nonnegative-directed-width",
+      "independence_id": "reviewed-conditional-width-validation",
+      "implementation_sha256": "63f09d6835c0d472e0a4c626b16f4c3a143a65e4f5fed0107cfd49c8b2efd69e",
+      "oracle_sha256": "44c36171da25b6af48ce928527e0875924a9a363cf2ff55e84f0c2fcff710c43"
+    },
+    "split": "development",
+    "implementation_sha256": "63f09d6835c0d472e0a4c626b16f4c3a143a65e4f5fed0107cfd49c8b2efd69e",
+    "receipt_sha256": "4785a10e7105b1916fd617107b625f504cb40e121fc17beeef57e1759d6dd322"
+  },
+  {
+    "spec": {
+      "schema": "tomolab-discovery-spec-v1",
+      "task_id": "public-e7-range-demo",
+      "inputs": [
+        {
+          "name": "lo",
+          "role": "lower",
+          "type": {
+            "kind": "int",
+            "min": -4,
+            "max": 4
+          }
+        },
+        {
+          "name": "hi",
+          "role": "upper",
+          "type": {
+            "kind": "int",
+            "min": -4,
+            "max": 4
+          }
+        }
+      ],
+      "contract": {
+        "id": "directed-width-v1",
+        "operation": "nonnegative-directed-width",
+        "preconditions": [],
+        "invariants": [
+          "reference"
+        ],
+        "state_model": "stateless",
+        "graph_signature": "14de70ab9c901c84a1ac95acd1679a4f0f2ce00dd924a7b1f754c860ca30a777"
+      }
+    },
+    "temporal_contract": null,
+    "public_ir": {
+      "schema": "tomolab-structural-ir-v1",
+      "source_sha256": "c6eba144703c3ee4e905bc360c2b9936de6156fb0ea150fc72174fedc79c4b74",
+      "function": "reference",
+      "parameters": [
+        {
+          "name": "lo",
+          "role": "lower",
+          "annotation": "int"
+        },
+        {
+          "name": "hi",
+          "role": "upper",
+          "annotation": "int"
+        }
+      ],
+      "return_annotation": "int",
+      "semantic_roles": "DECLARED",
+      "graph": {
+        "node": "FunctionDef",
+        "args": {
+          "node": "arguments",
+          "posonlyargs": [],
+          "args": [
+            {
+              "node": "arg",
+              "role": "lower",
+              "annotation": "int"
+            },
+            {
+              "node": "arg",
+              "role": "upper",
+              "annotation": "int"
+            }
+          ],
+          "kwonlyargs": [],
+          "kw_defaults": [],
+          "defaults": []
+        },
+        "body": [
+          {
+            "node": "If",
+            "test": {
+              "node": "Compare",
+              "left": {
+                "node": "Name",
+                "role": "lower",
+                "context": "Load"
+              },
+              "ops": [
+                {
+                  "node": "Gt"
+                }
+              ],
+              "comparators": [
+                {
+                  "node": "Name",
+                  "role": "upper",
+                  "context": "Load"
+                }
+              ]
+            },
+            "body": [
+              {
+                "node": "Return",
+                "value": {
+                  "node": "Constant",
+                  "type": "int"
+                }
+              }
+            ],
+            "orelse": []
+          },
+          {
+            "node": "Return",
+            "value": {
+              "node": "BinOp",
+              "left": {
+                "node": "Name",
+                "role": "upper",
+                "context": "Load"
+              },
+              "op": {
+                "node": "Sub"
+              },
+              "right": {
+                "node": "Name",
+                "role": "lower",
+                "context": "Load"
+              }
+            }
+          }
+        ]
+      },
+      "graph_signature": "14de70ab9c901c84a1ac95acd1679a4f0f2ce00dd924a7b1f754c860ca30a777",
+      "control": {
+        "If": 1
+      },
+      "operators": [
+        "Gt",
+        "Sub"
+      ],
+      "calls": [],
+      "dependencies": [],
+      "state_effects": [],
+      "exception_conditions": [],
+      "unsupported": [],
+      "status": "SUPPORTED_STATIC_IR",
+      "claim": "syntactic correspondence only; constants omitted; no semantic or purity proof",
+      "predicates": [
+        {
+          "op": "gt",
+          "left": {
+            "var": "lower"
+          },
+          "right": {
+            "var": "upper"
+          }
+        }
+      ],
+      "predicate_origins": [
+        {
+          "index": 0,
+          "kind": "If",
+          "line": 3
+        }
+      ],
+      "predicate_rejections": [],
+      "constraint_graph": {
+        "nodes": [
+          {
+            "id": "AST-3bdadd15cb342ba44dce",
+            "kind": "public-ast-guard"
+          }
+        ],
+        "edges": [
+          {
+            "from": "AST-3bdadd15cb342ba44dce",
+            "to": "lower",
+            "kind": "depends-on-role"
+          },
+          {
+            "from": "AST-3bdadd15cb342ba44dce",
+            "to": "upper",
+            "kind": "depends-on-role"
+          }
+        ]
+      }
+    },
+    "evidence": {
+      "kind": "REFUTATION",
+      "evidence_id": "independent-6",
+      "inputs": {
+        "hi": 3,
+        "lo": 1
+      },
+      "invariant": "reference",
+      "category": "mismatch",
+      "signature": "directed-width"
+    },
+    "origin": {
+      "project": "authored-e7-functional-fixtures",
+      "lineage": "conditional-width-validation",
+      "revision": "public-fixture-v1",
+      "oracle_id": "conditional-width-validation-reference",
+      "semantics": "nonnegative-directed-width",
+      "independence_id": "reviewed-conditional-width-validation",
+      "implementation_sha256": "63f09d6835c0d472e0a4c626b16f4c3a143a65e4f5fed0107cfd49c8b2efd69e",
+      "oracle_sha256": "44c36171da25b6af48ce928527e0875924a9a363cf2ff55e84f0c2fcff710c43"
+    },
+    "split": "development",
+    "implementation_sha256": "63f09d6835c0d472e0a4c626b16f4c3a143a65e4f5fed0107cfd49c8b2efd69e",
+    "receipt_sha256": "c5c368168be0e1ff641c0554d39ec062eb382347d48c4e43b7b980261e5676cd"
+  },
+  {
+    "spec": {
+      "schema": "tomolab-discovery-spec-v1",
+      "task_id": "public-e7-range-demo",
+      "inputs": [
+        {
+          "name": "lo",
+          "role": "lower",
+          "type": {
+            "kind": "int",
+            "min": -4,
+            "max": 4
+          }
+        },
+        {
+          "name": "hi",
+          "role": "upper",
+          "type": {
+            "kind": "int",
+            "min": -4,
+            "max": 4
+          }
+        }
+      ],
+      "contract": {
+        "id": "directed-width-v1",
+        "operation": "nonnegative-directed-width",
+        "preconditions": [],
+        "invariants": [
+          "reference"
+        ],
+        "state_model": "stateless",
+        "graph_signature": "14de70ab9c901c84a1ac95acd1679a4f0f2ce00dd924a7b1f754c860ca30a777"
+      }
+    },
+    "temporal_contract": null,
+    "public_ir": {
+      "schema": "tomolab-structural-ir-v1",
+      "source_sha256": "c6eba144703c3ee4e905bc360c2b9936de6156fb0ea150fc72174fedc79c4b74",
+      "function": "reference",
+      "parameters": [
+        {
+          "name": "lo",
+          "role": "lower",
+          "annotation": "int"
+        },
+        {
+          "name": "hi",
+          "role": "upper",
+          "annotation": "int"
+        }
+      ],
+      "return_annotation": "int",
+      "semantic_roles": "DECLARED",
+      "graph": {
+        "node": "FunctionDef",
+        "args": {
+          "node": "arguments",
+          "posonlyargs": [],
+          "args": [
+            {
+              "node": "arg",
+              "role": "lower",
+              "annotation": "int"
+            },
+            {
+              "node": "arg",
+              "role": "upper",
+              "annotation": "int"
+            }
+          ],
+          "kwonlyargs": [],
+          "kw_defaults": [],
+          "defaults": []
+        },
+        "body": [
+          {
+            "node": "If",
+            "test": {
+              "node": "Compare",
+              "left": {
+                "node": "Name",
+                "role": "lower",
+                "context": "Load"
+              },
+              "ops": [
+                {
+                  "node": "Gt"
+                }
+              ],
+              "comparators": [
+                {
+                  "node": "Name",
+                  "role": "upper",
+                  "context": "Load"
+                }
+              ]
+            },
+            "body": [
+              {
+                "node": "Return",
+                "value": {
+                  "node": "Constant",
+                  "type": "int"
+                }
+              }
+            ],
+            "orelse": []
+          },
+          {
+            "node": "Return",
+            "value": {
+              "node": "BinOp",
+              "left": {
+                "node": "Name",
+                "role": "upper",
+                "context": "Load"
+              },
+              "op": {
+                "node": "Sub"
+              },
+              "right": {
+                "node": "Name",
+                "role": "lower",
+                "context": "Load"
+              }
+            }
+          }
+        ]
+      },
+      "graph_signature": "14de70ab9c901c84a1ac95acd1679a4f0f2ce00dd924a7b1f754c860ca30a777",
+      "control": {
+        "If": 1
+      },
+      "operators": [
+        "Gt",
+        "Sub"
+      ],
+      "calls": [],
+      "dependencies": [],
+      "state_effects": [],
+      "exception_conditions": [],
+      "unsupported": [],
+      "status": "SUPPORTED_STATIC_IR",
+      "claim": "syntactic correspondence only; constants omitted; no semantic or purity proof",
+      "predicates": [
+        {
+          "op": "gt",
+          "left": {
+            "var": "lower"
+          },
+          "right": {
+            "var": "upper"
+          }
+        }
+      ],
+      "predicate_origins": [
+        {
+          "index": 0,
+          "kind": "If",
+          "line": 3
+        }
+      ],
+      "predicate_rejections": [],
+      "constraint_graph": {
+        "nodes": [
+          {
+            "id": "AST-3bdadd15cb342ba44dce",
+            "kind": "public-ast-guard"
+          }
+        ],
+        "edges": [
+          {
+            "from": "AST-3bdadd15cb342ba44dce",
+            "to": "lower",
+            "kind": "depends-on-role"
+          },
+          {
+            "from": "AST-3bdadd15cb342ba44dce",
+            "to": "upper",
+            "kind": "depends-on-role"
+          }
+        ]
+      }
+    },
+    "evidence": {
+      "kind": "REFUTATION",
+      "evidence_id": "independent-7",
+      "inputs": {
+        "hi": -2,
+        "lo": -2
+      },
+      "invariant": "reference",
+      "category": "mismatch",
+      "signature": "directed-width"
+    },
+    "origin": {
+      "project": "authored-e7-functional-fixtures",
+      "lineage": "conditional-width-validation",
+      "revision": "public-fixture-v1",
+      "oracle_id": "conditional-width-validation-reference",
+      "semantics": "nonnegative-directed-width",
+      "independence_id": "reviewed-conditional-width-validation",
+      "implementation_sha256": "63f09d6835c0d472e0a4c626b16f4c3a143a65e4f5fed0107cfd49c8b2efd69e",
+      "oracle_sha256": "44c36171da25b6af48ce928527e0875924a9a363cf2ff55e84f0c2fcff710c43"
+    },
+    "split": "development",
+    "implementation_sha256": "63f09d6835c0d472e0a4c626b16f4c3a143a65e4f5fed0107cfd49c8b2efd69e",
+    "receipt_sha256": "114d07df1a78379091009a11eae61fc2d7d653deabe5e6d9f88bedbcf30db41f"
+  }
+]

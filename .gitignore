@@ -37,6 +37,11 @@ research/e3/
 research/e4/
 research/e5/
 research/e6/
+research/e7/
+e7-evaluation/
+e7-validation.json
+e7-development.json
+e7-freeze.json
 e6-validation.json
 e6-development.json
 e6-freeze.json

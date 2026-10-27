@@ -1,0 +1,34 @@
+{
+  "schema": "tomolab-discovery-spec-v1",
+  "task_id": "public-e7-range-demo",
+  "inputs": [
+    {
+      "name": "start",
+      "role": "lower",
+      "type": {
+        "kind": "int",
+        "min": -4,
+        "max": 4
+      }
+    },
+    {
+      "name": "stop",
+      "role": "upper",
+      "type": {
+        "kind": "int",
+        "min": -4,
+        "max": 4
+      }
+    }
+  ],
+  "contract": {
+    "id": "directed-width-v1",
+    "operation": "nonnegative-directed-width",
+    "preconditions": [],
+    "invariants": [
+      "reference"
+    ],
+    "state_model": "stateless",
+    "graph_signature": "14de70ab9c901c84a1ac95acd1679a4f0f2ce00dd924a7b1f754c860ca30a777"
+  }
+}

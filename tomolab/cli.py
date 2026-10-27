@@ -197,9 +197,14 @@ def main(argv: list[str] | None = None) -> int:
     for parser in (stateful_demo,stateful_run,stateful_plan,stateful_inspect):
         parser.add_argument("--output")
 
+    from .knowledge_cli import register as register_knowledge
+    register_knowledge(cmd)
     args = p.parse_args(argv)
     try:
-        if args.command.startswith("stateful-"):
+        if args.command.startswith("knowledge-"):
+            from .knowledge_cli import dispatch
+            _save(dispatch(args, p, EXAMPLES), args.output)
+        elif args.command.startswith("stateful-"):
             from .discovery.schema import integer, keys, validate_spec
             from .discovery.temporal import trace_layout, validate_temporal_contract
             if args.command == "stateful-run" and not args.allow_local_execution:

@@ -1,0 +1,149 @@
+{
+  "schema": "tomolab-structural-ir-v1",
+  "source_sha256": "8db27c4d27eb08d310fb09cec9d9ed951ab0a441e7612aa21d3cac6386847e96",
+  "function": "reference",
+  "parameters": [
+    {
+      "name": "start",
+      "role": "lower",
+      "annotation": "int"
+    },
+    {
+      "name": "stop",
+      "role": "upper",
+      "annotation": "int"
+    }
+  ],
+  "return_annotation": "int",
+  "semantic_roles": "DECLARED",
+  "graph": {
+    "node": "FunctionDef",
+    "args": {
+      "node": "arguments",
+      "posonlyargs": [],
+      "args": [
+        {
+          "node": "arg",
+          "role": "lower",
+          "annotation": "int"
+        },
+        {
+          "node": "arg",
+          "role": "upper",
+          "annotation": "int"
+        }
+      ],
+      "kwonlyargs": [],
+      "kw_defaults": [],
+      "defaults": []
+    },
+    "body": [
+      {
+        "node": "If",
+        "test": {
+          "node": "Compare",
+          "left": {
+            "node": "Name",
+            "role": "lower",
+            "context": "Load"
+          },
+          "ops": [
+            {
+              "node": "Gt"
+            }
+          ],
+          "comparators": [
+            {
+              "node": "Name",
+              "role": "upper",
+              "context": "Load"
+            }
+          ]
+        },
+        "body": [
+          {
+            "node": "Return",
+            "value": {
+              "node": "Constant",
+              "type": "int"
+            }
+          }
+        ],
+        "orelse": []
+      },
+      {
+        "node": "Return",
+        "value": {
+          "node": "BinOp",
+          "left": {
+            "node": "Name",
+            "role": "upper",
+            "context": "Load"
+          },
+          "op": {
+            "node": "Sub"
+          },
+          "right": {
+            "node": "Name",
+            "role": "lower",
+            "context": "Load"
+          }
+        }
+      }
+    ]
+  },
+  "graph_signature": "14de70ab9c901c84a1ac95acd1679a4f0f2ce00dd924a7b1f754c860ca30a777",
+  "control": {
+    "If": 1
+  },
+  "operators": [
+    "Gt",
+    "Sub"
+  ],
+  "calls": [],
+  "dependencies": [],
+  "state_effects": [],
+  "exception_conditions": [],
+  "unsupported": [],
+  "status": "SUPPORTED_STATIC_IR",
+  "claim": "syntactic correspondence only; constants omitted; no semantic or purity proof",
+  "predicates": [
+    {
+      "op": "gt",
+      "left": {
+        "var": "lower"
+      },
+      "right": {
+        "var": "upper"
+      }
+    }
+  ],
+  "predicate_origins": [
+    {
+      "index": 0,
+      "kind": "If",
+      "line": 3
+    }
+  ],
+  "predicate_rejections": [],
+  "constraint_graph": {
+    "nodes": [
+      {
+        "id": "AST-3bdadd15cb342ba44dce",
+        "kind": "public-ast-guard"
+      }
+    ],
+    "edges": [
+      {
+        "from": "AST-3bdadd15cb342ba44dce",
+        "to": "lower",
+        "kind": "depends-on-role"
+      },
+      {
+        "from": "AST-3bdadd15cb342ba44dce",
+        "to": "upper",
+        "kind": "depends-on-role"
+      }
+    ]
+  }
+}

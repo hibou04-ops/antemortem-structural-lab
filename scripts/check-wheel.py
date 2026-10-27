@@ -48,6 +48,9 @@ with tempfile.TemporaryDirectory(prefix="structural-wheel-") as folder:
     temporal_contract = str(Path(examples)/"temporal"/"stack-contract.json")
     inspected = json.loads(run("-m","tomolab","stateful-inspect","--contract",temporal_contract))
     assert inspected["execution"] == "NOT_EXECUTED"
+    knowledge_folder = Path(examples)/"knowledge"
+    inspected = json.loads(run("-m","tomolab","knowledge-inspect","--spec",str(knowledge_folder/"target-spec.json")))
+    assert inspected["execution"] == "NOT_EXECUTED"
     evidence = root / "claim.json"
     target = str(Path(examples) / "claim_only" / "symmetry_bug.py")
     run("-m", "tomolab", "claim-run", target, "--claim", claim,
@@ -104,4 +107,17 @@ with tempfile.TemporaryDirectory(prefix="structural-wheel-") as folder:
                                       "--budget","8","--pool-size","12"))
         assert temporal_plan["gate"]["status"] == "APPLICABLE_FOR_PROBING"
         assert temporal_plan["final_feedback_allowed"] is False
+        knowledge = json.loads(run("-m","tomolab","knowledge-demo","--budget","16","--guidance-budget","4",
+                                   "--pool-size","16","--shrink-budget","16"))
+        assert knowledge["status"] == "COUNTEREXAMPLE_FOUND" and knowledge["snapshot"]["frozen"]
+        assert knowledge["gate"]["status"] == "QUALIFIED_FOR_PROBING"
+        assert knowledge["metrics"]["guided_prefix_calls"] > 0
+        assert knowledge["counterexample"]["replay"] == "MATCHED_TWICE"
+        knowledge_file = root/"knowledge.json"
+        knowledge_file.write_text(json.dumps(knowledge),encoding="utf-8")
+        planned = json.loads(run("-m","tomolab","knowledge-plan","--archive",str(knowledge_file),
+            "--spec",str(knowledge_folder/"target-spec.json"),"--target-provenance",str(knowledge_folder/"target-provenance.json"),
+            "--public-ir",str(knowledge_folder/"target-ir.json"),"--budget","8","--guidance-budget","4","--pool-size","16"))
+        assert planned["gate"]["status"] == "QUALIFIED_FOR_PROBING"
+        assert planned["oracle_calls"] == planned["target_calls"] == 0 and planned["final_feedback_allowed"] is False
     print(f"Wheel {version}: install, dependency check, bundled demo, claim and replay passed")
