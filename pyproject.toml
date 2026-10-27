@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "antemortem-structural-lab"
-version = "0.7.0a1"
+version = "0.8.0a1"
 requires-python = ">=3.11"
 description = "Experimental structural falsification and counterexample-guided mold learning"
 readme = "README.md"
@@ -34,6 +34,7 @@ include = ["tomolab", "tomolab.*"]
 "share/antemortem-structural-lab/examples/discovery" = ["examples/discovery/*.py", "examples/discovery/*.json"]
 "share/antemortem-structural-lab/examples/temporal" = ["examples/temporal/*.py", "examples/temporal/*.json"]
 "share/antemortem-structural-lab/examples/knowledge" = ["examples/knowledge/*.py", "examples/knowledge/*.json"]
+"share/antemortem-structural-lab/examples/evidence" = ["examples/evidence/*.py", "examples/evidence/*.json", "examples/evidence/README.ko.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

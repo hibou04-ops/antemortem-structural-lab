@@ -1,0 +1,47 @@
+{
+  "schema": "tomolab-e8-consumed-identities-v1",
+  "source_revision": "2edfb1230bd8519072845d9b9b0e2d4c42ab3837",
+  "identities": [
+    {
+      "canonical_function_identity": "ef7ff4bef40ec41c5fa425335211c5e5f7161d8c9adadc367f0dd6c6159dbef4",
+      "cross_revision_function_key": "940a34d1598aeb4e3314545da5a5e43d59ae662922dba2313030a91f6fc729f4",
+      "normalized_ast_clone_sha256": "3e8957017eece69f705d9134f1170efabb20685825c253d7eb4f1a4efbe12443",
+      "implementation_sha256": "7538746189cc405ffb428ac83f616f61d0f3faf362e7b4360f8d8c645877bfe0"
+    },
+    {
+      "canonical_function_identity": "68f2b5c7ab9b13efbece4787e5a997424410bec19ad5d5e1315239e35088a633",
+      "cross_revision_function_key": "138bede24d9289ec5d4401f3e67aacbe71b4f279a0bd03477b7e36cd33800290",
+      "normalized_ast_clone_sha256": "0fac85442d4b496e74386b6e93ba25fb03bbcf1cba8eb280ca8fe30b257a8b4b",
+      "implementation_sha256": "37168462e65fec13b41ab47033afb4dc8a25cd64d6c83162e1c5598d38f7b6e0"
+    },
+    {
+      "canonical_function_identity": "db31f90a12834d6fcbfe6668272b2c3cee74e718e4cfc57cd5e79e0c2cadb86d",
+      "cross_revision_function_key": "533662a154fa3f4a57add67b8a96f266f22fc9f679b032d83f95cdddc8e93111",
+      "normalized_ast_clone_sha256": "577753e219609d4b79bf034b50912ac89f2ffc3406c6c4e8a980928c795cee9a",
+      "implementation_sha256": "189c1b60f1bc57649aebe4cef16c046ab8f89d0957fa97b0c014f0f09e7a6f3d"
+    },
+    {
+      "canonical_function_identity": "b2130048b5f898ea231b8c9a025ddc8b9db6c74e52c6d4a88cb66cb2228eb714",
+      "cross_revision_function_key": "44247a11e81c89d6f40937d25cc75883334ca45ee5b1b998ff50aa43a18ae8bf",
+      "normalized_ast_clone_sha256": "d388bf3d9983cd39e079c7bd3ee6f04f7f880d141c03d8169468a91fe2bfdec6",
+      "implementation_sha256": "ce51c145bcdd17f1a87dd2c956fa13547513d232a37237c95e7e3a422fef069a"
+    },
+    {
+      "canonical_function_identity": "e957b8b740496ea9e65ad2161d9db7d62385a471e60c5b129a88aee818c48199",
+      "cross_revision_function_key": "d79f1a6c188ca391c7afdecad9e89623bf80e59df444e3d5a00e838dd159a6a9",
+      "normalized_ast_clone_sha256": "0c8565bc6ddd786915091e1988241fc0014aa87cc062f2d46716ed807d0168bf",
+      "implementation_sha256": "edf18cd583a17409f56344a83cf1ef1c6b6696b7c63033f973641fc3e6ad110a"
+    },
+    {
+      "canonical_function_identity": "96589ad0fdae21c0bae44d328f7f305195d94869a30e9cd37baf11913f7659bb",
+      "cross_revision_function_key": "33207b591625dc3567cb77788edafa2d62fe0918bb5c62f83b2173ad2eca25a6",
+      "normalized_ast_clone_sha256": "b5fa06f12ffce32b8eb7d30e68e509522f60a1b849ee48a8b00536234cd645b0",
+      "implementation_sha256": "85bc600f17b8175d0700b47044c67aa1dbb4344df75e0e848845d8387d2f3f1a"
+    }
+  ],
+  "excluded_research_target_projects": [
+    "antemortem-structural-lab"
+  ],
+  "authority": "REVIEWED_PUBLIC_GIT_IDENTITY_METADATA_NOT_A_GLOBAL_OR_HOSTILE_HOST_SECURITY_REGISTRY",
+  "old_E1_E7_final_inputs_answers_plans_accessed": false
+}

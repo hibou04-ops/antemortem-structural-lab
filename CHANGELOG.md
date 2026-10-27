@@ -2,6 +2,17 @@
 
 All versions are experimental. Versions v0.1.0 through v0.2.0 were retrospective imports of archived snapshots; those commit timestamps **do not** represent the dates when the experiments were originally performed. Later changes are developed in the public repository without rewriting historical tags.
 
+## 0.8.0a1 작업 후보 — 개발 증거 연결과 평가 readiness (미발행)
+
+- 생산 도구 이름과 무관하게 검토된 `DEVELOPMENT` 기록을 수용하는 공통 계약, 원본 결과·Oracle·출처·재현 결속, 중복 관측 구분과 오류 격리를 추가했습니다. 새 실행과 캐시 재사용을 구분합니다.
+- 기본 Native Hypothesis 수집기는 기존 생성·축소를 재사용하고 실제 두 번의 재현과 Target·Oracle 호출 합계 상한을 적용합니다. 사전 승인한 `EXACT_CANONICAL_JSON` 비교만 지원하며 수치 허용오차·정상 예외 비교는 지원하지 않습니다.
+- 기존 지식 엔진으로 실제 E7 v2 Source 관측 371개를 누락 없이 연결했습니다. 검증된 실패 입력 5개는 기존 1개 기전에 해당하며 새 블라인드 발견이 아닙니다. 후보 288개는 전부 `CONTRADICTED`, 살아 있는 구조적 가설·독립 C·qualified guidance는 모두 0개입니다.
+- Source/C/Target 계약, 실제 guidance 변화, Oracle 검토와 사용 이력을 확인하는 `EvaluationReadiness` 및 호출 전 최종 실행 차단을 추가했습니다. 이름·경로·해시 변경만으로 독립성이나 새 Target을 인정하지 않습니다.
+- `evidence-collect/import/inspect/learn/corroborate`, `readiness-check/demo`와 공개 기능 예제를 추가했습니다. 예제는 기능 검사이며 연구 성과에 포함하지 않습니다.
+- 승인된 5개 저장소의 Git 이력 182개와 함수 후보 18개를 검토했으나 완전한 독립 S→C→T 연결을 확보하지 못했습니다. 새 생산 코드·Oracle 호출과 최종 A~D 비교는 0회입니다. 상태는 `NOT_EXECUTED_READINESS_BLOCKED`, 전이 가치는 `NOT_EXECUTED`입니다.
+- 캐시 Source 전체 재구성은 262.921447초, 음성 메타데이터 readiness 진단은 약 2.544초였습니다. 최초 자료 수집 비용이나 A~D 성능 비교를 대신하지 않으며 자동 ROI 판정은 없습니다.
+- 기존 E1~E7 문서·동결 자료를 보존합니다. 전체506개(기존409＋신규97) 검사가 82.569초에 통과했고 실패·skip0, 기존28개 검사 파일의 SHA가 유지됐습니다. 이후 비용 계측 보완 관련29개 검사도 통과했습니다. build·메타데이터·공개 범위, 설치 wheel 검사37개와 README 명령60개가 통과했습니다. CI는 draft PR 현재 head의 필수 검사를 참조합니다. 변경은 작업 브랜치와 draft PR로 보존하며 병합·태그·Release는 만들지 않습니다. [E8 개발 결과와 한계](docs/E8_DEVELOPMENT_REPORT.md).
+
 ## v0.7.0a1 — Evidence-gated structural knowledge
 
 - 기존 E5/E6 Version Space와 공통 Typed IR을 재사용해 가설·독립 개발 지지·반증·적용 범위와 출처를 보존합니다.

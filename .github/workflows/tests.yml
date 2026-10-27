@@ -17,6 +17,8 @@ jobs:
         python-version: ['3.11', '3.12', '3.13']
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
@@ -32,8 +34,10 @@ jobs:
         run: python -m twine check dist/*
       - name: Check public source and artifact contents
         run: python scripts/check-public-scope.py
-      - name: Verify committed E7 research product bytes
-        run: python scripts/check-e7-freeze.py
+      - name: Verify preserved E7 Git revision
+        run: python scripts/check-historical-e7-freeze.py
+      - name: Verify current E8 implementation commitment
+        run: python scripts/check-e8-freeze.py
       - name: Check wheel outside the source checkout
         run: python scripts/check-wheel.py
       - name: Check optional QA integration in the installed wheel
@@ -93,9 +97,21 @@ jobs:
         run: docker build -f containers/e7-generator.Dockerfile -t tomolab-e7-generator:local containers
       - name: Verify E7 access controls and evidence-qualified native discovery
         run: python scripts/check-knowledge-isolation.py
+  release-eligibility:
+    runs-on: ubuntu-latest
+    outputs:
+      allow_release: ${{ steps.gate.outputs.allow_release }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - id: gate
+        name: Determine conditional E8 publication eligibility
+        run: python scripts/check-e8-release-eligibility.py --github-output
   prerelease:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [tests, generator-isolation, unified-generator-isolation, temporal-generator-isolation, knowledge-generator-isolation]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.release-eligibility.outputs.allow_release == 'true'
+    needs: [tests, generator-isolation, unified-generator-isolation, temporal-generator-isolation, knowledge-generator-isolation, release-eligibility]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -109,11 +125,11 @@ jobs:
       - run: python -m twine check dist/*
       - run: python scripts/check-public-scope.py
       - run: python scripts/check-wheel.py
-      - run: python scripts/check-e7-freeze.py
-      - name: Verify draft and publish experimental E7 prerelease
+      - run: python scripts/check-e8-freeze.py
+      - name: Verify readiness and publish conditional E8 prerelease
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python scripts/publish-e7.py
+        run: python scripts/publish-e8.py
       - uses: actions/upload-artifact@v4
         with:
           name: release-receipt

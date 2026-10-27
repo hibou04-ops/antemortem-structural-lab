@@ -38,6 +38,12 @@ research/e4/
 research/e5/
 research/e6/
 research/e7/
+research/e8/
+e8-evaluation/
+e8-evidence/
+e8-private/
+e8-readiness-private*.json
+e8-final-*.json
 e7-evaluation/
 e7-validation.json
 e7-development.json

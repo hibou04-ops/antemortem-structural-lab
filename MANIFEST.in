@@ -18,6 +18,7 @@ include docs/E7_CODE_FREEZE.json
 recursive-include examples/discovery *.json
 recursive-include examples/temporal *.json
 recursive-include examples/knowledge *.json
+recursive-include examples/evidence *.json *.md
 recursive-include containers *.Dockerfile
 recursive-include scripts *.ps1
 recursive-include scripts *.py
@@ -29,4 +30,14 @@ prune research/e4
 prune research/e5
 prune research/e6
 prune research/e7
+prune research/e8
+prune e8-evaluation
+prune e8-evidence
+prune e8-private
+include docs/E8_CODE_FREEZE.json
+include docs/E8_EVALUATION_CONTRACT.json
+include docs/E8_DEVELOPMENT_REPORT.md
+include docs/E8_RESULTS.json
+include docs/E8_RELEASE_AUTHORIZATION.json
+include docs/E8_CONSUMED_IDENTITIES.json
 global-exclude PRIVATE_* *EVIDENCE*.zip

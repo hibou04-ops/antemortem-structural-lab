@@ -1,5 +1,21 @@
 # Antemortem Structural Lab
 
+## E8 작업 후보 — 개발 증거 연결과 평가 readiness
+
+현재 로컬 작업 버전은 `0.8.0a1`이며 공개 릴리스는 없습니다. 도구 중립적인 개발 증거 수용과 기본 Native Hypothesis 수집기를 연결했습니다. **실제 Source 관측 371개를 기존 엔진에 연결했으나 후보 288개가 모두 반증되어 최종 A~D 비교를 실행하지 않았습니다.** 유효 실패 입력 5개는 이미 알려진 1개 기전의 개발 근거입니다. 살아 있는 구조적 가설·독립 C·적격 T·qualified guidance는 모두 0개이며 상태는 `NOT_EXECUTED_READINESS_BLOCKED`입니다. 연구 전이의 추가 가치는 입증하지 못했습니다.
+
+[한국어 E8 사용 흐름](README.ko.md#e8-작업-후보-개발-증거-연결과-최종-평가-차단) · [개발 보고서](docs/E8_DEVELOPMENT_REPORT.md) · [공개 결과](docs/E8_RESULTS.json) · [평가 계약](docs/E8_EVALUATION_CONTRACT.json)
+
+`개발 실패 로그 → Oracle·출처 확인 → 구조적 후보 → 동일한 독립 구현에서 양성·음성 보강 → 새 Target 적용 검사 → 실제 guidance 변화 → readiness → 적격할 때만 최종 비교`
+
+로컬 checkout에서 `python -m pip install ".[qa,solver]"`로 작업 후보를 설치할 수 있습니다. 공개 [examples/evidence 안내](examples/evidence/README.ko.md)의 `evidence-collect`, `evidence-inspect`, `evidence-learn`은 직접 작성한 기능 예제입니다. `readiness-demo`는 빈 Source/C/T가 최종 평가를 차단하는 기능 예제입니다. 검토한 host 자료는 `readiness-check`로 검사하며 부족하면 종료 코드 `3`과 구체적인 차단 이유를 반환합니다. 예제 성공을 연구 성과로 계산하지 않습니다.
+
+새 수집기는 사전 승인한 `EXACT_CANONICAL_JSON` 비교만 지원합니다. 수치 허용오차·정상 예외 비교는 지원하지 않습니다. `max-calls`는 재현을 포함한 Target와 Oracle 호출의 합이며, 실행 승인 플래그는 OS 격리가 아닙니다. 원본 결과와 증거 bundle은 host 전용입니다. Generator에는 기존 최소 증거만 전달합니다.
+
+기존 E7 v2 개발 로그는 과거 실제 관측의 일치를 확인한 `CACHED_OBSERVATION_REPLAY`로 수용했습니다. 새 생산 코드·Oracle 호출은 0회입니다. 전체 Source 재구성 비용 262.921447초와 음성 메타데이터 차단 진단 약 2.544초는 개발 비용이며 A~D 성능 시간이 아닙니다. 독립 C/T 계약·평가자 대조 영수증과 생존 가설이 없으므로 비교와 릴리스는 차단했습니다. 자동 ROI 판정은 없으며 실제 비교와 독립적인 비용·효과 분석이 필요합니다.
+
+전체 회귀 506개(기존409＋신규97)가 82.569초에 통과했고 실패·skip은 0개입니다. 기존28개 검사 파일의 SHA를 보존했으며 이후 비용 계측 보완 관련29개 검사도 통과했습니다. 빌드·메타데이터·공개 범위 검사와 설치 wheel 검사 37개, README 명령 60개가 통과했습니다. QA 의존성은 승인된 기존 환경을 사용했고 기본 설치는 새 venv에서 확인했습니다. Docker 격리와 원격 CI는 draft PR 현재 head의 검사를 참조합니다. 변경은 작업 브랜치와 draft PR로 보존하는 단계이며 병합·태그·릴리스를 진행하지 않습니다. 이하 본문은 이전 공개 버전의 안내 기록으로 보존합니다.
+
 An experimental Python tool that tests trusted functions, records failing inputs, and uses competing explanations of those failures to choose the next test. It combines **MRI** code inspection, **CAST** execution observations, **Claim-to-Witness** checks, and a **Mold** learning loop.
 
 **[한국어 사용자 안내](README.ko.md)** · [Changelog](CHANGELOG.md) · [Validation record](docs/RELEASE_VALIDATION.md)

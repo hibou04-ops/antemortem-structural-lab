@@ -1,5 +1,77 @@
 # Antemortem Structural Lab
 
+## E8 작업 후보: 개발 증거 연결과 최종 평가 차단
+
+현재 작업 버전은 `0.8.0a1`이며 공개 릴리스는 만들지 않았습니다. **실제 개발 실패를 기존 지식 엔진에 연결했지만, 살아 있는 구조적 가설과 독립 검증 근거가 없어 최종 비교는 실행하지 않았습니다.** 도구 중립적인 수용과 기본 Native Hypothesis 수집기를 추가한 제품 변경입니다. 전이 성능 향상을 입증한 결과는 없습니다.
+
+| 실제 개발 자료에서 확인한 항목 | 결과 |
+|---|---:|
+| 기존 E7 v2에서 수용한 해당 Source 관측 | 371개, 누락 0개 |
+| 재현 근거가 연결된 실패 입력 / 이미 알려진 결함 기전 | 5개 / 1개 |
+| 기존 문법이 생성한 후보 / 반증된 후보 | 288개 / 288개 |
+| 좌표만 저장한 후보 | 210개, 위 288개의 부분집합 |
+| 살아 있는 구조적 가설 / 독립 C / 적격 T / qualified guidance | 모두 0개 |
+| 새 생산 코드·Oracle 호출 / 최종 A~D 비교 | 0회 / 미실행 |
+
+[개발 보고서](docs/E8_DEVELOPMENT_REPORT.md) · [공개 결과](docs/E8_RESULTS.json) · [평가 계약](docs/E8_EVALUATION_CONTRACT.json)
+
+### 실제 사용 흐름
+
+`개발 실패 로그 가져오기 → Oracle·출처 확인 → 구조적 후보 생성 → 독립 개발 근거 연결 → Target 적용 검사 → readiness 확인 → 적격할 때만 동결 비교`
+
+- 기본 새 수집기는 Native Hypothesis의 기존 생성·축소를 사용합니다. 검토한 대상·Oracle에만 명시적으로 실행을 승인해야 합니다. `max-calls`는 모든 재현을 포함한 **Target 호출과 Oracle 호출의 합**입니다.
+- 다른 도구의 기록도 같은 `DEVELOPMENT` 계약으로 가져올 수 있습니다. 도구 이름으로 수용 여부나 구현 독립성을 판정하지 않습니다. 실제 결과·출처·Oracle 검토·입력 domain·재현 영수증이 필요하며, 오류와 재현 미확인은 격리합니다.
+- Source 학습에는 기존 `KnowledgeArchive.from_failure_log()`를 사용합니다. 같은 Source의 추가 관측은 기존 개발 관측 경로로 연결합니다. Source와 관측 각각의 256개 상한을 보존하며, 전체 512개를 넘기거나 초기 256개에 실패가 없으면 기록을 골라 바꾸지 않고 중단합니다.
+- 승격에는 **동일한 별도 검토 구현·Oracle에서 얻은 양성·음성 예측 검증**이 필요합니다. 도구 변경, 이름 변경, 복제본, 수정 전후 한 계보만으로 독립 C를 충족하지 않습니다. 기존 반증과 부모 세대는 보존합니다.
+- 적격 지식이 있어도 새 Target의 공개 계약에 적용되고, empty archive와 다른 유효 후보·순서를 실제로 만들어야 합니다. 최종 답·실패 입력·패치는 Generator에 제공하지 않습니다.
+
+소스 checkout에서 로컬 후보를 설치하고 공개 기능 예제를 실행하는 명령입니다. 설치 wheel에서는 동봉된 예제 폴더를 기준으로 같은 상대 경로를 사용합니다. 아래 예제는 직접 작성한 기능 검사이며 연구 성과에 포함하지 않습니다.
+
+```powershell
+python -m pip install ".[qa,solver]"
+$EvidenceRoot = Join-Path $env:TEMP 'tomolab-e8-authored-example'
+New-Item -ItemType Directory -Force $EvidenceRoot | Out-Null
+python -m tomolab evidence-collect examples/evidence/target.py --oracle-file examples/evidence/oracle.py --spec examples/evidence/spec.json --provenance examples/evidence/provenance.json --oracle-validation examples/evidence/oracle-validation.json --function-identity authored-identity --generation-id E8-AUTHORED-DEMO --allow-local-execution --budget 8 --max-calls 16 --output "$EvidenceRoot/collection.json"
+python -m tomolab evidence-inspect --bundle "$EvidenceRoot/collection.json"
+$Origin = Get-Content examples/evidence/provenance.json | ConvertFrom-Json
+$Review = Get-Content examples/evidence/oracle-validation.json | ConvertFrom-Json
+python -m tomolab evidence-learn --bundle "$EvidenceRoot/collection.json" --implementation-hash $Origin.implementation_sha256 --spec-hash $Review.public_spec_hash --output "$EvidenceRoot/source.json"
+python -m tomolab readiness-demo
+```
+
+`evidence-inspect`에서 격리 이유, 새 실행 비용과 캐시 재사용을 확인합니다. 별도 검토한 C가 있다면 `evidence-corroborate`로 연결합니다. [동봉된 안내](examples/evidence/README.ko.md)에 가져오기·보강 명령과 파일 계약을 설명합니다. `--allow-local-execution`은 현재 host에서 검토한 코드를 실행하는 동의이며 OS 격리가 아닙니다. 기본 새 수집기는 사전 승인한 `EXACT_CANONICAL_JSON` 비교만 지원합니다. 수치 허용오차나 명세상 정상 예외 비교를 요구하는 계약에는 사용할 수 없습니다.
+
+### qualified가 0일 때와 최종 평가
+
+현재 실제 E8 자료는 모든 후보가 `CONTRADICTED`이고 독립 C·적격 T·실효 guidance가 없습니다. 최종 상태는 **`NOT_EXECUTED_READINESS_BLOCKED`**입니다. `readiness-demo`는 빈 자료에서 차단되는 기능 예제이며 실제 E8 연구 자료를 공개한 실행이 아닙니다.
+
+검토한 비공개 host 자료를 준비했다면 다음처럼 검사합니다. `HOST/...`는 사용자가 근거와 사용 이력을 갖춰 준비하는 파일 경로입니다.
+
+```powershell
+$AuthorityId = python -c "from tomolab.discovery.evaluation_usage import UsageLedger; import sys; print(UsageLedger(sys.argv[1]).authority_id)" HOST/e8-usage.jsonl
+python -m tomolab readiness-check --bundle HOST/e8-readiness-bundle.json --usage-ledger HOST/e8-usage.jsonl --authority-id $AuthorityId --output results/e8-readiness.json
+```
+
+`$AuthorityId`는 고정 장부 경로에서 계산한 64자리 SHA-256이며, 평가 계약에 등록한 값과 같아야 합니다. 이 검사는 최종 실행 승인이 아닙니다. 아래 최종 host 실행기는 환경에 고정된 정본을 사용하고 기존 소비 기록을 추가 검사합니다.
+
+필수 근거가 부족하면 종료 코드 `3`과 차단 이유를 반환하며 최종 Target 측정을 시작하지 않습니다. 현재 차단 이유는 `NO_SURVIVING_HYPOTHESIS`, `NO_INDEPENDENT_CORROBORATION`, `NO_APPLICABLE_TARGET`, `NO_EFFECTIVE_GUIDANCE`입니다. 새 C/T의 검토된 Oracle와 평가자 전용 양성·정상 대조 영수증도 확보하지 못했습니다. 최종 평가를 실행하지 않은 상태를 `INCONCLUSIVE`로 기록하지 않습니다.
+
+소스 checkout의 최종 host 실행기도 같은 부족 조건을 실제 대상 import 전에 차단합니다. 현재 자료의 차단 확인 경로는 다음과 같습니다.
+
+```powershell
+python scripts/evaluate-e8.py --bundle HOST/e8-readiness-bundle.json --output results/e8-blocked-comparison.json
+```
+
+실제 최종 실행에는 고정 host 권한 정본·등록된 평가자 매핑·제품 해시·공유 사용 이력이 추가로 필요합니다. 출력 폴더를 바꾸어 사용 이력을 초기화할 수 없습니다. 이 host 계약은 Oracle의 진실성이나 전 세계 실행 이력·OS 격리를 보장하지 않습니다.
+
+기존 개발 기록의 재사용은 `CACHED_OBSERVATION_REPLAY`입니다. 과거 실제 관측들의 결과 일치를 확인한 것이며 E8에서 새로 두 번 재실행한 기록은 아닙니다. Source 371개는 기존 초기 학습 256개와 동일 Source 개발 관측 115개로 모두 연결했습니다. 기존 snapshot의 `independent_observations=115`는 관측 행수라는 명칭이며 실제 독립 C는 0개입니다.
+
+캐시 기록 전체 재구성은 262.921447초, 승인 없는 음성 메타데이터 readiness 진단은 약 2.544초였습니다. 두 값은 개발·진단 비용이며 A~D의 성능 비교가 아닙니다. 최초 자료 수집 비용을 무료로 간주하거나 경제적 ROI를 자동 판정하지 않습니다. A~D 비교와 추가 가치·손실 분석은 실행되지 않았습니다. 과거 결함을 향후 재현하면 `HISTORICAL_DEFECT_REDISCOVERY`로 구분하며 새 생산 결함 발견이나 일반화 우위로 표현하지 않습니다.
+
+전체 회귀 506개(기존409＋신규97)가 82.569초에 통과했고 실패·skip은 0개입니다. 기존 28개 검사 파일의 SHA가 유지됐으며 이후 비용 계측 보완 관련 29개 검사도 통과했습니다. 빌드·메타데이터·공개 범위와 설치 wheel 검사37개, README 명령60개가 통과했습니다. 기본 설치는 새 venv, QA는 승인된 기존 의존성으로 확인했습니다. Docker 격리와 CI는 draft PR의 현재 head 검사를 참조합니다. 변경은 작업 브랜치와 draft PR로 보존하며 병합·태그·릴리스를 진행하지 않습니다. 비공개 원본·입력·답·실행 로그는 공개 패키지에 포함하지 않습니다.
+
+## 이전 공개 버전 안내 — 보존
+
 신뢰할 수 있는 Python 함수를 검사하고, 실패한 입력을 저장하며, 그 실패를 설명하는 경쟁 가설로 다음 테스트를 선택하는 실험 도구입니다. 코드 구조를 읽는 **MRI**, 실행 결과를 관측하는 **CAST**, 반례를 찾는 **Claim-to-Witness**, 실패 조건을 학습하는 **Mold**를 제공합니다.
 
 **한국어 사용자 안내** · [English](README.md) · [변경 이력](CHANGELOG.md) · [검증 기록](docs/RELEASE_VALIDATION.md)

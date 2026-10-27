@@ -1,0 +1,13 @@
+{
+  "schema": "tomolab-discovery-spec-v1",
+  "task_id": "e8-authored-identity-fixture",
+  "inputs": [{"name": "value", "role": "operand", "type": {"kind": "int", "min": -3, "max": 3}}],
+  "contract": {
+    "id": "authored-identity-contract",
+    "operation": "identity",
+    "preconditions": [],
+    "invariants": ["reference"],
+    "state_model": "stateless",
+    "graph_signature": "UNKNOWN"
+  }
+}
