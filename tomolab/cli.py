@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sysconfig
 from pathlib import Path
@@ -13,6 +14,8 @@ from .replay import replay_evidence
 
 ROOT = Path(__file__).resolve().parent.parent
 EXAMPLES = (ROOT / "examples" if (ROOT / "pyproject.toml").is_file() else
+            ROOT / "share" / "antemortem-structural-lab" / "examples"
+            if (ROOT / "share" / "antemortem-structural-lab" / "examples").is_dir() else
             Path(sysconfig.get_path("data")) / "share" / "antemortem-structural-lab" / "examples")
 
 
@@ -107,9 +110,71 @@ def main(argv: list[str] | None = None) -> int:
         mold_parser.add_argument("--backend", choices=("subprocess", "docker"), default="subprocess")
         mold_parser.add_argument("--solver", choices=("enumeration", "z3"), default="enumeration")
         mold_parser.add_argument("--output")
+    pcs = cmd.add_parser("constraints-check", help="Check bounded AST relations without executing source")
+    pcs.add_argument("--spec", type=Path, required=True)
+    pcs.add_argument("--expression", action="append", required=True)
+    pcs.add_argument("--solver", choices=("enumeration", "z3"), default="enumeration")
+    pcs.add_argument("--output")
+    pbt_demo = cmd.add_parser("pbt-demo", help="Hypothesis generation and shrinking on a trusted bundled example")
+    pbt_run = cmd.add_parser("pbt-run", help="Property testing of a trusted target and separate integer Oracle")
+    pbt_run.add_argument("path", type=Path)
+    pbt_run.add_argument("--oracle-file", type=Path, required=True)
+    pbt_run.add_argument("--spec", type=Path, required=True)
+    pbt_run.add_argument("--function", default="implementation")
+    pbt_run.add_argument("--oracle", default="reference")
+    pbt_run.add_argument("--allow-local-execution", action="store_true")
+    for parser in (pbt_demo, pbt_run):
+        parser.add_argument("--budget", type=int, default=32)
+        parser.add_argument("--max-examples", type=int, default=128)
+        parser.add_argument("--shrink-budget", type=int, default=128)
+        parser.add_argument("--seed", type=int, default=7)
+        parser.add_argument("--backend", choices=("subprocess", "docker"), default="subprocess")
+        parser.add_argument("--solver", choices=("enumeration", "z3"), default="enumeration")
+        parser.add_argument("--output")
     args = p.parse_args(argv)
     try:
-        if args.command in ("mold-demo", "mold-run", "mold-plan"):
+        if args.command == "constraints-check":
+            from .mold.structural import compile_relation, check_consistency
+            spec = json.loads(args.spec.read_text(encoding="utf-8"))
+            relations = [compile_relation(expression, spec) for expression in args.expression]
+            _save({"relations": relations, **check_consistency(spec, relations, backend=args.solver)}, args.output)
+        elif args.command in ("pbt-demo", "pbt-run"):
+            from .mold.property_testing import run_properties
+            from .mold.schema import validate_spec
+            from .mold.service import _load
+            if args.command == "pbt-run" and not args.allow_local_execution:
+                p.error("pbt-run requires --allow-local-execution (trusted evaluator has NO sandbox)")
+            folder = EXAMPLES / "mold"
+            target = folder / "target.py" if args.command == "pbt-demo" else args.path
+            oracle = folder / "oracle.py" if args.command == "pbt-demo" else args.oracle_file
+            spec_path = folder / "spec.json" if args.command == "pbt-demo" else args.spec
+            spec = validate_spec(json.loads(spec_path.read_text(encoding="utf-8")))
+            # Validate controls and dependency availability before target import.
+            from .mold.schema import integer
+            domain_size = 1
+            for var in spec["variables"]:
+                domain_size *= var["high"] - var["low"] + 1
+            integer(args.budget, 1, min(256, domain_size), "budget")
+            integer(args.max_examples, 1, 10000, "max_examples")
+            integer(args.shrink_budget, 0, 4225, "shrink_budget")
+            integer(args.seed, 0, 2**32 - 1, "seed")
+            try:
+                import hypothesis  # noqa: F401
+            except ImportError as exc:
+                raise ValueError("property testing requires the 'qa' package extra") from exc
+            if target.resolve() == oracle.resolve():
+                raise ValueError("pbt-run requires a separately authored Oracle file")
+            fn, target_hash = _load(target, getattr(args, "function", "implementation"))
+            ref, oracle_hash = _load(oracle, getattr(args, "oracle", "reference"))
+            result = run_properties(fn, ref, spec, budget=args.budget, max_examples=args.max_examples,
+                                    shrink_budget=args.shrink_budget, seed=args.seed, backend=args.backend,
+                                    solver=args.solver, trusted_execution=True)
+            if (hashlib.sha256(target.read_bytes()).hexdigest() != target_hash or
+                    hashlib.sha256(oracle.read_bytes()).hexdigest() != oracle_hash):
+                raise ValueError("trusted source changed during property testing")
+            result.update(target_sha256=target_hash, oracle_sha256=oracle_hash)
+            _save(result, args.output)
+        elif args.command in ("mold-demo", "mold-run", "mold-plan"):
             from .mold.service import run_mold, plan_mold
             options = dict(budget=args.budget, seed=args.seed, backend=args.backend, solver=args.solver)
             if args.command == "mold-plan":
