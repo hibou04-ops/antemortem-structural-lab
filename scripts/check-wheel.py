@@ -85,6 +85,17 @@ with tempfile.TemporaryDirectory(prefix="structural-wheel-") as folder:
                              "--expression", "x + y == 0", "--expression", "x > 0"))
     assert checked["status"] == "SAT"
     if qa:
+        partial=root/"partial-source.json"
+        run("-m","tomolab","semantic-demo","--budget","12","--output",str(partial))
+        source=json.loads(partial.read_text(encoding="utf-8"))
+        assert source["scope"] == "AUTHORED_FUNCTIONAL_FIXTURE_NOT_RESEARCH"
+        run("-m","tomolab","semantic-inspect","--archive",str(partial))
+        partial_folder=Path(examples)/"partial"
+        for name in ("target.py","oracle.py","spec.json","provenance.json","oracle-validation.json","semantic-policy.json"):
+            assert (partial_folder/name).is_file(),name
+        planned=json.loads(run("-m","tomolab","semantic-plan","--archive",str(partial),"--spec",str(partial_folder/"spec.json"),
+            "--provenance",str(partial_folder/"provenance.json"),"--purpose","SOURCE_DEVELOPMENT","--budget","8","--guidance-budget","2","--pool-size","16"))
+        assert planned["target_calls"]==planned["oracle_calls"]==0
         collection_file = root/"authored-e8-collection.json"
         run("-m", "tomolab", "evidence-collect", str(evidence_folder/"target.py"),
             "--oracle-file", str(evidence_folder/"oracle.py"), "--spec", str(evidence_folder/"spec.json"),

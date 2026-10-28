@@ -6,7 +6,8 @@ from .schema import canonical, integer, keys, validate_spec
 
 PROTOCOL = "tomolab-knowledge-protocol-v1"
 MAX_MESSAGE = 8_000_000
-OPTIONS = ("archive", "temporal_contract", "target_provenance", "public_ir", "seed", "budget", "pool_size", "guidance_budget")
+OPTIONS = ("archive", "temporal_contract", "target_provenance", "public_ir", "seed", "budget", "pool_size", "guidance_budget",
+           "purpose", "allow_unvalidated_empirical")
 FIELDS = {
     "init": (("action", "spec"), OPTIONS),
     "plan": (("action", "spec", "archive"), tuple(k for k in OPTIONS if k != "archive")),
@@ -17,9 +18,20 @@ FIELDS = {
 }
 
 
-def validate_request(message, spec=None, temporal_contract=None, target_provenance=None):
+def semantic_observation_mode(initialization):
+    """Derive observation meaning only from an already validated init/plan."""
+    from .knowledge import SEMANTIC_SCHEMA
+    archive = initialization.get("archive")
+    return (initialization.get("purpose", "INDEPENDENT_TRANSFER") == "SOURCE_DEVELOPMENT"
+            or isinstance(archive, dict) and archive.get("schema") == SEMANTIC_SCHEMA)
+
+
+def validate_request(message, spec=None, temporal_contract=None, target_provenance=None,
+                     semantic_mode=False):
     # Validate and return one immutable JSON capture. A caller mutating nested
     # dictionaries must never change the payload after a different copy passed.
+    if type(semantic_mode) is not bool:
+        raise ValueError("initialized semantic observation mode must be Boolean")
     captured = canonical(message)
     if len(captured)+1 > MAX_MESSAGE:
         raise ValueError("knowledge message exceeds bound")
@@ -30,6 +42,15 @@ def validate_request(message, spec=None, temporal_contract=None, target_provenan
     keys(message, *FIELDS[action])
     clean = deepcopy(message)
     if action in ("init", "plan"):
+        # An empirical trial is an explicit Source-development request, never
+        # an alternative route around independent transfer qualification. Do
+        # not insert defaults into legacy message captures or their digests.
+        purpose = message.get("purpose", "INDEPENDENT_TRANSFER")
+        empirical = message.get("allow_unvalidated_empirical", False)
+        if purpose not in ("INDEPENDENT_TRANSFER", "SOURCE_DEVELOPMENT"):
+            raise ValueError("explicit Source development or independent transfer purpose required")
+        if type(empirical) is not bool or empirical and purpose != "SOURCE_DEVELOPMENT":
+            raise ValueError("unadopted empirical rules are Source development experiments only")
         from .knowledge import KnowledgeArchive, validate_provenance
         clean["spec"] = validate_spec(message["spec"])
         if message.get("archive") is not None:
@@ -50,10 +71,11 @@ def validate_request(message, spec=None, temporal_contract=None, target_provenan
         integer(message.get("pool_size", 64), 1, 4096)
         integer(message.get("guidance_budget", 16), 0, 2048)
     elif action == "observe":
-        from .knowledge import normalize_observation, validate_provenance
+        from .knowledge import normalize_observation, normalize_semantic_observation, validate_provenance
         if spec is None or target_provenance is None:
             raise ValueError("knowledge init with declared target provenance required")
-        event = normalize_observation(message["evidence"])
+        normalize = normalize_semantic_observation if semantic_mode else normalize_observation
+        event = normalize(message["evidence"])
         if (canonical(event["spec"]) != canonical(spec)
                 or canonical(event["temporal_contract"]) != canonical(temporal_contract)
                 or canonical(event["origin"]) != canonical(validate_provenance(target_provenance))):

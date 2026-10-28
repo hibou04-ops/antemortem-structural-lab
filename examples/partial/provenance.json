@@ -1,0 +1,10 @@
+{
+  "project": "authored-functional-fixtures",
+  "lineage": "authored-partial-addition",
+  "revision": "authored-r1-v1",
+  "oracle_id": "authored-addition-oracle",
+  "semantics": "integer-addition-v1",
+  "implementation_sha256": "ae511a6f2b5c9c2118a7faf020cd453a5cf4a745624ca660fe1281adce3899c2",
+  "oracle_sha256": "f7644b5c59344bda97043ebf72d7bf0d5d84d10d9a8159a20964131859602c9f",
+  "independence_id": "authored-functional-review"
+}

@@ -8,6 +8,7 @@ from .schema import canonical, digest, identifier, integer, keys, normalize_evid
 from .predicates import predicate_roles, validate_predicate, validate_public_ir
 
 SNAPSHOT_SCHEMA = "tomolab-discovery-snapshot-v2"
+SEMANTIC_SNAPSHOT_SCHEMA = "tomolab-discovery-snapshot-v3"
 
 
 def family_of(evidence):
@@ -16,7 +17,8 @@ def family_of(evidence):
 
 class DiscoveryEngine:
     def __init__(self,spec,*,seed=7,strategy="integrated",pool_size=512,seed_candidates=None,public_ir=None,
-                 solver="enumeration",native_strategy=None,oracle_costs=None,_pool=None):
+                 solver="enumeration",native_strategy=None,oracle_costs=None,_pool=None,
+                 claim_kinds=None,semantic_policy=None,seed_relations=None):
         self.spec = validate_spec(spec)
         self.seed = integer(seed,0,2**32-1)
         self.pool_size = integer(pool_size,1,4096)
@@ -76,7 +78,27 @@ class DiscoveryEngine:
         self.pool_events=[]
         self.query_metrics={"native_rounds":0,"native_attempts":0,"native_duplicate_rejections":0,
                             "native_constraint_rejections":0,"solver_calls":0,"solver_sat":0}
-        self.measured,self.relations,self.masks=grammar(self.pool,self.spec,self.predicates)
+        self._semantic = claim_kinds is not None or semantic_policy is not None
+        self.claim_kinds = self.semantic_policy = None
+        self.seed_relations = None
+        if self._semantic:
+            from .claim_semantics import normalize_claim_kinds, normalize_policy, semantic_grammar, validate_semantic_relation
+            self.claim_kinds = normalize_claim_kinds(claim_kinds)
+            self.semantic_policy = normalize_policy(semantic_policy)
+            if seed_relations is not None:
+                if not isinstance(seed_relations,list):
+                    raise ValueError("frozen atomic relation list required")
+                self.seed_relations=[validate_semantic_relation(r,self.spec,self.semantic_policy) for r in seed_relations]
+                for relation in self.seed_relations:
+                    term=relation["term"]
+                    if term["kind"]=="ast" and term["expression"] not in self.predicates:
+                        self.predicates.append(deepcopy(term["expression"]))
+            self.measured,self.relations,self.masks,self.unknown_masks = semantic_grammar(
+                self.pool,self.spec,self.predicates,self.semantic_policy,self.seed_relations)
+        else:
+            if seed_relations is not None:
+                raise ValueError("frozen relation seeds require explicit R1 semantics")
+            self.measured,self.relations,self.masks=grammar(self.pool,self.spec,self.predicates)
         self._prospective={relation_id({"term":{"kind":"ast","roles":sorted(predicate_roles(p)),"expression":p},"operator":"eq","value":1})
                            for p in self.public_predicates}
         self.seen=[]
@@ -102,15 +124,27 @@ class DiscoveryEngine:
         index=len(self.pool)
         self._index[key]=index
         self.pool.append(point)
-        row=measurements(point,self.spec,self.predicates)
+        if self._semantic:
+            from .claim_semantics import measurements3
+            row=measurements3(point,self.spec,self.predicates)
+        else:
+            row=measurements(point,self.spec,self.predicates)
         self.measured.append(row)
         for rid,relation in self.relations.items():
-            if holds(relation,row):
+            if self._semantic:
+                from .claim_semantics import relation_prediction
+                prediction=relation_prediction(relation,point,self.spec,self.semantic_policy,measured=row)
+                if prediction is None:self.unknown_masks[rid]|=1<<index
+            else:
+                prediction=holds(relation,row)
+            if prediction is True:
                 self.masks[rid]|=1<<index
         self.pool_events.append({"inputs":deepcopy(point),"source":source})
         return index
 
     def _candidate_ids(self):
+        if self._semantic:
+            return self._semantic_candidate_ids()
         raw=sorted({rid for group in self.groups.values() for rid in group["remaining"]}) if self.groups else sorted(self._prospective)
         # Equivalent truth columns have one vote; provenance and all alternative
         # syntax remain available in the version space and archive.
@@ -122,6 +156,10 @@ class DiscoveryEngine:
     def _predicate_for(self,rid):
         relation=self.relations[rid]
         term=relation["term"]
+        if self._semantic and term["kind"]=="compound":
+            # Public relation composition is useful for finite-pool ordering.
+            # Do not weaken the old integer Solver's supported typed fragment.
+            return None
         if term["kind"]=="ast":
             return term["expression"]
         variables=[{"var":role} for role in term["roles"]]
@@ -141,6 +179,8 @@ class DiscoveryEngine:
         return self._costs.get(canonical(self.pool[index]),1)
 
     def _install_prior(self,prior,gate):
+        if self._semantic:
+            raise ValueError("R1 priors require the kind-checked KnowledgeArchive qualification path")
         if not isinstance(prior,list) or len(prior)>64:
             raise ValueError("invalid prior groups")
         if not isinstance(gate,dict) or gate.get("status") not in ("APPLICABLE_FOR_PROBING","UNKNOWN"):
@@ -296,15 +336,146 @@ class DiscoveryEngine:
         self.seen.append(index)
         self._seen.add(index)
         predicts=[rid for rid in candidates if self.masks[rid]&(1<<index)]
-        return {"inputs":deepcopy(self.pool[index]),"reason":reason,"objective":objective,
+        result={"inputs":deepcopy(self.pool[index]),"reason":reason,"objective":objective,
                 "predicted_constraints":predicts[:32],"competing_count":len(candidates),
                 "hypothesis_ids":candidates[:32],"solver_check":solver_check,"declared_oracle_cost":self._cost(index),
                 "positive_votes":len(predicts),"sequence":len(self.seen),"frozen":self.frozen}
+        if self._semantic:
+            from .claim_semantics import SEMANTIC_VERSION
+            result.update(semantic_version=SEMANTIC_VERSION,claim_kinds=deepcopy(self.claim_kinds),
+                candidate_source="NATIVE" if not candidates or reason.startswith("native-") or self.strategy=="hypothesis" else "PARTIAL_CONDITION_EXPLORATION",
+                oracle_verdict_provided=False,empirical_guidance_adopted=False)
+        return result
 
     def _outcome(self,e):
         return family_of(e) if e["kind"]=="FAILURE" else None
 
+    def _semantic_prediction(self,rid,event):
+        index=self._index[canonical(event["inputs"])]
+        return None if self.unknown_masks[rid]&(1<<index) else bool(self.masks[rid]&(1<<index))
+
+    def _semantic_candidate_ids(self):
+        from .claim_semantics import EMPIRICAL, NECESSARY, classify, semantic_label
+        selected=set()
+        for family,group in self.groups.items():
+            for kind,remaining in group["remaining_by_kind"].items():
+                if kind==EMPIRICAL:
+                    # Stored empirical hypotheses need a separate development
+                    # utility receipt before any adoption. They do not acquire
+                    # an active vote merely by tolerating individual errors.
+                    continue
+                for rid in remaining:
+                    values=[(self._semantic_prediction(rid,e),semantic_label(e,family)) for e in self.evidence
+                            if e["invariant"]==group["invariant"]]
+                    if not any(classify(p,y,kind)["cell"]=="TP" for p,y in values):
+                        continue
+                    known=[p for p,y in values if p is not None and y is not None]
+                    if not known or all(known) or not any(known):
+                        continue
+                    selected.add(rid)
+        if not self.groups:
+            selected=set(self._prospective)
+        by_column={}
+        for rid in sorted(selected):
+            by_column.setdefault((self.masks[rid],self.unknown_masks[rid]),rid)
+        return sorted(by_column.values())
+
+    def _observe_semantic(self,evidence):
+        from .claim_semantics import classify, normalize_semantic_evidence, semantic_label, semantic_claim_id
+        if self.frozen:
+            raise ValueError("frozen engine rejects final feedback")
+        event=normalize_semantic_evidence(evidence,self.spec)
+        key=canonical(event["inputs"])
+        if key not in self._index or self._index[key] not in self._seen:
+            raise ValueError("evidence must refer to a proposed candidate")
+        if event["evidence_id"] in self._ids:
+            raise ValueError("evidence ID already used")
+        if len(self.evidence)>=self.semantic_policy["max_events"]:
+            raise ValueError("R1 evidence record cap reached")
+        valid_failure=event["kind"]=="FAILURE" and event.get("observation_status","VALID")=="VALID"
+        new_family=valid_failure and family_of(event) not in self.groups
+        if new_family and (len(self.groups)+1)*len(self.relations)*len(self.claim_kinds)>self.semantic_policy["max_claims"]:
+            raise ValueError("R1 total semantic claim budget exceeded")
+        families=set(self.groups)|({family_of(event)} if valid_failure else set())
+        old=[e for e in self.evidence if e["invariant"]==event["invariant"] and e["inputs"]==event["inputs"]]
+        # Different observed first failures are not automatically opposing
+        # labels for families that were not measured in the other execution.
+        if any(a is not None and b is not None and a!=b for e in old for family in families
+               for a,b in [(semantic_label(e,family),semantic_label(event,family))]):
+            self.inconsistent=True
+        self.evidence.append(event);self._ids.add(event["evidence_id"]);self.version+=1
+        if new_family:
+            self.groups[family_of(event)]={"invariant":event["invariant"],"remaining":set(self.relations),
+                "remaining_by_kind":{kind:set(self.relations) for kind in self.claim_kinds},"support":[],"source_evidence":[]}
+        changed=[]
+        scope={"spec":self.spec,"public_ir":self.public_ir,"semantic_policy":self.semantic_policy,
+               "seed_relations_sha256":digest(self.seed_relations),
+               "implementation_scope":"UNBOUND_GENERATOR_CANDIDATE_NOT_TRANSFER_AUTHORITY"}
+        for family,group in sorted(self.groups.items()):
+            relevant=[e for e in self.evidence if e["invariant"]==group["invariant"]]
+            checked=(relevant if new_family and family==family_of(event) or self.inconsistent else
+                     [event] if event["invariant"]==group["invariant"] else [])
+            changes=[]
+            for kind,remaining in group["remaining_by_kind"].items():
+                eliminated={}
+                for rid in remaining:
+                    for observed_event in checked:
+                        outcome=classify(self._semantic_prediction(rid,observed_event),semantic_label(observed_event,family),kind)
+                        if self.inconsistent or outcome["refutes"]:
+                            eliminated[rid]=(observed_event["evidence_id"],outcome["cell"]);break
+                for rid,(eid,cell) in sorted(eliminated.items()):
+                    self.contradictions.append({"family_id":family,"constraint_id":rid,
+                        "claim_id":semantic_claim_id(self.relations[rid],kind,family,scope),"claim_kind":kind,
+                        "evidence_id":eid,"cell":cell,"reason":"inconsistent-evidence" if self.inconsistent else "semantic-direction-counterexample"})
+                remaining.difference_update(eliminated)
+                changes.append({"claim_kind":kind,"eliminated":len(eliminated),"remaining":len(remaining)})
+            group["remaining"]=set().union(*group["remaining_by_kind"].values())
+            group["support"]=[e["evidence_id"] for e in relevant if semantic_label(e,family) is True]
+            changed.append({"family_id":family,"kinds":changes,"remaining":len(group["remaining"])})
+        self.history.append({"version":self.version,"evidence_id":event["evidence_id"],"groups":changed})
+        return {"version":self.version,"status":self.status,"groups":changed}
+
+    def _semantic_constraints(self):
+        from .claim_semantics import SEMANTIC_VERSION, classify, semantic_label, semantic_claim_id, EMPIRICAL
+        values=[]
+        scope={"spec":self.spec,"public_ir":self.public_ir,"semantic_policy":self.semantic_policy,
+               "seed_relations_sha256":digest(self.seed_relations),
+               "implementation_scope":"UNBOUND_GENERATOR_CANDIDATE_NOT_TRANSFER_AUTHORITY"}
+        for family,group in sorted(self.groups.items()):
+            for kind,remaining in group["remaining_by_kind"].items():
+                by_descriptor={}
+                for rid in sorted(remaining):
+                    descriptor=self.relations[rid]["term"]["kind"]
+                    previous=by_descriptor.get(descriptor)
+                    if previous is None or (self.masks[rid].bit_count(),rid)<(self.masks[previous].bit_count(),previous):
+                        by_descriptor[descriptor]=rid
+                for descriptor,rid in sorted(by_descriptor.items()):
+                    cells={name:[] for name in ("TP","FP","FN","TN","UNKNOWN")}
+                    for event in self.evidence:
+                        if event["invariant"]==group["invariant"]:
+                            cell=classify(self._semantic_prediction(rid,event),semantic_label(event,family),kind)["cell"]
+                            cells[cell].append(event["evidence_id"])
+                    trivial=not (cells["TP"] or cells["FP"]) or not (cells["FN"] or cells["TN"])
+                    source_status=("EMPIRICAL_CANDIDATE" if kind==EMPIRICAL and cells["TP"] else
+                        "HYPOTHESIS_NO_POSITIVE_SUPPORT" if not cells["TP"] else
+                        "TRIVIAL_ON_OBSERVED_INPUTS" if trivial else "UNREFUTED_ON_OBSERVED_SCOPE")
+                    values.append({"constraint_id":rid,"claim_id":semantic_claim_id(self.relations[rid],kind,family,scope),
+                        "claim_kind":kind,"semantic_version":SEMANTIC_VERSION,"family_id":family,
+                        "typed_relation":deepcopy(self.relations[rid]),"supporting_evidence":deepcopy(cells["TP"]),
+                        "counterevidence":{name:deepcopy(cells[name]) for name in ("FP","FN")},
+                        "unknown_evidence":deepcopy(cells["UNKNOWN"]),"evidence_cells":cells,
+                        "source_failure":deepcopy(group["support"]),"source_evidence":deepcopy(group["source_evidence"]),
+                        "source_claim_status":source_status,"trivial_on_observed_inputs":trivial,
+                        "positive_support":len(cells["TP"]),
+                        "source_validation_status":"NOT_SEPARATELY_VALIDATED",
+                        "transfer_status":"NOT_QUALIFIED","empirical_adoption":"UTILITY_NOT_VALIDATED" if kind==EMPIRICAL else None,
+                        "applicability":deepcopy(self.spec["contract"]),"version":self.version,
+                        "provenance":deepcopy(scope)})
+        return values
+
     def observe(self,evidence):
+        if self._semantic:
+            return self._observe_semantic(evidence)
         if self.frozen:
             raise ValueError("frozen engine rejects final feedback")
         event=normalize_evidence(evidence,self.spec)
@@ -362,6 +533,8 @@ class DiscoveryEngine:
         return "HYPOTHESES_REMAIN" if any(g["remaining"] for g in self.groups.values()) else "OUT_OF_GRAMMAR"
 
     def _constraints(self):
+        if self._semantic:
+            return self._semantic_constraints()
         constraints=[]
         for family,group in sorted(self.groups.items()):
             descriptors=sorted({self.relations[r]["term"]["kind"] for r in group["remaining"]})
@@ -383,7 +556,10 @@ class DiscoveryEngine:
         constraints=self._constraints()
         groups={family:{"invariant":g["invariant"],"remaining":sorted(g["remaining"]),"support":deepcopy(g["support"]),
                         "source_evidence":deepcopy(g["source_evidence"])} for family,g in sorted(self.groups.items())}
-        payload={"schema":SNAPSHOT_SCHEMA,"spec":deepcopy(self.spec),"public_ir":deepcopy(self.public_ir),"seed":self.seed,"strategy":self.strategy,
+        if self._semantic:
+            for family,g in self.groups.items():
+                groups[family]["remaining_by_kind"]={kind:sorted(ids) for kind,ids in g["remaining_by_kind"].items()}
+        payload={"schema":SEMANTIC_SNAPSHOT_SCHEMA if self._semantic else SNAPSHOT_SCHEMA,"spec":deepcopy(self.spec),"public_ir":deepcopy(self.public_ir),"seed":self.seed,"strategy":self.strategy,
                  "pool_size":self.pool_size,"seed_candidates":deepcopy(self.seed_candidates),"pool":deepcopy(self.pool),
                  "initial_pool":deepcopy(self.initial_pool),"pool_events":deepcopy(self.pool_events),
                  "solver":self.solver,"native_strategy":self.native_strategy,"oracle_costs":deepcopy(self.oracle_costs),
@@ -394,6 +570,9 @@ class DiscoveryEngine:
                              "quality":{"pool_support":self.masks[c["constraint_id"]].bit_count(),"meaning":"specificity-not-correctness"}} for c in constraints],
                  "contradictions":deepcopy(self.contradictions),"history":deepcopy(self.history),
                  "version":self.version,"status":self.status,"frozen":self.frozen}
+        if self._semantic:
+            from .claim_semantics import SEMANTIC_VERSION
+            payload.update(semantic_version=SEMANTIC_VERSION,claim_kinds=deepcopy(self.claim_kinds),semantic_policy=deepcopy(self.semantic_policy),seed_relations=deepcopy(self.seed_relations))
         payload["receipt"]={"sha256":digest(payload),"oracle_calls":0,"authenticity":"CALLER_APPROVAL_REQUIRED"}
         return payload
 
@@ -406,15 +585,21 @@ class DiscoveryEngine:
         required=("schema","spec","public_ir","seed","strategy","pool_size","seed_candidates","pool","initial_pool","pool_events",
                   "solver","native_strategy","oracle_costs","query_metrics","prospective","seen","evidence","prior","gate",
                   "groups","constraints","relations","archive","contradictions","history","version","status","frozen","receipt")
-        keys(snapshot,required)
-        if snapshot["schema"]!=SNAPSHOT_SCHEMA or type(snapshot["frozen"]) is not bool:
+        semantic=isinstance(snapshot,dict) and snapshot.get("schema")==SEMANTIC_SNAPSHOT_SCHEMA
+        keys(snapshot,required+(('semantic_version','claim_kinds','semantic_policy','seed_relations') if semantic else ()))
+        if snapshot["schema"] not in (SNAPSHOT_SCHEMA,SEMANTIC_SNAPSHOT_SCHEMA) or type(snapshot["frozen"]) is not bool:
             raise ValueError("invalid snapshot schema")
+        if semantic:
+            from .claim_semantics import SEMANTIC_VERSION
+            if snapshot["semantic_version"]!=SEMANTIC_VERSION:
+                raise ValueError("unsupported explicit claim semantics")
         keys(snapshot["receipt"],("sha256","oracle_calls","authenticity"))
         if snapshot["receipt"]["sha256"]!=digest({k:v for k,v in snapshot.items() if k!="receipt"}):
             raise ValueError("snapshot digest mismatch")
         engine=cls(snapshot["spec"],seed=snapshot["seed"],strategy=snapshot["strategy"],pool_size=snapshot["pool_size"],
                    seed_candidates=snapshot["seed_candidates"],public_ir=snapshot["public_ir"],_pool=snapshot["initial_pool"],
-                   solver=snapshot["solver"],native_strategy=snapshot["native_strategy"],oracle_costs=snapshot["oracle_costs"])
+                   solver=snapshot["solver"],native_strategy=snapshot["native_strategy"],oracle_costs=snapshot["oracle_costs"],
+                   **({"claim_kinds":snapshot["claim_kinds"],"semantic_policy":snapshot["semantic_policy"],"seed_relations":snapshot["seed_relations"]} if semantic else {}))
         if not isinstance(snapshot["pool_events"],list) or len(snapshot["pool_events"])>4096:
             raise ValueError("invalid dynamic pool history")
         for event in snapshot["pool_events"]:
@@ -459,6 +644,8 @@ class DiscoveryEngine:
 def transfer(snapshot,target_spec,*,seed=7,budget=64,pool_size=512,target_ir=None,mapping=None,
              target_evidence=(),solver=None,native_strategy=None,oracle_costs=None):
     source=DiscoveryEngine.from_snapshot(snapshot)
+    if source._semantic:
+        raise ValueError("R1 transfer requires independently qualified kind-checked KnowledgeArchive guidance")
     if not source.frozen:
         raise ValueError("transfer requires frozen source")
     target=validate_spec(target_spec)

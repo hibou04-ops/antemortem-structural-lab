@@ -258,7 +258,7 @@ class DevelopmentEvidenceArchive:
             raise ValueError("only accepted, consistent development evidence may reach a generator")
         return _minimal(value)
 
-    def build_knowledge_archive(self, record_ids=None):
+    def build_knowledge_archive(self, record_ids=None, *, semantic_policy=None, claim_kinds=None, derived_from=None):
         """Reuse existing bounded learning and observation APIs, without execution.
 
         Preserve input order: source prefix <=256, then <=256 reviewed same-source
@@ -278,6 +278,17 @@ class DevelopmentEvidenceArchive:
         scope = lambda value: canonical([value["spec"], value.get("temporal_contract"), value.get("public_ir"), value["provenance"]["origin"]])
         if any(scope(value) != scope(first) for value in values):
             raise ValueError("one source implementation and public contract per archive")
+        if semantic_policy is not None or claim_kinds is not None:
+            from .claim_semantics import normalize_policy
+            policy=normalize_policy(semantic_policy)
+            if len(values)>policy["max_events"]:
+                raise ValueError("R1 complete source batch exceeds the fixed event capacity; no records were silently discarded")
+            return KnowledgeArchive.from_failure_log(first["spec"],
+                [self.generator_evidence(value["record_id"]) for value in values],first["provenance"]["origin"],
+                temporal_contract=first.get("temporal_contract"),public_ir=first.get("public_ir"),
+                semantic_policy=policy,claim_kinds=claim_kinds,derived_from=derived_from)
+        if derived_from is not None:
+            raise ValueError("new parent reinterpretation requires an explicit R1 semantic policy")
         from .knowledge import MAX_EVENTS
         if len(values) > 2 * MAX_EVENTS:
             raise ValueError("source context exceeds the existing source-plus-observation capacity; no records were silently discarded")

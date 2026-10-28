@@ -5,7 +5,7 @@ import sys
 import time
 
 from .knowledge_engine import KnowledgeEngine, plan_knowledge
-from .knowledge_protocol import MAX_MESSAGE, validate_request
+from .knowledge_protocol import MAX_MESSAGE, validate_request, semantic_observation_mode
 
 
 def _diagnose(path):
@@ -32,6 +32,7 @@ def _diagnose(path):
 def main():
     engine = None
     planned = False
+    semantic_mode = False
     metrics = {"schema": "tomolab-knowledge-worker-cost-v1", "requests": 0,
                "wall_seconds": 0.0, "cpu_seconds": 0.0, "actions": {},
                "scope": "VALIDATION_COMPUTATION_JSON_ENCODING; EXCLUDES_STDIN_WAIT_AND_STDOUT_FLUSH"}
@@ -46,7 +47,8 @@ def main():
                 raise ValueError("oversized or truncated knowledge message")
             message = validate_request(json.loads(line), None if engine is None else engine.spec,
                                        None if engine is None else engine.temporal_contract,
-                                       None if engine is None else engine.target_provenance)
+                                       None if engine is None else engine.target_provenance,
+                                       semantic_mode=semantic_mode)
             action = message.pop("action")
             if action == "close":
                 return 0
@@ -64,6 +66,7 @@ def main():
                     planned = True
                 else:
                     engine = KnowledgeEngine(**message)
+                    semantic_mode = semantic_observation_mode(message)
                     result = {"initialized": True}
             else:
                 if engine is None:

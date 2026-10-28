@@ -1,0 +1,11 @@
+{
+  "semantic_version": "e8-r1-claims-v1",
+  "max_atomic_relations": 512,
+  "max_compound_relations": 128,
+  "max_relations": 640,
+  "max_depth": 3,
+  "max_terms": 3,
+  "max_claims": 4096,
+  "max_events": 512,
+  "extra_features": []
+}

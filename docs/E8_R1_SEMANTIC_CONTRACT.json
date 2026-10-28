@@ -1,0 +1,95 @@
+{
+  "schema": "tomolab-e8r1-semantic-contract-v1",
+  "semantic_version": "e8-r1-claims-v1",
+  "scope": "BOUNDED_SOURCE_OBSERVATIONS_NOT_UNIVERSAL_OR_CAUSAL_PROOF",
+  "opt_in": true,
+  "legacy_default": "EXACT_FAILURE_PREDICATE_WITH_UNCHANGED_V1_V2_SNAPSHOTS",
+  "meanings": {
+    "EXACT_FAILURE_PREDICATE": {
+      "formula": "R iff F",
+      "refuting_cells": [
+        "FP",
+        "FN"
+      ]
+    },
+    "SUFFICIENT_FAILURE_CONDITION": {
+      "formula": "R implies F",
+      "refuting_cells": [
+        "FP"
+      ]
+    },
+    "NECESSARY_FAILURE_CONDITION": {
+      "formula": "F implies R",
+      "refuting_cells": [
+        "FN"
+      ]
+    },
+    "EMPIRICAL_SEARCH_GUIDANCE": {
+      "formula": "soft search preference",
+      "refuting_cells": [],
+      "adoption": "SEPARATE_ASSOCIATED_SOURCE_DEVELOPMENT_UTILITY_RECEIPT_REQUIRED_NOT_INDIVIDUAL_RULE_CAUSAL_PROOF"
+    }
+  },
+  "unknown": {
+    "truth_values": [
+      true,
+      false,
+      null
+    ],
+    "not_unknown": null,
+    "censored_other_family": "UNKNOWN_UNLESS_EXPLICITLY_OBSERVED",
+    "invalid_oracle_domain_rejection_error_nondeterminism": "UNKNOWN_NOT_NORMAL_NEGATIVE",
+    "undefined_feature_nan_infinity": "UNKNOWN"
+  },
+  "grammar": {
+    "semantic_version": "e8-r1-claims-v1",
+    "max_atomic_relations": 512,
+    "max_compound_relations": 128,
+    "max_relations": 640,
+    "max_depth": 3,
+    "max_terms": 3,
+    "max_claims": 4096,
+    "max_events": 512,
+    "extra_features": []
+  },
+  "composition": [
+    "AND",
+    "OR",
+    "NOT"
+  ],
+  "new_input_features": [],
+  "claim_identity_binds": [
+    "expression",
+    "claim_kind",
+    "semantic_version",
+    "failure_family",
+    "source_implementation",
+    "input_domain",
+    "oracle_scope"
+  ],
+  "paths": [
+    "DiscoveryEngine.observe",
+    "KnowledgeArchive",
+    "KnowledgeEngine.guidance",
+    "independent_Oracle",
+    "snapshot_restore",
+    "CLI"
+  ],
+  "guidance": {
+    "hard_filter": false,
+    "native_stream_preserved": true,
+    "maximum_guided_fraction": 0.5,
+    "necessary_conditions": "SOFT_PROBES_NOT_FAILURE_CLASSIFIERS",
+    "empirical_trial": "EXPLICIT_SOURCE_DEVELOPMENT_ONLY_OPT_IN",
+    "source_guidance_confers_transfer_authority": false
+  },
+  "boundary": {
+    "worker_public_modules": 17,
+    "transport_max_bytes": 8000000,
+    "r1_archive_max_bytes": 134217728,
+    "large_source_archive_route": "REVIEWED_HOST_LOGICAL_ISOLATION_ONLY_NOT_CONTAINER_ATTESTED",
+    "secrets_oracle_outputs_source_bodies_final_labels_in_generator": false
+  },
+  "r1_stateful_extension": "NOT_IMPLEMENTED_LEGACY_STATEFUL_PATH_PRESERVED",
+  "transfer_gate": "EXISTING_INDEPENDENT_C_TARGET_CONSUMPTION_ORACLE_PRIVACY_GATES_REMAIN_REQUIRED"
+}

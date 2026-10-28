@@ -1,5 +1,47 @@
 # Antemortem Structural Lab
 
+## E8-R1 작업 후보 — 정확 분류와 부분 규칙을 구별하기
+
+같은 조건이라도 **완전한 실패 분류식·일부 실패의 충분조건·실패의 필요조건·경험적 탐색 규칙**은 다른 주장입니다. 기존 정확 분류의 반증을 지우지 않고 새 의미 버전과 ID로 검토합니다. Oracle는 계속 실제 결과를 판정하고, 규칙은 후보 순서와 제한된 탐색 예산에만 사용합니다.
+
+| 종류 | 관측 범위에서 주장하는 관계 | 반증 | 보장하지 않는 것 |
+|---|---|---|---|
+| EXACT | R ↔ F | FP 또는 FN | domain 밖의 완전 분류 |
+| SUFFICIENT | R → F | FP | 다른 영역의 모든 실패 설명 |
+| NECESSARY | F → R | FN | R을 만족하면 실패한다는 주장 |
+| EMPIRICAL | 순서·예산의 제한적 유용성 | 별도 개발 검증의 비용·효용 | 충분조건·정답·인과 법칙 |
+
+기존 Source371개에 대한288표현은 FP만 있는54개와 FP·FN을 모두 가진234개였습니다. **기존288개 모두 FP가 있으므로 충분조건으로 이름만 바꿔도 모두 반증됩니다.** 필요조건으로 남는54개 중 좌표 전용을 제외한19개는 추가 검증 전 Source 탐색 후보입니다. 전체 특징의 라벨 충돌은0개였고, 추가 입력 특징은0개로 고정했습니다.
+
+기존288원자와 사전에 제한한 AND/OR/NOT128개를 합친416고유 표현을 네 의미로 검토했습니다.1,664개 ID를 네 배의 독립 지식으로 계산하지 않습니다. EXACT416개 전부 반증, SUFFICIENT415개 반증·나머지1개는 TP0, NECESSARY86개는 관측 범위에서 무반증, EMPIRICAL245개는 학습 단계의 후보였습니다. 이후 새 Source 비교에서 경험적14개는 효용을 입증하지 못했고402개는 미검증이며 채택은0개입니다. 후보 수는 성능이나 qualified 지식 수가 아닙니다. [실제 방향·종류별 셀·한계](docs/E8_R1_REPORT.md) · [기계 판독 결과](docs/E8_R1_RESULTS.json).
+
+### 실제 사용자 흐름
+
+`개발 증거 → 의미별 학습 → TP/FP/FN/TN/UNKNOWN·증거 ID 확인 → 동결 → 새 Source 배치 검증 → 제한된 guidance와 Oracle 실행 → Source 결과와 독립 전이 적격성 분리`
+
+아래 명령은 동봉된 직접 작성 정수 예제를 사용하는 기능 검사입니다. 실제 프로젝트의 발견이나 외적 전이 결과가 아닙니다. 소스 checkout 또는 설치 wheel의 동봉 예제 폴더에서 실행하고, 기존 산출물이 있으면 새 output 경로를 사용합니다. `semantic-demo`는 이 작성 예제의 실행에 한정된 명령입니다. `semantic-run`에서 직접 코드를 실행할 때는 `--allow-local-execution`이 필요하며 OS 격리를 뜻하지 않습니다.
+
+```powershell
+python -m tomolab semantic-demo --budget 12 --output results/e8-r1-demo.json
+python -m tomolab semantic-inspect --archive results/e8-r1-demo.json --output results/e8-r1-inspect.json
+python -m tomolab semantic-plan --archive results/e8-r1-demo.json --spec examples/partial/spec.json --provenance examples/partial/provenance.json --purpose SOURCE_DEVELOPMENT --budget 12 --guidance-budget 4 --pool-size 32 --seed 313 --output results/e8-r1-plan.json
+python -m tomolab semantic-run examples/partial/target.py --oracle-file examples/partial/oracle.py --spec examples/partial/spec.json --provenance examples/partial/provenance.json --oracle-validation examples/partial/oracle-validation.json --archive results/e8-r1-demo.json --method C --allow-local-execution --budget 12 --guidance-budget 4 --pool-size 32 --seed 313 --output results/e8-r1-run.json
+```
+
+검토한 공통 개발 로그는 `semantic-learn --bundle ... --implementation-hash ... --spec-hash ... --parent-snapshot ... --semantic-policy ...`로 가져옵니다. `--claim-kind`를 반복 지정할 수 있으며 종류를 생략하면 네 의미를 명시적 R1 스키마로 검토합니다. 기존 archive를 기본 API로 읽으면 기존 정확 의미를 유지합니다. `semantic-inspect`는 counterevidence·UNKNOWN의 증거 ID와 각 상태를 보여 줍니다. 실제 비공개 자료의 결과는 host에 보관하고 공개하지 않습니다.
+
+별도의 새 Source 배치를 준비했다면 `semantic-validate --archive ... --bundle ... --implementation-hash ... --spec-hash ... --generation-id ... --approve-development-evidence`로 연결합니다. 이 배치는 같은 Source의 입력 검증이며 C가 아닙니다. 부모 동결 해시를 연결한 새 세대에 추가하고 전체 관측을 보존합니다. 경험적 규칙은 `--allow-unvalidated-empirical`을 명시한 Source 개발 시험에서만 미채택 후보로 사용할 수 있습니다. 별도 배치의 실제 후보 변화·새 guided 입력의 첫 확인 발견·호출·비용과 사전 기준을 갖춘 효용 영수증 없이는 채택하지 않습니다. Native나 알려진 입력 재생의 발견은 규칙 효용으로 승격하지 않으며, 비교 배치의 연관 효과를 개별 규칙의 인과 효과로 표현하지 않습니다.
+
+Guidance는 계획의 최대 절반이며 native 난수 흐름과 별도로 생성합니다. 필요조건을 모든 실패의 강제 필터로 쓰지 않고 유효 후보를 못 만들면 native로 복귀합니다. UNKNOWN은 false가 아니고 NOT UNKNOWN도 UNKNOWN입니다. 수치 실행은 기존에 검토한 tolerance·정확한0·epsilon·domain·예외 계약을 보존해야 하며 기존 `EXACT_CANONICAL_JSON` 수집기에 맞춰 기준을 바꾸지 않습니다.
+
+### 현재 검증 범위
+
+학습·새 Source 검증은 Gate A, 독립 C·미소비 T·Oracle·실효 guidance를 요구하는 외적 전이는 Gate B입니다. 현재 C·T가 없어 외적 전이는 `NOT_EXECUTED_READINESS_BLOCKED`입니다. 새 Source 입력42개를 각3회 실행한126쌍은 모두 정상이며 새 실패는0개였습니다. A/B/C는 각각40/40/41쌍에서 미검출, D는 알려진 Source 반례를3쌍으로 확인했습니다. C는 새 guided 입력8개로 선택을 바꿨지만 비용9.279995초와 중복1회가 추가됐고 효용은 입증하지 못했습니다. 경험적14개는 NO_UTILITY,402개는 미검증, 채택0개입니다. 전체573개 회귀는 실패·오류·skip0으로 통과했고 wheel·sdist·공개 범위 검사, 설치 검사48개와 README 명령64개가 통과했습니다. 최신 원격 CI는 [PR #8 검사](https://github.com/hibou04-ops/antemortem-structural-lab/pull/8/checks)를 참조합니다. 고정 A→B→C→D 실행 순서와 초기화·warmup 효과 때문에 시간 차이를 인과적 우위로 해석하지 않습니다. 기존 배치를 무작위 분할해 새 블라인드 검증이라고 부르지 않습니다.
+
+R1 부분 의미는 현재 stateless 계약만 지원합니다. 기존 stateful 경로와 E8 결과는 보존합니다. 학습 archive는63,604,940바이트, 새 배치 반영 후는72,789,151바이트로 기존8,000,000바이트 worker 전송 한도를 넘기므로 현재 대형 archive의 계획 경로는 신뢰한 host의 논리적 경계입니다. 이 자료의 Docker 실행을 검증했다고 주장하지 않습니다. R1 snapshot만128MiB로 제한하며 legacy8MiB 한도는 유지합니다. 새 공개 Release는 만들지 않았습니다.
+
+이하 E8 원래 안내와 결과는 보존 기록입니다.
+
 ## E8 작업 후보: 개발 증거 연결과 최종 평가 차단
 
 현재 작업 버전은 `0.8.0a1`이며 공개 릴리스는 만들지 않았습니다. **실제 개발 실패를 기존 지식 엔진에 연결했지만, 살아 있는 구조적 가설과 독립 검증 근거가 없어 최종 비교는 실행하지 않았습니다.** 도구 중립적인 수용과 기본 Native Hypothesis 수집기를 추가한 제품 변경입니다. 전이 성능 향상을 입증한 결과는 없습니다.

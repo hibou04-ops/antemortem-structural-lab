@@ -19,6 +19,7 @@ recursive-include examples/discovery *.json
 recursive-include examples/temporal *.json
 recursive-include examples/knowledge *.json
 recursive-include examples/evidence *.json *.md
+recursive-include examples/partial *.json
 recursive-include containers *.Dockerfile
 recursive-include scripts *.ps1
 recursive-include scripts *.py
@@ -40,4 +41,12 @@ include docs/E8_DEVELOPMENT_REPORT.md
 include docs/E8_RESULTS.json
 include docs/E8_RELEASE_AUTHORIZATION.json
 include docs/E8_CONSUMED_IDENTITIES.json
+include docs/E8_R1_SEMANTIC_CONTRACT.json
+include docs/E8_R1_DEVELOPMENT_CONTRACT.json
+include docs/E8_R1_CODE_FREEZE.json
+include docs/E8_R1_REPORT.md
+include docs/E8_R1_RESULTS.json
+prune research/e8-r1
+prune e8-r1-evidence
+prune e8-r1-private
 global-exclude PRIVATE_* *EVIDENCE*.zip

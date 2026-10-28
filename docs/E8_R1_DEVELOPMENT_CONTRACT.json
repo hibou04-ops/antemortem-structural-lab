@@ -1,0 +1,157 @@
+{
+  "schema": "tomolab-e8r1-public-development-contract-v1",
+  "scope": "SOURCE_DEVELOPMENT_ONLY_NOT_BLIND_NOT_INDEPENDENT_C_NOT_FINAL_TARGET",
+  "private_execution_contract_sha256": "6de71c32238daa69162f5b267507e515cc19091a185aa7d2be84006321844722",
+  "baseline_commit": "6ce54758f00a669c9618d9a8cf7fe491c960950b",
+  "source_implementation_sha256": "a87f8b23fb526cea8f7e55961c40051c67e0c690acf34a2a096f442dc01b6272",
+  "existing_oracle_semantic_sha256": "67f5677cb06220ea835620f4ef1ea6cf04fcb990a2c990c15b3d2b5dad4d88e9",
+  "oracle_math_helper_sha256": "14412b88f5dd0ef5d46b0c461ea47679be32eb28f160af74f487fa90b8c95139",
+  "source_domain": {
+    "inputs": "two equal-length finite float lists in [-1,1]",
+    "length_min": 3,
+    "length_max": 6,
+    "constants_allowed": true,
+    "nonconstant_exact_centered_sum_squares_min": "1/1000000",
+    "source_zero_epsilon": "EXACT_ZERO_UNCHANGED"
+  },
+  "comparison_policy": {
+    "kind": "FINITE_JSON",
+    "absolute_tolerance": 1e-10,
+    "relative_tolerance": 1e-08,
+    "undefined": "EXECUTION_ERROR",
+    "exceptions": "EXECUTION_ERROR"
+  },
+  "policy": {
+    "semantic_version": "e8-r1-claims-v1",
+    "max_atomic_relations": 512,
+    "max_compound_relations": 128,
+    "max_relations": 640,
+    "max_depth": 3,
+    "max_terms": 3,
+    "max_claims": 4096,
+    "max_events": 512,
+    "extra_features": []
+  },
+  "claim_kinds": [
+    "EXACT_FAILURE_PREDICATE",
+    "SUFFICIENT_FAILURE_CONDITION",
+    "NECESSARY_FAILURE_CONDITION",
+    "EMPIRICAL_SEARCH_GUIDANCE"
+  ],
+  "budget": {
+    "generation_id": "E8-R1-DEVELOPMENT-1",
+    "baseline_commit": "6ce54758f00a669c9618d9a8cf7fe491c960950b",
+    "declared_before_new_Source_or_Oracle_execution": true,
+    "existing_source_rows": 371,
+    "replay_predictions_max": 106848,
+    "grammar": {
+      "max_atomic_relations": 512,
+      "max_compounds": 128,
+      "max_relations": 640,
+      "max_depth": 3,
+      "max_terms": 3,
+      "max_claims": 4096,
+      "max_events": 512,
+      "generation_order": "DETERMINISTIC_PUBLIC_STRUCTURE_AND_CANONICAL_ORDER_NOT_LABEL_SELECTED"
+    },
+    "additional_input_features_max": 2,
+    "additional_features_policy": "only public-input-derived features justified by original development evidence and reviewed numeric specification; fixed before fresh validation",
+    "new_source_oracle_pairs_max_total": 512,
+    "oracle_contract_validation_pairs_max": 16,
+    "fresh_source_validation": {
+      "seed": 211,
+      "native_pool_size": 128,
+      "pairs_max": 128,
+      "splits": "NEW_DEVELOPMENT_NOT_BLIND_NOT_INDEPENDENT_C"
+    },
+    "comparison": {
+      "methods": [
+        "A_NATIVE_HYPOTHESIS",
+        "B_SAME_ENGINE_EMPTY",
+        "C_SAME_ENGINE_FROZEN_PARTIAL_RULES",
+        "D_APPROVED_SOURCE_REPLAY_THEN_NATIVE"
+      ],
+      "seed": 313,
+      "guided_seed": 314,
+      "pair_budget_per_method_including_replays": 64,
+      "replay_pairs_reserved": 2,
+      "guidance_pair_cap": 16,
+      "native_retained_fraction_at_least": 0.5,
+      "native_ordinary_generation_and_shrink_reused": true,
+      "no_archive_update_with_comparison_outcomes": true,
+      "active_semantic_claim_cap": 64,
+      "kind_priority": [
+        "SUFFICIENT_FAILURE_CONDITION",
+        "NECESSARY_FAILURE_CONDITION",
+        "EXACT_FAILURE_PREDICATE",
+        "EMPIRICAL_SEARCH_GUIDANCE"
+      ],
+      "utility_criteria": {
+        "max_wall_ratio": 1.25,
+        "max_call_ratio": 1.0
+      }
+    },
+    "pre_execution_revision": "Before any new Source/Oracle call, comparison seeds were separated from validation seed211 to avoid reusing one generated batch. No method result existed at this revision. Active-claim priority and cost criteria were fixed at the same time.",
+    "per_run_cooperative_wall_seconds": 15,
+    "execution_wall_scope": "15 seconds for the measured callback/search phase per method; separately bounded data validation/planning is still fully included in total wall cost and utility criteria",
+    "per_method_pre_execution_planning_wall_seconds_max": 120,
+    "pre_execution_profile_clarification": "Before any new Source/Oracle call, data-only profiling found archive replay/copy overhead. Its separate120second budget is explicit; no archive cost is hidden or excluded from comparative total wall time.",
+    "semantic_replay_wall_seconds_max": 120,
+    "oracle_policy": "PRESERVE_EXISTING_SOURCE_V2_TOLERANCES_DOMAIN_ZERO_EPSILON_EXCEPTION_CONTRACT; adapter review must precede calls",
+    "selection": "all eligible old observations retained; no case/seed/domain/budget/threshold changes based on method outcomes",
+    "sources": "reviewed Source-only extracted function and validated independent mathematical reference; no whole suite containing final targets",
+    "independent_corroboration": "NO_NEW_HISTORY_RESCAN; prior candidate index retained",
+    "final_transfer": "NOT_EXECUTED_READINESS_BLOCKED until all existing independent C/Target gates pass",
+    "publication": "FOLLOWUP_COMMIT_TO_EXISTING_DRAFT_PR_8; no merge/tag/release without original publication conditions"
+  },
+  "actual_extra_features": [],
+  "old_observations": {
+    "count": 371,
+    "retained_all": true,
+    "independent_samples": false,
+    "blind_data": false,
+    "same_source_and_shared_search_shrink_cache_lineage": true
+  },
+  "new_validation": {
+    "seed": 211,
+    "pool_size": 128,
+    "pair_budget": 128,
+    "calls_per_eligible_input": 3,
+    "known_development_inputs_excluded": true,
+    "rejected_or_not_executed_inputs_have_no_truth_label": true
+  },
+  "comparison": {
+    "order": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "randomized_order": false,
+    "single_host_startup_warmup_confound": true,
+    "seed": 313,
+    "guided_seed": 314,
+    "pair_budget_per_method_including_replays": 64,
+    "guidance_pair_cap": 16,
+    "active_claim_cap": 64,
+    "frozen_before_callbacks": true,
+    "comparison_feedback_to_archive": false,
+    "total_wall_cost_includes_validation_and_planning": true,
+    "D": "KNOWN_SOURCE_COUNTEREXAMPLE_REPLAY_NOT_NOVEL_DISCOVERY"
+  },
+  "utility_criteria": {
+    "max_wall_ratio": 1.25,
+    "max_call_ratio": 1.0
+  },
+  "utility_attribution": "ASSOCIATED_METHOD_BATCH_NOT_INDIVIDUAL_RULE_CAUSAL_EFFECT",
+  "post_measurement_reporting_correction": {
+    "path": "tomolab/discovery/knowledge_service.py",
+    "executed_source_sha256": "9bf66ce74e99e6c46747ef15c45d6f78e81b2fd761d8eff7708dbc9331705c54",
+    "final_source_sha256": "7008edf32fb7fb6ef3ddd30fc063025135fefe2dd695ae2679e3650ed5a5a9d7",
+    "change": "Nested native predicate attempts are labelled predicate_calls; actual native Target/Oracle counters are reported separately. Candidate selection, comparisons, replay, top-level actual counters and original raw results were preserved.",
+    "new_source_execution_after_correction": false
+  },
+  "private_material_publication": false,
+  "final_transfer": "NOT_EXECUTED_READINESS_BLOCKED",
+  "publication": "FOLLOWUP_TO_EXISTING_DRAFT_PR_8_NO_MERGE_TAG_RELEASE_WITHOUT_ORIGINAL_GATES"
+}

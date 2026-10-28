@@ -201,9 +201,20 @@ def main(argv: list[str] | None = None) -> int:
     register_knowledge(cmd)
     from .e8_cli import register as register_e8
     register_e8(cmd)
+    from .e8r1_cli import register as register_e8r1
+    register_e8r1(cmd)
     args = p.parse_args(argv)
     try:
-        if args.command.startswith(("evidence-", "readiness-")):
+        if args.command.startswith("semantic-"):
+            from .e8r1_cli import dispatch
+            try:
+                result=dispatch(args,p,EXAMPLES)
+            except ModuleNotFoundError as exc:
+                p.error(f"R1 학습·계획·실행에는 검토된 선택 의존성 [qa]가 필요합니다: {exc}")
+            _save(result,args.output)
+            if args.command in ("semantic-run","semantic-demo") and (result.get("status")=="ABORTED_EXECUTION_ERROR" or result.get("run",{}).get("status")=="ABORTED_EXECUTION_ERROR"):
+                return 3
+        elif args.command.startswith(("evidence-", "readiness-")):
             from .e8_cli import dispatch
             result = dispatch(args, p, EXAMPLES)
             _save(result, args.output)
