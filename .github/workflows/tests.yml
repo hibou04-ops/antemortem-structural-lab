@@ -93,28 +93,21 @@ jobs:
         run: docker build -f containers/e7-generator.Dockerfile -t tomolab-e7-generator:local containers
       - name: Verify E7 access controls and evidence-qualified native discovery
         run: python scripts/check-knowledge-isolation.py
-  prerelease:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  historical-e7-release:
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
     needs: [tests, generator-isolation, unified-generator-isolation, temporal-generator-isolation, knowledge-generator-isolation]
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -m pip install build twine
-      - run: python -m build
-      - run: python -m twine check dist/*
-      - run: python scripts/check-public-scope.py
-      - run: python scripts/check-wheel.py
-      - run: python scripts/check-e7-freeze.py
-      - name: Verify draft and publish experimental E7 prerelease
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: python scripts/publish-e7.py
+      - name: Verify existing E7 release and unchanged current product, without republishing
+        run: python scripts/verify-pypi-release.py --download --check-registry --directory verified-public-e7 --receipt verification/existing-e7-release.json
       - uses: actions/upload-artifact@v4
         with:
-          name: release-receipt
-          path: release-receipt.json
+          name: existing-e7-release-verification
+          path: verification/existing-e7-release.json
+          if-no-files-found: error
