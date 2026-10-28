@@ -184,6 +184,13 @@ class EvaluationReadiness:
             elif row["action"] == "import":
                 snapshot = row["snapshot"]
                 events = snapshot.get("temporal_evidence", snapshot.get("evidence", []))
+            elif row["action"] == "source_validation":
+                for observation in row["observations"]:
+                    token=canonical(observation)
+                    if token not in observations:
+                        raise ValueError("Source validation lacks accepted execution/replay receipts")
+                    linked.add(observations[token])
+                continue
             elif row["action"] == "observe":
                 token = canonical(row["observation"])
                 if token not in observations:
@@ -200,7 +207,7 @@ class EvaluationReadiness:
             raise ValueError("no accepted Source failure is present in the actual knowledge journal")
         return records, linked, source_linked
 
-    def _counterevidence(self, evidence, knowledge, claims):
+    def _counterevidence(self, evidence, knowledge, claims, *, source_only=False):
         """Recheck every accepted matching-scope observation, including omitted IDs.
 
         A subset archive or a different provenance label cannot erase already
@@ -208,8 +215,21 @@ class EvaluationReadiness:
         the existing E7 failure-membership interpretation.
         """
         from .engine import family_of
+        if not claims:return {}
+        r1=getattr(knowledge,"semantic_policy",None) is not None
+        measured_cache={}; prediction_cache={}; predicates={}
+        if r1:
+            from .claim_semantics import classify, semantic_label, measurements3, _relation_value
+            def ast_nodes(relation):
+                term=relation["term"]
+                if term["kind"]=="ast":predicates[canonical(term["expression"])]=term["expression"]
+                elif term["kind"]=="compound":
+                    for child in term["expression"]["args"]:ast_nodes(child)
+            for claim in claims:ast_nodes(claim["typed_relation"])
         contradictions = {}
         for record in evidence.accepted_records():
+            if source_only and record["implementation_hash"]!=knowledge.source.get("implementation_sha256"):
+                continue
             origin = record["provenance"]["origin"]
             if record["implementation_hash"] == knowledge.source.get("implementation_sha256"):
                 # Relabeling the same code's provenance must not make its known
@@ -222,10 +242,20 @@ class EvaluationReadiness:
             for claim in claims:
                 if event["invariant"] != claim["family_id"].split("/", 1)[0]:
                     continue
-                predicted = evaluate_claim(claim, event["inputs"], record["spec"],
-                    temporal_contract=record.get("temporal_contract"), first_failure_index=event.get("first_failure_index"))
-                observed = event["kind"] == "FAILURE" and family_of(event) == claim["family_id"]
-                if predicted != observed:
+                if r1:
+                    context=(digest(record["spec"]),canonical(event["inputs"]),record["oracle_hash"])
+                    if context not in measured_cache:
+                        measured_cache[context]=measurements3(event["inputs"],record["spec"],list(predicates.values()))
+                    key=(context,canonical(claim["typed_relation"]),claim["semantic_version"])
+                    if key not in prediction_cache:
+                        prediction_cache[key]=_relation_value(claim["typed_relation"],measured_cache[context])
+                    refutes=classify(prediction_cache[key],semantic_label(event,claim["family_id"]),claim["claim_kind"])["refutes"]
+                else:
+                    predicted = evaluate_claim(claim, event["inputs"], record["spec"],
+                        temporal_contract=record.get("temporal_contract"), first_failure_index=event.get("first_failure_index"))
+                    observed = event["kind"] == "FAILURE" and family_of(event) == claim["family_id"]
+                    refutes=predicted != observed
+                if refutes:
                     contradictions.setdefault(claim["claim_id"], []).append(record["record_id"])
         return contradictions
 
@@ -262,8 +292,10 @@ class EvaluationReadiness:
             failures = [r for r in records if r["record_id"] in source_linked and r["observed_failure_or_refutation"]["status"] == "FAILURE"]
             if not failures:
                 return _diagnostic("NO_VALID_FAILURE", ["accepted-replayed-source-failure-missing"])
-            claims = [c for c in knowledge.claims() if not c["coordinate_only"] and c["status"] != "CONTRADICTED"]
-            counter = self._counterevidence(evidence, knowledge, claims)
+            r1=getattr(knowledge,"semantic_policy",None) is not None
+            claims = [c for c in knowledge.claims() if not c["coordinate_only"] and c["status"] != "CONTRADICTED"
+                      and (not r1 or not c["trivial"] and c["positive_support"]>0)]
+            counter = self._counterevidence(evidence, knowledge, claims,source_only=r1)
             survivors = [c["claim_id"] for c in claims if c["claim_id"] not in counter]
             if not survivors:
                 return _diagnostic("NO_SURVIVING_HYPOTHESIS", ["no-structural-candidate-survives-all-accepted-scope-evidence"],

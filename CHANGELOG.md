@@ -2,6 +2,16 @@
 
 All versions are experimental. Versions v0.1.0 through v0.2.0 were retrospective imports of archived snapshots; those commit timestamps **do not** represent the dates when the experiments were originally performed. Later changes are developed in the public repository without rewriting historical tags.
 
+## E8-R1 후속 작업 — 의미별 주장과 Source 검증 (미발행)
+
+- 기존 완전 분류식·반증을 보존하면서 충분조건·필요조건·경험적 가이드를 명시적 의미 버전·ID·snapshot으로 구분하고 엔진의 앞단 제거부터 archive·계획·CLI까지 연결했습니다.
+- 실제 기존288표현의 FP_ONLY54/FP_AND_FN234를 재현했습니다. 기존 모든 표현은 FP가 있어 충분조건으로 이름만 바꾸어도 반증됩니다. 제한된128복합을 더한416표현과1,664의미 주장을 독립 지식으로 과장하지 않습니다.
+- UNKNOWN과 다른 실패 계열의 미관측을 음성 라벨로 바꾸지 않고, Source 상태·새 Source 검증·독립 C·Target·전이 상태를 분리합니다. C의 충돌 라벨도 원 Source를 오염시키지 않도록 검사했습니다.
+- native 흐름과 guidance 예산을 분리하고, 경험적 후보는 별도 개발 비용·효용 검증 없이는 채택하지 않습니다. 직접 작성 예제와 `semantic-learn/inspect/plan/validate/run/demo`를 추가했습니다.
+- 실제63MB archive의 복원·gate 프로파일에서 반복 deepcopy/snapshot 병목을 확인해 의미·전체 저널 재생·해시를 보존하는 경로만 최적화했습니다. stateless 범위와8MiB worker 전송 한계를 명시합니다.
+- 새 Source 입력42개를126쌍으로 검증해 새 실패0개를 기록했습니다. A/B/C는40/40/41쌍에서 미검출, D는 기존 반례를3쌍으로 재현했습니다. C는새guided입력8개·중복1회·9.279995초의비용을기록했으나 경험적채택0개입니다. 순서·warmup 한계와 미검출을 보존하며 일반적 우열을 주장하지 않습니다.
+- 실제 Source250쌍과 Oracle전용대조16회, 학습·추가검증·계획·효용기록 비용을 분리했습니다. 전체573개(기존506+신규67) 회귀는 실패·오류·skip0으로 통과했습니다. 최종 패키지·원격 CI는 [R1 보고서](docs/E8_R1_REPORT.md)의 root 갱신 대상으로 남깁니다. 독립 C·T 부재로 외적 전이·병합·공개 발행을 차단하고 기존 E8 문서·태그·main을 보존합니다.
+
 ## 0.8.0a1 작업 후보 — 개발 증거 연결과 평가 readiness (미발행)
 
 - 생산 도구 이름과 무관하게 검토된 `DEVELOPMENT` 기록을 수용하는 공통 계약, 원본 결과·Oracle·출처·재현 결속, 중복 관측 구분과 오류 격리를 추가했습니다. 새 실행과 캐시 재사용을 구분합니다.

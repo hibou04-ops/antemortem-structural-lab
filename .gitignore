@@ -1,4 +1,7 @@
 # Generated Python and packaging artifacts
+e8-r1-private/
+e8-r1-evidence/
+e8-r1-evaluation/
 __pycache__/
 *.py[cod]
 .pytest_cache/
