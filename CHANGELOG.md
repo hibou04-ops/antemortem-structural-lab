@@ -2,6 +2,13 @@
 
 All versions are experimental. Versions v0.1.0 through v0.2.0 were retrospective imports of archived snapshots; those commit timestamps **do not** represent the dates when the experiments were originally performed. Later changes are developed in the public repository without rewriting historical tags.
 
+## 배포 채널 추가 — 기존 `0.7.0a1`의 PyPI 최초 게시 경로
+
+- 이미 공개한 E7 wheel·sdist를 태그·소스·SHA-256으로 고정하여 동일 파일로 최초 게시하는 수동 Trusted Publishing 경로를 추가합니다. 게시 성공과 공개 다운로드·설치는 workflow 실행 결과로 별도 확인합니다.
+- PyPI 배포 이름 `antemortem-structural-lab`, import/CLI `tomolab`, 정확한 alpha 설치 버전과 기본·선택 의존성을 안내합니다. 현재 안내를 반영한 로컬 재빌드 파일은 기존 공개 자산을 대신하지 않습니다.
+- 기존 E7 GitHub 자산의 검증과 새로운 PyPI 발행을 구분합니다. 기존 태그·동결 manifest·연구 결과를 재작성하거나 E7 Release를 다시 만들지 않습니다.
+- E8-R1·C1 연구 PR과 연구 readiness 조건, 기존 다섯 PyPI 도구는 변경하지 않습니다. 배포 채널 추가는 새로운 연구 성능·일반화 검증이 아닙니다. [발행 절차와 파일 연결](docs/PYPI_PUBLISHING.md).
+
 ## v0.7.0a1 — Evidence-gated structural knowledge
 
 - 기존 E5/E6 Version Space와 공통 Typed IR을 재사용해 가설·독립 개발 지지·반증·적용 범위와 출처를 보존합니다.
