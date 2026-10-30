@@ -6,17 +6,17 @@
 
 | 항목 | 상태와 확인 범위 |
 |---|---|
-| main 호환 | main `3739e7d`의 PyPI 수동 workflow·검증 스크립트·E7 자산 고정을 연구 브랜치에 통합. 최종 CI는 `PENDING` |
+| main 호환 | main `3739e7d`의 PyPI 수동 workflow·검증 스크립트·E7 자산 고정을 연구 브랜치에 통합. 원격 상태는 [현재 PR Checks](https://github.com/hibou04-ops/antemortem-structural-lab/pull/8/checks) 참조 |
 | Source 재현 | 고정 `omega-lock@14ff508b`의 검토된 `pearson_result`·필요 타입을 확인. 기존 실패 5개는 Python 3.11·3.12에서 같은 중심화 기전으로 재현 |
 | 수치 입력 생성 | typed recipe·native Strategy・원본 반례에서 시작하는 native shrinking·CLI 연결. 동결 Source 비교 12개 run 모두 완료 |
-| 경량 실행 | canonical 3,448바이트 가이드, 실제 요청 최대 33,899바이트. subprocess 실행·host 기준 후보 일치 확인. 전체 72,801,555바이트 archive는 host 전용, Docker CI `PENDING` |
+| 경량 실행 | canonical 3,448바이트 가이드, 실제 요청 최대 33,899바이트. subprocess 실행·host 기준 후보 일치 확인. 전체 72,801,555바이트 archive는 host 전용. 로컬 Docker 미실행, 원격 Docker 결과는 PR Checks 참조 |
 | A/B/C/D 비교 | 고유 새 유효 입력 94/92/77/93개, 확인한 고유 새 실패 입력 0/15/24/44개. 모두 같은 기존 기전, 새 기전 0개 |
 | B·C 대비 추가 가치 | `NO_ADDITIONAL_VALUE_OVER_DOMAIN_PRIOR`. D의 발견 입력은 늘었지만 준비 포함 비용 조건 미충족 |
 | 독립 C·미소비 Target | 없음. 외적 일반화 `NOT_ESTABLISHED` |
-| 제품 검사 | 전체 669개 회귀 통과, 실패·오류·skip 0, pytest suite 125.859초. 후보 wheel 설치·README 명령·원격 CI는 `PENDING` |
+| 제품 검사 | 전체 669개 회귀 통과, 실패·오류·skip 0, pytest suite 125.859초. 새 환경의 실제 후보 wheel·README 경로 검사 20개 통과. 일반 index 설치·원격 CI는 PR Checks 참조 |
 | 공개 상태 | 기존 draft PR #8 갱신 범위. `allow_release=false`, main 병합·새 tag·GitHub Release 미실행, PyPI upload 0회 |
 
-Source 비교는 Python 3.12.10·Hypothesis 6.170.11에서 동결 후 한 번만 실행했습니다. 같은 배치의 결과를 본 뒤 코드·recipe·예산·판정 기준을 조정하거나 재실행하지 않았습니다. 설치·CI의 `PENDING`은 해당 검증을 통과한 것으로 간주하지 않기 위한 상태입니다.
+Source 비교는 Python 3.12.10·Hypothesis 6.170.11에서 동결 후 한 번만 실행했습니다. 같은 배치의 결과를 본 뒤 생성 코드·recipe·예산·판정 기준을 조정하거나 재실행하지 않았습니다. 설치 검사기의 Windows UTF-8 수정은 아래의 별도 QA 동결에 기록합니다. 원격 CI의 권위는 이 문서의 예측이 아니라 [PR #8 현재 head의 Checks](https://github.com/hibou04-ops/antemortem-structural-lab/pull/8/checks)이며, 완료 전 통과했다고 가정하지 않습니다.
 
 ## 확인한 Source와 계산 경로
 
@@ -103,7 +103,7 @@ results/r2-installed-env/Scripts/python.exe -m pip check
 results/r2-installed-env/Scripts/python.exe -m tomolab numerical-demo --budget 16 --size 4 --max-examples 128 --output results/r2-installed-demo.json
 ```
 
-Linux 환경에서는 venv의 `Scripts/python.exe` 대신 `bin/python`을 사용합니다. 이 문서의 실행 명령은 최종 설치 검증 영수증으로 확인하기 전 통과로 보고하지 않습니다.
+Linux 환경에서는 venv의 `Scripts/python.exe` 대신 `bin/python`을 사용합니다. 로컬 설치 검사는 실제 후보 wheel을 source checkout 밖의 새 venv에 설치하고 import 경로·동봉 자료·CLI 흐름을 확인했습니다. QA 의존성은 기존 승인 배포판의 바이트를 확인해 재사용했으며 위의 일반 index 새 설치와 구분합니다. 일반 index에서의 새 의존성 설치 결과는 정상 원격 CI의 PR Checks에서 확인합니다.
 
 ## 최종 개발 비교 결과
 
@@ -148,14 +148,24 @@ cold 시간은 영수증에 기록된 준비 포함 정의를 따릅니다. 표�
 
 ### 제품 회귀와 남은 검증
 
-전체 회귀는 **669개 통과, 실패·오류·skip 0, pytest suite 125.859초**입니다. 이 실행의 근거는 `E8-R2-regression-frozen-candidate.xml`이며 이전 실행 파일과 시간을 섞지 않습니다. R1 기존 40개 검사 파일과 main의 PyPI 검사 19개를 보호하고 기존 R1 573개 검사를 함께 실행했습니다. 단순 과거 합계만 인용한 것이 아니라 보존 파일과 현재 수집된 검사를 대조했습니다. 후보 wheel 설치·README 명령·Docker CI는 아직 `PENDING`이며 실행 후 별도 영수증으로 갱신합니다.
+전체 회귀는 **669개 통과, 실패·오류·skip 0, pytest suite 125.859초**입니다. 이 실행의 근거는 `E8-R2-regression-frozen-candidate.xml`이며 이전 실행 파일과 시간을 섞지 않습니다. R1 기존 40개 검사 파일과 main의 PyPI 검사 19개를 보호하고 기존 R1 573개 검사를 함께 실행했습니다. 단순 과거 합계만 인용한 것이 아니라 보존 파일과 현재 수집된 검사를 대조했습니다.
+
+실제 미발행 `0.8.0a1` wheel의 로컬 설치·README 경로 검사는 **20개 통과(성공 명령 18개·필수 차단 2개)**입니다. `E8-R2-installed-numerical-wheel.json`에 검사 대상 wheel의 SHA-256·설치 위치·명령 결과와 의존성 파일 inventory를 기록했습니다. 새 venv와 source checkout 밖에서 설치한 모듈의 출처를 확인하고 `prepare → compile → inspect → A/B/C/D run → compare` 및 동봉 실제 Source 가이드 재사용을 검사했습니다. 이 기능 검사는 최종 개발 비교를 재실행한 것이 아닙니다.
+
+로컬 QA는 Hypothesis 6.170.11·sortedcontainers 2.4.0·psutil 7.2.2·z3-solver 5.3.2.0의 기존 승인 배포판을 파일별 바이트 확인 후 재사용했습니다. 새 환경의 패키지 설치는 실제 수행했지만 QA 의존성을 일반 index에서 새로 다운로드했다고 표현하지 않습니다. 그 설치와 Docker 경계의 정상 원격 검증은 [PR #8 현재 head의 Checks](https://github.com/hibou04-ops/antemortem-structural-lab/pull/8/checks)를 참조합니다. 로컬 Docker 실행 상태는 `NOT_EXECUTED`입니다.
+
+### Source 동결과 설치 QA 수정의 분리
+
+Source 검증 이후 Windows 검사 보조 process의 `-I`가 환경의 UTF-8 설정을 무시해 경로/문서 처리에 문제가 있음을 확인했습니다. 수정은 `scripts/check-numerical-wheel.py`의 Python 실행에 `-X utf8`를 명시한 것과 CI의 동결 검사 진입점을 별도 packaging 검사기로 바꾼 것뿐입니다. Source 생성 runtime·recipe·domain·Oracle·예산·판정 기준은 바꾸지 않았고 Source 배치는 재실행하지 않았습니다.
+
+원본 157개 Source 동결 manifest `docs/E8_R2_CODE_FREEZE.json`은 SHA-256 `d8c3f5a0cff4b8461ffbb19fccd22479cef1e07e5445cebd9141ba8a721e44b1`로 보존하며 원 Source 검증 tree는 `9f5fb9b15fa6854c1b8c090bfb62915fcae5fc26`입니다. manifest를 현재 파일 해시로 다시 쓰지 않습니다. `scripts/check-e8r2-package-freeze.py`는 이 고정 역사 157개 파일과 현재 runtime의 동일성을 검사하고 위 두 QA 파일의 정확히 제한된 변경만 허용합니다. 최종 포장 파일은 별도의 packaging 동결과 납품 해시로 식별하며 Source 성능 검증의 동결 기록을 대체하지 않습니다.
 
 ## 분리한 상태와 발행 제한
 
 ```text
 SOURCE_REPRODUCTION: PASS_FIXED_REVISION
 NUMERICAL_GUIDANCE_IMPLEMENTATION: PASS
-COMPACT_WORKER_EXECUTION: SUBPROCESS_PASS_DOCKER_CI_PENDING
+COMPACT_WORKER_EXECUTION: SUBPROCESS_VERIFIED_CONTAINER_STATUS_IN_PR_CHECKS
 SOURCE_VALIDATION: COMPLETE
 ADDED_VALUE_OVER_STRONG_BASELINES: NOT_ESTABLISHED_NO_ADDITIONAL_VALUE_OVER_DOMAIN_PRIOR
 INDEPENDENT_CORROBORATION: NOT_AVAILABLE
