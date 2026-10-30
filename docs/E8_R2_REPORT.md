@@ -9,14 +9,14 @@
 | main 호환 | main `3739e7d`의 PyPI 수동 workflow·검증 스크립트·E7 자산 고정을 연구 브랜치에 통합. 원격 상태는 [현재 PR Checks](https://github.com/hibou04-ops/antemortem-structural-lab/pull/8/checks) 참조 |
 | Source 재현 | 고정 `omega-lock@14ff508b`의 검토된 `pearson_result`·필요 타입을 확인. 기존 실패 5개는 Python 3.11·3.12에서 같은 중심화 기전으로 재현 |
 | 수치 입력 생성 | typed recipe·native Strategy・원본 반례에서 시작하는 native shrinking·CLI 연결. 동결 Source 비교 12개 run 모두 완료 |
-| 경량 실행 | canonical 3,448바이트 가이드, 실제 요청 최대 33,899바이트. subprocess 실행·host 기준 후보 일치 확인. 전체 72,801,555바이트 archive는 host 전용. 로컬 Docker 미실행, 원격 Docker 결과는 PR Checks 참조 |
+| 경량 실행 | canonical 3,448바이트 가이드, 실제 요청 최대 33,899바이트. subprocess 실행·host 기준 후보 일치 확인. 첫 CI에서 실제 경량 가이드 Docker 경계 검사 통과. 전체 archive는 host 전용, 최신 head의 원격 결과는 PR Checks 참조 |
 | A/B/C/D 비교 | 고유 새 유효 입력 94/92/77/93개, 확인한 고유 새 실패 입력 0/15/24/44개. 모두 같은 기존 기전, 새 기전 0개 |
 | B·C 대비 추가 가치 | `NO_ADDITIONAL_VALUE_OVER_DOMAIN_PRIOR`. D의 발견 입력은 늘었지만 준비 포함 비용 조건 미충족 |
 | 독립 C·미소비 Target | 없음. 외적 일반화 `NOT_ESTABLISHED` |
 | 제품 검사 | 전체 669개 회귀 통과, 실패·오류·skip 0, pytest suite 125.859초. 새 환경의 실제 후보 wheel·README 경로 검사 20개 통과. 일반 index 설치·원격 CI는 PR Checks 참조 |
 | 공개 상태 | 기존 draft PR #8 갱신 범위. `allow_release=false`, main 병합·새 tag·GitHub Release 미실행, PyPI upload 0회 |
 
-Source 비교는 Python 3.12.10·Hypothesis 6.170.11에서 동결 후 한 번만 실행했습니다. 같은 배치의 결과를 본 뒤 생성 코드·recipe·예산·판정 기준을 조정하거나 재실행하지 않았습니다. 설치 검사기의 Windows UTF-8 수정은 아래의 별도 QA 동결에 기록합니다. 원격 CI의 권위는 이 문서의 예측이 아니라 [PR #8 현재 head의 Checks](https://github.com/hibou04-ops/antemortem-structural-lab/pull/8/checks)이며, 완료 전 통과했다고 가정하지 않습니다.
+Source 비교는 Python 3.12.10·Hypothesis 6.170.11에서 동결 후 한 번만 실행했습니다. 같은 배치의 결과를 본 뒤 생성 코드·recipe·예산·판정 기준을 조정하거나 재실행하지 않았습니다. 설치 검사기의 Windows UTF-8 수정과 Python 3.13 AST 검사 호환성은 아래의 별도 QA 동결에 기록합니다. 첫 CI는 Docker 경계 검사가 통과했지만 Python 3.13 AST 검사 1개가 실패해 전체 성공으로 보고하지 않습니다. 원격 CI의 권위는 [PR #8 현재 head의 Checks](https://github.com/hibou04-ops/antemortem-structural-lab/pull/8/checks)이며, 수정한 새 head의 검증도 여기서 확인합니다.
 
 ## 확인한 Source와 계산 경로
 
@@ -156,9 +156,11 @@ cold 시간은 영수증에 기록된 준비 포함 정의를 따릅니다. 표�
 
 ### Source 동결과 설치 QA 수정의 분리
 
-Source 검증 이후 Windows 검사 보조 process의 `-I`가 환경의 UTF-8 설정을 무시해 경로/문서 처리에 문제가 있음을 확인했습니다. 수정은 `scripts/check-numerical-wheel.py`의 Python 실행에 `-X utf8`를 명시한 것과 CI의 동결 검사 진입점을 별도 packaging 검사기로 바꾼 것뿐입니다. Source 생성 runtime·recipe·domain·Oracle·예산·판정 기준은 바꾸지 않았고 Source 배치는 재실행하지 않았습니다.
+Source 검증 이후 QA 호환성 두 가지를 수정했습니다. Windows 검사 보조 process의 `-I`가 환경의 UTF-8 설정을 무시하는 문제는 `scripts/check-numerical-wheel.py`에 `-X utf8`를 명시해 처리했습니다. Python 3.13의 `ast.dump`는 기본값에서 선택적인 빈 목록 필드를 생략하므로 AST 출력의 문자열 해시가 달라졌습니다. `tests/test_numerical_source.py`가 지원 여부를 확인해 `show_empty=True`를 전달하도록 수정했으며 기존 기대 AST 해시 두 개와 생산 함수는 변경하지 않았습니다. 이 동작은 [Python 3.13 공식 문서](https://docs.python.org/3.13/library/ast.html#ast.dump)의 `show_empty` 설명과 일치합니다. Source 생성 runtime·recipe·domain·Oracle·예산·판정 기준은 바꾸지 않았고 Source 배치는 재실행하지 않았습니다.
 
-원본 157개 Source 동결 manifest `docs/E8_R2_CODE_FREEZE.json`은 SHA-256 `d8c3f5a0cff4b8461ffbb19fccd22479cef1e07e5445cebd9141ba8a721e44b1`로 보존하며 원 Source 검증 tree는 `9f5fb9b15fa6854c1b8c090bfb62915fcae5fc26`입니다. manifest를 현재 파일 해시로 다시 쓰지 않습니다. `scripts/check-e8r2-package-freeze.py`는 이 고정 역사 157개 파일과 현재 runtime의 동일성을 검사하고 위 두 QA 파일의 정확히 제한된 변경만 허용합니다. 최종 포장 파일은 별도의 packaging 동결과 납품 해시로 식별하며 Source 성능 검증의 동결 기록을 대체하지 않습니다.
+원본 157개 Source 동결 manifest `docs/E8_R2_CODE_FREEZE.json`은 SHA-256 `d8c3f5a0cff4b8461ffbb19fccd22479cef1e07e5445cebd9141ba8a721e44b1`로 보존하며 원 Source 검증 tree는 `9f5fb9b15fa6854c1b8c090bfb62915fcae5fc26`입니다. 기존 165개 패키지 동결 `docs/E8_R2_PACKAGING_CODE_FREEZE.json`도 SHA-256 `8424cad3df6cb417cd5455f914444a33c346602ed46d8962e96bfa4683ca1f69`와 tree `044335dc7882ed7414250bfe9a0327da641eaf05`로 그대로 보존합니다. 두 manifest를 현재 파일 해시로 다시 쓰지 않습니다.
+
+이전 단계의 `scripts/check-e8r2-package-freeze.py`는 그 당시 두 QA 변경을 검증한 역사적 검사기로 바이트를 보존합니다. 현재 CI 진입점은 별도 `scripts/check-e8r2-py313-qa-freeze.py`이며, 두 역사 tree의 157개·165개 항목을 각각 해시로 확인하고 현재 runtime·recipe·계약·예산의 동일성을 검사합니다. 현재 허용 차이는 `scripts/check-numerical-wheel.py`의 UTF-8 명시, `.github/workflows/tests.yml`의 현재 동결 검사 진입점, `tests/test_numerical_source.py`의 AST 출력 호환 처리라는 세 QA 파일의 정확한 변경뿐입니다. 현재 167개 항목은 새 `docs/E8_R2_PY313_QA_CODE_FREEZE.json`에 별도로 기록하며 Source·기존 패키지 동결을 대체하지 않습니다. 최종 포장 파일의 납품 해시와 Source 성능 검증의 동결 기록도 구분합니다.
 
 ## 분리한 상태와 발행 제한
 

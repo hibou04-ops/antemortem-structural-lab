@@ -54,6 +54,7 @@ include docs/E8_R2_CONTRACT.json
 include docs/E8_R2_CODE_FREEZE.json
 include docs/E8_R2_RESULTS.json
 include docs/E8_R2_PACKAGING_CODE_FREEZE.json
+include docs/E8_R2_PY313_QA_CODE_FREEZE.json
 recursive-include examples/numerical *.json *.sha256
 prune research/e8-r2
 prune e8-r2-private
