@@ -1,5 +1,12 @@
 # Changelog
 
+## E8-R4 — 미발행 독립 구현 CORR 개발 검사
+
+- 실제 `statistics.correlation`·SciPy `pearsonr` 호출 후 반환값·문서화된 예외·경고·NaN을 정규화하고 기존 정확 수학 Oracle와 비교하는 고정 어댑터를 추가했습니다.
+- Source-only 가이드를 변경하지 않는 CORR 전용 host 승인과 기존 사용 장부의 개발 소비 예약을 연결했습니다. FINAL·발행·Generator feedback은 허용하지 않습니다.
+- 48개 계획의 결과 전 동결, 고정 자원 비교, 실제 함수 진입·재현·축소·전체 child 과정·영수증 비용 계측과 CLI·설치 검사를 추가했습니다.
+- 기존 R3 runtime·audit·후보 응답 검증·worker 5파일·Source/Oracle·720개 검사 계약과 PyPI 수동 경로를 보존했습니다. 구현 적용과 B/C 대비 추가 가치·최종 일반화는 별도 판정합니다.
+
 ## E8-R3 — 미발행 실행 비용 개선
 
 - 명시적 runtime의 주 생성 1회·기준 생성 0회와 D audit의 주 생성 1회·기준 생성 1회를 분리했습니다. 기존 D API 기본 감사 수준과 기존 worker 5개 파일의 바이트를 보존합니다.

@@ -139,6 +139,45 @@ class UsageLedger:
                 raise PermissionError("final identity already consumed, including interrupted START")
             return self._append("START", claim_id, payload, state["receipt_sha256"])
 
+    def claim_corroboration(self, permits, expected_contexts, *, output=None):
+        """Consume reviewed identities as CORR without fabricating final PASS.
+
+        The same authority's existing final readiness/claim path sees these
+        START tokens. The permit has no final, publication or feedback power.
+        Interrupted development reservations remain consumed as before.
+        """
+        from .corroboration_permit import CorroborationExecutionPermit, SCOPE
+        if not isinstance(permits, (list, tuple)) or not permits or len(permits) != len(expected_contexts):
+            raise PermissionError("matching reviewed CORR permits and external approvals required")
+        entries, seen = [], set()
+        for permit, expected in zip(permits, expected_contexts):
+            if not isinstance(permit, CorroborationExecutionPermit):
+                raise PermissionError("CORR reservation does not accept final readiness receipts")
+            permit.validate(expected)
+            context = permit.context
+            if context["authority_id"] != self.authority_id:
+                raise PermissionError("CORR permit and fixed host usage authority differ")
+            identity = context["approved_implementation_identity"]["usage_identity"]
+            token = digest(identity)
+            if token not in seen:
+                entries.append(dict(identity=deepcopy(identity),evaluation_role="CORROBORATION_DEVELOPMENT",control_group=None))
+                seen.add(token)
+        tokens = batch_identity_tokens(entries)
+        permit_digests = [permit.permit_digest for permit in permits]
+        if len(set(permit_digests)) != len(permit_digests):
+            raise ValueError("duplicate CORR plan approvals in one reservation")
+        payload = dict(scope=SCOPE,authorization_kind="EXTERNALLY_APPROVED_CORR_PERMIT_NOT_FINAL_READINESS",
+            target_identities=[entry["identity"] for entry in entries],targets=entries,
+            permit_digests=permit_digests,authorization_sha256=digest(expected_contexts),
+            output=str(Path(output).resolve()) if output is not None else None,
+            final_evaluation_authorized=False,publication_authorized=False,feedback_to_generator=False)
+        claim_id = digest(payload)
+        with self._exclusive():
+            state = self.inspect()
+            if tokens & set(state["consumed_tokens"]):
+                raise PermissionError("CORR identity was already consumed in this fixed usage authority")
+            return self._append("START",claim_id,payload,state["receipt_sha256"])
+
     def complete(self, claim_id, summary):
         with self._exclusive():
             state = self.inspect()
