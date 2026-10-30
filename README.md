@@ -30,6 +30,23 @@ An experimental Python tool that tests trusted functions, records failing inputs
 
 `0.7.0a1` adds experimental **Evidence-Gated Structural Knowledge**. Failure-membership hypotheses retain their supporting and contradicting evidence. Independently reviewed contrastive development evidence and compatible typed/semantic contracts qualify limited extra probes. Hypothesis performs ordinary generation and shrinking. See [knowledge contracts](docs/E7_KNOWLEDGE.md) and the [E7 evaluation record](docs/E7_EVALUATION_REPORT.md).
 
+## PyPI 배포 채널 — 기존 E7 공개 파일
+
+배포 이름은 `antemortem-structural-lab`, Python import와 CLI는 `tomolab`입니다. [PyPI 수동 발행 workflow](.github/workflows/publish-pypi.yml)가 성공한 뒤 [공개 버전](https://pypi.org/project/antemortem-structural-lab/0.7.0a1/)에서 파일을 확인하고 설치합니다. 아래는 그 공개 설치 검증에 사용하는 명령이며, workflow 추가만으로 게시 완료를 뜻하지 않습니다.
+
+```bash
+python -m pip install "antemortem-structural-lab==0.7.0a1"
+python -m pip check
+python -c "import tomolab; from importlib.metadata import version; print(version('antemortem-structural-lab'))"
+tomolab --help
+python -m tomolab --help
+python -m tomolab demo --mode cross --budget 12
+```
+
+기본 설치는 MRI·CAST·Claim·E4 기능을 제공합니다. 아래 E7 탐색 예제에는 `qa`와 `solver` 선택 의존성을 설치합니다. 데모는 동봉된 공개 기능 fixture이며 연구 성능이나 새 결함 발견의 증거가 아닙니다.
+
+이번 채널 추가의 업로드 대상은 [기존 `v0.7.0a1` GitHub Release](https://github.com/hibou04-ops/antemortem-structural-lab/releases/tag/v0.7.0a1)의 **동일 wheel·sdist**입니다. 현재 README의 채널 안내를 넣어 재빌드한 파일을 원본 대신 게시하지 않습니다. 원본 파일은 당시 README를 그대로 포함하고, 현재 저장소의 안내와 구분합니다. E7의 `INCONCLUSIVE` 판정과 연구 PR #1·#8의 조건은 유지합니다. [태그·파일 해시·발행 및 공개 재설치 절차](docs/PYPI_PUBLISHING.md)를 참조하세요.
+
 ## E7 evidence-gated discovery
 
 Claims distinguish `HYPOTHESIS`, `SUPPORTED_WITHIN_SCOPE`, `CONTRADICTED`, `APPLICABILITY_UNKNOWN` and `QUALIFIED_FOR_PROBING`. Qualification requires both positive and negative observations from the same separately reviewed implementation/Oracle identity, plus typed roles, operation semantics and applicable state/IR contracts. Hashes bind identity and integrity; semantic independence remains a reviewed host attestation.
@@ -37,7 +54,7 @@ Claims distinguish `HYPOTHESIS`, `SUPPORTED_WITHIN_SCOPE`, `CONTRADICTED`, `APPL
 Without qualified claims, native Hypothesis runs without starting a worker, pool or solver. Qualified plans limit guidance to at most half the total plan budget and preserve the native search path; exhaustion of a finite domain can change the actual candidate proportions. They use a bounded guidance prefix, freeze, native search/shrinking and independent replay. Stateful Python APIs also reuse native RuleBasedStateMachine; the existing E6 CLI remains available. CI covers Python 3.11–3.13; package metadata allows 3.11+, with later Python versions outside this validation. Local QA uses Hypothesis6.170.11/Z35.3.2.0.
 
 ```bash
-python -m pip install "antemortem-structural-lab[qa,solver] @ https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.7.0a1/antemortem_structural_lab-0.7.0a1-py3-none-any.whl"
+python -m pip install "antemortem-structural-lab[qa,solver]==0.7.0a1"
 python -m tomolab knowledge-demo --budget 16 --guidance-budget 4 --pool-size 16 --shrink-budget 16 --output results/e7.json
 python -m tomolab knowledge-demo --case clean --budget 12 --guidance-budget 4 --pool-size 8 --shrink-budget 0 --output results/e7-clean.json
 ```
@@ -155,10 +172,10 @@ The preserved E4 relation grammar covers sums, differences, absolute-value relat
 
 Requires **Python 3.11+**. E5 search uses the `qa` extra; select the `solver` extra for Z3. MRI, CAST, Claim and E4 Mold remain available without a paid model or API.
 
-Install the GitHub Release wheel:
+수동 PyPI 발행이 성공한 뒤 정확한 alpha 버전으로 설치합니다:
 
 ```bash
-python -m pip install "antemortem-structural-lab[qa,solver] @ https://github.com/hibou04-ops/antemortem-structural-lab/releases/download/v0.6.0a1/antemortem_structural_lab-0.6.0a1-py3-none-any.whl"
+python -m pip install "antemortem-structural-lab[qa,solver]==0.7.0a1"
 python -m tomolab discovery-demo --case sequence --solver z3 --budget 32 --output results/discovery.json
 python -m tomolab discovery-demo --case state --budget 32 --output results/state.json
 python -m tomolab mold-demo --budget 32 --seed 7 --backend subprocess --solver enumeration --output results/mold.json
@@ -174,7 +191,7 @@ cd antemortem-structural-lab
 python -m pip install -e ".[qa,solver]"
 ```
 
-Each command also works as a single line in PowerShell. `tomolab` and `python -m tomolab` use the same CLI. This release is distributed on GitHub; it does not imply a PyPI publication.
+Each command also works as a single line in PowerShell. `tomolab` and `python -m tomolab` use the same CLI. 과거 GitHub 전용 발행 기록은 보존합니다. 추가 PyPI 채널의 실제 발행·공개 다운로드 검사는 [배포 안내](docs/PYPI_PUBLISHING.md)와 해당 workflow 결과에서 별도로 확인합니다.
 
 ## Examples
 

@@ -1,0 +1,106 @@
+name: Publish verified public E7 files to PyPI
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pypi-antemortem-structural-lab-0.7.0a1
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    if: github.repository == 'hibou04-ops/antemortem-structural-lab' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    outputs:
+      publish_required: ${{ steps.release.outputs.publish_required }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install twine
+      - id: release
+        name: Verify pinned public tag, exact files, current product and registry state
+        run: python scripts/verify-pypi-release.py --download --check-registry --github-output --directory dist --receipt verification/pypi-release.json
+      - name: Check the actual public distributions
+        run: python -m twine check dist/*
+      - name: Check public source and archive scope
+        run: python scripts/check-public-scope.py
+      - name: Check the original commitment without changing it
+        run: python scripts/check-e7-freeze.py
+      - name: Install the actual public wheel in a fresh base environment
+        run: python scripts/check-wheel.py
+      - name: Install and check the actual public wheel with QA and solver dependencies
+        run: python scripts/check-wheel.py --qa
+      - uses: actions/upload-artifact@v4
+        with:
+          name: verified-pypi-e7-distributions
+          path: dist/*
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pypi-e7-verification-receipt
+          path: verification/pypi-release.json
+          if-no-files-found: error
+  publish:
+    needs: verify
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && needs.verify.outputs.publish_required == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/antemortem-structural-lab/0.7.0a1/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: verified-pypi-e7-distributions
+          path: dist
+      - name: Recheck the two immutable files after artifact handoff
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          expected = {
+            'antemortem_structural_lab-0.7.0a1-py3-none-any.whl': 'c15fed1666eac1a1e0878413059de212150eb98f77a919967cc8a7bd84cab979',
+            'antemortem_structural_lab-0.7.0a1.tar.gz': '3643ca44dda5ef3feb44a15fea10618421e11e683358ce47dc2e164ec68504e7',
+          }
+          folder = Path('dist')
+          assert {p.name for p in folder.iterdir()} == set(expected), 'unexpected upload contents'
+          assert all(p.is_file() and not p.is_symlink() and hashlib.sha256(p.read_bytes()).hexdigest() == expected[p.name] for p in folder.iterdir()), 'artifact handoff bytes changed'
+          PY
+      - name: Publish through the project-scoped Trusted Publisher
+        # Reviewed upstream release/v1 commit; this attests this upload workflow,
+        # not an original build of the historical E7 source commit.
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086
+        with:
+          packages-dir: dist/
+          skip-existing: false
+          verify-metadata: true
+          verbose: false
+          print-hash: true
+          attestations: true
+  verify-public-pypi:
+    needs: [verify, publish]
+    if: ${{ !cancelled() && needs.verify.result == 'success' && (needs.publish.result == 'success' || needs.publish.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Redownload both files from public PyPI and install each in a separate fresh environment
+        run: python scripts/verify-public-pypi.py --directory pypi-download --receipt verification/public-pypi.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: public-pypi-verification
+          path: verification/public-pypi.json
+          if-no-files-found: error
