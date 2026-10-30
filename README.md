@@ -23,6 +23,8 @@ python -m tomolab numerical-run --guide results/r2-functional/guide.json --appro
 
 이 workspace 예제는 공개 제공 진단을 사용한 기능 검사입니다. 실제 Source 비교와 독립 C를 대신하지 않습니다. 별도 `numerical-prepare/compile/compare`와 설치 wheel 검증은 [전체 흐름](docs/E8_R2_REPORT.md#실행-경로)을 참조합니다. 전체 회귀 669개가 실패·오류·skip 0으로 통과했고, 별도 새 환경의 실제 후보 wheel·README 경로 검사 20개(성공 18개·필수 차단 2개)가 통과했습니다. 로컬 QA 의존성은 바이트를 확인한 기존 승인 배포판을 재사용했습니다. Docker·일반 index의 새 의존성 설치·원격 CI 상태는 [이 head의 PR Checks](https://github.com/hibou04-ops/antemortem-structural-lab/pull/8/checks)에서 확인합니다.
 
+Python 3.13의 빈 AST 필드 출력 차이는 검사에 `show_empty=True`를 조건부 적용해 처리하며 기대 해시와 생산 함수는 유지합니다. 기존 Source 157개·패키지 165개 동결 기록을 보존하고 별도 167개 QA 동결과 `check-e8r2-py313-qa-freeze.py`로 제한된 세 QA 파일 변경을 검증합니다. Source 비교 배치는 재실행하지 않았습니다.
+
 동결한 Source 개발 배치는 한 번 실행했습니다. A/B/C/D의 방법별 고유 새 실패 입력은 **0/15/24/44개**이며 전부 이미 알려진 같은 기전입니다. 새 기전은 0개입니다. 측정한 준비 1회 포함 비용은 A/B/C/D가 2.83759/2.95153/3.37563/23.54118초였고, D는 입력 발견 수를 늘렸지만 사전 기준의 비용 조건을 만족하지 못했습니다. 판정은 **`NO_ADDITIONAL_VALUE_OVER_DOMAIN_PRIOR`**이며 B·C 대비 종합 추가 가치는 입증하지 못했습니다. 역사적 최초 수집비용은 `UNKNOWN`으로 이 비용표에 포함된 것처럼 주장하지 않습니다. [실제 결과 JSON](docs/E8_R2_RESULTS.json)에서 고유 입력과 seed별 합계를 구분합니다. 독립 C·적격 미소비 Target이 없어 외적 일반화는 미검증입니다. PR은 draft·`allow_release=false`로 유지하고 main 병합·새 tag·GitHub Release·PyPI upload는 실행하지 않습니다. 아래 R1·E8·E7 안내는 역사 보존 기록입니다.
 
 ## E8-R1 후속 작업 — 완전 분류·부분 조건·경험적 가이드

@@ -20,7 +20,8 @@ def test_historical_production_function_and_result_type_keep_the_reviewed_ast():
         "pearson_result": "03ea5e46ff3a910d716e467137d4b30cc30954e70895e767415574a429a5f95c",
     }
     tree = ast.parse(Path(source.__file__).read_text(encoding="utf-8"))
-    actual = {node.name: hashlib.sha256(ast.dump(node, include_attributes=False)
+    dump_options = {"show_empty": True} if "show_empty" in inspect.signature(ast.dump).parameters else {}
+    actual = {node.name: hashlib.sha256(ast.dump(node, include_attributes=False, **dump_options)
                 .replace(", type_params=[]", "").encode()).hexdigest()
               for node in tree.body if isinstance(node, (ast.ClassDef, ast.FunctionDef))
               and node.name in expected}

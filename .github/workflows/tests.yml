@@ -42,7 +42,7 @@ jobs:
         run: python scripts/check-historical-e8r1-freeze.py
       - name: Verify R2 byte commitment and PyPI paths preserved from main
         run: |
-          python scripts/check-e8r2-package-freeze.py
+          python scripts/check-e8r2-py313-qa-freeze.py
           python scripts/check-r2-preservation.py
       - name: Check wheel outside the source checkout
         run: python scripts/check-wheel.py
