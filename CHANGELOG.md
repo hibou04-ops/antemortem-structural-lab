@@ -2,6 +2,19 @@
 
 All versions are experimental. Versions v0.1.0 through v0.2.0 were retrospective imports of archived snapshots; those commit timestamps **do not** represent the dates when the experiments were originally performed. Later changes are developed in the public repository without rewriting historical tags.
 
+## E8-R2 후속 작업 — 수치 입력 생성과 경량 실행 (미발행)
+
+- main의 PyPI 수동 workflow·검증 스크립트·E7 파일 해시 고정을 보존하며 연구 PR #8을 통합합니다. 공개 `0.7.0a1`을 수정·재업로드하지 않으며 작업 버전 `0.8.0a1`은 미발행 후보입니다.
+- R1 의미 분리·readiness·소비 이력을 재사용합니다. 실패 입력의 저장/재생과 수치 구조를 유지하는 새 입력 생성을 구분하는 typed `FailureGuidanceRecipe`를 추가했습니다.
+- 고정된 `omega-lock` 과거 revision의 검토된 함수·타입과 기존 정확 입력 Oracle·FINITE_JSON 비교를 연결합니다. 원본 생산 코드와 허용오차·정확한 0·domain·예외 정책은 바꾸지 않습니다. 사용자 제공 진단은 개발 단서로 구분하고 현재 배포판의 문제로 확대하지 않습니다.
+- native Hypothesis Strategy와 원본 반례에서 시작하는 bounded native shrinking을 추가했습니다. 상수축·값/길이·표현·부호/스케일·인접 float·순열/반복·정상 대조를 지원하며 정확 float 입력의 중복·알려진 입력·domain 거절을 분리합니다.
+- B·D의 공개 수치 지식과 C·D의 실패 자료를 맞추고, D만 검증된 Source 실패·정상 관측으로 family 배정을 보정합니다. 공개 사전지식·보정·검증 결과의 출처를 별도로 기록합니다.
+- 원본 72,801,555바이트 archive를 host에서 검증하고 canonical 3,448바이트 경량 가이드로 컴파일합니다. worker는 원시 정답·전체 journal·실행 코드 없이 host 승인 digest·의미 버전·범위·변조·전송 한도를 확인합니다. 전체 archive를 Docker에서 실행했다고 주장하지 않습니다.
+- native float 생성이 import된 모듈의 숫자 상수 문맥에 영향을 받는 QA 원인을 확인하고 A·B·C·D의 생성을 동일한 최소 허용 모듈의 별도 process로 분리했습니다. A·B에는 D recipe를 전송하지 않고 C에만 같은 기존 실패 입력을 bounded 데이터로 전달합니다. Oracle 출력·라벨은 전송하지 않으며 Hypothesis 내부 패치는 하지 않습니다. 동일 seed만으로 재생을 보장하지 않고 runtime 버전·모듈 문맥·입력 계약을 함께 고정합니다.
+- `numerical-prepare/compile/inspect/run/compare/demo`를 패키지 CLI에 연결하고 호출·최초 새 실패·생성/직렬화/worker/Oracle/축소/재현 및 준비 비용을 계측합니다. 전체 669개 회귀는 실패·오류·skip 0으로 통과했으며 R1 기존 검사 파일과 main PyPI 검사를 보존합니다. 후보 wheel 설치·README 명령·Docker CI는 아직 `PENDING`입니다.
+- 한 번의 동결 Source 비교에서 A/B/C/D 고유 새 실패 입력 0/15/24/44개를 확인했습니다. C의 seed별 합계 26개와 고유 입력 24개를 구분합니다. 모두 같은 기존 기전이며 신규 기전은 0개입니다. 측정 준비 1회 포함 비용은 2.83759/2.95153/3.37563/23.54118초로 D가 사전 비용 기준을 충족하지 못해 `NO_ADDITIONAL_VALUE_OVER_DOMAIN_PRIOR`입니다. 결과 후 재실행·재보정은 하지 않았습니다. 역사적 수집비용은 `UNKNOWN`입니다. [결과 JSON](docs/E8_R2_RESULTS.json) · [R2 보고서](docs/E8_R2_REPORT.md).
+- 독립 C·미소비 Target 부재와 `allow_release=false`를 유지합니다. draft PR만 갱신하며 main 병합·새 tag·GitHub Release·PyPI upload는 실행하지 않습니다. 기능 구현을 외적 일반화나 보편적 성능 우위의 증거로 사용하지 않습니다.
+
 ## E8-R1 후속 작업 — 의미별 주장과 Source 검증 (미발행)
 
 - 기존 완전 분류식·반증을 보존하면서 충분조건·필요조건·경험적 가이드를 명시적 의미 버전·ID·snapshot으로 구분하고 엔진의 앞단 제거부터 archive·계획·CLI까지 연결했습니다.

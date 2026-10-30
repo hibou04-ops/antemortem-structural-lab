@@ -1,0 +1,147 @@
+{
+  "applicability_scope": "SOURCE_DEVELOPMENT_ONLY",
+  "approved_recipe_ids": [
+    "source-pearson-centering-v1"
+  ],
+  "artifact_digest": "c5ac5b4d86a45eb4498af7123eeb928e3974165aa73f4b8202015f0de95a98ed",
+  "bounded_recipe_parameters": [
+    {
+      "comparison_contract": {
+        "absolute_tolerance": 1e-10,
+        "exceptions": "EXECUTION_ERROR",
+        "kind": "FINITE_JSON",
+        "relative_tolerance": 1e-08,
+        "undefined": "EXECUTION_ERROR"
+      },
+      "cost_budget": {
+        "max_candidates": 1024,
+        "max_examples": 8192,
+        "max_shrink_calls": 1024
+      },
+      "development_validation": {
+        "origin_type": "OBSERVED_VALIDATION_RESULT",
+        "status": "NOT_YET_EXECUTED_SEPARATE_RECEIPT_REQUIRED"
+      },
+      "domain_guard": {
+        "contract_sha256": "9008da62d49077cf9489fd085f2dc40ad0eb8e0b90175c43c7f0fa73e26005f8",
+        "kind": "EXACT_INPUT_CENTERED_SUM_SQUARES"
+      },
+      "input_properties": [
+        "EXACT_FLOAT_EQUALITY",
+        "LENGTH",
+        "SCALE_ULP",
+        "PUBLIC_CENTERING_RESIDUAL"
+      ],
+      "known_counterevidence": {
+        "normal_observations": 408,
+        "quarantined_observations": 0,
+        "state": "PRESERVED_AS_COUNTEREVIDENCE_NOT_A_FAILURE_CLASSIFIER"
+      },
+      "mechanism_hypotheses": [
+        "ROUNDED_CENTERING_CAN_MASK_EXACT_CONSTANT_VARIANCE"
+      ],
+      "origin_type": "SOURCE_CALIBRATED_GUIDANCE",
+      "parameter_strategy": {
+        "calibration_counts": {
+          "BOTH_CONSTANT_RESIDUAL": {
+            "failure": 0,
+            "normal": 0
+          },
+          "CONSTANT_EXACT_CENTERING": {
+            "failure": 0,
+            "normal": 48
+          },
+          "NATIVE_NONDEGENERATE": {
+            "failure": 0,
+            "normal": 360
+          },
+          "PATTERNED_NONDEGENERATE": {
+            "failure": 0,
+            "normal": 0
+          },
+          "X_CONSTANT_RESIDUAL": {
+            "failure": 0,
+            "normal": 0
+          },
+          "Y_CONSTANT_RESIDUAL": {
+            "failure": 5,
+            "normal": 0
+          }
+        },
+        "families": [
+          "BOTH_CONSTANT_RESIDUAL",
+          "X_CONSTANT_RESIDUAL",
+          "Y_CONSTANT_RESIDUAL",
+          "CONSTANT_EXACT_CENTERING",
+          "PATTERNED_NONDEGENERATE",
+          "NATIVE_NONDEGENERATE"
+        ],
+        "selection_rule": "1_PLUS_FLOOR_15_FAILURES_OVER_ALL_WITHIN_FAMILY",
+        "weights": {
+          "BOTH_CONSTANT_RESIDUAL": 1,
+          "CONSTANT_EXACT_CENTERING": 1,
+          "NATIVE_NONDEGENERATE": 1,
+          "PATTERNED_NONDEGENERATE": 1,
+          "X_CONSTANT_RESIDUAL": 1,
+          "Y_CONSTANT_RESIDUAL": 16
+        }
+      },
+      "permitted_transformations": [
+        "VALUE_AND_LENGTH",
+        "ONE_CONSTANT_AXIS",
+        "BINARY_DECIMAL_CONTRAST",
+        "SIGN_SCALE_EXPONENT",
+        "ADJACENT_FLOAT",
+        "PERMUTE_AND_REPEAT",
+        "NORMAL_CONTROL"
+      ],
+      "provenance": {
+        "calibration_scope": "SOURCE_DEVELOPMENT_ONLY",
+        "oracle_outputs_included": false,
+        "prior": {
+          "knowledge": "Constant Pearson inputs are degenerate; rounded centering can leave a nonzero residual.",
+          "limits": "Public mathematical and source-arithmetic knowledge; not learned or a universal float invariant.",
+          "origin_type": "HAND_SPECIFIED_PRIOR",
+          "source": "https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html"
+        },
+        "source_archive_digest": "0498dcdb997335d4fe4c83ef139e7806a3461b10812e39eb0e2002a4bf91831c"
+      },
+      "public_contract": {
+        "lengths": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "maximum": 1.0,
+        "minimum": -1.0,
+        "nonconstant_centered_ss_min": "1/1000000",
+        "profile": "SOURCE_DOMAIN",
+        "schema": "tomolab-numerical-input-contract-v1"
+      },
+      "recipe_id": "source-pearson-centering-v1",
+      "schema_version": "tomolab-failure-guidance-recipe-v1",
+      "source_evidence_refs": [
+        "archive-receipt:0498dcdb997335d4fe4c83ef139e7806a3461b10812e39eb0e2002a4bf91831c"
+      ]
+    }
+  ],
+  "compiler_version": "e8-r2-compact-compiler-v1",
+  "counterevidence_state_reference": "b187e3ba8ee1368d6201db27a8eb40c57a842c0ad060b3f0aa77ada9464d7332",
+  "public_input_contract": {
+    "lengths": [
+      3,
+      4,
+      5,
+      6
+    ],
+    "maximum": 1.0,
+    "minimum": -1.0,
+    "nonconstant_centered_ss_min": "1/1000000",
+    "profile": "SOURCE_DOMAIN",
+    "schema": "tomolab-numerical-input-contract-v1"
+  },
+  "schema_version": "tomolab-compact-numerical-guide-v1",
+  "semantic_contract_version": "e8-r1-claims-v1",
+  "source_archive_digest": "0498dcdb997335d4fe4c83ef139e7806a3461b10812e39eb0e2002a4bf91831c"
+}

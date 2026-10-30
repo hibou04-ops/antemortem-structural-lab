@@ -203,9 +203,20 @@ def main(argv: list[str] | None = None) -> int:
     register_e8(cmd)
     from .e8r1_cli import register as register_e8r1
     register_e8r1(cmd)
+    from .e8r2_cli import register as register_e8r2
+    register_e8r2(cmd)
     args = p.parse_args(argv)
     try:
-        if args.command.startswith("semantic-"):
+        if args.command.startswith("numerical-"):
+            from .e8r2_cli import dispatch
+            try:
+                result = dispatch(args, p, EXAMPLES)
+            except ModuleNotFoundError as exc:
+                p.error(f"R2 수치 실행에는 선택 의존성 [qa]가 필요합니다: {exc}")
+            _save(result, args.output)
+            if result.get("status") in ("ABORTED_EXECUTION_ERROR", "INCONCLUSIVE", "INCONCLUSIVE_REPLAY_MISMATCH") or result.get("run",{}).get("status") in ("ABORTED_EXECUTION_ERROR", "INCONCLUSIVE_REPLAY_MISMATCH"):
+                return 3
+        elif args.command.startswith("semantic-"):
             from .e8r1_cli import dispatch
             try:
                 result=dispatch(args,p,EXAMPLES)

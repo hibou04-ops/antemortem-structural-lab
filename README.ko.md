@@ -1,5 +1,44 @@
 # Antemortem Structural Lab
 
+## E8-R2 작업 후보 — 실패 구조를 보존하는 새 수치 입력 생성
+
+**실패 입력을 그대로 저장하는 기능과, 실패가 발생한 수치 구조를 보존하면서 새로운 입력을 생성하는 기능을 구분합니다.** R2는 R1의 EXACT·SUFFICIENT·NECESSARY·EMPIRICAL 의미와 readiness를 재사용하고, 실패·정상 개발 관측으로 보정한 입력 생성 레시피를 별도 경량 가이드로 실행합니다. 레시피는 실패 분류식이나 Oracle 정답이 아닙니다.
+
+공개 PyPI **`0.7.0a1`에는 R1·R2가 없습니다.** 아래 수치 명령은 PR #8의 **미발행 `0.8.0a1` 연구 후보**를 checkout에서 설치하거나 후보 wheel을 별도 환경에 설치한 뒤 사용합니다. 공개 패키지 설치 안내와 기존 E7 파일·태그·해시는 아래에 보존합니다. 이번 작업은 PyPI를 다시 게시하지 않습니다.
+
+수치 프로파일은 고정 `omega-lock` revision `14ff508b2974298305d74c1c90bb43d3c0c13b82`의 검토된 `pearson_result` 계산을 사용합니다. 유한 float `[-1,1]`, 동길이 3~6개를 허용하며 정확 상수열은 포함합니다. 비상수열의 정확한 중심 제곱합이 `1e-6`보다 작으면 기존 Source domain에서 거절합니다. 거의 상수인 영역은 별도 `NEAR_CONSTANT_DIAGNOSTIC` 프로파일이며 주평가에 섞지 않습니다. 원본 생산 코드는 수정하지 않습니다.
+
+공개 사전지식은 상수 Pearson 입력의 퇴화와 공개 산술 경로의 중심화 반올림입니다. 상수축·값·길이·표현·부호/스케일·인접 float·순열/반복·정상 대조를 Hypothesis native Strategy로 생성하고, 실제 float 입력과 기존 Oracle 비교 계약으로 다시 평가합니다. `HAND_SPECIFIED_PRIOR`, `SOURCE_CALIBRATED_GUIDANCE`, `OBSERVED_VALIDATION_RESULT`의 출처를 분리합니다. 사용자 제공 `[0.1]*3` 진단은 제공된 개발 단서이며 엔진의 독립 발견이 아닙니다.
+
+현재 동봉 가이드는 검증된 기존 413개 Source 개발 관측(기존 371개와 R1의 정상 42개)으로 보정했습니다. 기존 실패 5개는 오른쪽 상수축의 같은 중심화 기전이며 Python 3.11·3.12에서 재현했습니다. 레시피는 해당 family에 가중치 16, 나머지 공개 family에 1을 배정합니다. B·D는 동일한 공개 수치 지식을 사용하고 D만 관측으로 배정을 보정합니다. C는 D와 같은 실패 자료를 재생·일반 변형합니다. 새 입력 수가 늘어도 결함 기전 수가 늘어난 것으로 세지 않습니다.
+
+전체 72,801,555바이트 감사 archive는 host에 유지합니다. 원본을 기존 규칙으로 검증한 뒤 컴파일한 실행 가이드는 canonical JSON 기준 3,448바이트이며, 원시 입력·정답·전체 journal·임의 실행 코드를 포함하지 않습니다. 실행 시에는 host가 보관한 예상 digest와 원본 검증 영수증을 함께 검사합니다. 가이드 상한 1MiB와 전체 요청 8,000,000바이트 상한을 유지합니다. 전체 archive를 Docker에 보냈다는 뜻은 아닙니다.
+
+Hypothesis 6.170.11의 native float Strategy는 import된 모듈에서 수집한 숫자 상수의 영향을 받을 수 있습니다. 실제 QA에서 공개 상수 하나의 import만으로 평가자 host와 최소 worker의 후보가 달라지는 경로를 확인했습니다. 따라서 A·B·C·D 모두 같은 최소 허용 모듈만 복사한 별도 생성 process를 사용하고 평가자·Oracle 모듈은 import하지 않습니다. A·B에는 D의 보정 레시피를 전송하지 않으며, C에만 공정한 재생·일반 변형에 필요한 기존 실패 입력을 bounded 데이터로 전달합니다. C의 입력을 포함해 Oracle 출력·라벨은 전송하지 않고 D 가이드는 원시 입력 없이 유지합니다. Hypothesis 내부 구현은 수정하지 않습니다. host 기준 경로도 별도 최소 process로 실행하며 seed뿐 아니라 Python·Hypothesis 버전·모듈 문맥·입력 계약을 함께 확인합니다.
+
+### R2 후보 설치와 실제 명령
+
+아래 명령은 후보 wheel을 설치한 별도 환경 또는 연구 checkout을 기준으로 합니다. `0.8.0a1`은 PyPI 설치 대상으로 안내하지 않습니다. 모든 출력은 새 경로를 사용합니다. 전체 회귀 669개가 실패·오류·skip 0으로 통과했습니다. 후보 wheel 설치·README 명령·Docker CI는 아직 `PENDING`이며 [R2 보고서](docs/E8_R2_REPORT.md)에 실제 실행 후 기록합니다.
+
+```powershell
+python -m pip install ".[qa,solver]"
+python -m tomolab numerical-demo --workspace results/r2-functional --budget 16 --size 4 --max-examples 128 --output results/r2-demo.json
+python -m tomolab numerical-inspect --guide results/r2-functional/guide.json --approval results/r2-functional/approval.json --expected-digest-file results/r2-functional/guide.sha256 --output results/r2-inspect.json
+python -m tomolab numerical-run --guide results/r2-functional/guide.json --approval results/r2-functional/approval.json --expected-digest-file results/r2-functional/guide.sha256 --method D --allow-local-execution --budget 16 --size 4 --max-examples 128 --output results/r2-run.json
+```
+
+`numerical-demo --workspace`는 공개 제공 진단의 작은 기능 archive와 recipe·guide·approval·별도 digest 파일을 새 폴더에 만듭니다. 이 기능 예제를 실제 413개 관측의 비교 결과로 계산하지 않습니다. `numerical-demo`에서 `--workspace`를 생략하면 사전 승인된 실제 Source 경량 가이드를 사용하되 전체 비공개 archive는 읽지 않습니다. `numerical-run/compare`의 `--allow-local-execution`은 고정된 검토 Source와 Oracle의 host 실행 승인이며 OS 격리를 의미하지 않습니다. Docker backend는 후보 생성 worker에 적용됩니다.
+
+별도 단계인 `numerical-prepare → numerical-compile → numerical-inspect/run/compare`와 후보 wheel 설치·검증 방법은 [전체 사용 흐름](docs/E8_R2_REPORT.md#실행-경로)에 있습니다. 알려진 입력 재생, 첫 평가 유효 입력, 새 실패 입력, 기전 수, domain 거절, Oracle 오류와 생성·직렬화·worker·Oracle·축소·재현 시간을 구분합니다. 최초 수집비용은 `UNKNOWN`으로 남기며, archive 재사용 추가 비용도 별도 기록합니다.
+
+### R2 검증과 공개 상태
+
+새 Source 개발 비교는 길이 4·5·6, seed 13·47·89, 방법별 후보 32개·draw 상한 512개·실제 Source/Oracle 쌍 상한 96개·축소 상한 16회를 동결한 뒤 한 번 실행했습니다. A/B/C/D의 고유 새 유효 입력은 94/92/77/93개, 고유 새 실패 입력은 **0/15/24/44개**였습니다. C의 seed별 실패 합계 26개를 고유 입력 24개와 구분합니다. B·C·D가 재현한 것은 모두 같은 기존 기전 1개이며 새 기전은 0개입니다.
+
+측정한 준비 1회 포함 전체 비용은 A/B/C/D가 2.83759/2.95153/3.37563/23.54118초입니다. D의 23.54118초는 준비 16.90675초와 현재 실행 6.63443초를 포함합니다. D가 같은 결함의 새 입력을 더 많이 만들었지만 B·C보다 비용이 커 사전 기준의 종합 추가 가치를 충족하지 못했습니다. 판정은 **`NO_ADDITIONAL_VALUE_OVER_DOMAIN_PRIOR`**입니다. 최초 역사적 수집비용은 `UNKNOWN`이며 전체 역사 비용을 측정한 값이 아닙니다. [사전 고정 계약](docs/E8_R2_CONTRACT.json)의 `NOT_EXECUTED`는 당시 선언 상태로 보존하고, [현재 실행 결과 JSON](docs/E8_R2_RESULTS.json)과 [보고서](docs/E8_R2_REPORT.md)에 완료 결과를 기록합니다. 결과를 보고 같은 배치를 재실행하거나 recipe를 다시 보정하지 않았습니다.
+
+독립 C와 적격 미소비 Target이 없어 외적 일반화는 검증되지 않았습니다. PR #8은 draft, `allow_release=false`를 유지하며 main 병합·새 tag·GitHub Release·PyPI upload는 실행하지 않습니다. 아래 R1·E8 결과와 소비 이력은 보존 기록입니다. 과거 특징 라벨 충돌 0개는 해당 표본의 완전 충돌 부재만 뜻하며 새 입력 생성 능력의 증거가 아닙니다.
+
 ## E8-R1 작업 후보 — 정확 분류와 부분 규칙을 구별하기
 
 같은 조건이라도 **완전한 실패 분류식·일부 실패의 충분조건·실패의 필요조건·경험적 탐색 규칙**은 다른 주장입니다. 기존 정확 분류의 반증을 지우지 않고 새 의미 버전과 ID로 검토합니다. Oracle는 계속 실제 결과를 판정하고, 규칙은 후보 순서와 제한된 탐색 예산에만 사용합니다.

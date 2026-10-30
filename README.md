@@ -1,5 +1,30 @@
 # Antemortem Structural Lab
 
+## E8-R2 작업 후보 — Source 수치 입력 생성과 경량 실행
+
+**실패 입력을 그대로 저장하는 기능과, 실패가 발생한 수치 구조를 보존하면서 새로운 입력을 생성하는 기능을 구분합니다.** 기존 R1의 EXACT·SUFFICIENT·NECESSARY·EMPIRICAL 의미·세 값 논리·readiness를 재사용하며 새 실패 분류 문법을 다시 만들지 않습니다. [한국어 상세 안내](README.ko.md) · [R2 개발 계약](docs/E8_R2_CONTRACT.json) · [R2 보고서와 실행 경로](docs/E8_R2_REPORT.md).
+
+공개 PyPI **`0.7.0a1`에는 이 연구 기능이 없습니다.** 수치 명령은 PR #8의 **미발행 `0.8.0a1` 후보**를 checkout 또는 별도 후보 wheel 환경에 설치한 뒤 사용합니다. 현재 공개 `0.7.0a1` 파일·E7 태그·PyPI 수동 발행 경로를 보존하며 재업로드하지 않습니다.
+
+고정 `omega-lock@14ff508b2974298305d74c1c90bb43d3c0c13b82`의 검토된 `pearson_result`만 별도 개발 경로에서 실행합니다. 원본 생산 코드는 수정하지 않습니다. 기존 Source domain은 유한 float `[-1,1]`, 동길이 3~6개이며 상수 입력은 포함하고 정확한 비상수 중심 제곱합이 `1e-6` 미만인 입력은 제외합니다. 거의 상수인 입력의 별도 진단을 주평가에 섞지 않습니다.
+
+레시피는 상수축·길이·표현·부호/스케일·인접 float·순열/반복·정상 대조를 native Hypothesis Strategy로 생성합니다. 공개 사전지식·Source 보정·관측 검증의 출처를 구분합니다. B·D는 같은 공개 수치 지식을 받고 C·D는 같은 실패 자료를 사용합니다. 현재 413개 Source 관측으로 보정한 D는 오른쪽 상수축의 중심화 잔차 family를 우선 배정합니다. 알려진 5개 실패는 동일 기전이며 사용자 `[0.1]*3` 진단은 제공된 단서로 기록합니다. 이를 새 독립 발견이라고 부르지 않습니다.
+
+전체 72,801,555바이트 archive는 host의 감사·재현 자료입니다. canonical JSON 3,448바이트의 사전 승인 실행 가이드는 입력·Oracle 정답·전체 journal 없이 원본 검증 영수증과 host 예상 digest에 연결됩니다. 가이드 1MiB·전체 요청 8,000,000바이트 한도를 유지합니다. 전체 archive의 Docker 실행을 주장하지 않습니다.
+
+Hypothesis의 float 생성은 seed 외에 import된 모듈의 숫자 상수 문맥에도 영향을 받을 수 있습니다. A·B·C·D 모두 같은 최소 허용 모듈을 복사한 독립 생성 process에서 실행하여 평가자 모듈의 숫자가 후보에 유입되는 경로를 제거합니다. A·B에는 D 레시피를 보내지 않고 C에만 같은 기존 실패 입력을 제한적으로 전달하며 Oracle 출력·라벨은 보내지 않습니다. host 기준 경로도 별도 최소 process이며 runtime 버전·모듈 문맥·입력 계약을 맞춰 worker와 비교합니다. seed만 같으면 모든 환경에서 후보가 같다고 보장하지 않습니다.
+
+```powershell
+python -m pip install ".[qa,solver]"
+python -m tomolab numerical-demo --workspace results/r2-functional --budget 16 --size 4 --max-examples 128 --output results/r2-demo.json
+python -m tomolab numerical-inspect --guide results/r2-functional/guide.json --approval results/r2-functional/approval.json --expected-digest-file results/r2-functional/guide.sha256 --output results/r2-inspect.json
+python -m tomolab numerical-run --guide results/r2-functional/guide.json --approval results/r2-functional/approval.json --expected-digest-file results/r2-functional/guide.sha256 --method D --allow-local-execution --budget 16 --size 4 --max-examples 128 --output results/r2-run.json
+```
+
+이 workspace 예제는 공개 제공 진단을 사용한 기능 검사입니다. 실제 Source 비교와 독립 C를 대신하지 않습니다. 별도 `numerical-prepare/compile/compare`와 설치 wheel 검증은 [전체 흐름](docs/E8_R2_REPORT.md#실행-경로)을 참조합니다. 전체 회귀 669개가 실패·오류·skip 0으로 통과했습니다. 후보 wheel 설치·README 명령·Docker CI는 아직 `PENDING`이며 실행 결과를 보고서에 기록합니다.
+
+동결한 Source 개발 배치는 한 번 실행했습니다. A/B/C/D의 방법별 고유 새 실패 입력은 **0/15/24/44개**이며 전부 이미 알려진 같은 기전입니다. 새 기전은 0개입니다. 측정한 준비 1회 포함 비용은 A/B/C/D가 2.83759/2.95153/3.37563/23.54118초였고, D는 입력 발견 수를 늘렸지만 사전 기준의 비용 조건을 만족하지 못했습니다. 판정은 **`NO_ADDITIONAL_VALUE_OVER_DOMAIN_PRIOR`**이며 B·C 대비 종합 추가 가치는 입증하지 못했습니다. 역사적 최초 수집비용은 `UNKNOWN`으로 이 비용표에 포함된 것처럼 주장하지 않습니다. [실제 결과 JSON](docs/E8_R2_RESULTS.json)에서 고유 입력과 seed별 합계를 구분합니다. 독립 C·적격 미소비 Target이 없어 외적 일반화는 미검증입니다. PR은 draft·`allow_release=false`로 유지하고 main 병합·새 tag·GitHub Release·PyPI upload는 실행하지 않습니다. 아래 R1·E8·E7 안내는 역사 보존 기록입니다.
+
 ## E8-R1 후속 작업 — 완전 분류·부분 조건·경험적 가이드
 
 기존 정확 분류 `R ↔ F`와 충분조건 `R → F`, 필요조건 `F → R`, 경험적 탐색 규칙을 서로 다른 ID·반증 방향·검증 상태로 다룹니다. 기본 legacy 의미와 기존 반증은 그대로 보존합니다. [한국어 실행 안내](README.ko.md) · [R1 개발 보고서](docs/E8_R1_REPORT.md) · [결과 JSON](docs/E8_R1_RESULTS.json).
