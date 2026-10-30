@@ -1,0 +1,551 @@
+{
+  "schema": "tomolab-e8r4-corroboration-result-v1",
+  "status": "COMPLETE",
+  "outcome": "CONFIRMED_CONTRACT_VIOLATIONS_WITHIN_BUDGET",
+  "summaries": {
+    "python-statistics-correlation": {
+      "A": {
+        "trials": 6,
+        "completed_trials": 6,
+        "fixed_budget_discoveries": 0,
+        "distinct_confirmed_violation_inputs": 0,
+        "confirmed_contract_categories": [],
+        "mechanism_count": "REQUIRES_SEPARATE_MECHANISTIC_REVIEW_NOT_INPUT_OR_CATEGORY_COUNT",
+        "target_calls": 192,
+        "oracle_calls": 192,
+        "oracle_errors": 0,
+        "not_comparable": 0,
+        "replay_mismatches": 0,
+        "documented_undefined_observations": 42,
+        "first_confirmed_failure": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "prepared_seconds": 8.4351385249538,
+        "cold_measured_subtotal_seconds": 8.4351385249538,
+        "D_guide_total_actual_reuse_count": 0,
+        "guide_preparation_share_seconds": null,
+        "guide_preparation_cost_origin": "RECORDED_R3_MEASUREMENT_REUSED_NOT_RECOMPILED_IN_R4",
+        "historical_source_acquisition": "UNKNOWN_NOT_ZERO"
+      },
+      "B": {
+        "trials": 6,
+        "completed_trials": 6,
+        "fixed_budget_discoveries": 3,
+        "distinct_confirmed_violation_inputs": 10,
+        "confirmed_contract_categories": [
+          "FINITE_VALUE_FOR_EXACT_CONSTANT_INPUT"
+        ],
+        "mechanism_count": "REQUIRES_SEPARATE_MECHANISTIC_REVIEW_NOT_INPUT_OR_CATEGORY_COUNT",
+        "target_calls": 233,
+        "oracle_calls": 233,
+        "oracle_errors": 0,
+        "not_comparable": 0,
+        "replay_mismatches": 0,
+        "documented_undefined_observations": 81,
+        "first_confirmed_failure": [
+          null,
+          {
+            "seconds_since_execution_api_entry": 0.12419380000210367,
+            "target_calls": 21,
+            "oracle_calls": 21,
+            "input_digest": "252e01d9a551ee7ee96890b83e760891250223d4fc2e271ddc5098e8996b1b63",
+            "phase": "fresh_generation",
+            "violation_category": "FINITE_VALUE_FOR_EXACT_CONSTANT_INPUT",
+            "charged_plan_plus_execution_seconds": 1.1588313999964157,
+            "execution_run_outer_seconds": 0.12419410000438802,
+            "prepaid_plan_plus_run_event_seconds": 1.199790500002564
+          },
+          null,
+          null,
+          {
+            "seconds_since_execution_api_entry": 0.09656340000219643,
+            "target_calls": 6,
+            "oracle_calls": 6,
+            "input_digest": "8213df04c78ce9e3e72532915f20230a8a547073797904dc060827646046f1db",
+            "phase": "fresh_generation",
+            "violation_category": "FINITE_VALUE_FOR_EXACT_CONSTANT_INPUT",
+            "charged_plan_plus_execution_seconds": 1.0840796000120463,
+            "execution_run_outer_seconds": 0.09656370000448078,
+            "prepaid_plan_plus_run_event_seconds": 1.1278797000122722
+          },
+          {
+            "seconds_since_execution_api_entry": 0.15645589999621734,
+            "target_calls": 31,
+            "oracle_calls": 31,
+            "input_digest": "0e67963c60d5e1ccb23aac313b4bd8a61fa547eba018bc428ed985f8ffb1daaf",
+            "phase": "fresh_generation",
+            "violation_category": "FINITE_VALUE_FOR_EXACT_CONSTANT_INPUT",
+            "charged_plan_plus_execution_seconds": 1.1601387999980943,
+            "execution_run_outer_seconds": 0.15645629998471122,
+            "prepaid_plan_plus_run_event_seconds": 1.2021699999895645
+          }
+        ],
+        "prepared_seconds": 9.097762025012344,
+        "cold_measured_subtotal_seconds": 9.097762025012344,
+        "D_guide_total_actual_reuse_count": 0,
+        "guide_preparation_share_seconds": null,
+        "guide_preparation_cost_origin": "RECORDED_R3_MEASUREMENT_REUSED_NOT_RECOMPILED_IN_R4",
+        "historical_source_acquisition": "UNKNOWN_NOT_ZERO"
+      },
+      "C": {
+        "trials": 6,
+        "completed_trials": 6,
+        "fixed_budget_discoveries": 6,
+        "distinct_confirmed_violation_inputs": 40,
+        "confirmed_contract_categories": [
+          "FINITE_VALUE_FOR_EXACT_CONSTANT_INPUT"
+        ],
+        "mechanism_count": "REQUIRES_SEPARATE_MECHANISTIC_REVIEW_NOT_INPUT_OR_CATEGORY_COUNT",
+        "target_calls": 397,
+        "oracle_calls": 397,
+        "oracle_errors": 0,
+        "not_comparable": 0,
+        "replay_mismatches": 0,
+        "documented_undefined_observations": 154,
+        "first_confirmed_failure": [
+          {
+            "seconds_since_execution_api_entry": 0.06440099999599624,
+            "target_calls": 3,
+            "oracle_calls": 3,
+            "input_digest": "6d256d40bb0e1a6c646baa1bb9b29b1447dbcfd89fdebd8a79f3d94a8e6db0ff",
+            "phase": "known_source_replay",
+            "violation_category": "FINITE_VALUE_FOR_EXACT_CONSTANT_INPUT",
+            "charged_plan_plus_execution_seconds": 1.0243882999930065,
+            "execution_run_outer_seconds": 0.06440129999828059,
+            "prepaid_plan_plus_run_event_seconds": 1.0670676000008825
+          },
+          {
+            "seconds_since_execution_api_entry": 0.06326949999493081,
+            "target_calls": 3,
+            "oracle_calls": 3,
+            "input_digest": "6d256d40bb0e1a6c646baa1bb9b29b1447dbcfd89fdebd8a79f3d94a8e6db0ff",
+            "phase": "known_source_replay",
+            "violation_category": "FINITE_VALUE_FOR_EXACT_CONSTANT_INPUT",
+            "charged_plan_plus_execution_seconds": 1.0419452000060119,
+            "execution_run_outer_seconds": 0.06326979999721516,
+            "prepaid_plan_plus_run_event_seconds": 1.0869675999856554
+          },
+          {
+            "seconds_since_execution_api_entry": 0.060294800001429394,
+            "target_calls": 3,
+            "oracle_calls": 3,
+            "input_digest": "6d256d40bb0e1a6c646baa1bb9b29b1447dbcfd89fdebd8a79f3d94a8e6db0ff",
+            "phase": "known_source_replay",
+            "violation_category": "FINITE_VALUE_FOR_EXACT_CONSTANT_INPUT",
+            "charged_plan_plus_execution_seconds": 1.011702800009516,
+            "execution_run_outer_seconds": 0.06029510000371374,
+            "prepaid_plan_plus_run_event_seconds": 1.0586172000039369
+          },
+          {
+            "seconds_since_execution_api_entry": 0.06135820000781678,
+            "target_calls": 3,
+            "oracle_calls": 3,
+            "input_digest": "6d256d40bb0e1a6c646baa1bb9b29b1447dbcfd89fdebd8a79f3d94a8e6db0ff",
+            "phase": "known_source_replay",
+            "violation_category": "FINITE_VALUE_FOR_EXACT_CONSTANT_INPUT",
+            "charged_plan_plus_execution_seconds": 1.0152011000027414,
+            "execution_run_outer_seconds": 0.06135859999631066,
+            "prepaid_plan_plus_run_event_seconds": 1.059864299997571
+          },
+          {
+            "seconds_since_execution_api_entry": 0.06363279999641236,
+            "target_calls": 3,
+            "oracle_calls": 3,
+            "input_digest": "6d256d40bb0e1a6c646baa1bb9b29b1447dbcfd89fdebd8a79f3d94a8e6db0ff",
+            "phase": "known_source_replay",
+            "violation_category": "FINITE_VALUE_FOR_EXACT_CONSTANT_INPUT",
+            "charged_plan_plus_execution_seconds": 1.0087563999986742,
+            "execution_run_outer_seconds": 0.06363319999945816,
+            "prepaid_plan_plus_run_event_seconds": 1.0529876999935368
+          },
+          {
+            "seconds_since_execution_api_entry": 0.07824750000145286,
+            "target_calls": 3,
+            "oracle_calls": 3,
+            "input_digest": "6d256d40bb0e1a6c646baa1bb9b29b1447dbcfd89fdebd8a79f3d94a8e6db0ff",
+            "phase": "known_source_replay",
+            "violation_category": "FINITE_VALUE_FOR_EXACT_CONSTANT_INPUT",
+            "charged_plan_plus_execution_seconds": 1.034636700002011,
+            "execution_run_outer_seconds": 0.07824789998994675,
+            "prepaid_plan_plus_run_event_seconds": 1.0801548999879742
+          }
+        ],
+        "prepared_seconds": 10.018502824976167,
+        "cold_measured_subtotal_seconds": 10.018502824976167,
+        "D_guide_total_actual_reuse_count": 0,
+        "guide_preparation_share_seconds": null,
+        "guide_preparation_cost_origin": "RECORDED_R3_MEASUREMENT_REUSED_NOT_RECOMPILED_IN_R4",
+        "historical_source_acquisition": "UNKNOWN_NOT_ZERO"
+      },
+      "D": {
+        "trials": 6,
+        "completed_trials": 6,
+        "fixed_budget_discoveries": 6,
+        "distinct_confirmed_violation_inputs": 65,
+        "confirmed_contract_categories": [
+          "FINITE_VALUE_FOR_EXACT_CONSTANT_INPUT"
+        ],
+        "mechanism_count": "REQUIRES_SEPARATE_MECHANISTIC_REVIEW_NOT_INPUT_OR_CATEGORY_COUNT",
+        "target_calls": 361,
+        "oracle_calls": 361,
+        "oracle_errors": 0,
+        "not_comparable": 0,
+        "replay_mismatches": 0,
+        "documented_undefined_observations": 57,
+        "first_confirmed_failure": [
+          {
+            "seconds_since_execution_api_entry": 0.06574530000216328,
+            "target_calls": 3,
+            "oracle_calls": 3,
+            "input_digest": "990289fde0788345eec1b9eea094c9e9b08fe3b8e63c80bc477cb98c153223ea",
+            "phase": "fresh_generation",
+            "violation_category": "FINITE_VALUE_FOR_EXACT_CONSTANT_INPUT",
+            "charged_plan_plus_execution_seconds": 1.1921222999953898,
+            "execution_run_outer_seconds": 0.06574580000597052,
+            "prepaid_plan_plus_run_event_seconds": 1.239040999993449
+          },
+          {
+            "seconds_since_execution_api_entry": 0.1588422999921022,
+            "target_calls": 31,
+            "oracle_calls": 31,
+            "input_digest": "7e534b519e24a082aba4381d0bcdd08cba687f468f0d967ad31d0c320d0de700",
+            "phase": "fresh_generation",
+            "violation_category": "FINITE_VALUE_FOR_EXACT_CONSTANT_INPUT",
+            "charged_plan_plus_execution_seconds": 1.2498589000024367,
+            "execution_run_outer_seconds": 0.15884299999743234,
+            "prepaid_plan_plus_run_event_seconds": 1.2983097000105772
+          },
+          {
+            "seconds_since_execution_api_entry": 0.077694400009932,
+            "target_calls": 7,
+            "oracle_calls": 7,
+            "input_digest": "2f7601676c346a3ad90496a75b5cc5cb423a653c06a5985af652e72c96ba77e7",
+            "phase": "fresh_generation",
+            "violation_category": "FINITE_VALUE_FOR_EXACT_CONSTANT_INPUT",
+            "charged_plan_plus_execution_seconds": 1.1914058000111254,
+            "execution_run_outer_seconds": 0.07769490001373924,
+            "prepaid_plan_plus_run_event_seconds": 1.239388100017095
+          },
+          {
+            "seconds_since_execution_api_entry": 0.06331240000145044,
+            "target_calls": 3,
+            "oracle_calls": 3,
+            "input_digest": "89bc72ae2bb2cc63008dd0eb33226112386d2c156b8280bca4d020a40a1c9873",
+            "phase": "fresh_generation",
+            "violation_category": "FINITE_VALUE_FOR_EXACT_CONSTANT_INPUT",
+            "charged_plan_plus_execution_seconds": 1.1550951000099303,
+            "execution_run_outer_seconds": 0.06331310000678059,
+            "prepaid_plan_plus_run_event_seconds": 1.2023103999963496
+          },
+          {
+            "seconds_since_execution_api_entry": 0.11079139998764731,
+            "target_calls": 14,
+            "oracle_calls": 14,
+            "input_digest": "9db1f233cc8fe93ede41700e7ce6d0cfd5b65f12bdda4afd1e505ec6bece4340",
+            "phase": "fresh_generation",
+            "violation_category": "FINITE_VALUE_FOR_EXACT_CONSTANT_INPUT",
+            "charged_plan_plus_execution_seconds": 1.1910786999942502,
+            "execution_run_outer_seconds": 0.11079179999069311,
+            "prepaid_plan_plus_run_event_seconds": 1.2413182999880519
+          },
+          {
+            "seconds_since_execution_api_entry": 0.06575809999776538,
+            "target_calls": 3,
+            "oracle_calls": 3,
+            "input_digest": "cb69a3a30a6051cdf8271d85f6148eb05f94b2da1eb2883a06d82a00ef4bf95a",
+            "phase": "fresh_generation",
+            "violation_category": "FINITE_VALUE_FOR_EXACT_CONSTANT_INPUT",
+            "charged_plan_plus_execution_seconds": 1.2865481999906478,
+            "execution_run_outer_seconds": 0.06575849998625927,
+            "prepaid_plan_plus_run_event_seconds": 1.335298399993917
+          }
+        ],
+        "prepared_seconds": 10.198212324998167,
+        "cold_measured_subtotal_seconds": 18.750630524998996,
+        "D_guide_total_actual_reuse_count": 12,
+        "guide_preparation_share_seconds": 8.55241820000083,
+        "guide_preparation_cost_origin": "RECORDED_R3_MEASUREMENT_REUSED_NOT_RECOMPILED_IN_R4",
+        "historical_source_acquisition": "UNKNOWN_NOT_ZERO"
+      }
+    },
+    "scipy-stats-pearsonr": {
+      "A": {
+        "trials": 6,
+        "completed_trials": 6,
+        "fixed_budget_discoveries": 0,
+        "distinct_confirmed_violation_inputs": 0,
+        "confirmed_contract_categories": [],
+        "mechanism_count": "REQUIRES_SEPARATE_MECHANISTIC_REVIEW_NOT_INPUT_OR_CATEGORY_COUNT",
+        "target_calls": 192,
+        "oracle_calls": 192,
+        "oracle_errors": 0,
+        "not_comparable": 0,
+        "replay_mismatches": 0,
+        "documented_undefined_observations": 42,
+        "first_confirmed_failure": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "prepared_seconds": 8.627578924970294,
+        "cold_measured_subtotal_seconds": 8.627578924970294,
+        "D_guide_total_actual_reuse_count": 0,
+        "guide_preparation_share_seconds": null,
+        "guide_preparation_cost_origin": "RECORDED_R3_MEASUREMENT_REUSED_NOT_RECOMPILED_IN_R4",
+        "historical_source_acquisition": "UNKNOWN_NOT_ZERO"
+      },
+      "B": {
+        "trials": 6,
+        "completed_trials": 6,
+        "fixed_budget_discoveries": 0,
+        "distinct_confirmed_violation_inputs": 0,
+        "confirmed_contract_categories": [],
+        "mechanism_count": "REQUIRES_SEPARATE_MECHANISTIC_REVIEW_NOT_INPUT_OR_CATEGORY_COUNT",
+        "target_calls": 192,
+        "oracle_calls": 192,
+        "oracle_errors": 0,
+        "not_comparable": 0,
+        "replay_mismatches": 0,
+        "documented_undefined_observations": 88,
+        "first_confirmed_failure": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "prepared_seconds": 9.108041824998509,
+        "cold_measured_subtotal_seconds": 9.108041824998509,
+        "D_guide_total_actual_reuse_count": 0,
+        "guide_preparation_share_seconds": null,
+        "guide_preparation_cost_origin": "RECORDED_R3_MEASUREMENT_REUSED_NOT_RECOMPILED_IN_R4",
+        "historical_source_acquisition": "UNKNOWN_NOT_ZERO"
+      },
+      "C": {
+        "trials": 6,
+        "completed_trials": 6,
+        "fixed_budget_discoveries": 0,
+        "distinct_confirmed_violation_inputs": 0,
+        "confirmed_contract_categories": [],
+        "mechanism_count": "REQUIRES_SEPARATE_MECHANISTIC_REVIEW_NOT_INPUT_OR_CATEGORY_COUNT",
+        "target_calls": 282,
+        "oracle_calls": 282,
+        "oracle_errors": 0,
+        "not_comparable": 0,
+        "replay_mismatches": 0,
+        "documented_undefined_observations": 282,
+        "first_confirmed_failure": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "prepared_seconds": 8.939001225029642,
+        "cold_measured_subtotal_seconds": 8.939001225029642,
+        "D_guide_total_actual_reuse_count": 0,
+        "guide_preparation_share_seconds": null,
+        "guide_preparation_cost_origin": "RECORDED_R3_MEASUREMENT_REUSED_NOT_RECOMPILED_IN_R4",
+        "historical_source_acquisition": "UNKNOWN_NOT_ZERO"
+      },
+      "D": {
+        "trials": 6,
+        "completed_trials": 6,
+        "fixed_budget_discoveries": 0,
+        "distinct_confirmed_violation_inputs": 0,
+        "confirmed_contract_categories": [],
+        "mechanism_count": "REQUIRES_SEPARATE_MECHANISTIC_REVIEW_NOT_INPUT_OR_CATEGORY_COUNT",
+        "target_calls": 192,
+        "oracle_calls": 192,
+        "oracle_errors": 0,
+        "not_comparable": 0,
+        "replay_mismatches": 0,
+        "documented_undefined_observations": 119,
+        "first_confirmed_failure": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "prepared_seconds": 9.686311425051827,
+        "cold_measured_subtotal_seconds": 18.238729625052656,
+        "D_guide_total_actual_reuse_count": 12,
+        "guide_preparation_share_seconds": 8.55241820000083,
+        "guide_preparation_cost_origin": "RECORDED_R3_MEASUREMENT_REUSED_NOT_RECOMPILED_IN_R4",
+        "historical_source_acquisition": "UNKNOWN_NOT_ZERO"
+      }
+    }
+  },
+  "implementation_detection_coverage": {
+    "A": [],
+    "B": [
+      "python-statistics-correlation"
+    ],
+    "C": [
+      "python-statistics-correlation"
+    ],
+    "D": [
+      "python-statistics-correlation"
+    ]
+  },
+  "added_value_over_B": "NO_ADDITIONAL_DETECTION_BREADTH_OBSERVED",
+  "added_value_over_C": "NO_ADDITIONAL_DETECTION_BREADTH_OBSERVED",
+  "secondary_paired_comparisons": {
+    "python-statistics-correlation": {
+      "B": {
+        "matched_seed_count": 6,
+        "D_only_discoveries": 3,
+        "baseline_only_discoveries": 0,
+        "both_detected_seed_count": 3,
+        "D_faster_execution_first_confirmed_count": 1,
+        "baseline_faster_execution_first_confirmed_count": 2,
+        "no_miss_imputation": true,
+        "prepared_cost_delta_D_minus_baseline_seconds": 1.1004502999858232,
+        "cold_cost_delta_D_minus_baseline_seconds": 9.652868499986653,
+        "extra_confirmed_input_yield": 55,
+        "faster_execution_is_not_continuous_end_to_end_latency": true
+      },
+      "C": {
+        "matched_seed_count": 6,
+        "D_only_discoveries": 0,
+        "baseline_only_discoveries": 0,
+        "both_detected_seed_count": 6,
+        "D_faster_execution_first_confirmed_count": 1,
+        "baseline_faster_execution_first_confirmed_count": 5,
+        "no_miss_imputation": true,
+        "prepared_cost_delta_D_minus_baseline_seconds": 0.1797095000219997,
+        "cold_cost_delta_D_minus_baseline_seconds": 8.73212770002283,
+        "extra_confirmed_input_yield": 25,
+        "faster_execution_is_not_continuous_end_to_end_latency": true
+      }
+    },
+    "scipy-stats-pearsonr": {
+      "B": {
+        "matched_seed_count": 6,
+        "D_only_discoveries": 0,
+        "baseline_only_discoveries": 0,
+        "both_detected_seed_count": 0,
+        "D_faster_execution_first_confirmed_count": 0,
+        "baseline_faster_execution_first_confirmed_count": 0,
+        "no_miss_imputation": true,
+        "prepared_cost_delta_D_minus_baseline_seconds": 0.5782696000533178,
+        "cold_cost_delta_D_minus_baseline_seconds": 9.130687800054147,
+        "extra_confirmed_input_yield": 0,
+        "faster_execution_is_not_continuous_end_to_end_latency": true
+      },
+      "C": {
+        "matched_seed_count": 6,
+        "D_only_discoveries": 0,
+        "baseline_only_discoveries": 0,
+        "both_detected_seed_count": 0,
+        "D_faster_execution_first_confirmed_count": 0,
+        "baseline_faster_execution_first_confirmed_count": 0,
+        "no_miss_imputation": true,
+        "prepared_cost_delta_D_minus_baseline_seconds": 0.7473102000221843,
+        "cold_cost_delta_D_minus_baseline_seconds": 9.299728400023014,
+        "extra_confirmed_input_yield": 0,
+        "faster_execution_is_not_continuous_end_to_end_latency": true
+      }
+    }
+  },
+  "input_counts_are_not_mechanism_counts": true,
+  "all_methods_no_failure": false,
+  "no_first_failure_time_assigned_to_misses": true,
+  "complete_adaptive_PBT_superiority_claimed": false,
+  "statistical_superiority_claimed": false,
+  "independent_oracle_lineages": "ONE_SHARED_REVIEWED_MATH_ORACLE",
+  "qualified_knowledge_status": "NOT_PROMOTED",
+  "final_target_readiness": "NOT_AUTHORIZED_CORR_CONSUMED",
+  "publication_authorized": false,
+  "allow_release": false,
+  "frozen_file_sha256": "71f3eb0bcb9c3ec066f43f59f95cf6d5acbab1597ddb00fcc881a1a0e790cd81",
+  "usage_receipt_sha256": "af4de1c6c3738cb35ba0dab161eaac2a4890a2acdc2a97b5eb6bc9fb7b023df7",
+  "shared_planning_seconds": 6.399737099985941,
+  "shared_execution_seconds": 2.9380099000554765,
+  "actual_function_entries": {
+    "statistics_correlation": 1183,
+    "scipy_pearsonr": 858,
+    "source_oracle_result": 2041,
+    "source_pearson_result": 0
+  },
+  "actual_entry_counts_match_run_records": true,
+  "global_first_confirmed_failure": {
+    "index": 2,
+    "implementation_id": "python-statistics-correlation",
+    "method": "C",
+    "seed": 1103,
+    "seconds_since_execution_child_function_entry": 3.160335499997018,
+    "cumulative_target_calls": 67,
+    "cumulative_oracle_calls": 67,
+    "phase": "known_source_replay",
+    "violation_category": "FINITE_VALUE_FOR_EXACT_CONSTANT_INPUT",
+    "excludes_previously_completed_planning_and_child_process_startup": true,
+    "prepaid_all_48_plans_plus_execution_event_seconds": 60.417422099999385,
+    "prepaid_sum_is_not_continuous_wall_clock": true
+  },
+  "result_and_public_write": "INCLUDED_IN_PARENT_OUTER_RECEIPT_NOT_YET_PER_METHOD_ALLOCATED",
+  "private_result_file_sha256": "7b509005d00bddc2f7a0fe6ef4008aca3744578b0e60a16d1b10deb6b86cfcf4",
+  "original_public_file_sha256": "7de98d18a249da9a65de06a6904397cee3f6cff67e38780b80f8b67e46d084e6",
+  "execution_child_outer_wall_seconds": 16.85346249998838,
+  "final_result_io_startup_shutdown_residual_seconds": 1.617712399980519,
+  "residual_allocation": "ONE_EIGHTH_TO_EACH_IMPLEMENTATION_METHOD_GROUP",
+  "accounting_report_write": "SEPARATE_PARENT_RECEIPT_COST_NOT_INCLUDED_IN_CHILD_PROCESS_WALL",
+  "original_accounted_public_file_sha256": "d72d9d422b14a70f0a7eccb41226f8fc3c40f8ec1b2982c6c889ac86fc842937",
+  "original_accounted_public_receipt_sha256": "2754480ac6c25cdae1d18d695680aed87c7f5baad1ad4e5b397cd8501e62b428",
+  "dimension_specific_interpretation": {
+    "ADDED_VALUE_OVER_B": {
+      "DETECTION_BREADTH": "NO_ADDITIONAL_BREADTH_OBSERVED",
+      "FIXED_BUDGET_DISCOVERY": "D_6_OF_6_VS_B_3_OF_6_ON_ONE_REVIEWED_IMPLEMENTATION_ONLY",
+      "PREPARED_COST": "D_HIGHER",
+      "COLD_COST": "D_HIGHER_RECORDED_PREPARATION_SCENARIO",
+      "EXTRA_INPUT_YIELD": "AUXILIARY_NOT_NEW_MECHANISMS",
+      "CHARGED_TIME_TO_FIRST_ON_COMMON_DETECTED_SEEDS": "B_EARLIER_3_OF_3_NO_MISS_IMPUTATION"
+    },
+    "ADDED_VALUE_OVER_C": {
+      "DETECTION_BREADTH": "NO_ADDITIONAL_BREADTH_OBSERVED",
+      "FIXED_BUDGET_DISCOVERY": "SAME_6_OF_6",
+      "PREPARED_COST": "D_HIGHER",
+      "TIME_TO_FIRST": "C_EARLIER_EXECUTION_EVENT_IN_5_OF_6_PAIRED_DETECTED_SEEDS",
+      "EXTRA_INPUT_YIELD": "AUXILIARY_NOT_NEW_MECHANISMS",
+      "CHARGED_TIME_TO_FIRST_ON_COMMON_DETECTED_SEEDS": "C_EARLIER_6_OF_6"
+    },
+    "SCIPY": "NO_CONFIRMED_FAILURE_WITHIN_BUDGET_NO_DETECTION_TIME_ASSIGNED",
+    "FINAL_TARGET_READINESS": "BLOCKED_NOT_A_FINAL_BLIND_EVALUATION",
+    "qualified_knowledge_promoted": false,
+    "prior_R2_R3_verdicts_changed": false
+  },
+  "mechanistic_review": {
+    "implementation_id": "python-statistics-correlation",
+    "version": "3.12.10",
+    "mechanism": "CONSTANT_CENTERING_ROUNDOFF_LEAVES_NONZERO_RESIDUALS_AND_POSITIVE_COMPUTED_VARIANCE",
+    "mismatch_observations_analyzed": 522,
+    "all_mismatches_exact_constant": true,
+    "all_constant_axes_exact_variance_zero": true,
+    "all_constant_axes_public_fsum_centering_residual_nonzero": true,
+    "all_public_computed_variances_positive": true,
+    "reconstructed_unchanged_public_path_matches_all_recorded_finite_results": true,
+    "verified_mechanism_count_within_CORR": 1,
+    "verified_implementation_mechanism_pairs_within_CORR": 1,
+    "distinct_confirmed_input_digests": 115,
+    "same_family_as_original_Source": true,
+    "identical_code_lineage_claimed": false,
+    "current_upstream_or_other_versions_affected": "UNKNOWN",
+    "direct_post_batch_target_calls": 3,
+    "direct_post_batch_shared_oracle_calls": 1,
+    "shared_oracle_is_not_a_second_oracle_lineage": true,
+    "audit_file_sha256": "df2ad5635e910af42ec07482aa1562b372d50e5dba2d3e94ef3206d0e97a2285"
+  },
+  "derived_report_digest": "271cf72523cd49ada89719832c53f0f9e583e0edbbb4886649347eeca1c00424"
+}

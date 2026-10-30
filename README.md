@@ -1,5 +1,9 @@
 # Antemortem Structural Lab
 
+## E8-R4 미발행 CORR 개발 검증
+
+동결 Source 가이드를 `statistics.correlation`·SciPy `pearsonr`에 적용하는 host 어댑터와 계약별 Oracle 비교를 추가했습니다. 문서화된 예외·경고·NaN을 결함으로 오인하지 않고, 후보를 모두 동결한 뒤 결과를 관측합니다. [한국어 실행·권한·비용 안내](docs/E8_R4_USAGE_KO.md)를 참고하세요. Source-only scope와 기존 결과·PyPI `0.7.0a1`은 보존하며 CORR를 최종 전이·발행 승인으로 간주하지 않습니다.
+
 ## E8-R3 미발행 연구 후보
 
 일반 `numerical-runtime`은 후보 생성 1회 후 응답을 검증하고, `numerical-audit --method D`는 별도 기준 생성과 전체 의미를 비교합니다. 승인된 작은 가이드는 외부 host 승인 상태를 확인해 재사용합니다. 생성 정책·Source·Oracle·R2 결과·PyPI `0.7.0a1`은 보존합니다. [한국어 실행 안내와 비용·신뢰 경계](docs/E8_R3_USAGE_KO.md)를 참고하세요. 기본 runtime 방법은 B이며 연구 PR #8은 draft·`allow_release=false`입니다.

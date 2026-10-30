@@ -1,5 +1,9 @@
 # Antemortem Structural Lab
 
+## E8-R4 작업 후보 — 동결 가이드의 별도 구현 CORR 검사
+
+**Source에서 작동한 가이드를 다른 구현에 적용하는 검사와, 그 가이드가 다른 구현에서도 유용하다는 결론은 다릅니다.** 미발행 R4는 Python `statistics.correlation`과 SciPy `pearsonr`를 실제 호출하고, 구현별 예외·경고·NaN을 기존 정확 Oracle와 구분해 비교합니다. R3 가이드·가중치·domain·worker·Source·Oracle는 보존합니다. [고정 버전·공통 계약·실제 CLI·비용 경계](docs/E8_R4_USAGE_KO.md)를 참고하세요. CORR는 METHOD_C나 미소비 FINAL_TARGET이 아니며 발행 권한을 부여하지 않습니다. 공개 PyPI `0.7.0a1`에는 이 기능이 없습니다.
+
 ## E8-R3 작업 후보 — 단일 생성 runtime과 명시적 audit
 
 PyPI `0.7.0a1`은 그대로 보존합니다. 미발행 R3는 R1 의미 분리와 R2 입력 생성 정책을 재사용하며, D의 중복 생성을 일반 실행에서 제거합니다. `numerical-runtime`은 생성 1회, `numerical-audit --method D`는 생성 2회로 전체 후보 의미를 대조합니다. 기본 runtime 방법은 공개 사전지식 기준선 B입니다. [실제 CLI·승인된 가이드 재사용·시간 계약](docs/E8_R3_USAGE_KO.md)과 [검증 결과](docs/E8_R3_REPORT_KO.md)를 확인하세요. 공개 비용 검사에서 중복 제거 이득은 관측했지만 새 Source 배치의 B·C 대비 실용적 추가 가치는 미입증입니다. R2 판정과 독립 C·Target·발행 제한은 유지합니다.
