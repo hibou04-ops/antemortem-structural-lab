@@ -1,5 +1,12 @@
 # Changelog
 
+## E8-R3 — 미발행 실행 비용 개선
+
+- 명시적 runtime의 주 생성 1회·기준 생성 0회와 D audit의 주 생성 1회·기준 생성 1회를 분리했습니다. 기존 D API 기본 감사 수준과 기존 worker 5개 파일의 바이트를 보존합니다.
+- 실제 응답의 스키마·요청·후보 digest·domain·중복·제외·출처·입력 특징·동결 상태를 평가 전에 검증합니다. A/B/C도 같은 clean worker 경계를 사용하며 D guide를 요구하지 않습니다.
+- 외부 현재 host 승인 상태에 연결한 경량 가이드의 별도 준비·원자적 저장·재사용과 CLI·직렬화·write/flush 계측을 추가했습니다. 전체 archive 검증·보정·컴파일은 준비 비용으로 기록합니다.
+- 공개 비용 검증과 새 Source 개발 검증을 분리하고, R2 결과·Oracle·PyPI 수동 발행 경로·readiness를 유지합니다. 신규 배포를 허용하지 않습니다.
+
 All versions are experimental. Versions v0.1.0 through v0.2.0 were retrospective imports of archived snapshots; those commit timestamps **do not** represent the dates when the experiments were originally performed. Later changes are developed in the public repository without rewriting historical tags.
 
 ## E8-R2 후속 작업 — 수치 입력 생성과 경량 실행 (미발행)
