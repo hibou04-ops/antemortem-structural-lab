@@ -38,8 +38,8 @@ jobs:
         run: python scripts/check-historical-e7-freeze.py
       - name: Verify preserved E8 PR revision
         run: python scripts/check-historical-e8-freeze.py
-      - name: Verify current R1 implementation commitment
-        run: python scripts/check-e8r1-freeze.py
+      - name: Verify preserved R1 Git revision
+        run: python scripts/check-historical-e8r1-freeze.py
       - name: Check wheel outside the source checkout
         run: python scripts/check-wheel.py
       - name: Check optional QA integration in the installed wheel
@@ -127,7 +127,7 @@ jobs:
       - run: python -m twine check dist/*
       - run: python scripts/check-public-scope.py
       - run: python scripts/check-wheel.py
-      - run: python scripts/check-e8r1-freeze.py
+      - run: python scripts/check-historical-e8r1-freeze.py
       - name: Verify readiness and publish conditional E8 prerelease
         env:
           GH_TOKEN: ${{ github.token }}
@@ -136,3 +136,25 @@ jobs:
         with:
           name: release-receipt
           path: release-receipt.json
+
+  historical-e7-release:
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
+    needs: [tests, generator-isolation, unified-generator-isolation, temporal-generator-isolation, knowledge-generator-isolation]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Materialize the pinned publication-workflow revision without altering research files
+        run: git worktree add --detach "${{ runner.temp }}/pypi-publication-source" 3739e7dee2a7064d1c73f2c29dac30dc7c2eefe1
+      - name: Verify historical E7 files through the preserved publication scripts, without uploading
+        working-directory: ${{ runner.temp }}/pypi-publication-source
+        run: python scripts/verify-pypi-release.py --download --check-registry --directory verified-public-e7 --receipt verification/existing-e7-release.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: existing-e7-release-verification
+          path: ${{ runner.temp }}/pypi-publication-source/verification/existing-e7-release.json
+          if-no-files-found: error

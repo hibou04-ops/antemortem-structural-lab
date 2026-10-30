@@ -22,6 +22,12 @@ All versions are experimental. Versions v0.1.0 through v0.2.0 were retrospective
 - 승인된 5개 저장소의 Git 이력 182개와 함수 후보 18개를 검토했으나 완전한 독립 S→C→T 연결을 확보하지 못했습니다. 새 생산 코드·Oracle 호출과 최종 A~D 비교는 0회입니다. 상태는 `NOT_EXECUTED_READINESS_BLOCKED`, 전이 가치는 `NOT_EXECUTED`입니다.
 - 캐시 Source 전체 재구성은 262.921447초, 음성 메타데이터 readiness 진단은 약 2.544초였습니다. 최초 자료 수집 비용이나 A~D 성능 비교를 대신하지 않으며 자동 ROI 판정은 없습니다.
 - 기존 E1~E7 문서·동결 자료를 보존합니다. 전체506개(기존409＋신규97) 검사가 82.569초에 통과했고 실패·skip0, 기존28개 검사 파일의 SHA가 유지됐습니다. 이후 비용 계측 보완 관련29개 검사도 통과했습니다. build·메타데이터·공개 범위, 설치 wheel 검사37개와 README 명령60개가 통과했습니다. CI는 draft PR 현재 head의 필수 검사를 참조합니다. 변경은 작업 브랜치와 draft PR로 보존하며 병합·태그·Release는 만들지 않습니다. [E8 개발 결과와 한계](docs/E8_DEVELOPMENT_REPORT.md).
+## 배포 채널 추가 — 기존 `0.7.0a1`의 PyPI 최초 게시 경로
+
+- 이미 공개한 E7 wheel·sdist를 태그·소스·SHA-256으로 고정하여 동일 파일로 최초 게시하는 수동 Trusted Publishing 경로를 추가합니다. 게시 성공과 공개 다운로드·설치는 workflow 실행 결과로 별도 확인합니다.
+- PyPI 배포 이름 `antemortem-structural-lab`, import/CLI `tomolab`, 정확한 alpha 설치 버전과 기본·선택 의존성을 안내합니다. 현재 안내를 반영한 로컬 재빌드 파일은 기존 공개 자산을 대신하지 않습니다.
+- 기존 E7 GitHub 자산의 검증과 새로운 PyPI 발행을 구분합니다. 기존 태그·동결 manifest·연구 결과를 재작성하거나 E7 Release를 다시 만들지 않습니다.
+- E8-R1·C1 연구 PR과 연구 readiness 조건, 기존 다섯 PyPI 도구는 변경하지 않습니다. 배포 채널 추가는 새로운 연구 성능·일반화 검증이 아닙니다. [발행 절차와 파일 연결](docs/PYPI_PUBLISHING.md).
 
 ## v0.7.0a1 — Evidence-gated structural knowledge
 
