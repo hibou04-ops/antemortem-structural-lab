@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 import sysconfig
+import time
 from pathlib import Path
 
 from .engine import MODES, run_experiment
@@ -42,6 +43,7 @@ def _add_engine_options(parser: argparse.ArgumentParser) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
+    main_started = time.perf_counter()
     p = argparse.ArgumentParser(prog="tomolab", description="Experimental MRI↔CAST behavioral falsification")
     cmd = p.add_subparsers(dest="command", required=True)
     pi = cmd.add_parser("inspect", help="AST inspection only; never execute source")
@@ -205,9 +207,16 @@ def main(argv: list[str] | None = None) -> int:
     register_e8r1(cmd)
     from .e8r2_cli import register as register_e8r2
     register_e8r2(cmd)
+    from .e8r3_cli import register as register_e8r3, COMMANDS as R3_COMMANDS
+    register_e8r3(cmd)
     args = p.parse_args(argv)
     try:
-        if args.command.startswith("numerical-"):
+        if args.command in R3_COMMANDS:
+            from .e8r3_cli import dispatch, save_receipt
+            result = dispatch(args, p)
+            save_receipt(result, args.output, main_started=main_started)
+            return 0 if result["status"] == "COMPLETE" else 3
+        elif args.command.startswith("numerical-"):
             from .e8r2_cli import dispatch
             try:
                 result = dispatch(args, p, EXAMPLES)

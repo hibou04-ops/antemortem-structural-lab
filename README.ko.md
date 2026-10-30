@@ -1,5 +1,9 @@
 # Antemortem Structural Lab
 
+## E8-R3 작업 후보 — 단일 생성 runtime과 명시적 audit
+
+PyPI `0.7.0a1`은 그대로 보존합니다. 미발행 R3는 R1 의미 분리와 R2 입력 생성 정책을 재사용하며, D의 중복 생성을 일반 실행에서 제거합니다. `numerical-runtime`은 생성 1회, `numerical-audit --method D`는 생성 2회로 전체 후보 의미를 대조합니다. 기본 runtime 방법은 공개 사전지식 기준선 B입니다. [실제 CLI·승인된 가이드 재사용·시간 계약](docs/E8_R3_USAGE_KO.md)과 [검증 결과](docs/E8_R3_REPORT_KO.md)를 확인하세요. 공개 비용 검사에서 중복 제거 이득은 관측했지만 새 Source 배치의 B·C 대비 실용적 추가 가치는 미입증입니다. R2 판정과 독립 C·Target·발행 제한은 유지합니다.
+
 ## E8-R2 작업 후보 — 실패 구조를 보존하는 새 수치 입력 생성
 
 **실패 입력을 그대로 저장하는 기능과, 실패가 발생한 수치 구조를 보존하면서 새로운 입력을 생성하는 기능을 구분합니다.** R2는 R1의 EXACT·SUFFICIENT·NECESSARY·EMPIRICAL 의미와 readiness를 재사용하고, 실패·정상 개발 관측으로 보정한 입력 생성 레시피를 별도 경량 가이드로 실행합니다. 레시피는 실패 분류식이나 Oracle 정답이 아닙니다.

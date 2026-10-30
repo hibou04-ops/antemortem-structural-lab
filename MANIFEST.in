@@ -60,3 +60,12 @@ prune research/e8-r2
 prune e8-r2-private
 prune e8-r2-evidence
 prune e8-r2-evaluation
+include docs/E8_R3_CODE_FREEZE.json
+include docs/E8_R3_PUBLIC_PROFILE_CONTRACT.json
+include docs/E8_R3_PUBLIC_PROFILE_RESULTS.json
+include docs/E8_R3_SOURCE_CONTRACT.json
+include docs/E8_R3_RESULTS.json
+prune research/e8-r3
+prune e8-r3-private
+prune e8-r3-evidence
+prune e8-r3-evaluation

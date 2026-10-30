@@ -31,20 +31,29 @@ def _guide_context(compiled, expected_digest):
     return artifact
 
 
-def run_numerical_method(compiled, *, expected_digest, method="D", seed=7,
+def run_numerical_method(compiled=None, *, expected_digest=None, method="D", seed=7,
         size=32, max_examples=512, pair_budget=96, shrink_budget=16,
         excluded_digests=(), replay_inputs=(), contract=None,
-        backend="subprocess", image="tomolab-e7-generator:local", setup_seconds=0.0):
+        backend="subprocess", image="tomolab-e7-generator:local", setup_seconds=0.0,
+        verification_profile=None):
     """Meter actual calls, fresh inputs, known replay, native shrink and errors.
 
     One initial evaluation and two independently invoked replays confirm a
     new failing input. Shrink calls share the same total per-method budget.
     The public response retains private rows only for the caller's local log.
     """
+    api_tick = time.perf_counter()
     from .numerical_source import (target_result, oracle_result, compare_results,
         classify_mechanism, source_identity, comparison_policy)
     from .compact_guidance import host_candidate_plan
     from .numerical_boundary import NumericalBoundary
+    from .numerical_response import (assert_equivalent_plans,
+        validate_worker_response)
+    from .compact_guidance import validate_numerical_request
+    if verification_profile not in (None, "runtime", "audit"):
+        raise ValueError("verification_profile must be runtime or audit")
+    legacy = verification_profile is None
+    profile = verification_profile or ("audit" if method == "D" else "runtime")
     if method not in METHODS:
         raise ValueError("method must be A, B, C or D")
     integer(seed, 0, 2**32-1); integer(size, 1, 1024)
@@ -52,23 +61,33 @@ def run_numerical_method(compiled, *, expected_digest, method="D", seed=7,
     integer(shrink_budget, 0, min(1024, pair_budget-3))
     if type(setup_seconds) not in (int, float) or not math.isfinite(setup_seconds) or setup_seconds < 0:
         raise ValueError("nonnegative measured preparation time required")
-    artifact = _guide_context(compiled, expected_digest)
-    recipe = artifact["bounded_recipe_parameters"][0]
-    recipe = FailureGuidanceRecipe.from_dict(recipe).to_dict()
-    contract = validate_input_contract(contract or artifact["public_input_contract"])
-    if (contract["profile"] != artifact["public_input_contract"]["profile"] or
-            not set(contract["lengths"]) <= set(artifact["public_input_contract"]["lengths"])):
-        raise ValueError("validation contract must narrow the approved applicability scope")
+    artifact_tick = time.perf_counter()
+    bound_compiled = compiled if method == "D" or legacy else None
+    if method == "D" or legacy:
+        artifact = _guide_context(compiled, expected_digest)
+        recipe = FailureGuidanceRecipe.from_dict(artifact["bounded_recipe_parameters"][0]).to_dict()
+        contract = validate_input_contract(contract or artifact["public_input_contract"])
+        if (contract["profile"] != artifact["public_input_contract"]["profile"] or
+                not set(contract["lengths"]) <= set(artifact["public_input_contract"]["lengths"])):
+            raise ValueError("validation contract must narrow the approved applicability scope")
+        artifact_status = "PASS_HOST_APPROVED_COMPACT_GUIDE"
+    else:
+        # Independent baselines require a public input contract, never D's
+        # archive, calibrated recipe, approval receipt or expected digest.
+        artifact = None
+        contract = validate_input_contract(contract or public_input_contract())
+        artifact_status = "NOT_APPLICABLE_BASELINE_NO_GUIDE"
+    artifact_seconds = time.perf_counter()-artifact_tick
     known = set(excluded_digests)
     replay_inputs = list(replay_inputs)
     known.update(numerical_input_digest(p) for p in replay_inputs)
-    before = digest(compiled)
+    before = digest(bound_compiled)
     tick = time.perf_counter()
     result = {"schema": "tomolab-numerical-execution-v1", "method": method, "seed": seed,
         "scope": "SOURCE_DEVELOPMENT_NOT_INDEPENDENT_CORROBORATION",
         "origin_type": "OBSERVED_VALIDATION_RESULT", "status": "COMPLETE",
         "source_identity": source_identity(), "comparison_contract": comparison_policy(),
-        "guide_digest": expected_digest, "contract": contract,
+        "guide_digest": expected_digest if method == "D" or legacy else None, "contract": contract,
         "pair_budget": pair_budget, "target_calls": 0, "oracle_calls": 0,
         "first_evaluated_valid_inputs": 0, "confirmed_new_failure_inputs": 0,
         "known_input_replay_calls": 0, "initial_known_replays": 0,
@@ -82,8 +101,32 @@ def run_numerical_method(compiled, *, expected_digest, method="D", seed=7,
             "comparison_seconds": 0.0, "replay_seconds": 0.0, "shrink_seconds": 0.0},
         "rows": [], "shrinking": None, "boundary": None,
         "final_feedback_allowed": False, "allow_release": False}
+    verification = result["r3"] = {
+        "schema": "tomolab-numerical-runtime-verification-v1",
+        "verification_profile": profile,
+        "api_compatibility": "R2_LEGACY_DEFAULT" if legacy else "EXPLICIT_R3_STRICT",
+        "primary_generation_executions": 0, "reference_generation_executions": 0,
+        "artifact_validation_status": artifact_status,
+        "response_validation_status": "NOT_EXECUTED",
+        "equivalence_check_status": "NOT_RUN_IN_RUNTIME" if profile == "runtime" else "NOT_EXECUTED",
+        "generation_trace": [], "discovery_events": [], "first_mismatch_observation": None,
+        "first_confirmed_failure": None,
+        "timing": {"artifact_load_and_validation": artifact_seconds,
+            "artifact_load": None, "source_preparation_and_compilation": None,
+            "worker_startup_and_generation": None, "response_validation": None,
+            "reference_generation": None, "target_execution": None,
+            "oracle_execution": None, "failure_replay": None, "shrinking": None,
+            "receipt_io": None, "end_to_end_wall": None},
+        "timing_contract": "API_ENTRY_INCLUDES_IMPORTS_AND_VALIDATION_NESTED_INTERVALS_NOT_ADDITIVE",
+        "generation_count_contract": "GENERATION_REQUESTS_DISPATCHED_TO_STARTED_BOUNDARIES_COMPLETION_SEPARATE_IN_TRACE",
+        "receipt_io_included": False,
+        "historical_collection_seconds": "UNKNOWN"}
     measured = result["cost"]
     seen = set(known); first_failure = None
+
+    def event():
+        return {"seconds_since_api_entry": time.perf_counter()-api_tick,
+                "target_calls": result["target_calls"], "oracle_calls": result["oracle_calls"]}
 
     def evaluate(point, phase):
         if not domain_guard(point, public_input_contract() if phase == "known_replay" else contract):
@@ -133,6 +176,18 @@ def run_numerical_method(compiled, *, expected_digest, method="D", seed=7,
         return row
 
     try:
+        request = (dict(artifact=compiled["artifact"], approval_receipt=compiled["approval_receipt"],
+            expected_digest=expected_digest, seed=seed, size=size, max_examples=max_examples,
+            excluded_digests=sorted(known), contract=contract) if method == "D" else None)
+        transport = (dict(action="plan", **request) if method == "D" else
+            dict(action="baseline", method=method, seed=seed, size=size, max_examples=max_examples,
+                 excluded_digests=sorted(known), contract=contract))
+        if method == "C":
+            transport["replay_inputs"] = replay_inputs
+        # The explicit path validates the complete request before any Source
+        # replay. A/B never receive C's counterexamples or D's guide.
+        if not legacy:
+            transport = validate_numerical_request(transport)
         # C is allowed the identical failure material used for D calibration.
         # Direct replay is paid and reported separately from fresh generation.
         if method == "C":
@@ -144,14 +199,6 @@ def run_numerical_method(compiled, *, expected_digest, method="D", seed=7,
                     evaluate(point, "known_replay")
                     result["initial_known_replays"] += 1
             measured["replay_seconds"] += time.perf_counter()-replay_started
-        request = dict(artifact=compiled["artifact"], approval_receipt=compiled["approval_receipt"],
-            expected_digest=expected_digest, seed=seed, size=size, max_examples=max_examples,
-            excluded_digests=sorted(known), contract=contract)
-        transport = (dict(action="plan",**request) if method == "D" else
-            dict(action="baseline",method=method,seed=seed,size=size,max_examples=max_examples,
-                 excluded_digests=sorted(known),contract=contract))
-        if method == "C":
-            transport["replay_inputs"] = replay_inputs
         start = time.perf_counter()
         encoded = json.dumps(transport,ensure_ascii=True,allow_nan=False).encode("utf-8")
         if len(encoded)+1 > 8_000_000:
@@ -161,22 +208,118 @@ def run_numerical_method(compiled, *, expected_digest, method="D", seed=7,
         if method == "D":
             start = time.perf_counter()
             with NumericalBoundary(backend=backend, image=image) as boundary:
-                planned = boundary.request("plan", **request)
-                result["boundary"] = boundary.receipt
+                trace = {"role": "primary", "action": "plan", "request_digest": digest(transport),
+                         "process_id": boundary.process.pid, "process_started": True,
+                         "plan_attempted": True, "plan_completed": False, "boundary": None}
+                verification["generation_trace"].append(trace)
+                verification["primary_generation_executions"] += 1
+                try:
+                    planned = boundary.request("plan", **request)
+                    trace["plan_completed"] = True
+                    plan_snapshot = boundary.request("snapshot") if not legacy else None
+                finally:
+                    result["boundary"] = boundary.receipt
+                    trace["boundary"] = boundary.receipt
             measured["worker_seconds"] = time.perf_counter()-start
-            start = time.perf_counter()
-            host = host_candidate_plan(**request)
-            if host["candidate_digest"] != planned["candidate_digest"]:
-                raise ValueError("host and compact worker candidate results differ")
-            measured["host_equivalence_check_seconds"] = time.perf_counter()-start
-            generation = planned["generation"]
+            verification["timing"]["worker_startup_and_generation"] = measured["worker_seconds"]
+            if not legacy:
+                start = time.perf_counter()
+                try:
+                    generation = validate_worker_response(planned, transport, snapshot=plan_snapshot)
+                    verification["response_validation_status"] = "PASS"
+                except Exception:
+                    verification["response_validation_status"] = "FAIL"
+                    raise
+                finally:
+                    verification["timing"]["response_validation"] = time.perf_counter()-start
+            else:
+                generation = planned["generation"]
+                verification["response_validation_status"] = "LEGACY_R2_DIGEST_AUDIT"
+            if profile == "audit":
+                start = time.perf_counter()
+                try:
+                    if legacy:
+                        host = host_candidate_plan(**request)
+                        verification["reference_generation_executions"] += 1
+                        verification["generation_trace"].append({"role": "reference", "action": "plan",
+                            "request_digest": digest(transport), "process_id": None,
+                            "process_started": True, "plan_attempted": True, "plan_completed": True,
+                            "boundary": host.get("reference_boundary")})
+                        if host["candidate_digest"] != planned["candidate_digest"]:
+                            raise ValueError("host and compact worker candidate results differ")
+                        verification["equivalence_check_status"] = "PASS_LEGACY_R2_CANDIDATE_DIGEST"
+                    else:
+                        reference_image = (result["boundary"]["container_image_id"]
+                                           if backend == "docker" else image)
+                        with NumericalBoundary(backend=backend, image=reference_image) as reference_worker:
+                            trace = {"role": "reference", "action": "plan", "request_digest": digest(transport),
+                                     "process_id": reference_worker.process.pid, "process_started": True,
+                                     "plan_attempted": True, "plan_completed": False, "boundary": None}
+                            verification["generation_trace"].append(trace)
+                            verification["reference_generation_executions"] += 1
+                            try:
+                                reference = reference_worker.request("plan", **request)
+                                trace["plan_completed"] = True
+                                reference_snapshot = reference_worker.request("snapshot")
+                            finally:
+                                trace["boundary"] = reference_worker.receipt
+                        validate_worker_response(reference, transport, snapshot=reference_snapshot)
+                        if trace["boundary"]["generator_sha256"] != result["boundary"]["generator_sha256"]:
+                            raise ValueError("reference worker module identities differ")
+                        if trace["boundary"]["container_image_id"] != result["boundary"]["container_image_id"]:
+                            raise ValueError("reference worker container identities differ")
+                        verification["equivalence_semantic_digest"] = assert_equivalent_plans(planned, reference)
+                        verification["equivalence_check_status"] = "PASS_FULL_STRUCTURED_SEMANTICS"
+                except Exception:
+                    verification["equivalence_check_status"] = "FAIL"
+                    if legacy:
+                        verification["reference_generation_executions"] = None
+                    raise
+                finally:
+                    measured["host_equivalence_check_seconds"] = time.perf_counter()-start
+                    verification["timing"]["reference_generation"] = measured["host_equivalence_check_seconds"]
         else:
             start = time.perf_counter()
-            generation = generate_numerical_candidates(method, seed=seed, size=size,
-                max_examples=max_examples, excluded_digests=sorted(known), contract=contract,
-                replay_inputs=replay_inputs if method == "C" else None)
+            if legacy:
+                # Preserve the original public API and its baseline extension
+                # hook. New explicitly selected modes always use strict workers.
+                generation = generate_numerical_candidates(method, seed=seed, size=size,
+                    max_examples=max_examples, excluded_digests=sorted(known), contract=contract,
+                    replay_inputs=replay_inputs if method == "C" else None)
+                verification["response_validation_status"] = "LEGACY_R2_BASELINE_API"
+                result["boundary"] = generation.get("generation_boundary")
+                verification["primary_generation_executions"] = 1 if result["boundary"] is not None else None
+            else:
+                fields = {k:v for k,v in transport.items() if k != "action"}
+                with NumericalBoundary(backend=backend, image=image) as boundary:
+                    trace = {"role": "primary", "action": "baseline", "request_digest": digest(transport),
+                             "process_id": boundary.process.pid, "process_started": True,
+                             "plan_attempted": True, "plan_completed": False, "boundary": None}
+                    verification["generation_trace"].append(trace)
+                    verification["primary_generation_executions"] += 1
+                    try:
+                        response = boundary.request("baseline", **fields)
+                        trace["plan_completed"] = True
+                        snapshot = boundary.request("snapshot")
+                    finally:
+                        result["boundary"] = boundary.receipt
+                        trace["boundary"] = boundary.receipt
+                worker_seconds = time.perf_counter()-start
+                verification["timing"]["worker_startup_and_generation"] = worker_seconds
+                measured["worker_seconds"] = worker_seconds
+                validation_tick = time.perf_counter()
+                try:
+                    generation = validate_worker_response(response, transport, snapshot=snapshot)
+                    verification["response_validation_status"] = "PASS"
+                except Exception:
+                    verification["response_validation_status"] = "FAIL"
+                    raise
+                finally:
+                    verification["timing"]["response_validation"] = time.perf_counter()-validation_tick
             measured["generation_seconds"] = time.perf_counter()-start
-            result["boundary"] = generation.get("generation_boundary")
+            if profile == "audit":
+                verification["equivalence_check_status"] = "NOT_APPLICABLE_BASELINE_SINGLE_GENERATION"
+        verification["candidate_semantic_digest"] = digest(generation["candidates"])
         result["generation"] = {k:v for k,v in generation.items() if k != "candidates"}
         result["candidate_count"] = len(generation["candidates"])
         result["candidate_input_digest"] = digest([r["inputs"] for r in generation["candidates"]])
@@ -192,6 +335,8 @@ def run_numerical_method(compiled, *, expected_digest, method="D", seed=7,
             row.update(origin=candidate["origin"], transform=candidate["transform"], recipe_id=candidate["recipe_id"])
             if not row["failed"]:
                 continue
+            if verification["first_mismatch_observation"] is None:
+                verification["first_mismatch_observation"] = event()
             if first_failure is None:
                 first_failure = deepcopy(point)
                 result["first_new_failure_seconds"] = time.perf_counter()-tick+setup_seconds
@@ -207,6 +352,11 @@ def run_numerical_method(compiled, *, expected_digest, method="D", seed=7,
                 continue
             result["confirmed_new_failure_inputs"] += 1
             row["confirmed_failure"] = True
+            confirmed_event = dict(event(), input_digest=token,
+                confirmed_failure_index=result["confirmed_new_failure_inputs"])
+            verification["discovery_events"].append(confirmed_event)
+            if verification["first_confirmed_failure"] is None:
+                verification["first_confirmed_failure"] = deepcopy(confirmed_event)
             mechanism = row["mechanism"]
             if mechanism == "OTHER_REQUIRES_REVIEW":
                 result["unreviewed_failure_inputs"] += 1
@@ -234,7 +384,9 @@ def run_numerical_method(compiled, *, expected_digest, method="D", seed=7,
         result["status"] = "ABORTED_EXECUTION_ERROR"
         result["error_type"] = type(error).__name__
         result["error"] = str(error)
-    if digest(compiled) != before:
+        if verification["response_validation_status"] == "NOT_EXECUTED":
+            verification["response_validation_status"] = "NOT_COMPLETED_EXECUTION_ERROR"
+    if digest(bound_compiled) != before:
         raise ValueError("guide changed after freeze")
     result["confirmed_mechanism_count"] = len(result["mechanisms"])
     result["phase_counts"] = {phase:{
@@ -249,6 +401,18 @@ def run_numerical_method(compiled, *, expected_digest, method="D", seed=7,
     measured["historical_collection_seconds"] = "UNKNOWN"
     measured["complete_historical_collection_to_discovery_seconds"] = None
     result["guide_unchanged"] = True
+    for name, legacy_name in (("target_execution", "target_seconds"),
+            ("oracle_execution", "oracle_seconds"), ("failure_replay", "replay_seconds"),
+            ("shrinking", "shrink_seconds")):
+        verification["timing"][name] = measured[legacy_name]
+    if not any(row["phase"] in ("known_replay", "new_failure_replay") for row in result["rows"]):
+        verification["timing"]["failure_replay"] = None
+    if result["shrinking"] is None:
+        verification["timing"]["shrinking"] = None
+    verification["timing"]["end_to_end_wall"] = time.perf_counter()-api_tick
+    for field in ("verification_profile", "primary_generation_executions", "reference_generation_executions",
+                  "artifact_validation_status", "response_validation_status", "equivalence_check_status"):
+        result[field] = verification[field]
     result["receipt_sha256"] = digest(result)
     return result
 
