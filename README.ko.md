@@ -18,7 +18,7 @@ Hypothesis 6.170.11의 native float Strategy는 import된 모듈에서 수집한
 
 ### R2 후보 설치와 실제 명령
 
-아래 명령은 후보 wheel을 설치한 별도 환경 또는 연구 checkout을 기준으로 합니다. `0.8.0a1`은 PyPI 설치 대상으로 안내하지 않습니다. 모든 출력은 새 경로를 사용합니다. 전체 회귀 669개가 실패·오류·skip 0으로 통과했습니다. 후보 wheel 설치·README 명령·Docker CI는 아직 `PENDING`이며 [R2 보고서](docs/E8_R2_REPORT.md)에 실제 실행 후 기록합니다.
+아래 명령은 후보 wheel을 설치한 별도 환경 또는 연구 checkout을 기준으로 합니다. `0.8.0a1`은 PyPI 설치 대상으로 안내하지 않습니다. 모든 출력은 새 경로를 사용합니다. 전체 회귀 669개가 실패·오류·skip 0으로 통과했고, 별도 새 환경에 설치한 실제 후보 wheel·README 경로 검사 20개(성공 18개·필수 차단 2개)가 통과했습니다. 로컬 QA 의존성은 바이트를 확인한 기존 승인 배포판 4개를 재사용했으며 일반 index에서 새로 설치했다고 주장하지 않습니다. Docker·일반 index의 새 의존성 설치·원격 CI 상태는 [이 head의 PR Checks](https://github.com/hibou04-ops/antemortem-structural-lab/pull/8/checks)에서 확인합니다. [R2 보고서](docs/E8_R2_REPORT.md)는 Source 검증과 설치 검증의 범위를 구분합니다.
 
 ```powershell
 python -m pip install ".[qa,solver]"

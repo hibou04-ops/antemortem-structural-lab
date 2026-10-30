@@ -44,7 +44,7 @@ def main():
         python = external/"env"/("Scripts/python.exe" if os.name == "nt" else "bin/python")
 
         def run(label, *arguments, expected=0):
-            completed = subprocess.run([str(python), "-I", *map(str, arguments)],
+            completed = subprocess.run([str(python), "-I", "-X", "utf8", *map(str, arguments)],
                 cwd=external, env=env, text=True, encoding="utf-8", capture_output=True, timeout=180)
             records.append({"check": label, "returncode": completed.returncode,
                             "expected_success": expected == 0})
