@@ -2,6 +2,9 @@
 e8-r1-private/
 e8-r1-evidence/
 e8-r1-evaluation/
+e8-r2-private/
+e8-r2-evidence/
+e8-r2-evaluation/
 __pycache__/
 *.py[cod]
 .pytest_cache/

@@ -36,6 +36,7 @@ include = ["tomolab", "tomolab.*"]
 "share/antemortem-structural-lab/examples/knowledge" = ["examples/knowledge/*.py", "examples/knowledge/*.json"]
 "share/antemortem-structural-lab/examples/evidence" = ["examples/evidence/*.py", "examples/evidence/*.json", "examples/evidence/README.ko.md"]
 "share/antemortem-structural-lab/examples/partial" = ["examples/partial/*.py", "examples/partial/*.json"]
+"share/antemortem-structural-lab/examples/numerical" = ["examples/numerical/*.json", "examples/numerical/*.sha256"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
