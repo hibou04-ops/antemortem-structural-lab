@@ -2,7 +2,7 @@
 
 이 기능은 연구 브랜치의 미발행 기능이다. 공개 PyPI `0.7.0a1`에는 아래 `historical-*` 명령과 E9-R1 비교가 포함되지 않는다. 기존 PyPI 파일을 수정하거나 다시 게시하지 않는다. PR은 draft, `allow_release=false`를 유지하며 main 병합·태그·GitHub Release·PyPI 업로드는 이번 실행 경로에 포함되지 않는다.
 
-문서 작성 시점의 실제 Docker 실행과 외부 원본 함수 실행은 **CI 검증 대기**다. 아래는 구현된 명령과 사전 계획이며 성공 결과가 아니다. 실제 판정에는 해당 HEAD의 CI 종료 코드, 실행 경계 영수증, 원본 재현·정상 대조 결과, 설치된 wheel의 실행 결과가 필요하다.
+실제 Docker 원본/어댑터/Oracle·수정본 검사와 설치 wheel의 실행은 [CI41214559998](https://github.com/hibou04-ops/antemortem-structural-lab/actions/runs/41214559998)에서 통과했다. [단일 등록 연구41215382397](https://github.com/hibou04-ops/antemortem-structural-lab/actions/runs/41215382397)의 historical-study도 384회 완료했다. [고정 결과·비용·한계](HISTORICAL_REPORT_KO.md)를 확인한다. 구현 전이에서 D의 C 대비 이득은 없었고 적격 LOMO에서 음의 전이가 있었다. 아래 연구 실행 명령은 절차 기록이며 이미 소비한 배치를 새로운 미관측 평가로 다시 실행하라는 안내가 아니다.
 
 ## 자료와 판정 범위
 
@@ -72,7 +72,7 @@ python scripts/check-historical-container.py `
 
 계획은 A/B/C/D, 공통 예산 24·48, seed `4201,4211,4229`, 축소 예산 6이다. Source는 방법 B, seed `1811`, 예산 48로 준비한다. Source 수집 결과로 Mold를 만든 뒤 코드·설정·초기 Mold·자료 identity와 실행 profile을 등록하고 Target 방법 비교를 시작한다. Target 결과에 맞춰 사례·예산·기준을 바꾸거나 같은 배치를 최적화하지 않는다.
 
-현재 정적 routing 계획은 총 **384회 실행 예정**이다. implementation-transfer에서 Target 6개와 정상 대조 6개 × 예산 2개 × seed 3개 × 방법 4개 = 288회다. 적격인 empty-iterable leave-one-mechanism-out의 Target 2개와 정상 대조 2개에 같은 조합 96회가 더해진다. Source 준비·preflight·wheel의 기능 검사는 이 수치 밖이며 비용을 별도 기록한다. 384는 완료된 실행 수나 발견 수가 아니다. 실제 완료 수·누락·오류·미발견과 비용은 결과 영수증으로 확인한다.
+고정 routing의 **384회 실행을 완료**했다. implementation-transfer에서 Target 6개와 정상 대조 6개 × 예산 2개 × seed 3개 × 방법 4개 = 288회다. 적격인 empty-iterable leave-one-mechanism-out의 Target 2개와 정상 대조 2개에 같은 조합 96회가 더해진다. Source 준비·preflight·wheel의 기능 검사는 이 수치 밖이며 비용을 별도 기록한다. 384는 발견 수나 독립 프로젝트 표본 수가 아니다. 각 run의 미검출·오류·Source 적용·전체 비용은 [결과 영수증](HISTORICAL_RESULTS.json)으로 확인한다.
 
 C와 D는 같은 Source의 입력 전용 replay를 사용하고 같은 호출·축소 예산을 적용한다. A/B는 Source rule provider를 로드하지 않으며 D만 고정 Mold를 로드한다. 결과는 서로 다른 역사적 결함 수, 최초 확정 실패까지의 호출, wall time과 Source 수집·학습 비용을 분리해 보고한다. wall-time 허용 상한을 사후에 만들어 종합 효율 성공으로 포장하지 않는다. C만 발견한 사례, D의 추가 호출·추가 시간과 음의 전이도 보존한다.
 

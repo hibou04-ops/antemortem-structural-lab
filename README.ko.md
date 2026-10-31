@@ -1,5 +1,13 @@
 # Antemortem Structural Lab
 
+## E9-R1 미발행 후보 — 대조 정합성과 실제 과거 결함
+
+적용 가능한 학습 규칙이 없으면 D는 C와 같은 탐색으로 돌아간다. 실제 프로젝트 평가는 작성된 기능 예제 평가와 별도로 보고한다. 실제 toolz·more-itertools·boltons의 Source2·Target결함6·수정본대조6을 고정 revision과 계약 Oracle에 연결하고 Docker/설치 wheel 경로를 검증했다.
+
+등록384회에서 구현 전이의 A/B/C/D 모두 각 예산에서 과거 결함5/6개를 찾았다. D의 C 대비 탐지·최초 확인 호출 이득은 없었다. 적격 EMPTY LOMO에서는 예산24의 C4/6·D0/6, 예산48의 C6/6·D0/6 run으로 실제 학습 규칙 사용 중 음의 전이가 관측됐다. C도 작은 예산에서 A/B보다 손실이 있어 보편적 우위를 주장하지 않는다. [실제 사용법](docs/HISTORICAL_USAGE_KO.md), [전체 결과·비용·한계](docs/HISTORICAL_REPORT_KO.md), [동결](docs/HISTORICAL_PROFILE.json)을 확인한다.
+
+공개 PyPI **0.7.0a1에는 없는 미발행 후보 기능**이다. 기존 E9 결과·PR #8·main·태그·PyPI·Drive는 보존하며 PR #10은 draft, `allow_release=false`를 유지한다. 연구 배치 재실행·결과 후 조정·신규 Release/PyPI 업로드는0회다.
+
 ## E9 작업 후보 — 타깃 내부 온라인 탐색과 Source 정책 전이
 
 타깃 내부에서는 실행 반응에 적응하고, 타깃 사이에서는 Source에서 학습한 변형 정책을 제한적으로 재사용한다. 두 효과는 별도로 평가한다.

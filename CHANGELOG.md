@@ -6,6 +6,7 @@
 - 실제 3개 프로젝트의 Source·buggy/fixed revision·라이선스·계약 Oracle를 기존 공통 러너·사용 장부에 연결했다. 원본 함수의 AST/root coverage와 wrapper를 구별한다.
 - 고정된 OCI 경계 확인, 설치 wheel의 역사 사례 CLI, Source-only 예산 preflight와 수동 1회 연구 실행을 분리했다. 원시 기록은 공개 업로드 전에 암호화한다.
 - E9의 원래 360회 결과는 고정 revision으로 검증하며 새 결과로 덮어쓰지 않는다. 배포·merge·tag·PyPI 업로드는 허용하지 않는다.
+- 실제384회 비교에서 D는 구현 전이의 C 대비 탐지·호출 이득이 없었고 적격 EMPTY LOMO에서 음의 전이가 관측됐다. A/B/C/D와 미검출·적용비·Source 준비비를 [별도 보고](docs/HISTORICAL_REPORT_KO.md)하며 사후 조정하지 않는다.
 
 ## E9 미발행 연구 후보 — 온라인 탐색과 제한된 Source 전이
 
