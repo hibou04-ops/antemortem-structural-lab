@@ -9,7 +9,7 @@ import tomllib
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-FORBIDDEN_PATH = re.compile(r"(^|/)(PRIVATE_[^/]*|research/e[1-8](/|$)|research/e8[-_]r[1234](/|$)|SYNC(/|$)|HISTORY(/|$)|e[5678]-evaluation(/|$)|e8-evidence(/|$)|e8-private(/|$)|e8[-_]r[1234][-_](private|evidence|evaluation)(/|$)|e8-readiness-private[^/]*|known-positive-private[^/]*|final_suite\.py$)", re.I)
+FORBIDDEN_PATH = re.compile(r"(^|/)(PRIVATE_[^/]*|research/e[1-9](/|$)|research/e8[-_]r[1234](/|$)|SYNC(/|$)|HISTORY(/|$)|e[5678]-evaluation(/|$)|e9[-_](private|evidence|evaluation)(/|$)|e8-evidence(/|$)|e8-private(/|$)|e8[-_]r[1234][-_](private|evidence|evaluation)(/|$)|e8-readiness-private[^/]*|known-positive-private[^/]*|final_suite\.py$)", re.I)
 SECRET = re.compile(rb"gh[pousr]_[A-Za-z0-9]{24,}|github_pat_[A-Za-z0-9_]{30,}|sk-[A-Za-z0-9]{30,}")
 PERSONAL_PATH = re.compile(rb"[A-Za-z]:[/\\]+Users[/\\]+[A-Za-z0-9_.-]+", re.I)
 
