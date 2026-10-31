@@ -21,6 +21,7 @@ ASSESSMENT_SCHEMA = "tomolab-harvester-assessment-v1"
 PROFILE_SCHEMA = "tomolab-harvester-candidate-profile-v1"
 CONSUMED_SCHEMA = "tomolab-harvester-consumed-v1"
 CONSUMED_SNAPSHOT_DIGEST = "9bc758c5746e3e52cf0ca24361f3ce2efff9db738eedc9b37166e63a03832b12"
+AST_NORMALIZATION_SCHEMA = "CPYTHON_312_COMPAT_EXPLICIT_FIELDS_V1"
 STATES = ("DISCOVERED", "PROVENANCE_VERIFIED", "CONTRACT_REVIEWED", "ORACLE_REVIEWED",
           "REPRODUCED", "DEVELOPMENT_ELIGIBLE", "REJECTED", "UNKNOWN", "HOLD_REVIEW", "HOLD_EXECUTION")
 REVIEW_IDS = ("contract_review_id", "oracle_review_id", "reset_review_id", "license_review_id", "reviewer_id")
@@ -79,6 +80,44 @@ def _verify_digest(value, field):
         raise ValueError("harvester review content digest mismatch")
 
 
+def canonical_ast_dump(node):
+    """Keep the reviewed Python 3.12 representation across supported runtimes.
+
+    Python 3.11 omits the empty type_params field and Python 3.13's ast.dump
+    hides empty fields by default. Neither changes the reviewed program's
+    structure. Emit every parser field explicitly and add only the known
+    absent-empty 3.12 type_params compatibility field. Nonempty type parameters
+    and any new parser fields remain in the serialization, never disappear.
+    Source positions are excluded exactly as in the frozen 3.12 fingerprint.
+    """
+    missing = object()
+    def serialize(value):
+        if isinstance(value, ast.AST):
+            fields = list(value._fields)
+            if isinstance(value, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and "type_params" not in fields:
+                fields.append("type_params")
+            parts = []
+            for name in fields:
+                default = [] if name == "type_params" and isinstance(value,(ast.FunctionDef,ast.AsyncFunctionDef,ast.ClassDef)) else missing
+                child = getattr(value,name,default)
+                if child is missing:
+                    raise ValueError("parser field is missing from the reviewed AST")
+                # Match 3.12 optional-None behavior, retaining semantic None
+                # values such as Constant(value=None) and None list entries.
+                if child is None and getattr(type(value),name,missing) is None:
+                    continue
+                parts.append(name+"="+serialize(child))
+            return type(value).__name__+"("+", ".join(parts)+")"
+        if type(value) is list:
+            return "["+", ".join(serialize(item) for item in value)+"]"
+        if value is None or type(value) in (str,int,float,bool,bytes,complex):
+            return repr(value)
+        raise ValueError("unsupported field in the reviewed AST representation")
+    if not isinstance(node,ast.AST):
+        raise ValueError("one parsed AST node required")
+    return serialize(node)
+
+
 def static_source_review(source):
     """Syntax/shape triage only. Absence of a flagged node is not safety proof."""
     if type(source) is not str or len(source.encode("utf-8")) > 256 * 1024:
@@ -116,8 +155,12 @@ def static_source_review(source):
                 item.id = "NAME"
             elif isinstance(item, ast.Constant):
                 item.value = type(item.value).__name__
+        try:
+            normalized = canonical_ast_dump(clone)
+        except (ValueError,RecursionError,MemoryError):
+            return dict(status="UNKNOWN",reason="STATIC_AST_REPRESENTATION_UNSUPPORTED",functions=[],flags=["REVIEW_REQUIRED"],host_imported=False)
         functions.append(dict(name=node.name,
-            normalized_ast_clone_sha256=hashlib.sha256(ast.dump(clone, include_attributes=False).encode()).hexdigest()))
+            normalized_ast_clone_sha256=hashlib.sha256(normalized.encode()).hexdigest()))
     return dict(status="STATIC_ONLY", reason="SEMANTICS_AND_SAFETY_NOT_AUTHORIZED", functions=functions,
                 flags=sorted(flags), host_imported=False)
 

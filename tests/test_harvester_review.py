@@ -1,12 +1,13 @@
 """Authored data-only qualification fixtures; no external source is imported."""
 from copy import deepcopy
+import ast
 import hashlib
 
 import pytest
 
 from tomolab.discovery.harvester_github import candidate_identity, validate_candidate
 from tomolab.discovery.harvester_review import (assess_candidate, build_consumed_registry,
-    candidate_profile, validate_candidate_profile, make_review, source_function_identity,
+    canonical_ast_dump, candidate_profile, validate_candidate_profile, make_review, source_function_identity,
     static_source_review, validate_review_bundle)
 from tomolab.discovery.schema import digest
 
@@ -146,3 +147,36 @@ def test_candidate_title_cannot_invent_language_contract_mechanism_or_oracle():
     resign(profile,"sha256")
     with pytest.raises(ValueError,match="source-backed metadata"):
         validate_candidate_profile(candidate,profile)
+
+
+def test_ast_fingerprint_preserves_explicit_312_fields_without_runtime_dump(monkeypatch):
+    source = "def sample(point):\n    return point\n"
+    expected = "FunctionDef(name='DEFINITION', args=arguments(posonlyargs=[], args=[arg(arg='ROLE')], kwonlyargs=[], kw_defaults=[], defaults=[]), body=[Return(value=Name(id='NAME', ctx=Load()))], decorator_list=[], type_params=[])"
+    def forbidden_dump(*args,**kwargs):
+        raise AssertionError("runtime-dependent ast.dump must not define persistent identity")
+    monkeypatch.setattr(ast,"dump",forbidden_dump)
+    result = static_source_review(source)
+    assert result["functions"][0]["normalized_ast_clone_sha256"] == hashlib.sha256(expected.encode()).hexdigest()
+
+
+def test_new_ast_data_is_preserved_and_only_absent_empty_type_params_are_filled():
+    node = ast.parse("def selected(point):\n    return point\n").body[0]
+    expected = canonical_ast_dump(node)
+    legacy = deepcopy(node)
+    legacy._fields = tuple(name for name in legacy._fields if name != "type_params")
+    if hasattr(legacy,"type_params"):
+        del legacy.type_params
+    assert canonical_ast_dump(legacy) == expected
+    legacy.type_params = [ast.Name(id="REVIEWED_GENERIC_PARAMETER",ctx=ast.Load())]
+    assert "REVIEWED_GENERIC_PARAMETER" in canonical_ast_dump(legacy)
+    assert canonical_ast_dump(legacy) != expected
+    new_field = deepcopy(node)
+    new_field._fields = tuple(new_field._fields)+("new_parser_semantic_field",)
+    new_field.new_parser_semantic_field = ast.Constant(value="MUST_BE_PRESERVED")
+    assert "new_parser_semantic_field=Constant(value='MUST_BE_PRESERVED')" in canonical_ast_dump(new_field)
+
+
+def test_source_derived_consumed_registry_preserves_original_pinned_146_identities():
+    registry = build_consumed_registry()
+    assert len(registry["tokens"]) == 146
+    assert registry["registry_digest"] == "9bc758c5746e3e52cf0ca24361f3ce2efff9db738eedc9b37166e63a03832b12"
