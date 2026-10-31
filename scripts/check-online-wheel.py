@@ -24,7 +24,7 @@ def main():
     if args.output.exists():
         raise FileExistsError("installed-wheel receipt must be new")
     root = Path(__file__).resolve().parents[1]
-    version = tomllib.loads((root/"pyproject.toml").read_text())["project"]["version"]
+    version = tomllib.loads((root/"pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
     wheels = list((root/"dist").glob(f"antemortem_structural_lab-{version}-*.whl"))
     if len(wheels) != 1:
         raise ValueError("exactly one current candidate wheel required")
@@ -49,8 +49,8 @@ def main():
         def command(label, *arguments):
             output = external/(label+".json")
             run(label, "-m", "tomolab", *arguments, "--output", output)
-            value = json.loads(output.read_text())
-            io = json.loads(Path(str(output)+".io.json").read_text())
+            value = json.loads(output.read_text(encoding="utf-8"))
+            io = json.loads(Path(str(output)+".io.json").read_text(encoding="utf-8"))
             assert io["receipt_sha256"] == hashlib.sha256(output.read_bytes()).hexdigest()
             return value, output
         run("base-offline-install", "-m", "pip", "install", "--no-index", "--no-deps", wheel)

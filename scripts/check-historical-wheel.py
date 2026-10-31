@@ -20,7 +20,7 @@ def main():
     sys.path.insert(0,str(root))
     from tomolab.historical import require_reviewed_container
     boundary=require_reviewed_container()
-    version=tomllib.loads((root/'pyproject.toml').read_text())['project']['version']
+    version=tomllib.loads((root/'pyproject.toml').read_text(encoding='utf-8'))['project']['version']
     wheels=list((root/'dist').glob(f'antemortem_structural_lab-{version}-*.whl'))
     if len(wheels)!=1:raise ValueError('exactly one current candidate wheel required')
     wheel=wheels[0]
@@ -39,10 +39,10 @@ def main():
             return value.stdout
         def command(label,*argv):
             path=external/(label+'.json');run(label,'-m','tomolab',*argv,'--output',path)
-            io=json.loads(Path(str(path)+'.io.json').read_text())
+            io=json.loads(Path(str(path)+'.io.json').read_text(encoding='utf-8'))
             if io['receipt_sha256']!=hashlib.sha256(path.read_bytes()).hexdigest():
                 raise ValueError('installed receipt and durable IO digest differ')
-            return json.loads(path.read_text()),path
+            return json.loads(path.read_text(encoding='utf-8')),path
         run('offline-wheel-install','-m','pip','install','--no-index','--no-deps','--force-reinstall',wheel)
         origin=json.loads(run('installed-origin','-c',
             "import inspect,json;from tomolab import historical_cli;from tomolab.discovery import online_engine;"
