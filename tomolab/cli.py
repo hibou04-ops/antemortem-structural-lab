@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sys
 import sysconfig
 import time
 from pathlib import Path
@@ -18,6 +19,17 @@ EXAMPLES = (ROOT / "examples" if (ROOT / "pyproject.toml").is_file() else
             ROOT / "share" / "antemortem-structural-lab" / "examples"
             if (ROOT / "share" / "antemortem-structural-lab" / "examples").is_dir() else
             Path(sysconfig.get_path("data")) / "share" / "antemortem-structural-lab" / "examples")
+
+
+class _ArgumentParser(argparse.ArgumentParser):
+    """Render help/diagnostics safely without changing application streams."""
+
+    def _print_message(self, message, file=None):
+        stream = file or sys.stderr
+        encoding = getattr(stream, "encoding", None)
+        if message and encoding:
+            message = message.encode(encoding, errors="backslashreplace").decode(encoding)
+        super()._print_message(message, stream)
 
 
 def _package_version() -> str:
@@ -52,7 +64,7 @@ def _add_engine_options(parser: argparse.ArgumentParser) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     main_started = time.perf_counter()
-    p = argparse.ArgumentParser(prog="tomolab", description="Experimental MRI↔CAST behavioral falsification")
+    p = _ArgumentParser(prog="tomolab", description="Experimental MRI <-> CAST behavioral falsification")
     p.add_argument("--version", action="version", version=f"%(prog)s {_package_version()}")
     cmd = p.add_subparsers(dest="command", required=True)
     pi = cmd.add_parser("inspect", help="AST inspection only; never execute source")

@@ -100,13 +100,13 @@ def _require_qa():
         raise ValueError('온라인 생성에는 선택 의존성이 필요합니다: pip install "antemortem-structural-lab[qa]"')
 
 
-def _binding(target, oracle, contract):
+def _binding(target, oracle, contract, *, source_function=None, oracle_function=None):
     from .discovery.schema import digest
     value = dict(schema="tomolab-online-replay-binding-v1",
                  source_file_sha256=hashlib.sha256(Path(inspect.getfile(target)).read_bytes()).hexdigest(),
-                 source_function=target.__name__,
+                 source_function=source_function if source_function is not None else target.__name__,
                  oracle_file_sha256=hashlib.sha256(Path(inspect.getfile(oracle)).read_bytes()).hexdigest(),
-                 oracle_function=oracle.__name__, contract_digest=digest(contract))
+                 oracle_function=oracle_function if oracle_function is not None else oracle.__name__, contract_digest=digest(contract))
     return dict(value, binding_digest=digest(value))
 
 
@@ -134,7 +134,11 @@ def _execute(target, oracle, contract, args, *, mold, replays, configuration, ta
     from .discovery.schema import digest
     validate_json_callable(target, "Target")
     validate_json_callable(oracle, "Oracle")
-    binding = _binding(target, oracle, contract)
+    # Replay binds the selected public export; callable_identity separately
+    # records the actual function for the existing usage authority.
+    binding = _binding(target, oracle, contract,
+                       source_function=getattr(args, "function", None),
+                       oracle_function=getattr(args, "oracle", None))
     if args.method == "D":
         print("경고: D는 실험적 Source 가이드이며 추가 가치가 입증되지 않았고 음의 전이가 관측됐습니다.", file=sys.stderr)
     authority = digest({"fixed_online_authority": str(args.usage_ledger.resolve())})
