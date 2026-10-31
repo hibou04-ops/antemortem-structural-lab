@@ -25,7 +25,7 @@ SOURCE = "3ece4df3bd01abe6aae58ef8a01bf4b01515f689"
 PREFIX = "antemortem_structural_lab-" + VERSION
 NAMES = {"wheel": PREFIX + "-py3-none-any.whl", "sdist": PREFIX + ".tar.gz"}
 LIMIT = 64 * 1024 * 1024
-PRIVATE_PATH = re.compile(r"(^|/)(?:\.git|\.env(?:\..*)?|PRIVATE_[^/]*|research/e[1-9](?:[-_][^/]*)?|e[89][-_](?:private|evidence|evaluation)[^/]*|e8[-_]r[1-4][-_](?:private|evidence|evaluation)[^/]*)(?:/|$)", re.I)
+PRIVATE_PATH = re.compile(r"(^|/)(?:\.git(?:/|$)|\.env(?:\.[^/]*)?(?:/|$)|PRIVATE_[^/]*(?:/|$)|research/e[1-9](?:[-_][^/]*)?(?:/|$)|e[89][-_](?:private|evidence|evaluation)[^/]*/|e8[-_]r[1-4][-_](?:private|evidence|evaluation)[^/]*/)", re.I)
 PATTERNS = {
     "github_credential": re.compile(rb"(?:gh[pousr]_[A-Za-z0-9]{24,}|github_pat_[A-Za-z0-9_]{30,})"),
     "openai_like_credential": re.compile(rb"sk-[A-Za-z0-9_-]{30,}"),
