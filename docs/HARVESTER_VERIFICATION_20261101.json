@@ -1,0 +1,255 @@
+{
+  "schema": "tomolab-harvester-verification-v1",
+  "date": "2026-11-01",
+  "source_class": "SAFE_AGGREGATES_FROM_ACTUAL_LOCAL_COMMAND_AND_HOST_RECEIPTS",
+  "lineage": {
+    "existing_public_product": {
+      "version": "0.8.0a1",
+      "baseline_commit": "3ece4df3bd01abe6aae58ef8a01bf4b01515f689",
+      "public_readback_at": "2026-11-01T05:32:23.214407+09:00",
+      "new_publication_performed": false
+    },
+    "product_repair": {
+      "pr": 12,
+      "head": "525ca8b262497f5491c390580238de8949b241ef"
+    },
+    "recursive_development": {
+      "pr": 13,
+      "head": "a8ffd07f7c0419e196513df6802a588473976aaa"
+    },
+    "harvester_development": {
+      "branch": "feat/evidence-harvester-20261101",
+      "base_commit": "a8ffd07f7c0419e196513df6802a588473976aaa",
+      "final_readback": "SEE_PR_BODY_FOR_POST_COMMIT_READBACK",
+      "commit_identity": "RESOLVE_CURRENT_DRAFT_PR_HEAD"
+    }
+  },
+  "states": {
+    "implementation": "IMPLEMENTED",
+    "bounded_discovery": "FUNCTIONALLY_VERIFIED",
+    "authored_recursive_supply_chain": "FUNCTIONALLY_VERIFIED",
+    "real_development_validation": "HOLD",
+    "real_m0": "NOT_EXECUTED",
+    "real_selector_update": "NOT_EXECUTED",
+    "real_equal_cost_policy_comparison": "NOT_EXECUTED",
+    "oos_validation": "NOT_EXECUTED",
+    "transfer_utility": "NOT_ESTABLISHED",
+    "intergeneration_performance_improvement": "NOT_ESTABLISHED"
+  },
+  "real_discovery": {
+    "frozen_caps": {
+      "max_candidates": 50,
+      "max_details": 10,
+      "max_qualifications": 4,
+      "max_repositories": 8
+    },
+    "candidate_metadata_received": 50,
+    "distinct_candidates_registered": 50,
+    "detail_reservations": 10,
+    "qualification_distinct_candidates": 4,
+    "repositories_reserved": 8,
+    "actual_api_requests": 56,
+    "wall_seconds": 32.372519500000635,
+    "original_distribution": {
+      "DEVELOPMENT_ELIGIBLE": 0,
+      "REJECTED": 0,
+      "HOLD_REVIEW": 46,
+      "UNKNOWN": 4
+    },
+    "current_distribution": {
+      "DEVELOPMENT_ELIGIBLE": 0,
+      "REJECTED": 0,
+      "UNKNOWN": 0,
+      "HOLD_REVIEW": 50
+    },
+    "review_queue_count": 50,
+    "validated_new_unique_defects": 0,
+    "candidate_count_is_not_validated_defect_count": true,
+    "reassessment": {
+      "reason": "FIXED_BOOL_FIRST_PARENT_VS_PARENT_SHA_INTEGRATION_ERROR",
+      "original_result_preserved": true,
+      "new_api_requests": 0,
+      "new_candidates": 0,
+      "same_candidate_static_reassessment_attempts": 4,
+      "total_static_assessment_attempts": 8,
+      "additional_independent_cases": 0
+    },
+    "static_profile": {
+      "language": {
+        "Python": 3,
+        "UNKNOWN": 47
+      },
+      "input_type": "UNKNOWN_PENDING_REVIEW",
+      "mechanism": "UNKNOWN_PENDING_REVIEW",
+      "oracle": "UNKNOWN_PENDING_REVIEW",
+      "basis": "ALREADY_RETAINED_ORIGINAL_METADATA_AND_SOURCE_BLOBS_ONLY",
+      "new_api_requests": 0,
+      "new_deep_review_candidates": 0
+    }
+  },
+  "consumed_registry": {
+    "token_count": 146,
+    "registry_digest": "6ad4c924aa0c0142cf09d49b4e71b026d495080237a6ff4614bf2632ce1a47e5",
+    "scope": "KNOWN_PUBLIC_REGISTRIES_ONLY_NOT_A_GLOBAL_E1_E9_CENSUS",
+    "private_final_inputs_read": false,
+    "no_match_does_not_prove_global_nonconsumption": true
+  },
+  "authored_functional_execution": {
+    "evidence_class": "AUTHORED_SYNTHETIC_FIXTURE",
+    "status": "COMPLETE",
+    "registered_candidates": 4,
+    "registry_candidates": 4,
+    "review_queue_count": 4,
+    "rerun_registered_new": 0,
+    "duplicates_skipped": 4,
+    "distribution": {
+      "HOLD_REVIEW": 4
+    },
+    "authored_transport_requests": 32,
+    "actual_network_requests": 0,
+    "conditional_304_responses": 4,
+    "exact_source_authority_binding": "HARVESTED_CANDIDATE_DIGEST_TO_WHITELISTED_FUNCTION_SOURCE_SHA_TO_LINEAGE_TO_ACTUAL_PAIRED_RECEIPT",
+    "actual_candidates": [
+      [
+        -1,
+        -2
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        -1,
+        -2
+      ]
+    ],
+    "fresh_search_changed_common": [
+      0,
+      1,
+      0
+    ],
+    "separate_restart_processes": 3,
+    "actual_development_cost": {
+      "observation_wall_seconds": 0.03509349998785183,
+      "oracle_calls": 28,
+      "reset_calls": 24,
+      "target_calls": 28
+    },
+    "actual_resume_cost": [
+      {
+        "generation_id": "G0",
+        "fixed_slot_calls": {
+          "oracle_calls": 1,
+          "target_calls": 1
+        },
+        "fresh_search_cost": {
+          "oracle_calls": 67,
+          "target_calls": 67,
+          "wall_seconds": 0.7936164000129793
+        }
+      },
+      {
+        "generation_id": "G1",
+        "fixed_slot_calls": {
+          "oracle_calls": 1,
+          "target_calls": 1
+        },
+        "fresh_search_cost": {
+          "oracle_calls": 69,
+          "target_calls": 69,
+          "wall_seconds": 0.718261000001803
+        }
+      },
+      {
+        "generation_id": "G2",
+        "fixed_slot_calls": {
+          "oracle_calls": 1,
+          "target_calls": 1
+        },
+        "fresh_search_cost": {
+          "oracle_calls": 67,
+          "target_calls": 67,
+          "wall_seconds": 0.7270465999899898
+        }
+      }
+    ],
+    "wall_seconds": 3.2944034000101965,
+    "real_eligible": 0,
+    "real_target_calls": 0,
+    "real_oracle_calls": 0,
+    "real_learning_gate_accepts_authored_fixture": false
+  },
+  "actual_external_execution": {
+    "status": "HOLD_EXECUTION",
+    "actual_oci_daemon": "UNAVAILABLE",
+    "controls": "IMPLEMENTED_REVIEWED_OCI_ONLY_NOT_RUNTIME_VERIFIED_IN_THIS_SESSION",
+    "host_external_code_execution": false,
+    "host_fallback": false,
+    "real_target_calls": 0,
+    "real_oracle_calls": 0,
+    "oracle_independence": "NOT_REVIEWED",
+    "qualified_real_lineages": 0,
+    "real_m0": "HOLD_INSUFFICIENT_LINEAGES",
+    "policy_update": "NOT_EXECUTED",
+    "equal_cost_comparison": "NOT_EXECUTED",
+    "utility": "NOT_ESTABLISHED"
+  },
+  "validation": {
+    "subtask_local_github_fixture_tests": {
+      "passed": 20
+    },
+    "subtask_local_supply_chain_integration": {
+      "passed": 6
+    },
+    "final_local_regressions": {
+      "platform": "Windows",
+      "python": "3.12.10",
+      "collected": 309,
+      "passed": 308,
+      "failed": 0,
+      "skipped": 1,
+      "skip_scope": "LOCAL_WINDOWS_SYMLINK_CAPABILITY_CHECK"
+    },
+    "installed_artifacts": {
+      "status": "PASS",
+      "product_installations": 2,
+      "product_checks_passed": 36,
+      "installed_harvester": {
+        "status": "PASS",
+        "authored_registered": 4,
+        "authored_duplicates": 4,
+        "separate_restart_processes": 3,
+        "fresh_search_changed_common": [
+          0,
+          1,
+          0
+        ],
+        "real_eligible": 0
+      }
+    },
+    "remote_ci": "SEE_PR_BODY_FOR_REMOTE_ARTIFACT_READBACK",
+    "historical_preservation": {
+      "status": "PASS",
+      "historical_files": 226,
+      "regression_files": 60
+    }
+  },
+  "usage": {
+    "collect": "python -m tomolab harvest-run --workspace work/harvest",
+    "authored_demo": "python -m tomolab harvest-demo --workspace work/harvest-authored --allow-local-execution",
+    "review": "python -m tomolab harvest-review --workspace WORKSPACE --candidate-id CANDIDATE_ID --review REVIEW_JSON --execution-receipt REPRODUCTION_JSON --allow-reviewed-development",
+    "m0": "python -m tomolab harvest-m0 --workspace WORKSPACE --execution-contract FROZEN_M0_JSON --allow-external-execution",
+    "learn": "python -m tomolab harvest-learn --workspace WORKSPACE --candidate-ids ID1 ID2 ID3 ID4 --manifest DEVELOPMENT_MANIFEST --receipts PAIRED_RECEIPTS --generation-store GENERATION_STORE --generation-id G1 --allow-reviewed-development",
+    "real_commands_require_reviewed_files_and_do_not_assert_current_eligibility": true
+  },
+  "private_sync": {
+    "initial_checkpoint": "COMMITTED_VERIFIED_PRIVATE_RECEIPTS",
+    "final_checkpoint": "SEE_PR_BODY_FOR_PRIVATE_MANIFEST_AND_DETACHED_RECEIPT_STATUS",
+    "private_drive_ids_published": false,
+    "private_canonical_content_published": false
+  },
+  "raw_api_or_external_source_copied_to_this_report": false,
+  "default_adoption": "HOLD",
+  "allow_release": false,
+  "report_scope": "VERSIONED_PRE_PUSH_LOCAL_VERIFICATION_REMOTE_AND_SYNC_RECEIPTS_ARE_REPORTED_IN_PR_BODY"
+}

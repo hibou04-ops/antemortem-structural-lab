@@ -11,6 +11,55 @@ jobs:
   # Product-repair and recursive-progress branches use explicitly bounded checks.
   # Legacy Source/historical jobs are excluded for both branch families;
   # actual new research is never hidden in the synthetic functional job.
+  harvester-functional:
+    if: startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-')
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ['3.11', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install functional verification dependencies
+        run: |
+          python -m pip install -e ".[qa,solver]"
+          python -m pip install pytest build twine
+      - name: Verify authored supply chain and preserved product paths
+        run: python -m pytest tests/test_harvester_github.py tests/test_harvester_registry.py tests/test_harvester_review.py tests/test_harvester_execution.py tests/test_harvester_learning.py tests/test_harvester_integration.py tests/test_harvester_adversarial.py tests/test_recursive_observe.py tests/test_recursive_policy.py tests/test_recursive_store.py tests/test_recursive_integration.py tests/test_recursive_review.py tests/test_online_engine.py tests/test_online_boundary.py tests/test_online_observe.py tests/test_online_learning.py tests/test_online_authority.py tests/test_product_runtime_regressions.py tests/test_product_workflows.py tests/test_e7_knowledge.py -q --junitxml=harvester-regressions.xml
+      - name: Run authored candidate to generation and restart example
+        run: python -m tomolab harvest-demo --workspace work/harvester-example --allow-local-execution
+      - name: Build candidate artifacts without publishing
+        run: python -m build
+      - name: Check metadata and public artifact scope
+        run: |
+          python -m twine check dist/*
+          python scripts/check-public-scope.py
+      - name: Verify historical preservation without target execution
+        run: python scripts/check-historical-freeze.py --revision 591f802dea6f8ac88a27af3ffd89bd6e1396b318 --manifest docs/HISTORICAL_PROFILE.json --output historical-preservation.json
+      - name: Verify installed harvester path and consumed registry outside checkout
+        run: python scripts/check-harvester-wheel.py --output harvester-installed.json
+      - name: Verify installed product wheel and sdist
+        run: python scripts/check-product-runtime.py --output product-runtime.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: harvester-functional-${{ matrix.os }}-${{ matrix.python-version }}
+          path: |
+            harvester-regressions.xml
+            work/harvester-example/summary.json
+            harvester-installed.json
+            historical-preservation.json
+            product-runtime.json
+            dist/*
+          if-no-files-found: error
   recursive-functional:
     if: startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-')
     runs-on: ${{ matrix.os }}
@@ -108,7 +157,7 @@ jobs:
             dist/*
           if-no-files-found: error
   tests:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -178,7 +227,7 @@ jobs:
             online-registration.json
             historical-registration.json
   product-installation:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') }}
     # Read-only product CI. Publication is a separate, manually invoked workflow.
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -208,7 +257,7 @@ jobs:
             dist/*
           if-no-files-found: error
   generator-isolation:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -220,7 +269,7 @@ jobs:
       - name: Verify restricted generator filesystem and network
         run: python scripts/check-isolation.py
   unified-generator-isolation:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -233,7 +282,7 @@ jobs:
       - name: Verify actual E5 access control and integrated discovery
         run: python scripts/check-discovery-isolation.py
   temporal-generator-isolation:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -246,7 +295,7 @@ jobs:
       - name: Verify E6 access controls, native state learning and replay
         run: python scripts/check-temporal-isolation.py
   knowledge-generator-isolation:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -272,7 +321,7 @@ jobs:
             compact-r3-docker.json
           if-no-files-found: error
   corroboration-integration:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') }}
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -293,7 +342,7 @@ jobs:
           path: corroboration-wheel.json
           if-no-files-found: error
   release-eligibility:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') }}
     runs-on: ubuntu-latest
     outputs:
       allow_release: ${{ steps.gate.outputs.allow_release }}
@@ -306,7 +355,7 @@ jobs:
         name: Determine conditional E8 publication eligibility
         run: python scripts/check-e8-release-eligibility.py --github-output
   historical-e7-release:
-    if: (!startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-')) && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')
+    if: (!startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-')) && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')
     needs: [tests, generator-isolation, unified-generator-isolation, temporal-generator-isolation, knowledge-generator-isolation]
     runs-on: ubuntu-latest
     steps:
@@ -327,7 +376,7 @@ jobs:
           path: ${{ runner.temp }}/pypi-publication-source/verification/existing-e7-release.json
           if-no-files-found: error
   historical-functional:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:

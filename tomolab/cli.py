@@ -239,9 +239,16 @@ def main(argv: list[str] | None = None) -> int:
     recursive_demo = cmd.add_parser("recursive-demo", help="Authored paired learning and generation restart fixture")
     recursive_demo.add_argument("--workspace", type=Path, required=True)
     recursive_demo.add_argument("--allow-local-execution", action="store_true")
+    from .harvester_cli import register as register_harvester, COMMANDS as HARVESTER_COMMANDS
+    register_harvester(cmd)
     args = p.parse_args(argv)
     try:
-        if args.command == "recursive-demo":
+        if args.command in HARVESTER_COMMANDS:
+            from .harvester_cli import dispatch
+            result = dispatch(args)
+            print(json.dumps(result, ensure_ascii=True, indent=2))
+            return 0 if result.get("status") == "COMPLETE" else 3
+        elif args.command == "recursive-demo":
             if not args.allow_local_execution:
                 p.error("--allow-local-execution is required for the authored fixture")
             from .recursive_demo import run_demo
