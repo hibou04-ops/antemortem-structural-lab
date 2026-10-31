@@ -231,6 +231,13 @@ print(json.dumps(result, ensure_ascii=True, allow_nan=False, separators=(",", ":
 '''
 
 
+def _stage_readable(path):
+    """Only a fresh minimal stage; permit the inspected non-root OCI UID to read it."""
+    path.chmod(0o755)
+    for member in path.rglob("*"):
+        member.chmod(0o755 if member.is_dir() else 0o644)
+
+
 def _stage(path, bundle, point, variant):
     runtime = path / "runtime/tomolab"
     (runtime / "discovery").mkdir(parents=True)
@@ -252,6 +259,7 @@ def _stage(path, bundle, point, variant):
         input=deepcopy(point), input_digest=input_identity(point),
         files={name:{key:row[key] for key in ("sha256", "function")} for name,row in bundle["files"].items()})
     (path / "request.json").write_text(canonical(request)+"\n", encoding="utf-8", newline="\n")
+    _stage_readable(path)
     return digest(manifest)
 
 
@@ -260,7 +268,9 @@ def _save(path, value):
         stream.write(canonical(value)+"\n"); stream.flush(); os.fsync(stream.fileno())
 
 
-def _validate_boundary(boundary):
+def _validate_boundary(boundary, *, expected_execution_scope="REVIEWED_HARVESTER_FUNCTIONS_ONLY"):
+    if expected_execution_scope not in ("REVIEWED_HARVESTER_FUNCTIONS_ONLY", "FIRST_PARTY_BOUNDARY_CONTROL_PROBE"):
+        raise PermissionError("only reviewed functions or first-party boundary control scope allowed")
     if type(boundary) is not dict or set(boundary) != {"inspection","runtime"}:
         raise PermissionError("one host inspection and observed runtime boundary required")
     inspection,runtime = boundary["inspection"],boundary["runtime"]
@@ -291,7 +301,7 @@ def _validate_boundary(boundary):
             or runtime.get("operating_system") != "Linux" or runtime.get("uid") != 65534 or runtime.get("gid") != 65534
             or runtime.get("effective_capabilities") != 0 or runtime.get("no_new_privileges") is not True
             or runtime.get("interfaces") != ["lo"] or runtime.get("sent_network_bytes") != 0
-            or runtime.get("execution_scope") != "REVIEWED_HARVESTER_FUNCTIONS_ONLY"
+            or runtime.get("execution_scope") != expected_execution_scope
             or runtime.get("host_inspection_required") is not True
             or runtime.get("binding") != binding or runtime.get("binding_digest") != digest(binding)):
         raise PermissionError("runtime kernel boundary and host inspection must agree")
@@ -340,9 +350,11 @@ def _validate_boundary(boundary):
 
 def execute_reviewed_case(candidate, review, source_bundle, *, variant, input, image,
                           output_directory, allow_external_execution=False, trusted_review=False,
-                          timeout=30):
+                          timeout=30, launcher_factory=None):
     if allow_external_execution is not True or trusted_review is not True:
         raise PermissionError("explicit external execution opt-in and accountable review required")
+    if launcher_factory is not None and not callable(launcher_factory):
+        raise ValueError("optional launcher factory must be a trusted host Python callable")
     review = validate_review_bundle(candidate, review)
     bundle = validate_source_bundle(source_bundle, review=review)
     if variant not in VARIANTS or not validate_input(input, review["contract"]):
@@ -364,7 +376,7 @@ def execute_reviewed_case(candidate, review, source_bundle, *, variant, input, i
         boundary=None, runtime_digest=None, cost=dict(wall_seconds=0.0),
         host_external_code_imported=False, fresh_container_per_call=True)
     try:
-        launcher = _launcher()
+        launcher = _launcher() if launcher_factory is None else launcher_factory()
         with tempfile.TemporaryDirectory(prefix="tomolab-harvester-minimal-") as temporary:
             staging = Path(temporary)
             receipt["runtime_digest"] = _stage(staging, bundle, input, variant)

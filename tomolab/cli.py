@@ -241,9 +241,16 @@ def main(argv: list[str] | None = None) -> int:
     recursive_demo.add_argument("--allow-local-execution", action="store_true")
     from .harvester_cli import register as register_harvester, COMMANDS as HARVESTER_COMMANDS
     register_harvester(cmd)
+    from .qualification_cli import register as register_qualification, COMMANDS as QUALIFICATION_COMMANDS
+    register_qualification(cmd)
     args = p.parse_args(argv)
     try:
-        if args.command in HARVESTER_COMMANDS:
+        if args.command in QUALIFICATION_COMMANDS:
+            from .qualification_cli import dispatch
+            result = dispatch(args)
+            print(json.dumps(result, ensure_ascii=True, indent=2))
+            return 0 if result.get("status") in ("PASS", "FUNCTIONAL_COMPLETE") else 3
+        elif args.command in HARVESTER_COMMANDS:
             from .harvester_cli import dispatch
             result = dispatch(args)
             print(json.dumps(result, ensure_ascii=True, indent=2))
