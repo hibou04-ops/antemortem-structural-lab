@@ -274,6 +274,7 @@ def validate_online_parameters(contract, method, seed, budget, shrink_budget, ma
     # All methods load the same public runtime modules before Hypothesis mines
     # module constants. Only D receives actual Source-learned data.
     from .online_mold import validate_mold
+    from . import recursive_observe, recursive_policy  # same data-only imports for opt-in/off
     contract = validate_contract(contract)
     if type(method) is not str or method.removeprefix("E9_") not in ("A", "B", "C", "D"):
         raise ValueError("method must be A/B/C/D")
@@ -294,9 +295,21 @@ def validate_online_parameters(contract, method, seed, budget, shrink_budget, ma
 def validate_online_config(config):
     """The same whitelist runs before transport and inside the fresh worker."""
     required = {"contract", "structure", "method", "seed", "budget", "shrink_budget", "mold", "replays", "max_seconds", "_started"}
-    if type(config) is not dict or set(config) != required:
+    if type(config) is not dict or not required <= set(config) or set(config)-required-{"diagnostics", "selector"}:
         raise ValueError("only public online configuration fields may cross")
     validate_online_parameters(*(config[key] for key in ("contract", "method", "seed", "budget", "shrink_budget", "max_seconds", "mold")))
+    if "diagnostics" in config:
+        from .recursive_observe import validate_public_diagnostics
+        validate_public_diagnostics(config["diagnostics"])
+        if config["method"] != "C":
+            raise ValueError("paired diagnostics require unmodified C transport")
+    if "selector" in config:
+        from .recursive_policy import validate_selector
+        if config["method"] != "D" or config["mold"] is None:
+            raise ValueError("selector requires explicit D and frozen Mold")
+        selector = validate_selector(config["selector"], mold_digest=config["mold"]["artifact_digest"])
+        if selector["input_contract_digest"] is not None and selector["input_contract_digest"] != digest(config["contract"]):
+            raise ValueError("selector input contract identity mismatch")
     structure = config["structure"]
     fields = {"schema", "mode", "status", "literals", "comparisons", "branches", "loops", "calls",
               "state_changes", "dependencies", "parameters", "limitations", "contract"}

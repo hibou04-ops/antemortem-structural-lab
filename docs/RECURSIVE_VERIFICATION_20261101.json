@@ -1,0 +1,193 @@
+{
+  "schema": "tomolab-recursive-verification-v1",
+  "date": "2026-11-01",
+  "base_sha": "525ca8b262497f5491c390580238de8949b241ef",
+  "branch": "feat/recursive-progress-20261101",
+  "scope": "LOCAL_BOUNDED_FUNCTIONAL_VERIFICATION_NOT_REAL_RESEARCH_SUCCESS",
+  "source_class": "ACTUAL_COMMAND_RESULTS_AND_HOST_EXECUTION_RECEIPTS",
+  "local_environment": {
+    "os": "Windows",
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]"
+  },
+  "regressions": {
+    "status": "PASS",
+    "passed": 207,
+    "failed": 0,
+    "wall_seconds": 49.962,
+    "suites": [
+      "recursive_observe",
+      "recursive_policy",
+      "recursive_store",
+      "recursive_integration",
+      "recursive_review",
+      "online_engine",
+      "online_boundary",
+      "online_observe",
+      "online_learning",
+      "online_authority",
+      "product_runtime_regressions",
+      "product_workflows",
+      "e7_knowledge"
+    ],
+    "actual_target_calls_across_entire_test_suite": "NOT_GLOBALLY_INSTRUMENTED_SYNTHETIC_ONLY"
+  },
+  "authored_end_to_end": {
+    "status": "COMPLETE",
+    "choices": [
+      "common",
+      "learned",
+      "common"
+    ],
+    "actual_candidates": [
+      [
+        -1,
+        -2
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        -1,
+        -2
+      ]
+    ],
+    "separate_resume_processes": 3,
+    "fresh_search_changed_common": [
+      0,
+      1,
+      0
+    ],
+    "paired_target_calls": 24,
+    "paired_oracle_calls": 24,
+    "carrier_cost": {
+      "oracle_calls": 4,
+      "target_calls": 4
+    },
+    "fresh_search_cost": [
+      {
+        "oracle_calls": 67,
+        "target_calls": 67,
+        "wall_seconds": 0.8663396000047214
+      },
+      {
+        "oracle_calls": 69,
+        "target_calls": 69,
+        "wall_seconds": 0.8742605999868829
+      },
+      {
+        "oracle_calls": 67,
+        "target_calls": 67,
+        "wall_seconds": 0.8570963999954984
+      }
+    ],
+    "fixed_slot_calls": [
+      {
+        "oracle_calls": 1,
+        "target_calls": 1
+      },
+      {
+        "oracle_calls": 1,
+        "target_calls": 1
+      },
+      {
+        "oracle_calls": 1,
+        "target_calls": 1
+      }
+    ],
+    "wall_seconds": 3.3749937000102364,
+    "evidence_class": "AUTHORED_SYNTHETIC_FIXTURE"
+  },
+  "installed_recursive": {
+    "schema": "tomolab-recursive-installed-check-v1",
+    "status": "PASS",
+    "artifact": "antemortem_structural_lab-0.8.0a1-py3-none-any.whl",
+    "artifact_sha256": "eb2040b696be06e28895f8fad5ea00e9034b8e2e479b8575afbaaf9ec28cf5d6",
+    "outside_checkout": true,
+    "isolated_python": true,
+    "fresh_environment": true,
+    "choices": [
+      "common",
+      "learned",
+      "common"
+    ],
+    "actual_candidates": [
+      [
+        -1,
+        -2
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        -1,
+        -2
+      ]
+    ],
+    "new_search_changed_common": [
+      0,
+      1,
+      0
+    ],
+    "process_restarts": 3,
+    "pip_check": "PASS",
+    "evidence_class": "AUTHORED_SYNTHETIC_FIXTURE",
+    "real_research_calls": 0,
+    "wall_seconds": 14.63965119997738
+  },
+  "installed_product": {
+    "status": "PASS",
+    "installations": 2,
+    "checks": 36,
+    "cp1252_modes": [
+      "ACTUAL_WINDOWS_CP1252_PIPE",
+      "ACTUAL_WINDOWS_CP1252_PIPE"
+    ],
+    "check_wall_seconds": 38.04197479994036
+  },
+  "preserved_history": {
+    "status": "PASS",
+    "revision": "591f802dea6f8ac88a27af3ffd89bd6e1396b318",
+    "manifest": "docs/HISTORICAL_PROFILE.json",
+    "historical_files": 226,
+    "regression_files_preserved": 60,
+    "explicitly_replaced_current_tests": [],
+    "current_code_compared_as_historical": false
+  },
+  "frozen_documents_unchanged": [
+    "docs/PRODUCT_RUNTIME_VALIDATION_20261101.ko.md",
+    "docs/PRODUCT_LEARNING_OBSERVABILITY_20261101.ko.md",
+    "docs/PRODUCT_LEARNING_OBSERVABILITY_20261101.json",
+    "docs/MINIMAL_RECURSIVE_RESEARCH_CONTRACT_20261101.ko.md",
+    "docs/E7_KNOWLEDGE.md",
+    "docs/HISTORICAL_REPORT_KO.md"
+  ],
+  "artifacts": {
+    "status": "BUILD_AND_TWINE_PASS",
+    "runtime_source_files": 91,
+    "runtime_source_matches_both_artifacts": true,
+    "runtime_source_manifest_digest": "17a73b45b07ee6c7665773c7a86ab0472967458747774fb3f472b53c2a1b762f",
+    "local_candidate_artifacts": [
+      {
+        "name": "antemortem_structural_lab-0.8.0a1-py3-none-any.whl",
+        "sha256": "eb2040b696be06e28895f8fad5ea00e9034b8e2e479b8575afbaaf9ec28cf5d6"
+      },
+      {
+        "name": "antemortem_structural_lab-0.8.0a1.tar.gz",
+        "sha256": "ba421b2b89c835abf539e9c90027701a9e6352548bd33cbefd6e989a5816b148"
+      }
+    ]
+  },
+  "real_research": {
+    "target_calls": 0,
+    "oracle_calls": 0,
+    "status": "HOLD_INSUFFICIENT_LINEAGES",
+    "utility": "NOT_ESTABLISHED",
+    "generalization": "NOT_ESTABLISHED",
+    "intergeneration_performance_improvement": "NOT_ESTABLISHED"
+  },
+  "default_adoption": "HOLD",
+  "allow_release": false,
+  "remote_ci": "INDEPENDENT_PR_CHECKS_REPORTED_ON_THE_DRAFT_PR"
+}
