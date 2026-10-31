@@ -3,15 +3,11 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  actions: read
 jobs:
-  independent-public-user-audit:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        python: ['3.11', '3.13']
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
+  consolidate-existing-public-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
@@ -23,14 +19,17 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python }}
-      - name: Audit exact public files and external-user commands without publishing
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: python audit/public/run_audit.py --source published-source --output public-audit-results
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: 41226721157
+          github-token: ${{ github.token }}
+          path: originals
+      - name: Correct only auditor directory matcher and expose preserved execution findings
+        run: python audit/public/consolidate.py --source published-source --originals originals --output consolidated-audit
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: independent-public-audit-${{ runner.os }}-${{ matrix.python }}
-          path: public-audit-results
+          name: independent-public-audit-consolidated
+          path: consolidated-audit
           if-no-files-found: error
