@@ -9,7 +9,7 @@ requires-python = ">=3.11"
 description = "Experimental structural falsification and counterexample-guided mold learning"
 readme = "README.md"
 license = "Apache-2.0"
-license-files = ["LICENSE"]
+license-files = ["LICENSE", "benchmarks/historical/vendor/*-LICENSE.txt"]
 
 [project.urls]
 Repository = "https://github.com/hibou04-ops/antemortem-structural-lab"

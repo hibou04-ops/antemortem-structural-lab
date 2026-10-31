@@ -115,6 +115,21 @@ def main():
         def semantic(value):
             return [(r["input_digest"], r["status"], r["origin"]) for r in value["run"]["observations"]]
         assert semantic(replay) == semantic(no_mold)
+        empty_observations = external/"empty-observations.json"
+        empty_observations.write_text("[]", encoding="utf-8")
+        empty, _ = command("learn-empty-mold", "online-learn", "--observations", empty_observations,
+                           "--mold", external/"empty-mold.json")
+        assert empty["rules"] == 0
+        fallback, _ = command("D-empty-mold-fallback", "online-run", examples/"target.py", *shared,
+            "--method", "D", "--mold", external/"empty-mold.json", "--expected-digest", empty["mold_digest"],
+            "--usage-ledger", external/"functional-empty-D-usage.jsonl", "--allow-local-execution")
+        assert semantic(fallback) == semantic(no_mold)
+        assert fallback["run"]["target_calls"] == no_mold["run"]["target_calls"]
+        assert fallback["run"]["oracle_calls"] == no_mold["run"]["oracle_calls"]
+        def common_states(value):
+            return [(e.get("common_policy_state_before"), e.get("common_policy_state_after"))
+                    for e in value["run"]["events"]]
+        assert common_states(fallback) == common_states(no_mold)
         demo, _ = command("D-end-to-end-demo", "online-demo", "--method", "D", "--workspace", external/"demo",
             "--usage-ledger", external/"demo-usage.jsonl", "--budget", "32", "--shrink-budget", "6",
             "--allow-local-execution")
@@ -123,7 +138,8 @@ def main():
             wheel_sha256=hashlib.sha256(wheel.read_bytes()).hexdigest(), checks=records,
             dependency_installation="APPROVED_BYTE_REUSE" if args.reuse_approved_dependencies else "NORMAL_INDEX_INSTALL",
             reused_dependencies=dependencies, source_target_pipeline=True, replay_semantics_equal=True,
-            functional_target_calls=sum(v["run"]["target_calls"] for v in (source,target,no_mold,replay,demo))+demo["source_learning"]["target_calls"],
+            empty_mold_C_D_candidate_rng_and_budget_parity=True,
+            functional_target_calls=sum(v["run"]["target_calls"] for v in (source,target,no_mold,replay,fallback,demo))+demo["source_learning"]["target_calls"],
             registered_comparison_reexecuted=False, allow_release=False)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("x", encoding="utf-8") as handle:

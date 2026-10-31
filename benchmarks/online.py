@@ -341,9 +341,44 @@ def default_config():
         allow_release=False)
 
 
+HISTORICAL_CRITERIA = dict(
+    primary="UNIQUE_HISTORICAL_DEFECTS",
+    DETECTION_GAIN="MORE_UNIQUE_D_DEFECTS_AND_NO_C_ONLY_RUN",
+    QUERY_EFFICIENCY_GAIN="NO_C_ONLY_RUN_AND_ALL_JOINT_D_CALLS_LE_C_WITH_ONE_STRICTLY_LOWER",
+    WALL_TIME_GAIN="DESCRIPTIVE_ONLY_NO_PREDECLARED_COST_MARGIN",
+    NEGATIVE_TRANSFER="C_ONLY_RUN_OR_HIGHER_D_FIRST_CALLS_OR_HIGHER_D_TOTAL_WALL",
+    ADDED_VALUE_OVER_C="REPORT_DETECTION_QUERY_AND_COST_SEPARATELY_NO_COMPOSITE_EFFICIENCY_SUCCESS")
+
+
+def historical_config(*, budgets, seeds, source_budget, source_seed,
+                      shrink_budget=8, max_seconds=30):
+    """Build a bounded profile after a Source/development budget check.
+
+    No cost margin is invented: wall time remains a predeclared descriptive
+    result, including when an otherwise valid detection/query gain is found.
+    """
+    if not isinstance(budgets,(list,tuple)) or not budgets:
+        raise ValueError("Source/development-tested common budgets must be supplied explicitly")
+    value = default_config()
+    value.update(schema="tomolab-online-comparison-v2", corpus_profile="REVIEWED_HISTORICAL_DEFECTS",
+        budgets=list(budgets), budget=budgets[0], seeds=list(seeds),
+        shrink_budget=shrink_budget, max_seconds=max_seconds,
+        source=dict(method="B",seed=source_seed,budget=source_budget,shrink_budget=shrink_budget),
+        source_profile="REVIEWED_HISTORICAL_SOURCE",
+        benchmark_independence="REVIEWED_PROVENANCE_NOT_INFERRED_FROM_PROJECT_COUNT",
+        criteria=deepcopy(HISTORICAL_CRITERIA))
+    return validate_config(value)
+
+
 def validate_config(config):
     expected = default_config()
-    if set(config) != set(expected) or config["schema"] != expected["schema"]:
+    historical = config.get("schema") == "tomolab-online-comparison-v2" if isinstance(config,dict) else False
+    if historical:
+        expected.update(schema="tomolab-online-comparison-v2",corpus_profile="REVIEWED_HISTORICAL_DEFECTS",
+            budgets=[],criteria=deepcopy(HISTORICAL_CRITERIA),
+            source_profile="REVIEWED_HISTORICAL_SOURCE",
+            benchmark_independence="REVIEWED_PROVENANCE_NOT_INFERRED_FROM_PROJECT_COUNT")
+    if not isinstance(config,dict) or set(config) != set(expected) or config["schema"] != expected["schema"]:
         raise ValueError("registered common online configuration schema required")
     for field in ("scope", "methods", "evaluations", "target_state_policy",
                   "source_profile", "benchmark_independence", "knowledge_status",
@@ -381,36 +416,125 @@ def validate_config(config):
             raise ValueError("finite predeclared overhead threshold required")
     if success["overhead_target"] != expected["success"]["overhead_target"]:
         raise ValueError("cost acceptance status must be explicit")
+    if historical:
+        if config["corpus_profile"] != expected["corpus_profile"] or config["criteria"] != HISTORICAL_CRITERIA:
+            raise ValueError("historical classification and all five predeclared criteria required")
+        budgets=config["budgets"]
+        if (not isinstance(budgets,list) or not 1 <= len(budgets) <= 2
+            or any(type(v) is not int or not 8 <= v <= 2048 or config["shrink_budget"] > v//2 for v in budgets)
+            or budgets != sorted(set(budgets)) or config["budget"] != budgets[0]):
+            raise ValueError("one or two ordered common budgets must be fixed before Target results")
+        if success["maximum_wall_ratio"] is not None:
+            raise ValueError("historical profile predeclares descriptive cost without an acceptance margin")
     return deepcopy(config)
 
 
-def prepare_sources(config):
+def _corpus(config, corpus):
+    if corpus is None:
+        if config.get("corpus_profile") == "REVIEWED_HISTORICAL_DEFECTS":
+            raise ValueError("reviewed historical corpus must be supplied by the approved execution boundary")
+        corpus=cases()
+    rows=list(corpus)
+    if not rows or len({case.id for case in rows}) != len(rows):
+        raise ValueError("nonempty individually identified corpus required")
+    for case in rows:
+        if case.role not in ("SOURCE","TARGET","CONTROL"):
+            raise ValueError("Source, Target and clean control roles must remain distinct")
+        if config.get("corpus_profile") == "REVIEWED_HISTORICAL_DEFECTS":
+            metadata=case.metadata()
+            required={"project","bug_identity","mechanism_family","input_kind",
+                      "implementation_lineage","license","buggy_revision","fixed_revision"}
+            if not required <= metadata.keys() or any(not metadata[name] for name in required):
+                raise ValueError("historical cases require original/fixed provenance and independent classifications")
+            if metadata["input_kind"] != case.contract["kind"] or metadata["mechanism_family"] != case.mechanism:
+                raise ValueError("mechanism and input kind metadata disagree with their separate contracts")
+    if config.get("corpus_profile") == "REVIEWED_HISTORICAL_DEFECTS":
+        source_bugs={c.metadata()["bug_identity"] for c in rows if c.role=="SOURCE"}
+        target_bugs={c.metadata()["bug_identity"] for c in rows if c.role=="TARGET"}
+        if not source_bugs or not target_bugs or source_bugs & target_bugs:
+            raise ValueError("observed Source bugs and registered Target bugs must be disjoint")
+    return rows
+
+
+def fold_plan(config, corpus, prepared=None):
+    """Use public contracts and frozen Source only, never Target outcomes."""
+    from tomolab.discovery.online_schema import common_operators
+    rows=_corpus(config,corpus)
+    sources=[case for case in rows if case.role=="SOURCE"]
+    historical=config.get("corpus_profile") == "REVIEWED_HISTORICAL_DEFECTS"
+    result=[]
+    for evaluation in config["evaluations"]:
+        for case in rows:
+            if case.role=="SOURCE":
+                continue
+            family=case.mechanism if historical else case.axis
+            fold="ALL" if evaluation=="IMPLEMENTATION_TRANSFER" else family
+            excluded=[s for s in sources if fold!="ALL" and (s.mechanism if historical else s.axis)==fold]
+            remaining=[s for s in sources if fold=="ALL" or (s.mechanism if historical else s.axis)!=fold]
+            contact=[s for s in remaining if s.contract["kind"]==case.contract["kind"]
+                     and set(common_operators(s.contract["kind"])) & set(common_operators(case.contract["kind"]))]
+            mold=(prepared or {}).get("molds",{}).get(fold)
+            retained=None if mold is None else sum(r["kind"]==case.contract["kind"] for r in mold.get("rules",[]))
+            classification=("ROUTING_FALLBACK_CONTROL" if not contact else
+                "MECHANISM_ABSENT_FROM_SOURCE" if historical and fold!="ALL" and not excluded else
+                "TRANSFER_PROBE")
+            result.append(dict(evaluation=evaluation,fold=fold,case_id=case.id,
+                mechanism_family=case.mechanism,input_kind=case.contract["kind"],
+                source_ids=[s.id for s in remaining],type_grammar_contact=bool(contact),
+                excluded_source_ids=[s.id for s in excluded],excluded_source_count=len(excluded),
+                compatible_source_ids=[s.id for s in contact],retained_type_rules=retained,
+                classification=classification,
+                execute=not(historical and evaluation=="LEAVE_ONE_MECHANISM_OUT" and
+                            (not contact or not excluded))))
+    return result
+
+
+def prepare_sources(config, *, corpus=None, executor=None):
     """Collect real Source feedback, then compile six bounded providers once."""
     from tomolab.discovery.online_engine import run_online
     from tomolab.discovery.online_learning import learn_mold
     config = validate_config(config)
+    corpus=_corpus(config,corpus)
+    execute=executor or run_online
+    execution_boundary=None
+    if config.get("corpus_profile") == "REVIEWED_HISTORICAL_DEFECTS":
+        from tomolab.historical import require_reviewed_container
+        execution_boundary=require_reviewed_container()["binding"]
     started = time.perf_counter()
     records, runs = [], []
-    for case in (case for case in cases() if case.role == "SOURCE"):
-        row = run_online(case.target, case.oracle, case.contract,
-            method="B", seed=config["source"]["seed"],
+    for case in (case for case in corpus if case.role == "SOURCE"):
+        options=dict(method="B", seed=config["source"]["seed"],
             budget=config["source"]["budget"], shrink_budget=config["source"]["shrink_budget"],
             max_seconds=config["max_seconds"])
+        if config.get("corpus_profile") == "REVIEWED_HISTORICAL_DEFECTS":
+            import inspect
+            original=getattr(case.target,"upstream_function",None)
+            options["mode"]="structural" if inspect.isfunction(original) else "black_box"
+            if inspect.isfunction(original):options["inspection_target"]=original
+        row = execute(case.target, case.oracle, case.contract,**options)
         runs.append(dict(case=case.metadata(), run=row))
         for event in row["observations"]:
             records.append(dict(input=deepcopy(event["input"]), status=event["status"],
                 contract=deepcopy(case.contract), source_identity=case.metadata()["identity"]["implementation_sha256"],
-                source_axis=case.axis, input_digest=input_identity(event["input"])))
+                source_axis=case.axis,source_mechanism=case.mechanism,
+                source_project=case.metadata().get("project","AUTHORED_FUNCTIONAL"),
+                input_digest=input_identity(event["input"])))
     validate_prepared_inputs(dict(records=records,source_runs=runs))
     source_seconds = time.perf_counter()-started
-    learned, learning_cost = {}, {}
-    folds = ["ALL", *sorted({case.axis for case in cases()})]
+    learned, learning_cost, learning_audits, learning_metrics = {}, {}, {}, {}
+    historical=config.get("corpus_profile") == "REVIEWED_HISTORICAL_DEFECTS"
+    folds = (["ALL", *sorted({p["fold"] for p in fold_plan(config,corpus) if p["execute"] and p["fold"]!="ALL"})]
+             if historical else ["ALL", *sorted({case.axis for case in corpus})])
     for fold in folds:
-        training = [record for record in records if fold == "ALL" or record["source_axis"] != fold]
+        training = [record for record in records if fold == "ALL" or record["source_mechanism" if historical else "source_axis"] != fold]
         tick = time.perf_counter()
-        learned[fold] = learn_mold(training)
+        if historical:
+            learning_audits[fold],learning_metrics[fold]={},{}
+            learned[fold] = learn_mold(training,audit=learning_audits[fold],metrics=learning_metrics[fold])
+        else:
+            learned[fold] = learn_mold(training)
         learning_cost[fold] = time.perf_counter()-tick
-    return dict(schema="tomolab-online-source-preparation-v1",config_digest=digest(config),
+    result=dict(schema="tomolab-online-source-preparation-v1",config_digest=digest(config),
         records=records, source_runs=runs, molds=learned,
         cost=dict(source_collection_seconds=source_seconds,
                   source_learning_seconds=learning_cost,
@@ -418,16 +542,53 @@ def prepare_sources(config):
         target_calls=sum(row["run"]["target_calls"] for row in runs),
         oracle_calls=sum(row["run"]["oracle_calls"] for row in runs),
         target_evaluation_calls=0, allow_release=False)
+    if historical:
+        result["execution_boundary"]=deepcopy(execution_boundary)
+        result["fold_plan"]=fold_plan(config,corpus,result)
+        result["learning_audits"]=learning_audits
+        result["learning_metrics"]=learning_metrics
+        result["coverage"]=source_coverage(corpus,result)
+    return result
 
 
-def _training(prepared, fold):
-    return [row for row in prepared["records"] if fold == "ALL" or row["source_axis"] != fold]
+def source_coverage(corpus, prepared):
+    """Pre-Target summary; does not assert that a rule will help a Target."""
+    source_counts={}
+    for case in corpus:
+        if case.role!="SOURCE":continue
+        metadata=case.metadata()
+        key=canonical(dict(project=metadata.get("project"),bug_identity=metadata.get("bug_identity"),
+            input_kind=case.contract["kind"],mechanism_family=case.mechanism))
+        source_counts[key]=source_counts.get(key,0)+1
+    models={}
+    for fold,mold in prepared["molds"].items():
+        summary=prepared.get("learning_audits",{}).get(fold,{}).get("ranked_rule_summaries",[])
+        selected_ids={rule["rule_id"] for rule in mold["rules"]}
+        groups={"selected":{},"omitted":{}}
+        for rule in summary:
+            key=canonical({name:rule[name] for name in ("kind","edit_composition","preconditions")})
+            category="selected" if rule["rule_id"] in selected_ids else "omitted"
+            groups[category][key]=groups[category].get(key,0)+1
+        models[fold]=dict(rules=len(mold["rules"]),omitted_rules=mold["omitted_rules"],
+            compact_bytes=len(canonical(mold).encode())+1,
+            ranked_summary_status="RECORDED" if summary or not mold["rules"] else "UNAVAILABLE",
+            kinds=sorted({r["kind"] for r in mold["rules"]}),breakdown=groups)
+    return dict(source_groups=source_counts,models=models,
+        target_contract_routing=deepcopy(prepared.get("fold_plan",[])),
+        measured_before_registered_target_runs=True,target_calls=0,oracle_calls=0)
 
 
-def _replays(records, contract):
+def _training(prepared, fold, *, historical=False):
+    return [row for row in prepared["records"] if fold == "ALL" or row["source_mechanism" if historical else "source_axis"] != fold]
+
+
+def _replays(records, contract, *, compatible_domain=False):
+    from tomolab.discovery.online_schema import validate_input
     seen, result = set(), []
     for row in records:
-        if row["status"] != "FAILURE" or row["contract"] != contract:
+        compatible=(row["contract"].get("kind")==contract.get("kind") and validate_input(row["input"],contract)
+                    if compatible_domain else row["contract"]==contract)
+        if row["status"] != "FAILURE" or not compatible:
             continue
         token = input_identity(row["input"])
         if token not in seen:
@@ -463,14 +624,22 @@ def validate_prepared_inputs(prepared):
     return True
 
 
-def run_comparison(config, prepared, *, event_path=None):
+def run_comparison(config, prepared, *, event_path=None, corpus=None, executor=None):
     """Run every preregistered problem; no result-dependent case replacement."""
     from tomolab.discovery.online_engine import run_online
     config = validate_config(config)
+    corpus=_corpus(config,corpus)
+    execute=executor or run_online
+    historical=config.get("corpus_profile") == "REVIEWED_HISTORICAL_DEFECTS"
+    if historical:
+        from tomolab.historical import require_reviewed_container
+        if require_reviewed_container()["binding"] != prepared.get("execution_boundary"):
+            raise PermissionError("Source preparation and Target comparison require the same reviewed container binding")
     validate_prepared_inputs(prepared)
     if prepared.get("config_digest") != digest(config) or prepared.get("target_evaluation_calls") != 0:
         raise ValueError("Source preparation and registered configuration differ")
-    expected_folds = {"ALL", *(case.axis for case in cases())}
+    expected_folds = ({"ALL",*(p["fold"] for p in fold_plan(config,corpus) if p["execute"])}
+                      if historical else {"ALL", *(case.axis for case in corpus)})
     if set(prepared.get("molds", {})) != expected_folds:
         raise ValueError("all pre-evaluation frozen Source providers required")
     handle = None
@@ -478,30 +647,48 @@ def run_comparison(config, prepared, *, event_path=None):
         handle = Path(event_path).open("x", encoding="utf-8", newline="\n")
     started = time.perf_counter()
     runs = []
+    plan=fold_plan(config,corpus,prepared)
+    if historical and prepared.get("fold_plan") != plan:
+        raise ValueError("public contract/Source-only fold applicability changed after preparation")
     try:
-        evaluation_cases = [case for case in cases() if case.role != "SOURCE"]
+        evaluation_cases = [case for case in corpus if case.role != "SOURCE"]
         for evaluation in config["evaluations"]:
             for case_index, case in enumerate(evaluation_cases):
-                fold = "ALL" if evaluation == "IMPLEMENTATION_TRANSFER" else case.axis
-                records = _training(prepared, fold)
-                replays = _replays(records, case.contract)
-                for seed_index, seed in enumerate(config["seeds"]):
-                    # Rotate all four methods before observations, balancing method order.
-                    offset = (case_index+seed_index) % 4
-                    methods = config["methods"][offset:]+config["methods"][:offset]
-                    for method in methods:
-                        row = run_online(case.target, case.oracle, deepcopy(case.contract),
-                            method=method, seed=seed, budget=config["budget"],
-                            shrink_budget=config["shrink_budget"], max_seconds=config["max_seconds"],
-                            mold=deepcopy(prepared["molds"][fold]) if method == "D" else None,
-                            replays=deepcopy(replays) if method in ("C", "D") else ())
-                        run = dict(evaluation=evaluation, fold=fold, case=case.metadata(),
-                                   seed=seed, method="E9_"+method, result=row)
-                        if handle is not None:
-                            handle.write(json.dumps(run,ensure_ascii=True,allow_nan=False,
-                                                    separators=(",",":"))+"\n")
-                            handle.flush()
-                        runs.append(run)
+                routing=next(p for p in plan if p["evaluation"]==evaluation and p["case_id"]==case.id)
+                if not routing["execute"]:
+                    continue
+                fold = routing["fold"]
+                records = _training(prepared, fold,historical=historical)
+                replays = _replays(records, case.contract,compatible_domain=historical)
+                for budget in config.get("budgets",[config["budget"]]):
+                    for seed_index, seed in enumerate(config["seeds"]):
+                        # Rotate before observations. D gets no extra calls/time.
+                        offset = (case_index+seed_index) % 4
+                        methods = config["methods"][offset:]+config["methods"][:offset]
+                        for method in methods:
+                            options=dict(method=method, seed=seed, budget=budget,
+                                shrink_budget=config["shrink_budget"], max_seconds=config["max_seconds"],
+                                mold=deepcopy(prepared["molds"][fold]) if method == "D" else None,
+                                replays=deepcopy(replays) if method in ("C", "D") else ())
+                            if historical:
+                                # Public original AST/root coverage is shared by
+                                # all four methods. Adapter mapping stays unknown.
+                                import inspect
+                                original=getattr(case.target,"upstream_function",None)
+                                options["mode"]="structural" if inspect.isfunction(original) else "black_box"
+                                if inspect.isfunction(original):options["inspection_target"]=original
+                            tick=time.perf_counter()
+                            row = execute(case.target, case.oracle, deepcopy(case.contract),**options)
+                            run = dict(evaluation=evaluation, fold=fold, case=case.metadata(),
+                                seed=seed, method=("E9_R1_" if historical else "E9_")+method, result=row)
+                            if historical:
+                                run.update(budget=budget,routing=deepcopy(routing),
+                                    executor_call_wall_seconds=time.perf_counter()-tick)
+                            if handle is not None:
+                                handle.write(json.dumps(run,ensure_ascii=True,allow_nan=False,
+                                                        separators=(",",":"))+"\n")
+                                handle.flush()
+                            runs.append(run)
     finally:
         if handle is not None:
             handle.close()
@@ -513,11 +700,79 @@ def run_comparison(config, prepared, *, event_path=None):
         benchmark_limits=dict(real_project_defects=0,independent_projects=0,
             authored_targets=10,authored_clean_controls=5,coarse_mechanism_families=5,
             human_blind=False,held_out_runtime_source_only=True),allow_release=False)
+    if historical:
+        result["generation"]="E9_R1"
+        result["fold_plan"]=plan
+        result["benchmark_limits"]=dict(real_project_defects=len({c.metadata()["bug_identity"] for c in corpus if c.role=="TARGET"}),
+            projects=sorted({c.metadata()["project"] for c in corpus}),
+            source_defects=len({c.metadata()["bug_identity"] for c in corpus if c.role=="SOURCE"}),
+            target_implementations=len({c.metadata()["implementation_lineage"] for c in corpus if c.role=="TARGET"}),
+            mechanism_families=sorted({c.mechanism for c in corpus if c.role=="TARGET"}),
+            input_kinds=sorted({c.contract["kind"] for c in corpus}),
+            clean_controls=sum(c.role=="CONTROL" for c in corpus),human_blind=False,
+            discovery_class="HISTORICAL_DEFECT_REDISCOVERY_NOT_NEW_CURRENT_DEFECT",
+            project_independence="ASSESS_FROM_PINNED_CODE_LINEAGE_NOT_PROJECT_COUNT")
     result["summary"] = summarize(result)
     return result
 
 
 def summarize(result):
+    if result["config"].get("corpus_profile") == "REVIEWED_HISTORICAL_DEFECTS":
+        summary={}
+        for evaluation in result["config"]["evaluations"]:
+            budgets={}
+            for budget in result["config"]["budgets"]:
+                selected=[row for row in result["runs"] if row["evaluation"]==evaluation and row["budget"]==budget]
+                if not selected:
+                    continue
+                # The same aggregation code is used for the authored v1 and
+                # historical corpus. Method labels are a provenance boundary.
+                normalized=[]
+                for row in selected:
+                    value=dict(row,method=row["method"].replace("E9_R1_","E9_",1))
+                    normalized.append(value)
+                view=dict(result,runs=normalized,config=dict(result["config"],
+                    corpus_profile="SUMMARY_ONLY",evaluations=[evaluation]))
+                part=summarize(view)[evaluation]
+                part["methods"]={key.replace("E9_","E9_R1_",1):value for key,value in part["methods"].items()}
+                for comparison in part["paired"].values():
+                    comparison["outcome"]=comparison["outcome"].replace("AUTHORED_SCOPE","HISTORICAL_SCOPE")
+                for method,group in part["methods"].items():
+                    rows=[r for r in selected if r["method"]==method]
+                    found=[r for r in rows if r["case"]["role"]=="TARGET" and r["result"]["first_confirmed_failure"] is not None]
+                    group["detected_historical_defects"]=len({r["case"]["bug_identity"] for r in found})
+                    group.pop("detected_authored_defects",None)
+                    group["historical_defects"]=len({r["case"]["bug_identity"] for r in rows if r["case"]["role"]=="TARGET"})
+                    group["discovery_class"]="HISTORICAL_DEFECT_REDISCOVERY"
+                    group["generated_failure_attribution"]="CANDIDATE_UNTIL_PUBLIC_CONTRACT_FIX_AND_MECHANISM_REVIEW"
+                    group["fixed_control_disagreements"]=[dict(case=r["case"]["id"],seed=r["seed"],
+                        first_confirmation=r["result"]["first_confirmed_failure"],
+                        status="UNRESOLVED_CONTRACT_DIFFERENCE") for r in rows
+                        if r["case"]["role"]=="CONTROL" and r["result"]["first_confirmed_failure"] is not None]
+                    group.pop("control_false_positives",None)
+                    group["executor_call_wall_seconds"]=sum(r["executor_call_wall_seconds"] for r in rows)
+                    for name in ("learned_rule_matches","learned_valid_proposals","learned_changed_common_proposals",
+                                 "learned_changed_common_executions","learned_invalid_results",
+                                 "learned_duplicate_results","learned_unexecutable_results"):
+                        group[name]=sum(r["result"].get("scheduler",{}).get(name,0) for r in rows)
+                part["criteria"]=assess_historical_gain(selected,result["config"]["criteria"])
+                part["transfer_probe_criteria"]=assess_historical_gain(
+                    [r for r in selected if r["routing"]["classification"]=="TRANSFER_PROBE"],
+                    result["config"]["criteria"])
+                part["applicability"]=dict(
+                    type_grammar_contact_cases=len({r["case"]["id"] for r in selected if r["routing"]["type_grammar_contact"]}),
+                    retained_rule_cases=len({r["case"]["id"] for r in selected if r["routing"]["retained_type_rules"]}),
+                    actual_matching_rules=sum(r["result"].get("scheduler",{}).get("learned_rule_matches",0) for r in selected),
+                    actual_different_candidates=sum(r["result"].get("scheduler",{}).get("learned_changed_common_executions",0) for r in selected))
+                budgets[str(budget)]=part
+            summary[evaluation]=dict(budgets=budgets,
+                status="EVALUATED" if budgets else "NOT_TESTABLE_WITH_CURRENT_CORPUS",
+                routing_controls=[p for p in result["fold_plan"] if p["evaluation"]==evaluation
+                                  and p["classification"]=="ROUTING_FALLBACK_CONTROL"],
+                no_applicable_lomo=(evaluation=="LEAVE_ONE_MECHANISM_OUT" and
+                    not any(p["execute"] for p in result["fold_plan"] if p["evaluation"]==evaluation)),
+                external_generalization="NOT_ESTABLISHED_BY_HISTORICAL_REDISCOVERY_ALONE")
+        return summary
     summary = {}
     for evaluation in result["config"]["evaluations"]:
         rows = [row for row in result["runs"] if row["evaluation"] == evaluation]
@@ -572,3 +827,67 @@ def summarize(result):
                 external_generalization="NOT_ESTABLISHED")
         summary[evaluation] = dict(methods=methods,paired=paired)
     return summary
+
+
+def assess_historical_gain(rows, criteria):
+    """Frozen logical criteria, with every miss kept and no fitted threshold."""
+    if criteria != HISTORICAL_CRITERIA:
+        raise ValueError("gain logic must be fixed before registered execution")
+    targets=[r for r in rows if r["case"]["role"]=="TARGET"]
+    unresolved_controls=[dict(case=r["case"]["id"],seed=r["seed"],method=r["method"],
+        status="UNRESOLVED_CONTRACT_DIFFERENCE") for r in rows
+        if r["case"]["role"]=="CONTROL" and r["result"]["first_confirmed_failure"] is not None]
+    incomparable=[dict(case=r["case"]["id"],seed=r["seed"],method=r["method"],
+        status=r["result"].get("status","COMPLETE")) for r in rows
+        if (r["method"] in ("E9_R1_C","E9_R1_D") or r["case"]["role"]=="CONTROL") and
+        (r["result"].get("status","COMPLETE")!="COMPLETE" or
+         any(r["result"].get(key,0)>0 for key in ("unknown","oracle_errors","execution_errors")))]
+    def side(method):
+        return {(r["case"]["id"],r["seed"]):r for r in targets if r["method"]=="E9_R1_"+method}
+    c,d=side("C"),side("D")
+    if set(c)!=set(d):
+        raise ValueError("paired C/D execution identities must be complete")
+    c_only,d_only,joint,both_missed=[],[],[],[]
+    c_defects,d_defects=set(),set()
+    for key in sorted(c):
+        cf=c[key]["result"]["first_confirmed_failure"]
+        df=d[key]["result"]["first_confirmed_failure"]
+        item=dict(case=key[0],seed=key[1])
+        if cf is not None:c_defects.add(c[key]["case"]["bug_identity"])
+        if df is not None:d_defects.add(d[key]["case"]["bug_identity"])
+        if cf is not None and df is not None:
+            item.update(C_calls=cf["target_calls"],D_calls=df["target_calls"],
+                        C_seconds=cf["seconds"],D_seconds=df["seconds"])
+            joint.append(item)
+        elif cf is not None:c_only.append(item)
+        elif df is not None:d_only.append(item)
+        else:both_missed.append(item)
+    query_better=[r for r in joint if r["D_calls"]<r["C_calls"]]
+    query_worse=[r for r in joint if r["D_calls"]>r["C_calls"]]
+    time_better=[r for r in joint if r["D_seconds"]<r["C_seconds"]]
+    time_worse=[r for r in joint if r["D_seconds"]>r["C_seconds"]]
+    c_wall=sum(r["executor_call_wall_seconds"] for r in rows if r["method"]=="E9_R1_C")
+    d_wall=sum(r["executor_call_wall_seconds"] for r in rows if r["method"]=="E9_R1_D")
+    detection=len(d_defects)>len(c_defects) and not c_only and not unresolved_controls and not incomparable
+    query=bool(query_better) and not query_worse and not c_only and not unresolved_controls and not incomparable
+    status=("DETECTION_VALUE_OBSERVED_COST_DESCRIPTIVE" if detection else
+            "QUERY_VALUE_OBSERVED_COST_DESCRIPTIVE" if query else
+            "NO_ADDITIONAL_VALUE_OVER_C_OBSERVED")
+    if c_only:status="MIXED_OR_NEGATIVE_TRANSFER_NOT_ESTABLISHED"
+    if unresolved_controls:status="UNRESOLVED_FIXED_CONTROL_CONTRACT_DIFFERENCE"
+    if incomparable:status="INCONCLUSIVE_EXECUTION_OR_ORACLE_OR_UNKNOWN"
+    return dict(DETECTION_GAIN=dict(observed=detection,C_unique=len(c_defects),D_unique=len(d_defects),
+                   C_only_runs=c_only,D_only_runs=d_only,
+                   generated_attribution="REQUIRES_PUBLIC_CONTRACT_FIX_AND_MECHANISM_REVIEW"),
+        QUERY_EFFICIENCY_GAIN=dict(observed=query,better=query_better,worse=query_worse,
+            joint_detected=len(joint),both_missed=both_missed,
+            scope="PAIRED_JOINT_DETECTION_CALLS_WITH_ALL_MISS_COUNTS_RETAINED"),
+        WALL_TIME_GAIN=dict(status="DESCRIPTIVE_ONLY",faster=time_better,slower=time_worse,
+            C_total_seconds=c_wall,D_total_seconds=d_wall,
+            ratio=None if c_wall==0 else d_wall/c_wall,acceptable_cost_margin=None),
+        NEGATIVE_TRANSFER=dict(C_detected_D_missed=c_only,higher_D_first_calls=query_worse,
+            higher_D_total_wall=d_wall>c_wall,descriptive_not_statistical=True),
+        ADDED_VALUE_OVER_C=dict(status=status,composite_efficiency_success=False,
+            fixed_control_disagreements=unresolved_controls,
+            incomparable_runs=incomparable,
+            source_cost="REPORTED_SEPARATELY_NOT_TREATED_AS_FREE"))

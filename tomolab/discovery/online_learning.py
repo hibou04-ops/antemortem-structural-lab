@@ -212,10 +212,17 @@ def learn_mold(observations, *, operator_grammar=None, max_rules=8,
             edit_applications_considered=attempted, source_target_calls=0, source_oracle_calls=0,
             cost_scope="RECORDED_OBSERVATION_EXTRACTION_ONLY_SOURCE_COLLECTION_SEPARATE")
     if audit is not None:
+        selected_ids={rule["rule_id"] for rule in mold["rules"]}
         audit.update(deltas=delta_records, bounded_trace_limit=128,
             all_matched_pairs=len(pairs), unpaired_failure_digests=sorted(unmatched),
             unpaired_status="UNAVAILABLE" if unmatched else "NONE",
-            source_delta_minimality="NOT_CLAIMED", target_calls=0, oracle_calls=0)
+            source_delta_minimality="NOT_CLAIMED", target_calls=0, oracle_calls=0,
+            ranked_rule_summaries=[dict(rule_id=rule["rule_id"],kind=rule["kind"],
+                edit_composition=list(rule["edit_composition"]),preconditions=deepcopy(rule["preconditions"]),
+                selected=rule["rule_id"] in selected_ids,
+                omission_reason=None if rule["rule_id"] in selected_ids else
+                    "PREDECLARED_RANK_LIMIT" if index>=max_rules else "PREDECLARED_SIZE_LIMIT")
+                for index,rule in enumerate(ranked)])
     return mold
 
 

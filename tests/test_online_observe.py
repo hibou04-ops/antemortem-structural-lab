@@ -15,6 +15,41 @@ def scalar_branch(point):
     return point
 
 
+def upstream_with_two_arguments(point, offset):
+    if point < 3:
+        return point+offset
+    return point
+
+
+def transparent_argument_wrapper(point):
+    return upstream_with_two_arguments(point, 1)
+
+
+def test_upstream_line_trace_does_not_call_wrapper_or_upstream_twice():
+    log=[]
+    def upstream(point,offset):
+        log.append("upstream")
+        if point < 3:
+            return point+offset
+        return point
+    def wrapper(point):
+        log.append("wrapper")
+        return upstream(point,1)
+    def oracle(point):
+        return point+1 if point<3 else point
+    untraced=observe(wrapper,oracle,1,CONTRACT,tracing=False)
+    assert log==["wrapper","upstream"]
+    log.clear()
+    traced=observe(wrapper,oracle,1,CONTRACT,trace_target=upstream)
+    assert log==["wrapper","upstream"]
+    assert traced["private_outcome"]==untraced["private_outcome"]
+    assert traced["target_calls"]==traced["oracle_calls"]==1
+    assert traced["observation_scope"]=="UPSTREAM_ROOT_LINE_TRACE"
+    import inspect
+    lines,start=inspect.getsourcelines(upstream)
+    assert traced["feedback"]["coverage"] and all(start<=line<start+len(lines) for line in traced["feedback"]["coverage"])
+
+
 def test_public_structure_and_scalar_distance_are_explicitly_bounded():
     structure = inspect_target(scalar_branch, CONTRACT)
     assert structure["status"] == "SUPPORTED_BOUNDED_OBSERVATION"

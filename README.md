@@ -1,5 +1,13 @@
 # Antemortem Structural Lab
 
+## E9-R1 미발행 후보 — 대조 정합성과 실제 과거 결함
+
+적용 가능한 학습 규칙이 없으면 D는 C와 같은 탐색으로 돌아간다. 거절된 제안은 원래 anchor로 되돌리고, Source 조회 난수는 공통 난수와 분리한다. 실제 프로젝트 평가는 작성된 기능 예제 평가와 별도로 보고한다.
+
+toolz·more-itertools·boltons의 고정 과거 revision을 최소 어댑터와 독립 계약 Oracle로 연결했다. Source 2개, 평가 결함 6개, 수정본 대조 6개이며, 알려진 Target 재현 입력은 적격성 확인 전용이다. 이는 과거 결함 재발견 실험이며 새로운 upstream 결함 발견이 아니다. 원본 함수의 공개 AST·실제 root coverage를 사용하지만 어댑터 인자 대응은 추론하지 않아 거리값은 UNKNOWN이다. 클래스 Source는 명시적 black-box 범위다.
+
+[실제 CLI·Docker 경계·Source/Target 분리 안내](docs/HISTORICAL_USAGE_KO.md)를 참고한다. 기존 E9의 [고정 결과](docs/ONLINE_REPORT_KO.md)는 변경하지 않는다. E9-R1은 같은 미발행 후보 wheel 기능이며 공개 PyPI **0.7.0a1에는 없다**. 연구 비교·비용·미검출·규칙 사용량은 검토된 CI 실행 영수증으로 별도 보고한다. 기존 PR #8·main·태그·PyPI·Drive는 보존하고 PR #10은 draft, `allow_release=false`로 유지한다.
+
 ## E9 작업 후보 — 타깃 내부 온라인 탐색과 Source 정책 전이
 
 타깃 내부에서는 실행 반응에 적응하고, 타깃 사이에서는 Source에서 학습한 변형 정책을 제한적으로 재사용한다. 두 효과는 별도로 평가한다.
