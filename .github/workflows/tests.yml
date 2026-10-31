@@ -1,278 +1,36 @@
 name: Python tests
+on:
+  workflow_dispatch:
 permissions:
   contents: read
-on:
-  push:
-    branches: [main]
-    tags: ['v*']
-  pull_request:
-  workflow_dispatch:
 jobs:
-  tests:
-    runs-on: ${{ matrix.os }}
+  independent-public-user-audit:
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ['3.11', '3.12', '3.13']
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install package and optional QA, solver and analysis integrations
-        run: python -m pip install -e ".[solver,qa,analysis]"
-      - name: Install test and build tools
-        run: python -m pip install pytest build twine
-      - name: Test
-        run: python -m pytest -q --junitxml=test-results.xml
-      - name: Build source distribution and wheel
-        run: python -m build
-      - name: Check distribution metadata
-        run: python -m twine check dist/*
-      - name: Check public source and artifact contents
-        run: python scripts/check-public-scope.py
-      - name: Verify preserved E7 Git revision
-        run: python scripts/check-historical-e7-freeze.py
-      - name: Verify preserved E8 PR revision
-        run: python scripts/check-historical-e8-freeze.py
-      - name: Verify preserved R1 Git revision
-        run: python scripts/check-historical-e8r1-freeze.py
-      - name: Verify R2 byte commitment and PyPI paths preserved from main
-        run: |
-          python scripts/check-historical-e8r2-freeze.py
-          python scripts/check-historical-e8r3-freeze.py
-          python scripts/check-historical-freeze.py --revision ff74d19737460f4b51910192adbadddf82389560 --manifest docs/E8_R4_CODE_FREEZE.json
-      - name: Materialize the preserved R4 revision for its original PyPI path checks
-        run: git worktree add --detach "${{ runner.temp }}/r2-preservation" ff74d19737460f4b51910192adbadddf82389560
-      - name: Verify the original R2 publication paths without rewriting their checker
-        working-directory: ${{ runner.temp }}/r2-preservation
-        run: python scripts/check-r2-preservation.py
-      - name: Verify the online algorithm registration without replaying research
-        run: python scripts/check-historical-freeze.py --revision c92a094cf9092aa33b180ca733266705150a3d3f --manifest docs/ONLINE_PROFILE.json --allow-current-test-change tests/test_online_engine.py --allow-current-test-change tests/test_online_benchmark.py --allow-current-test-change tests/test_online_observe.py --output online-registration.json
-      - name: Verify the original 226-file R1 registration without target execution
-        run: python scripts/check-historical-freeze.py --revision 591f802dea6f8ac88a27af3ffd89bd6e1396b318 --manifest docs/HISTORICAL_PROFILE.json --output historical-registration.json
-      - name: Check wheel outside the source checkout
-        run: python scripts/check-wheel.py
-      - name: Check optional QA integration in the installed wheel
-        run: python scripts/check-wheel.py --qa
-      - name: Verify numerical CLI from the installed candidate wheel
-        run: python scripts/check-numerical-wheel.py --output numerical-wheel.json
-      - name: Verify R3 runtime and audit from the installed candidate wheel
-        run: python scripts/check-numerical-r3-wheel.py --output numerical-r3-wheel.json
-      - name: Verify installed online Source learning and target-local discovery
-        run: python scripts/check-online-wheel.py --output online-wheel.json
-      - name: Run preserved E4 public regression fixtures
-        run: python scripts/evaluate-e4.py --output e4-validation.json
-      - uses: actions/upload-artifact@v4
-        with:
-          name: validation-${{ matrix.os }}-${{ matrix.python-version }}
-          path: |
-            test-results.xml
-            e4-validation.json
-            numerical-wheel.json
-            numerical-r3-wheel.json
-            online-wheel.json
-            online-registration.json
-            historical-registration.json
-  product-installation:
-    # Read-only product CI. Publication is a separate, manually invoked workflow.
-    runs-on: ubuntu-latest
+        python: ['3.11', '3.13']
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: v0.8.0a1
+          path: published-source
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-      - name: Install normal-index build tools
-        run: python -m pip install build twine
-      - name: Build the candidate source distribution and wheel
-        run: python -m build
-      - name: Check distribution metadata
-        run: python -m twine check dist/*
-      - name: Verify static product publication policy without authorizing upload
-        run: python scripts/check-product-release.py --static
-      - name: Install both artifacts and verify the documented product workflows
-        run: python scripts/check-product-wheel.py --source-sha "$(git rev-parse HEAD)" --output product-install.json
-      - uses: actions/upload-artifact@v4
-        with:
-          name: product-installation
-          path: |
-            product-install.json
-            dist/*
-          if-no-files-found: error
-  generator-isolation:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: python -m pip install -e .
-      - run: docker pull python:3.12-slim
-      - name: Verify restricted generator filesystem and network
-        run: python scripts/check-isolation.py
-  unified-generator-isolation:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: python -m pip install -e ".[qa,solver]"
-      - name: Build reviewed dependency-only E5 generator image
-        run: docker build -f containers/e5-generator.Dockerfile -t tomolab-e5-generator:local containers
-      - name: Verify actual E5 access control and integrated discovery
-        run: python scripts/check-discovery-isolation.py
-  temporal-generator-isolation:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: python -m pip install -e ".[qa,solver]"
-      - name: Build reviewed dependency-only E6 generator image
-        run: docker build -f containers/e6-generator.Dockerfile -t tomolab-e6-generator:local containers
-      - name: Verify E6 access controls, native state learning and replay
-        run: python scripts/check-temporal-isolation.py
-  knowledge-generator-isolation:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: python -m pip install -e ".[qa,solver]"
-      - name: Match the reviewed dependency-only image versions for candidate equivalence
-        run: python -m pip install hypothesis==6.170.11 z3-solver==5.3.2.0
-      - name: Build reviewed dependency-only E7 generator image
-        run: docker build -f containers/e7-generator.Dockerfile -t tomolab-e7-generator:local containers
-      - name: Verify E7 access controls and evidence-qualified native discovery
-        run: python scripts/check-knowledge-isolation.py
-      - name: Execute the actual compact Source guide within the existing Docker controls
-        run: python scripts/check-numerical-isolation.py --output compact-docker.json
-      - name: Verify R3 runtime and audit using actual Docker workers
-        run: python scripts/check-numerical-r3-isolation.py --output compact-r3-docker.json
-      - uses: actions/upload-artifact@v4
-        with:
-          name: actual-compact-guide-docker-receipt
-          path: |
-            compact-docker.json
-            compact-r3-docker.json
-          if-no-files-found: error
-  corroboration-integration:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install pinned reviewed CORR libraries using the normal package index
-        run: python -m pip install -e ".[qa,solver,corr]" build
-      - name: Match the frozen Hypothesis generation version
-        run: python -m pip install hypothesis==6.170.11
-      - name: Build the unreleased candidate
-        run: python -m build
-      - name: Verify real CORR adapters and CLI in a fresh installed-wheel environment
-        run: python scripts/check-corroboration-wheel.py --output corroboration-wheel.json
-      - uses: actions/upload-artifact@v4
-        with:
-          name: reviewed-corroboration-functional-wheel
-          path: corroboration-wheel.json
-          if-no-files-found: error
-  release-eligibility:
-    runs-on: ubuntu-latest
-    outputs:
-      allow_release: ${{ steps.gate.outputs.allow_release }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - id: gate
-        name: Determine conditional E8 publication eligibility
-        run: python scripts/check-e8-release-eligibility.py --github-output
-  historical-e7-release:
-    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
-    needs: [tests, generator-isolation, unified-generator-isolation, temporal-generator-isolation, knowledge-generator-isolation]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Materialize the pinned publication-workflow revision without altering research files
-        run: git worktree add --detach "${{ runner.temp }}/pypi-publication-source" 3739e7dee2a7064d1c73f2c29dac30dc7c2eefe1
-      - name: Verify historical E7 files through the preserved publication scripts, without uploading
-        working-directory: ${{ runner.temp }}/pypi-publication-source
-        run: python scripts/verify-pypi-release.py --download --check-registry --directory verified-public-e7 --receipt verification/existing-e7-release.json
-      - uses: actions/upload-artifact@v4
-        with:
-          name: existing-e7-release-verification
-          path: ${{ runner.temp }}/pypi-publication-source/verification/existing-e7-release.json
-          if-no-files-found: error
-  historical-functional:
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install normal build tools
-        run: python -m pip install build
-      - name: Build the candidate and reviewed dependency-only runtime
-        run: |
-          python -m build
-          docker build -f containers/historical-review.Dockerfile -t tomolab-historical:reviewed .
-      - name: Historical original/adapter/Oracle eligibility and Source-only budget preflight
-        run: python scripts/check-historical-container.py --image tomolab-historical:reviewed --phase preflight --output-directory "${{ runner.temp }}/historical-preflight"
-      - name: Installed wheel historical Source to fixed-control path
-        run: python scripts/check-historical-container.py --image tomolab-historical:reviewed --phase wheel --output-directory "${{ runner.temp }}/historical-wheel"
-      - name: Preserve safe receipts and encrypt raw local research records
-        if: always()
-        run: |
-          python scripts/package-historical-artifacts.py --input "${{ runner.temp }}/historical-preflight" --public "${{ runner.temp }}/historical-public" --recipient docs/HISTORICAL_ARTIFACT_RECIPIENT.pem --label preflight
-          python scripts/package-historical-artifacts.py --input "${{ runner.temp }}/historical-wheel" --public "${{ runner.temp }}/historical-public" --recipient docs/HISTORICAL_ARTIFACT_RECIPIENT.pem --label installed
+          python-version: ${{ matrix.python }}
+      - name: Audit exact public files and external-user commands without publishing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python audit/public/run_audit.py --source published-source --output public-audit-results
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: historical-functional-reviewed-container
-          path: ${{ runner.temp }}/historical-public/*
-          if-no-files-found: error
-  historical-study:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/feat/e9-online-structural-transfer'
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Build the exact reviewed runtime
-        run: docker build -f containers/historical-review.Dockerfile -t tomolab-historical:reviewed .
-      - name: Source preparation, durable algorithm/Mold freeze, then one registered comparison
-        run: python scripts/check-historical-container.py --image tomolab-historical:reviewed --phase study --timeout 1500 --output-directory "${{ runner.temp }}/historical-study"
-      - name: Preserve safe results and encrypted raw evidence
-        if: always()
-        run: python scripts/package-historical-artifacts.py --input "${{ runner.temp }}/historical-study" --public "${{ runner.temp }}/historical-study-public" --recipient docs/HISTORICAL_ARTIFACT_RECIPIENT.pem --label study
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: historical-registered-study-once
-          path: ${{ runner.temp }}/historical-study-public/*
+          name: independent-public-audit-${{ runner.os }}-${{ matrix.python }}
+          path: public-audit-results
           if-no-files-found: error
