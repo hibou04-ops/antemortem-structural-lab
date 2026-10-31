@@ -414,7 +414,7 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
     return result
 
 
-def run_online(target, oracle, contract, *, method="C", seed=7, budget=48, shrink_budget=8,
+def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrink_budget=8,
                mold=None, replays=(), max_seconds=30, mode="structural", inspection_target=None):
     """Fresh data-only search process; trusted Target/Oracle stay on the host.
 

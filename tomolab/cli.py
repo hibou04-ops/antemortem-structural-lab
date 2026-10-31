@@ -20,6 +20,14 @@ EXAMPLES = (ROOT / "examples" if (ROOT / "pyproject.toml").is_file() else
             Path(sysconfig.get_path("data")) / "share" / "antemortem-structural-lab" / "examples")
 
 
+def _package_version() -> str:
+    if (ROOT / "pyproject.toml").is_file():
+        import tomllib
+        return tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
+    from importlib.metadata import version
+    return version("antemortem-structural-lab")
+
+
 def _save(payload: dict, output: str | None) -> None:
     rendered = json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=True) + "\n"
     if output:
@@ -45,6 +53,7 @@ def _add_engine_options(parser: argparse.ArgumentParser) -> None:
 def main(argv: list[str] | None = None) -> int:
     main_started = time.perf_counter()
     p = argparse.ArgumentParser(prog="tomolab", description="Experimental MRI↔CAST behavioral falsification")
+    p.add_argument("--version", action="version", version=f"%(prog)s {_package_version()}")
     cmd = p.add_subparsers(dest="command", required=True)
     pi = cmd.add_parser("inspect", help="AST inspection only; never execute source")
     pi.add_argument("path", type=Path)

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.0a1 — Experimental product release
+
+- Default online search is A (native Hypothesis with shared public priors). B, explicit Source replay C, and experimental learned guidance D remain opt-in. A/B demos perform no Source collection or learning.
+- Added source/Oracle/contract-bound online replay, actionable signature errors, replay provenance, a bundled product example, and English/Korean product guides. Existing explicit C/D scripts retain their arguments; D emits an experimental warning.
+- Product publication has its own explicit authorization and actual CI/install/artifact checks. Historical research authorization, frozen results, consumed evidence and negative-transfer conclusions remain unchanged.
+- One manual Trusted Publisher workflow creates or verifies an annotated tag, builds the final wheel/sdist once, validates those exact files, stages a Draft Release, publishes the same files to PyPI, then verifies public installations and GitHub downloads before completion. Ordinary CI never uploads packages.
+- This release does not establish D superiority, automatic Oracle construction, arbitrary Python verification, or external generalization. See the [migration guide](https://github.com/hibou04-ops/antemortem-structural-lab/blob/main/docs/MIGRATION_0_8.md).
+
 ## E9-R1 미발행 후보 — C/D fallback 정합성과 역사적 프로젝트 평가
 
 - C/D 공통 기본 선택·공통 RNG를 보존하고 적용 불가·거절·중복 Source 제안은 C로 rollback한다. 손상 Mold는 별도 오류다.

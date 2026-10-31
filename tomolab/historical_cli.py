@@ -17,7 +17,7 @@ def register(commands):
             p.add_argument("--factory", type=Path, required=True)
             p.add_argument("--expected-factory-sha256", required=True)
             p.add_argument("--case", required=True)
-            p.add_argument("--method", choices=("A","B","C","D"), default="C")
+            p.add_argument("--method", choices=("A","B","C","D"), default="A")
             p.add_argument("--mold", type=Path)
             p.add_argument("--expected-digest")
             p.add_argument("--replays", type=Path)

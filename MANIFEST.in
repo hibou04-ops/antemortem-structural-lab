@@ -85,3 +85,6 @@ recursive-include benchmarks/historical *.json *.txt *.md
 include docs/HISTORICAL_ARTIFACT_RECIPIENT.pem
 include docs/HISTORICAL_PROFILE.json
 include docs/HISTORICAL_RESULTS.json
+recursive-include examples/product *.py *.json
+include docs/PRODUCT_RELEASE_AUTHORIZATION.json
+include THIRD_PARTY_NOTICES.md
