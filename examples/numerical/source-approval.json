@@ -1,0 +1,19 @@
+{
+  "schema": "tomolab-compact-host-approval-v1",
+  "compiler_version": "e8-r2-compact-compiler-v1",
+  "source_archive_digest": "0498dcdb997335d4fe4c83ef139e7806a3461b10812e39eb0e2002a4bf91831c",
+  "source_archive_content_digest": "5437984279282dfd38a3eeec83b1bdee5bc7d47e1ee9b3d982fa28d25970d262",
+  "source_archive_schema": "tomolab-knowledge-archive-v2",
+  "source_archive_validation": "FULL_EXISTING_ARCHIVE_REPLAY_VALIDATION_ON_TRUSTED_HOST",
+  "artifact_digest": "c5ac5b4d86a45eb4498af7123eeb928e3974165aa73f4b8202015f0de95a98ed",
+  "counterevidence_state_reference": "b187e3ba8ee1368d6201db27a8eb40c57a842c0ad060b3f0aa77ada9464d7332",
+  "approved_recipe_ids": [
+    "source-pearson-centering-v1"
+  ],
+  "semantic_contract_version": "e8-r1-claims-v1",
+  "public_input_contract_digest": "9008da62d49077cf9489fd085f2dc40ad0eb8e0b90175c43c7f0fa73e26005f8",
+  "transfer_authorized": false,
+  "final_feedback_allowed": false,
+  "authority": "TRUSTED_HOST_APPROVAL_NOT_SELF_HASH_AUTHENTICATION",
+  "receipt_digest": "82ac1f340dba42cf986a3c90bf9068dac996d79dffd9be1525c82fb694ec39ad"
+}

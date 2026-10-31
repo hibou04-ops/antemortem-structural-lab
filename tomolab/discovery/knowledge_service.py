@@ -347,3 +347,169 @@ def run_knowledge_stateful(target_factory, model_factory, operations, *, snapsho
     return _run(pair,native,engine,budget=budget,shrink_budget=shrink_budget,
         guidance_budget=guidance_budget,time_budget=time_budget,backend=backend,image=image,
         failure_signature=failure_signature,started=started,cpu=cpu)
+
+
+def run_source_development(target, oracle, spec, *, source_provenance, comparison_policy,
+                           method="C", archive=None, approved_counterexamples=(),
+                           known_development_inputs=(), budget=64, guidance_budget=16,
+                           seed=313, pool_size=128, time_budget=15.0,
+                           trusted_execution=False, input_accepts=None,
+                           allow_unvalidated_empirical=False,
+                           failure_signature="reference-comparison"):
+    """Gate A only: bounded same-Source testing; no transfer authorization.
+
+    This reuses KnowledgeEngine and native_find/shrinking. Frozen public rule
+    plans never receive measured labels. Oracle callbacks remain on the trusted
+    host. Independent final transfer must use EvaluationReadiness instead.
+    """
+    if trusted_execution is not True:
+        raise PermissionError("explicit reviewed Source execution approval required")
+    if not callable(target) or not callable(oracle) or target is oracle:
+        raise ValueError("distinct reviewed Source and Oracle callbacks required")
+    if method not in ("A","B","C","D"):
+        raise ValueError("fixed A-D Source development method required")
+    from .schema import decode_inputs, keys, validate_inputs
+    from .knowledge import validate_provenance
+    from .qualified_comparison import equivalent
+    from .hypothesis_adapter import native_find
+    from .knowledge_engine import KnowledgeEngine
+    spec = validate_spec(spec); origin = validate_provenance(source_provenance)
+    integer(budget,3,4096); integer(guidance_budget,0,budget//2)
+    integer(seed,0,2**32-1); integer(pool_size,1,4096)
+    if len(spec["contract"]["invariants"]) != 1:
+        raise ValueError("one independently checked Source comparison invariant required")
+    if type(time_budget) not in (int,float) or not math.isfinite(time_budget) or not 0 < time_budget <= 15:
+        raise ValueError("bounded cooperative Source wall budget in (0,15] required")
+    keys(comparison_policy,("kind","absolute_tolerance","relative_tolerance","undefined","exceptions"))
+    if comparison_policy["kind"] != "FINITE_JSON" or comparison_policy["undefined"] != "EXECUTION_ERROR" or comparison_policy["exceptions"] != "EXECUTION_ERROR":
+        raise ValueError("explicit finite Source comparison and error policy required")
+    for key in ("absolute_tolerance","relative_tolerance"):
+        value = comparison_policy[key]
+        if type(value) not in (int,float) or not math.isfinite(value) or value < 0:
+            raise ValueError("finite nonnegative Source comparison tolerances required")
+    if input_accepts is not None and not callable(input_accepts):
+        raise ValueError("reviewed Source precondition callback required")
+    if not isinstance(approved_counterexamples,(list,tuple)) or len(approved_counterexamples)>512:
+        raise ValueError("bounded approved Source counterexample list required")
+    if not isinstance(known_development_inputs,(list,tuple)) or len(known_development_inputs)>512:
+        raise ValueError("bounded known Source development inputs required")
+    known = {canonical(validate_inputs(point,spec)) for point in known_development_inputs}
+    replays = [validate_inputs(point,spec) for point in approved_counterexamples]
+    started,cpu = time.perf_counter(),time.process_time()
+    engine = None; plans=[]; plan_seconds=0.0
+    if method in ("B","C"):
+        tick=time.perf_counter()
+        engine=KnowledgeEngine(spec,archive=archive if method=="C" else None,
+            target_provenance=origin,budget=budget,pool_size=pool_size,
+            guidance_budget=guidance_budget,seed=seed,purpose="SOURCE_DEVELOPMENT",
+            allow_unvalidated_empirical=allow_unvalidated_empirical if method=="C" else False)
+        if method=="C" and engine.qualified:
+            # At most half the call budget goes to this fixed prefix. Ordinary
+            # native search retains its independent, unchanged RNG stream.
+            for _ in range(min(guidance_budget,budget//2,budget-2)):
+                proposal=engine.propose()
+                if proposal is None:break
+                plans.append({**proposal,"frozen":True})
+        engine.freeze();plan_seconds=time.perf_counter()-tick
+    elif method=="D":
+        seen=set()
+        for point in replays:
+            token=canonical(point)
+            if token not in seen:
+                seen.add(token);plans.append(dict(inputs=point,source="SOURCE_COUNTEREXAMPLE_REPLAY",claim_ids=[],frozen=True))
+    planning_seconds=time.perf_counter()-started
+    if planning_seconds>120:
+        raise TimeoutError("Source data validation/planning exceeded its separate 120-second cap")
+    execution_started=time.perf_counter()
+    rows=[]; rejected=[]; counters={"target":0,"oracle":0}; observed={}
+    guard_checks=0;guard_seconds=0.0
+    first=None; witness=None; native=None; error=None; replay_status="NOT_NEEDED";active_attempt=None
+    def check_time():
+        if time.perf_counter()-execution_started>=time_budget:
+            raise TimeoutError("cooperative Source development wall budget exhausted")
+    def pair(point, phase, candidate_source, claim_ids=()):
+        nonlocal first,guard_checks,guard_seconds,active_attempt
+        check_time();point=validate_inputs(point,spec)
+        active_attempt=dict(inputs=deepcopy(point),phase=phase,candidate_source=candidate_source,stage="DOMAIN_GUARD")
+        if input_accepts is not None:
+            guard_checks+=1;guard_tick=time.perf_counter()
+            try:accepted=input_accepts(deepcopy(point))
+            finally:guard_seconds+=time.perf_counter()-guard_tick
+            if type(accepted) is not bool:raise ValueError("Source input guard must return bool")
+            if not accepted:
+                rejected.append(dict(inputs=point,phase=phase,status="DOMAIN_REJECTED",label=None,target_calls=0,oracle_calls=0))
+                return None
+        if counters["target"]>=budget or counters["oracle"]>=budget:
+            raise ValueError("Source call budget exhausted")
+        counters["oracle"]+=1
+        active_attempt["stage"]="ORACLE"
+        expected=oracle(**decode_inputs(deepcopy(point),spec));active_attempt["oracle_output_type"]=type(expected).__name__
+        canonical(expected);active_attempt["expected"]=deepcopy(expected);check_time()
+        counters["target"]+=1
+        active_attempt["stage"]="TARGET"
+        actual=target(**decode_inputs(deepcopy(point),spec));active_attempt["target_output_type"]=type(actual).__name__
+        canonical(actual);active_attempt["actual"]=deepcopy(actual);check_time()
+        failed=not equivalent(actual,expected,comparison_policy)
+        row=dict(inputs=point,actual=actual,expected=expected,failed=failed,phase=phase,
+            candidate_source=candidate_source,claim_ids=list(claim_ids),
+            known_development_input=canonical(point) in known)
+        rows.append(row);observed[canonical(point)]=row
+        if failed and first is None:
+            first=dict(wall_seconds=time.perf_counter()-started,target_calls=counters["target"],oracle_calls=counters["oracle"],
+                candidate_source=candidate_source,claim_ids=list(claim_ids),known_development_input=row["known_development_input"])
+        return failed
+    try:
+        # All prefix decisions are frozen before the first measured Source call.
+        for proposal in plans:
+            if counters["target"]>=budget-2 or counters["oracle"]>=budget-2:break
+            if pair(proposal["inputs"],"frozen-prefix",proposal["source"],proposal["claim_ids"]) is True:
+                witness=proposal["inputs"];break
+        remaining=min(budget-2-counters["target"],budget-2-counters["oracle"])
+        if witness is None and remaining>0:
+            def predicate(point):
+                return pair(point,"native-search-and-shrink","NATIVE_HYPOTHESIS") is True
+            native=native_find(spec,predicate,budget=remaining,seed=seed,
+                time_budget=max(0.001,time_budget-(time.perf_counter()-execution_started)),cache=False)
+            if "oracle_calls" in native:
+                # The adapter counts predicate attempts, including guard-only
+                # rejections. Only the trusted host knows actual executions.
+                native["predicate_calls"]=native.pop("oracle_calls")
+            native["oracle_calls"]=sum(row["phase"]=="native-search-and-shrink" for row in rows)
+            native["target_calls"]=native["oracle_calls"]
+            witness=native.get("witness")
+            if witness is not None and (canonical(witness) not in observed or not observed[canonical(witness)]["failed"]):
+                raise ValueError("native witness has no actual failing Source observation")
+        if witness is not None:
+            original=observed[canonical(witness)]
+            fingerprint=digest({k:original[k] for k in ("actual","expected")})
+            matched=[]
+            for _ in range(2):
+                flag=pair(witness,"independent-replay",original["candidate_source"],original["claim_ids"])
+                matched.append(flag is True and digest({k:rows[-1][k] for k in ("actual","expected")})==fingerprint)
+            replay_status="MATCHED_TWICE" if all(matched) else "NONDETERMINISTIC_QUARANTINED"
+    except Exception as exc:
+        error=dict(kind="EXECUTION_OR_ORACLE_ERROR",type=type(exc).__name__,active_attempt=deepcopy(active_attempt),
+                   partial_target_calls=counters["target"],partial_oracle_calls=counters["oracle"])
+    found=witness is not None and replay_status=="MATCHED_TWICE" and error is None
+    unique={canonical(row["inputs"]) for row in rows}
+    search=[row for row in rows if row["phase"]!="independent-replay"]
+    native_rows=[row for row in search if row["candidate_source"]=="NATIVE_HYPOTHESIS"]
+    guided_rows=[row for row in search if row["candidate_source"] in ("PARTIAL_CONDITION_PROBE","EMPIRICAL_GUIDANCE_EXPERIMENT")]
+    return dict(schema="tomolab-e8r1-source-run-v1",evaluation_split="DEVELOPMENT",method=method,
+        status="ABORTED_EXECUTION_ERROR" if error else "COUNTEREXAMPLE_FOUND" if found else "NOT_REFUTED_WITHIN_BUDGET",
+        gate="SOURCE_DEVELOPMENT_ONLY_NOT_INDEPENDENT_TRANSFER",source_provenance=origin,
+        spec_sha256=digest(spec),archive_sha256=digest(archive) if archive is not None else None,
+        comparison_policy=deepcopy(comparison_policy),first_failure=first,found=found,
+        replay_status=replay_status,target_calls=counters["target"],oracle_calls=counters["oracle"],
+        budget_per_side_including_replay=budget,actual_primitive_calls=sum(counters.values()),
+        unique_evaluated_inputs=len(unique),duplicate_search_evaluations=len(search)-len({canonical(r["inputs"]) for r in search}),
+        native_search_calls=len(native_rows),guided_search_calls=len(guided_rows),
+        known_source_reuse_calls=sum(r["known_development_input"] for r in search),
+        novel_guided_candidates=sum(not r["known_development_input"] for r in guided_rows),
+        plan_wall_seconds=plan_seconds,pre_execution_wall_seconds=planning_seconds,
+        input_guard_calls=guard_checks,input_guard_wall_seconds=guard_seconds,
+        wall_seconds=time.perf_counter()-started,cpu_seconds=time.process_time()-cpu,
+        timing_scope="TOTAL_INCLUDES_ARCHIVE_REPLAY_PLANNING_GUARD_SEARCH_SHRINK_REPLAYS; PHASE_TIMES_OVERLAP",
+        time_policy="COOPERATIVE_NOT_CALLBACK_PREEMPTION",plans=plans,rows=rows,domain_rejections=rejected,native=native,error=error,
+        generator_feedback=0,archive_updated=False,external_transfer="NOT_EXECUTED_READINESS_BLOCKED",
+        classification="KNOWN_SOURCE_DEVELOPMENT_NOT_NEW_PRODUCTION_DISCOVERY")

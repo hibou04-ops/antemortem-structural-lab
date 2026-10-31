@@ -1,0 +1,18 @@
+{
+  "schema": "tomolab-e8r1-oracle-validation-v1",
+  "status": "VALIDATED",
+  "receipt_id": "authored-integer-addition-review-v1",
+  "implementation_hash": "ae511a6f2b5c9c2118a7faf020cd453a5cf4a745624ca660fe1281adce3899c2",
+  "oracle_hash": "f7644b5c59344bda97043ebf72d7bf0d5d84d10d9a8159a20964131859602c9f",
+  "public_spec_hash": "06500a16cd5df1067258d88cec294514b44b077acc7468f8569fbe6e7c144eda",
+  "comparison_policy": {
+    "kind": "FINITE_JSON",
+    "absolute_tolerance": 0.0,
+    "relative_tolerance": 0.0,
+    "undefined": "EXECUTION_ERROR",
+    "exceptions": "EXECUTION_ERROR"
+  },
+  "authority": "AUTHORED_FUNCTIONAL_FIXTURE_NOT_RESEARCH",
+  "limitations": "Small exact integer addition fixture only; no real-project independent corroboration or external transfer evidence.",
+  "receipt_sha256": "295ca1fe9f0e4d2be7be032f08031e3da36eabe3154da9000abdde800467064e"
+}

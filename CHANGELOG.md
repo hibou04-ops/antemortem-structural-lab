@@ -1,7 +1,78 @@
 # Changelog
 
+## 0.8.0a1 — Experimental product release
+
+- Default online search is A (native Hypothesis with shared public priors). B, explicit Source replay C, and experimental learned guidance D remain opt-in. A/B demos perform no Source collection or learning.
+- Added source/Oracle/contract-bound online replay, actionable signature errors, replay provenance, a bundled product example, and English/Korean product guides. Existing explicit C/D scripts retain their arguments; D emits an experimental warning.
+- Product publication has its own explicit authorization and actual CI/install/artifact checks. Historical research authorization, frozen results, consumed evidence and negative-transfer conclusions remain unchanged.
+- One manual Trusted Publisher workflow creates or verifies an annotated tag, builds the final wheel/sdist once, validates those exact files, stages a Draft Release, publishes the same files to PyPI, then verifies public installations and GitHub downloads before completion. Ordinary CI never uploads packages.
+- This release does not establish D superiority, automatic Oracle construction, arbitrary Python verification, or external generalization. See the [migration guide](https://github.com/hibou04-ops/antemortem-structural-lab/blob/main/docs/MIGRATION_0_8.md).
+
+## E9-R1 미발행 후보 — C/D fallback 정합성과 역사적 프로젝트 평가
+
+- C/D 공통 기본 선택·공통 RNG를 보존하고 적용 불가·거절·중복 Source 제안은 C로 rollback한다. 손상 Mold는 별도 오류다.
+- 실제 3개 프로젝트의 Source·buggy/fixed revision·라이선스·계약 Oracle를 기존 공통 러너·사용 장부에 연결했다. 원본 함수의 AST/root coverage와 wrapper를 구별한다.
+- 고정된 OCI 경계 확인, 설치 wheel의 역사 사례 CLI, Source-only 예산 preflight와 수동 1회 연구 실행을 분리했다. 원시 기록은 공개 업로드 전에 암호화한다.
+- E9의 원래 360회 결과는 고정 revision으로 검증하며 새 결과로 덮어쓰지 않는다. 배포·merge·tag·PyPI 업로드는 허용하지 않는다.
+- 실제384회 비교에서 D는 구현 전이의 C 대비 탐지·호출 이득이 없었고 적격 EMPTY LOMO에서 음의 전이가 관측됐다. A/B/C/D와 미검출·적용비·Source 준비비를 [별도 보고](docs/HISTORICAL_REPORT_KO.md)하며 사후 조정하지 않는다.
+
+## E9 미발행 연구 후보 — 온라인 탐색과 제한된 Source 전이
+
+- 공통 온라인 MRI–CAST와 native Hypothesis 생성·축소를 CLI에 연결하고 C/D의 차이를 Source 학습 provider로 제한합니다.
+- 정상/실패 차분의 기존 typed 편집 선택·합성·적용조건을 empirical Mold에 기록합니다. 다중 축의 작성 기능 비교와 실제 프로젝트 독립성의 한계는 [보고](docs/ONLINE_REPORT_KO.md)에 분리합니다.
+- 기존 E8/R1/R2/R3/R4 증거·readiness·PyPI0.7.0a1을 보존합니다. 이번에는 새 Release·태그·업로드·main 병합이 없습니다.
+
+
+## E8-R4 — 미발행 독립 구현 CORR 개발 검사
+
+- 실제 `statistics.correlation`·SciPy `pearsonr` 호출 후 반환값·문서화된 예외·경고·NaN을 정규화하고 기존 정확 수학 Oracle와 비교하는 고정 어댑터를 추가했습니다.
+- Source-only 가이드를 변경하지 않는 CORR 전용 host 승인과 기존 사용 장부의 개발 소비 예약을 연결했습니다. FINAL·발행·Generator feedback은 허용하지 않습니다.
+- 48개 계획의 결과 전 동결, 고정 자원 비교, 실제 함수 진입·재현·축소·전체 child 과정·영수증 비용 계측과 CLI·설치 검사를 추가했습니다.
+- 기존 R3 runtime·audit·후보 응답 검증·worker 5파일·Source/Oracle·720개 검사 계약과 PyPI 수동 경로를 보존했습니다. 구현 적용과 B/C 대비 추가 가치·최종 일반화는 별도 판정합니다.
+
+## E8-R3 — 미발행 실행 비용 개선
+
+- 명시적 runtime의 주 생성 1회·기준 생성 0회와 D audit의 주 생성 1회·기준 생성 1회를 분리했습니다. 기존 D API 기본 감사 수준과 기존 worker 5개 파일의 바이트를 보존합니다.
+- 실제 응답의 스키마·요청·후보 digest·domain·중복·제외·출처·입력 특징·동결 상태를 평가 전에 검증합니다. A/B/C도 같은 clean worker 경계를 사용하며 D guide를 요구하지 않습니다.
+- 외부 현재 host 승인 상태에 연결한 경량 가이드의 별도 준비·원자적 저장·재사용과 CLI·직렬화·write/flush 계측을 추가했습니다. 전체 archive 검증·보정·컴파일은 준비 비용으로 기록합니다.
+- 공개 비용 검증과 새 Source 개발 검증을 분리하고, R2 결과·Oracle·PyPI 수동 발행 경로·readiness를 유지합니다. 신규 배포를 허용하지 않습니다.
+
 All versions are experimental. Versions v0.1.0 through v0.2.0 were retrospective imports of archived snapshots; those commit timestamps **do not** represent the dates when the experiments were originally performed. Later changes are developed in the public repository without rewriting historical tags.
 
+## E8-R2 후속 작업 — 수치 입력 생성과 경량 실행 (미발행)
+
+- main의 PyPI 수동 workflow·검증 스크립트·E7 파일 해시 고정을 보존하며 연구 PR #8을 통합합니다. 공개 `0.7.0a1`을 수정·재업로드하지 않으며 작업 버전 `0.8.0a1`은 미발행 후보입니다.
+- R1 의미 분리·readiness·소비 이력을 재사용합니다. 실패 입력의 저장/재생과 수치 구조를 유지하는 새 입력 생성을 구분하는 typed `FailureGuidanceRecipe`를 추가했습니다.
+- 고정된 `omega-lock` 과거 revision의 검토된 함수·타입과 기존 정확 입력 Oracle·FINITE_JSON 비교를 연결합니다. 원본 생산 코드와 허용오차·정확한 0·domain·예외 정책은 바꾸지 않습니다. 사용자 제공 진단은 개발 단서로 구분하고 현재 배포판의 문제로 확대하지 않습니다.
+- native Hypothesis Strategy와 원본 반례에서 시작하는 bounded native shrinking을 추가했습니다. 상수축·값/길이·표현·부호/스케일·인접 float·순열/반복·정상 대조를 지원하며 정확 float 입력의 중복·알려진 입력·domain 거절을 분리합니다.
+- B·D의 공개 수치 지식과 C·D의 실패 자료를 맞추고, D만 검증된 Source 실패·정상 관측으로 family 배정을 보정합니다. 공개 사전지식·보정·검증 결과의 출처를 별도로 기록합니다.
+- 원본 72,801,555바이트 archive를 host에서 검증하고 canonical 3,448바이트 경량 가이드로 컴파일합니다. worker는 원시 정답·전체 journal·실행 코드 없이 host 승인 digest·의미 버전·범위·변조·전송 한도를 확인합니다. 전체 archive를 Docker에서 실행했다고 주장하지 않습니다.
+- native float 생성이 import된 모듈의 숫자 상수 문맥에 영향을 받는 QA 원인을 확인하고 A·B·C·D의 생성을 동일한 최소 허용 모듈의 별도 process로 분리했습니다. A·B에는 D recipe를 전송하지 않고 C에만 같은 기존 실패 입력을 bounded 데이터로 전달합니다. Oracle 출력·라벨은 전송하지 않으며 Hypothesis 내부 패치는 하지 않습니다. 동일 seed만으로 재생을 보장하지 않고 runtime 버전·모듈 문맥·입력 계약을 함께 고정합니다.
+- `numerical-prepare/compile/inspect/run/compare/demo`를 패키지 CLI에 연결하고 호출·최초 새 실패·생성/직렬화/worker/Oracle/축소/재현 및 준비 비용을 계측합니다. 전체 669개 회귀는 실패·오류·skip 0으로 통과했으며 R1 기존 검사 파일과 main PyPI 검사를 보존합니다. 새 환경의 실제 후보 wheel·README 경로 검사 20개(성공 18개·필수 차단 2개)가 통과했습니다. 로컬 QA 의존성 4개는 바이트 확인 후 기존 승인 배포판을 재사용했습니다. Docker·일반 index 설치·원격 CI 상태는 [현재 PR Checks](https://github.com/hibou04-ops/antemortem-structural-lab/pull/8/checks)에서 확인합니다.
+- Source 동결 이후 Windows 설치 검사기의 UTF-8 명시와 Python 3.13 AST 출력 호환 처리를 추가했습니다. `ast.dump`의 지원 여부를 확인해 `show_empty=True`를 적용하고 기존 기대 해시 두 개·생산 함수는 유지합니다. 원 Source 157개와 기존 packaging 165개 manifest를 재작성하지 않으며, 현재 `check-e8r2-py313-qa-freeze.py`와 별도 167개 QA 동결이 설치 검사기·CI 진입점·AST 검사라는 세 파일의 정확히 제한된 변경만 검증합니다. Source 비교 배치는 재실행하지 않았습니다. [Python 3.13 공식 AST 문서](https://docs.python.org/3.13/library/ast.html#ast.dump).
+- 한 번의 동결 Source 비교에서 A/B/C/D 고유 새 실패 입력 0/15/24/44개를 확인했습니다. C의 seed별 합계 26개와 고유 입력 24개를 구분합니다. 모두 같은 기존 기전이며 신규 기전은 0개입니다. 측정 준비 1회 포함 비용은 2.83759/2.95153/3.37563/23.54118초로 D가 사전 비용 기준을 충족하지 못해 `NO_ADDITIONAL_VALUE_OVER_DOMAIN_PRIOR`입니다. 결과 후 재실행·재보정은 하지 않았습니다. 역사적 수집비용은 `UNKNOWN`입니다. [결과 JSON](docs/E8_R2_RESULTS.json) · [R2 보고서](docs/E8_R2_REPORT.md).
+- 독립 C·미소비 Target 부재와 `allow_release=false`를 유지합니다. draft PR만 갱신하며 main 병합·새 tag·GitHub Release·PyPI upload는 실행하지 않습니다. 기능 구현을 외적 일반화나 보편적 성능 우위의 증거로 사용하지 않습니다.
+
+## E8-R1 후속 작업 — 의미별 주장과 Source 검증 (미발행)
+
+- 기존 완전 분류식·반증을 보존하면서 충분조건·필요조건·경험적 가이드를 명시적 의미 버전·ID·snapshot으로 구분하고 엔진의 앞단 제거부터 archive·계획·CLI까지 연결했습니다.
+- 실제 기존288표현의 FP_ONLY54/FP_AND_FN234를 재현했습니다. 기존 모든 표현은 FP가 있어 충분조건으로 이름만 바꾸어도 반증됩니다. 제한된128복합을 더한416표현과1,664의미 주장을 독립 지식으로 과장하지 않습니다.
+- UNKNOWN과 다른 실패 계열의 미관측을 음성 라벨로 바꾸지 않고, Source 상태·새 Source 검증·독립 C·Target·전이 상태를 분리합니다. C의 충돌 라벨도 원 Source를 오염시키지 않도록 검사했습니다.
+- native 흐름과 guidance 예산을 분리하고, 경험적 후보는 별도 개발 비용·효용 검증 없이는 채택하지 않습니다. 직접 작성 예제와 `semantic-learn/inspect/plan/validate/run/demo`를 추가했습니다.
+- 실제63MB archive의 복원·gate 프로파일에서 반복 deepcopy/snapshot 병목을 확인해 의미·전체 저널 재생·해시를 보존하는 경로만 최적화했습니다. stateless 범위와8MiB worker 전송 한계를 명시합니다.
+- 새 Source 입력42개를126쌍으로 검증해 새 실패0개를 기록했습니다. A/B/C는40/40/41쌍에서 미검출, D는 기존 반례를3쌍으로 재현했습니다. C는새guided입력8개·중복1회·9.279995초의비용을기록했으나 경험적채택0개입니다. 순서·warmup 한계와 미검출을 보존하며 일반적 우열을 주장하지 않습니다.
+- 실제 Source250쌍과 Oracle전용대조16회, 학습·추가검증·계획·효용기록 비용을 분리했습니다. 전체573개(기존506+신규67) 회귀는 실패·오류·skip0으로 통과했습니다. 최종 패키지·원격 CI는 [R1 보고서](docs/E8_R1_REPORT.md)의 root 갱신 대상으로 남깁니다. 독립 C·T 부재로 외적 전이·병합·공개 발행을 차단하고 기존 E8 문서·태그·main을 보존합니다.
+
+## 0.8.0a1 작업 후보 — 개발 증거 연결과 평가 readiness (미발행)
+
+- 생산 도구 이름과 무관하게 검토된 `DEVELOPMENT` 기록을 수용하는 공통 계약, 원본 결과·Oracle·출처·재현 결속, 중복 관측 구분과 오류 격리를 추가했습니다. 새 실행과 캐시 재사용을 구분합니다.
+- 기본 Native Hypothesis 수집기는 기존 생성·축소를 재사용하고 실제 두 번의 재현과 Target·Oracle 호출 합계 상한을 적용합니다. 사전 승인한 `EXACT_CANONICAL_JSON` 비교만 지원하며 수치 허용오차·정상 예외 비교는 지원하지 않습니다.
+- 기존 지식 엔진으로 실제 E7 v2 Source 관측 371개를 누락 없이 연결했습니다. 검증된 실패 입력 5개는 기존 1개 기전에 해당하며 새 블라인드 발견이 아닙니다. 후보 288개는 전부 `CONTRADICTED`, 살아 있는 구조적 가설·독립 C·qualified guidance는 모두 0개입니다.
+- Source/C/Target 계약, 실제 guidance 변화, Oracle 검토와 사용 이력을 확인하는 `EvaluationReadiness` 및 호출 전 최종 실행 차단을 추가했습니다. 이름·경로·해시 변경만으로 독립성이나 새 Target을 인정하지 않습니다.
+- `evidence-collect/import/inspect/learn/corroborate`, `readiness-check/demo`와 공개 기능 예제를 추가했습니다. 예제는 기능 검사이며 연구 성과에 포함하지 않습니다.
+- 승인된 5개 저장소의 Git 이력 182개와 함수 후보 18개를 검토했으나 완전한 독립 S→C→T 연결을 확보하지 못했습니다. 새 생산 코드·Oracle 호출과 최종 A~D 비교는 0회입니다. 상태는 `NOT_EXECUTED_READINESS_BLOCKED`, 전이 가치는 `NOT_EXECUTED`입니다.
+- 캐시 Source 전체 재구성은 262.921447초, 음성 메타데이터 readiness 진단은 약 2.544초였습니다. 최초 자료 수집 비용이나 A~D 성능 비교를 대신하지 않으며 자동 ROI 판정은 없습니다.
+- 기존 E1~E7 문서·동결 자료를 보존합니다. 전체506개(기존409＋신규97) 검사가 82.569초에 통과했고 실패·skip0, 기존28개 검사 파일의 SHA가 유지됐습니다. 이후 비용 계측 보완 관련29개 검사도 통과했습니다. build·메타데이터·공개 범위, 설치 wheel 검사37개와 README 명령60개가 통과했습니다. CI는 draft PR 현재 head의 필수 검사를 참조합니다. 변경은 작업 브랜치와 draft PR로 보존하며 병합·태그·Release는 만들지 않습니다. [E8 개발 결과와 한계](docs/E8_DEVELOPMENT_REPORT.md).
 ## 배포 채널 추가 — 기존 `0.7.0a1`의 PyPI 최초 게시 경로
 
 - 이미 공개한 E7 wheel·sdist를 태그·소스·SHA-256으로 고정하여 동일 파일로 최초 게시하는 수동 Trusted Publishing 경로를 추가합니다. 게시 성공과 공개 다운로드·설치는 workflow 실행 결과로 별도 확인합니다.

@@ -51,6 +51,13 @@ with tempfile.TemporaryDirectory(prefix="structural-wheel-") as folder:
     knowledge_folder = Path(examples)/"knowledge"
     inspected = json.loads(run("-m","tomolab","knowledge-inspect","--spec",str(knowledge_folder/"target-spec.json")))
     assert inspected["execution"] == "NOT_EXECUTED"
+    evidence_folder = Path(examples)/"evidence"
+    for name in ("target.py", "oracle.py", "spec.json", "provenance.json", "oracle-validation.json", "README.ko.md"):
+        assert (evidence_folder/name).is_file(), name
+    readiness = json.loads(run("-m", "tomolab", "readiness-demo"))
+    assert readiness["scope"] == "AUTHORED_FUNCTIONAL_FIXTURE_NOT_RESEARCH"
+    assert readiness["source_count"] == readiness["corroboration_count"] == readiness["target_count"] == 0
+    assert readiness["readiness"]["status"] == "NOT_EXECUTED_READINESS_BLOCKED"
     evidence = root / "claim.json"
     target = str(Path(examples) / "claim_only" / "symmetry_bug.py")
     run("-m", "tomolab", "claim-run", target, "--claim", claim,
@@ -78,6 +85,29 @@ with tempfile.TemporaryDirectory(prefix="structural-wheel-") as folder:
                              "--expression", "x + y == 0", "--expression", "x > 0"))
     assert checked["status"] == "SAT"
     if qa:
+        partial=root/"partial-source.json"
+        run("-m","tomolab","semantic-demo","--budget","12","--output",str(partial))
+        source=json.loads(partial.read_text(encoding="utf-8"))
+        assert source["scope"] == "AUTHORED_FUNCTIONAL_FIXTURE_NOT_RESEARCH"
+        run("-m","tomolab","semantic-inspect","--archive",str(partial))
+        partial_folder=Path(examples)/"partial"
+        for name in ("target.py","oracle.py","spec.json","provenance.json","oracle-validation.json","semantic-policy.json"):
+            assert (partial_folder/name).is_file(),name
+        planned=json.loads(run("-m","tomolab","semantic-plan","--archive",str(partial),"--spec",str(partial_folder/"spec.json"),
+            "--provenance",str(partial_folder/"provenance.json"),"--purpose","SOURCE_DEVELOPMENT","--budget","8","--guidance-budget","2","--pool-size","16"))
+        assert planned["target_calls"]==planned["oracle_calls"]==0
+        collection_file = root/"authored-e8-collection.json"
+        run("-m", "tomolab", "evidence-collect", str(evidence_folder/"target.py"),
+            "--oracle-file", str(evidence_folder/"oracle.py"), "--spec", str(evidence_folder/"spec.json"),
+            "--provenance", str(evidence_folder/"provenance.json"),
+            "--oracle-validation", str(evidence_folder/"oracle-validation.json"),
+            "--function-identity", "authored-identity", "--generation-id", "E8-WHEEL-FUNCTIONAL",
+            "--allow-local-execution", "--budget", "8", "--max-calls", "16", "--output", str(collection_file))
+        collection = json.loads(collection_file.read_text(encoding="utf-8"))
+        assert 0 < collection["summary"]["actual_primitive_calls"] <= 16
+        inspected = json.loads(run("-m", "tomolab", "evidence-inspect", "--bundle", str(collection_file)))
+        assert inspected["valid_failures"] >= 1
+        assert inspected["new_target_calls"]+inspected["new_oracle_calls"] <= 16
         pbt = json.loads(run("-m", "tomolab", "pbt-demo", "--budget", "32"))
         assert pbt["schema"] == "tomolab-property-run-v1"
         assert pbt["snapshot"]["frozen"] is True

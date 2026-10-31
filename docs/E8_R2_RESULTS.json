@@ -1,0 +1,2148 @@
+{
+  "schema": "tomolab-numerical-comparison-v1",
+  "scope": "SOURCE_INPUT_GENERALIZATION_ONLY",
+  "status": "COMPLETE",
+  "verdict": "NO_ADDITIONAL_VALUE_OVER_DOMAIN_PRIOR",
+  "criterion": "MORE_CONFIRMED_NEW_INPUTS_AND_NO_MORE_MEASURED_TOTAL_COST_THAN_B_AND_C",
+  "public_prior_shared_by": [
+    "B",
+    "C",
+    "D"
+  ],
+  "same_source_failure_material_for": [
+    "C",
+    "D"
+  ],
+  "summaries": {
+    "A": {
+      "trials": 3,
+      "completed_trials": 3,
+      "unique_fresh_generation_valid_inputs": 94,
+      "first_evaluated_valid_inputs_trial_sum_including_shrink": 96,
+      "confirmed_new_failure_inputs": 0,
+      "confirmed_new_failure_inputs_trial_sum": 0,
+      "confirmed_mechanisms": [],
+      "target_calls": 96,
+      "oracle_calls": 96,
+      "known_input_replay_calls": 0,
+      "domain_rejections": 54,
+      "oracle_errors": 0,
+      "current_execution_seconds": 2.837587599977269,
+      "one_time_preparation_seconds": 0.0,
+      "first_new_failure_primitive_calls": [
+        null,
+        null,
+        null
+      ],
+      "first_new_failure_cold_seconds": [
+        null,
+        null,
+        null
+      ],
+      "measured_total_with_one_preparation_seconds": 2.837587599977269
+    },
+    "B": {
+      "trials": 3,
+      "completed_trials": 3,
+      "unique_fresh_generation_valid_inputs": 92,
+      "first_evaluated_valid_inputs_trial_sum_including_shrink": 102,
+      "confirmed_new_failure_inputs": 15,
+      "confirmed_new_failure_inputs_trial_sum": 15,
+      "confirmed_mechanisms": [
+        "CONSTANT_CENTERING_ROUNDOFF_MISCLASSIFIES_DEGENERACY"
+      ],
+      "target_calls": 144,
+      "oracle_calls": 144,
+      "known_input_replay_calls": 0,
+      "domain_rejections": 2,
+      "oracle_errors": 0,
+      "current_execution_seconds": 2.9515268000104697,
+      "one_time_preparation_seconds": 0.0,
+      "first_new_failure_primitive_calls": [
+        null,
+        8,
+        44
+      ],
+      "first_new_failure_cold_seconds": [
+        null,
+        1.0065172000031453,
+        0.9497970999946119
+      ],
+      "measured_total_with_one_preparation_seconds": 2.9515268000104697
+    },
+    "C": {
+      "trials": 3,
+      "completed_trials": 3,
+      "unique_fresh_generation_valid_inputs": 77,
+      "first_evaluated_valid_inputs_trial_sum_including_shrink": 97,
+      "confirmed_new_failure_inputs": 24,
+      "confirmed_new_failure_inputs_trial_sum": 26,
+      "confirmed_mechanisms": [
+        "CONSTANT_CENTERING_ROUNDOFF_MISCLASSIFIES_DEGENERACY"
+      ],
+      "target_calls": 212,
+      "oracle_calls": 212,
+      "known_input_replay_calls": 45,
+      "domain_rejections": 15,
+      "oracle_errors": 0,
+      "current_execution_seconds": 3.092853299996932,
+      "one_time_preparation_seconds": 0.28278100000170525,
+      "first_new_failure_primitive_calls": [
+        38,
+        36,
+        38
+      ],
+      "first_new_failure_cold_seconds": [
+        1.2120616000029258,
+        1.2092693000013242,
+        1.2082859000074677
+      ],
+      "measured_total_with_one_preparation_seconds": 3.3756342999986373
+    },
+    "D": {
+      "trials": 3,
+      "completed_trials": 3,
+      "unique_fresh_generation_valid_inputs": 93,
+      "first_evaluated_valid_inputs_trial_sum_including_shrink": 97,
+      "confirmed_new_failure_inputs": 44,
+      "confirmed_new_failure_inputs_trial_sum": 44,
+      "confirmed_mechanisms": [
+        "CONSTANT_CENTERING_ROUNDOFF_MISCLASSIFIES_DEGENERACY"
+      ],
+      "target_calls": 203,
+      "oracle_calls": 203,
+      "known_input_replay_calls": 0,
+      "domain_rejections": 24,
+      "oracle_errors": 0,
+      "current_execution_seconds": 6.634428499994101,
+      "one_time_preparation_seconds": 16.906752399998368,
+      "first_new_failure_primitive_calls": [
+        24,
+        14,
+        6
+      ],
+      "first_new_failure_cold_seconds": [
+        19.128150500007905,
+        19.10664430000179,
+        19.04518069999176
+      ],
+      "measured_total_with_one_preparation_seconds": 23.54118089999247
+    }
+  },
+  "runtime": {
+    "python": "3.12.10",
+    "hypothesis": "6.170.11"
+  },
+  "independent_C": 0,
+  "eligible_unconsumed_Target": 0,
+  "external_generalization": "NOT_EXECUTED",
+  "allow_release": false,
+  "publication": "NOT_AUTHORIZED",
+  "statistical_superiority_claimed": false,
+  "historical_acquisition_cost": "UNKNOWN",
+  "distinct_new_mechanisms": 0,
+  "input_counting": {
+    "method_unique_counts_relative_to": "FROZEN_PREVALIDATION_KNOWN_SET",
+    "trial_sum_is_not_distinct_count": true,
+    "actual_first_evaluations_across_all_methods_and_shrink_by_execution_order": {
+      "A": 94,
+      "B": 95,
+      "C": 78,
+      "D": 90
+    },
+    "actual_first_evaluations_across_entire_batch": 357,
+    "batch_distinct_confirmed_new_failure_inputs": 82,
+    "cross_method_overlap_does_not_influence_generation_or_primary_method_comparison": true
+  },
+  "receipt_sha256": "ff8e7728340230e0a1a0fb8481961c9cef92cd999994cdb12826a3ba92e83a95",
+  "frozen_receipt_sha256": "baad6f3d8bac76bc1c8b1b2250a2a0f8135cca107e801ea8131563c580dc04d4",
+  "artifact_bytes": 3448,
+  "known_input_count": 424,
+  "runs": [
+    {
+      "schema": "tomolab-numerical-execution-v1",
+      "method": "A",
+      "seed": 13,
+      "scope": "SOURCE_DEVELOPMENT_NOT_INDEPENDENT_CORROBORATION",
+      "origin_type": "OBSERVED_VALIDATION_RESULT",
+      "status": "COMPLETE",
+      "source_identity": {
+        "repository": "hibou04-ops/omega-lock",
+        "revision": "14ff508b2974298305d74c1c90bb43d3c0c13b82",
+        "path": "src/omega_lock/walk_forward.py",
+        "function": "pearson_result",
+        "source_blob": "98c9d7eb5651aabd7074b184a544e2c34b04b8ab",
+        "source_file_sha256": "25e8b722b824f15d9607b28158533e618afaf4cb9c80783df5084f3f5265fd1a",
+        "function_ast_serialization_runtime": "CPython 3.12",
+        "function_ast_sha256": {
+          "PearsonResult": "087d9d5087041d3286cb2a90e6d33d58de69a7d556cac33f62390856702b6204",
+          "pearson_result": "b5f7c457f2c8ef0c9f5da9d1a35075f167da0d6dd32cab6e03f9205c3e5f8ede"
+        },
+        "reviewed_extraction_sha256": "a87f8b23fb526cea8f7e55961c40051c67e0c690acf34a2a096f442dc01b6272",
+        "oracle_semantic_sha256": "67f5677cb06220ea835620f4ef1ea6cf04fcb990a2c990c15b3d2b5dad4d88e9",
+        "reviewed_math_helper_sha256": "14412b88f5dd0ef5d46b0c461ea47679be32eb28f160af74f487fa90b8c95139",
+        "oracle_helper_source": "scripts/evaluate-e7.py at E8-R1 e10699f602fb8757098e0ba675b44e54828f960c",
+        "scope": "HISTORICAL_SOURCE_DEVELOPMENT_ONLY_NOT_CURRENT_RELEASE_OR_EXTERNAL_GENERALIZATION",
+        "production_code_modified": false
+      },
+      "comparison_contract": {
+        "kind": "FINITE_JSON",
+        "absolute_tolerance": 1e-10,
+        "relative_tolerance": 1e-08,
+        "undefined": "EXECUTION_ERROR",
+        "exceptions": "EXECUTION_ERROR"
+      },
+      "guide_digest": "c5ac5b4d86a45eb4498af7123eeb928e3974165aa73f4b8202015f0de95a98ed",
+      "contract": {
+        "schema": "tomolab-numerical-input-contract-v1",
+        "profile": "SOURCE_DOMAIN",
+        "lengths": [
+          4,
+          5,
+          6
+        ],
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "nonconstant_centered_ss_min": "1/1000000"
+      },
+      "pair_budget": 96,
+      "target_calls": 32,
+      "oracle_calls": 32,
+      "first_evaluated_valid_inputs": 32,
+      "confirmed_new_failure_inputs": 0,
+      "known_input_replay_calls": 0,
+      "initial_known_replays": 0,
+      "domain_rejections": 0,
+      "oracle_errors": 0,
+      "target_errors": 0,
+      "replay_mismatches": 0,
+      "mechanisms": {},
+      "unreviewed_failure_inputs": 0,
+      "first_new_failure_seconds": null,
+      "first_new_failure_target_calls": null,
+      "first_new_failure_oracle_calls": null,
+      "cost": {
+        "preparation_seconds": 0.0,
+        "generation_seconds": 0.9280829000053927,
+        "worker_seconds": 0.0,
+        "host_equivalence_check_seconds": 0.0,
+        "serialization_seconds": 4.879999323748052e-05,
+        "target_seconds": 0.0003324000572320074,
+        "oracle_seconds": 0.004228199934004806,
+        "comparison_seconds": 0.0006872999656479806,
+        "replay_seconds": 0.0,
+        "shrink_seconds": 0.0,
+        "current_execution_seconds": 0.9417389999871375,
+        "measured_cold_total_seconds": 0.9417389999871375,
+        "archive_reuse_incremental_seconds": 0.9417389999871375,
+        "historical_collection_seconds": "UNKNOWN",
+        "complete_historical_collection_to_discovery_seconds": null
+      },
+      "boundary": {
+        "isolation": "LOGICAL_ISOLATION_ONLY",
+        "backend": "subprocess",
+        "generator_sha256": {
+          "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+          "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+          "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+          "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+          "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+        },
+        "container_image_id": null,
+        "protocol": "tomolab-compact-numerical-protocol-v1",
+        "validated_requests": 1,
+        "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+        "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+        "full_archive_transmitted": false,
+        "oracle_modules_transmitted": false
+      },
+      "final_feedback_allowed": false,
+      "allow_release": false,
+      "serialized_request_bytes": 29127,
+      "generation": {
+        "attempts": 54,
+        "cpu_seconds": 0.515625,
+        "domain_rejections": 21,
+        "duplicate_rejections": 1,
+        "existing_input_rejections": 0,
+        "explicit_replays": 0,
+        "mechanism_filter_rejections": 0,
+        "method": "A",
+        "oracle_calls": 0,
+        "schema": "tomolab-numerical-candidates-v1",
+        "stop": "REQUESTED_CANDIDATES",
+        "target_calls": 0,
+        "wall_seconds": 0.7703239999973448,
+        "generation_boundary": {
+          "isolation": "LOGICAL_ISOLATION_ONLY",
+          "backend": "subprocess",
+          "generator_sha256": {
+            "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+            "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+            "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+            "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+            "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+          },
+          "container_image_id": null,
+          "protocol": "tomolab-compact-numerical-protocol-v1",
+          "validated_requests": 1,
+          "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+          "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+          "full_archive_transmitted": false,
+          "oracle_modules_transmitted": false
+        },
+        "generation_execution": "CLEAN_HOST_SUBPROCESS_BASELINE"
+      },
+      "candidate_count": 32,
+      "candidate_input_digest": "f8929255987fbe65f4c53e96045df0a7bab773604ec593d9d7a18dc53bcb6af5",
+      "confirmed_mechanism_count": 0,
+      "phase_counts": {
+        "fresh_generation": {
+          "source_oracle_pairs": 32,
+          "first_evaluated_valid_inputs": 32
+        }
+      },
+      "distinct_new_mechanisms": 0,
+      "oracle_target_primitive_calls": 64,
+      "guide_unchanged": true,
+      "receipt_sha256": "72eae1be2d2b4f505bdb087bec8ec188c08faeffa379ab5c511c01e3f54c314d",
+      "shrinking": null
+    },
+    {
+      "schema": "tomolab-numerical-execution-v1",
+      "method": "B",
+      "seed": 13,
+      "scope": "SOURCE_DEVELOPMENT_NOT_INDEPENDENT_CORROBORATION",
+      "origin_type": "OBSERVED_VALIDATION_RESULT",
+      "status": "COMPLETE",
+      "source_identity": {
+        "repository": "hibou04-ops/omega-lock",
+        "revision": "14ff508b2974298305d74c1c90bb43d3c0c13b82",
+        "path": "src/omega_lock/walk_forward.py",
+        "function": "pearson_result",
+        "source_blob": "98c9d7eb5651aabd7074b184a544e2c34b04b8ab",
+        "source_file_sha256": "25e8b722b824f15d9607b28158533e618afaf4cb9c80783df5084f3f5265fd1a",
+        "function_ast_serialization_runtime": "CPython 3.12",
+        "function_ast_sha256": {
+          "PearsonResult": "087d9d5087041d3286cb2a90e6d33d58de69a7d556cac33f62390856702b6204",
+          "pearson_result": "b5f7c457f2c8ef0c9f5da9d1a35075f167da0d6dd32cab6e03f9205c3e5f8ede"
+        },
+        "reviewed_extraction_sha256": "a87f8b23fb526cea8f7e55961c40051c67e0c690acf34a2a096f442dc01b6272",
+        "oracle_semantic_sha256": "67f5677cb06220ea835620f4ef1ea6cf04fcb990a2c990c15b3d2b5dad4d88e9",
+        "reviewed_math_helper_sha256": "14412b88f5dd0ef5d46b0c461ea47679be32eb28f160af74f487fa90b8c95139",
+        "oracle_helper_source": "scripts/evaluate-e7.py at E8-R1 e10699f602fb8757098e0ba675b44e54828f960c",
+        "scope": "HISTORICAL_SOURCE_DEVELOPMENT_ONLY_NOT_CURRENT_RELEASE_OR_EXTERNAL_GENERALIZATION",
+        "production_code_modified": false
+      },
+      "comparison_contract": {
+        "kind": "FINITE_JSON",
+        "absolute_tolerance": 1e-10,
+        "relative_tolerance": 1e-08,
+        "undefined": "EXECUTION_ERROR",
+        "exceptions": "EXECUTION_ERROR"
+      },
+      "guide_digest": "c5ac5b4d86a45eb4498af7123eeb928e3974165aa73f4b8202015f0de95a98ed",
+      "contract": {
+        "schema": "tomolab-numerical-input-contract-v1",
+        "profile": "SOURCE_DOMAIN",
+        "lengths": [
+          4,
+          5,
+          6
+        ],
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "nonconstant_centered_ss_min": "1/1000000"
+      },
+      "pair_budget": 96,
+      "target_calls": 32,
+      "oracle_calls": 32,
+      "first_evaluated_valid_inputs": 32,
+      "confirmed_new_failure_inputs": 0,
+      "known_input_replay_calls": 0,
+      "initial_known_replays": 0,
+      "domain_rejections": 0,
+      "oracle_errors": 0,
+      "target_errors": 0,
+      "replay_mismatches": 0,
+      "mechanisms": {},
+      "unreviewed_failure_inputs": 0,
+      "first_new_failure_seconds": null,
+      "first_new_failure_target_calls": null,
+      "first_new_failure_oracle_calls": null,
+      "cost": {
+        "preparation_seconds": 0.0,
+        "generation_seconds": 0.946745599998394,
+        "worker_seconds": 0.0,
+        "host_equivalence_check_seconds": 0.0,
+        "serialization_seconds": 3.989999822806567e-05,
+        "target_seconds": 0.0002962999715236947,
+        "oracle_seconds": 0.00254840002162382,
+        "comparison_seconds": 0.0005983000301057473,
+        "replay_seconds": 0.0,
+        "shrink_seconds": 0.0,
+        "current_execution_seconds": 0.9569865000084974,
+        "measured_cold_total_seconds": 0.9569865000084974,
+        "archive_reuse_incremental_seconds": 0.9569865000084974,
+        "historical_collection_seconds": "UNKNOWN",
+        "complete_historical_collection_to_discovery_seconds": null
+      },
+      "boundary": {
+        "isolation": "LOGICAL_ISOLATION_ONLY",
+        "backend": "subprocess",
+        "generator_sha256": {
+          "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+          "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+          "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+          "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+          "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+        },
+        "container_image_id": null,
+        "protocol": "tomolab-compact-numerical-protocol-v1",
+        "validated_requests": 1,
+        "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+        "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+        "full_archive_transmitted": false,
+        "oracle_modules_transmitted": false
+      },
+      "final_feedback_allowed": false,
+      "allow_release": false,
+      "serialized_request_bytes": 29127,
+      "generation": {
+        "attempts": 87,
+        "cpu_seconds": 0.515625,
+        "domain_rejections": 2,
+        "duplicate_rejections": 8,
+        "existing_input_rejections": 0,
+        "explicit_replays": 0,
+        "mechanism_filter_rejections": 45,
+        "method": "B",
+        "oracle_calls": 0,
+        "schema": "tomolab-numerical-candidates-v1",
+        "stop": "REQUESTED_CANDIDATES",
+        "target_calls": 0,
+        "wall_seconds": 0.7948146999988239,
+        "generation_boundary": {
+          "isolation": "LOGICAL_ISOLATION_ONLY",
+          "backend": "subprocess",
+          "generator_sha256": {
+            "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+            "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+            "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+            "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+            "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+          },
+          "container_image_id": null,
+          "protocol": "tomolab-compact-numerical-protocol-v1",
+          "validated_requests": 1,
+          "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+          "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+          "full_archive_transmitted": false,
+          "oracle_modules_transmitted": false
+        },
+        "generation_execution": "CLEAN_HOST_SUBPROCESS_BASELINE"
+      },
+      "candidate_count": 32,
+      "candidate_input_digest": "d1e865abe2b754d7440ee00f9213df7103c672c1cd67be188bfd4bcfae79d374",
+      "confirmed_mechanism_count": 0,
+      "phase_counts": {
+        "fresh_generation": {
+          "source_oracle_pairs": 32,
+          "first_evaluated_valid_inputs": 32
+        }
+      },
+      "distinct_new_mechanisms": 0,
+      "oracle_target_primitive_calls": 64,
+      "guide_unchanged": true,
+      "receipt_sha256": "0b9be222fe7f6cc79bade2eb175dacc88c95390a491810511e3ed046653e9bb3",
+      "shrinking": null
+    },
+    {
+      "schema": "tomolab-numerical-execution-v1",
+      "method": "C",
+      "seed": 13,
+      "scope": "SOURCE_DEVELOPMENT_NOT_INDEPENDENT_CORROBORATION",
+      "origin_type": "OBSERVED_VALIDATION_RESULT",
+      "status": "COMPLETE",
+      "source_identity": {
+        "repository": "hibou04-ops/omega-lock",
+        "revision": "14ff508b2974298305d74c1c90bb43d3c0c13b82",
+        "path": "src/omega_lock/walk_forward.py",
+        "function": "pearson_result",
+        "source_blob": "98c9d7eb5651aabd7074b184a544e2c34b04b8ab",
+        "source_file_sha256": "25e8b722b824f15d9607b28158533e618afaf4cb9c80783df5084f3f5265fd1a",
+        "function_ast_serialization_runtime": "CPython 3.12",
+        "function_ast_sha256": {
+          "PearsonResult": "087d9d5087041d3286cb2a90e6d33d58de69a7d556cac33f62390856702b6204",
+          "pearson_result": "b5f7c457f2c8ef0c9f5da9d1a35075f167da0d6dd32cab6e03f9205c3e5f8ede"
+        },
+        "reviewed_extraction_sha256": "a87f8b23fb526cea8f7e55961c40051c67e0c690acf34a2a096f442dc01b6272",
+        "oracle_semantic_sha256": "67f5677cb06220ea835620f4ef1ea6cf04fcb990a2c990c15b3d2b5dad4d88e9",
+        "reviewed_math_helper_sha256": "14412b88f5dd0ef5d46b0c461ea47679be32eb28f160af74f487fa90b8c95139",
+        "oracle_helper_source": "scripts/evaluate-e7.py at E8-R1 e10699f602fb8757098e0ba675b44e54828f960c",
+        "scope": "HISTORICAL_SOURCE_DEVELOPMENT_ONLY_NOT_CURRENT_RELEASE_OR_EXTERNAL_GENERALIZATION",
+        "production_code_modified": false
+      },
+      "comparison_contract": {
+        "kind": "FINITE_JSON",
+        "absolute_tolerance": 1e-10,
+        "relative_tolerance": 1e-08,
+        "undefined": "EXECUTION_ERROR",
+        "exceptions": "EXECUTION_ERROR"
+      },
+      "guide_digest": "c5ac5b4d86a45eb4498af7123eeb928e3974165aa73f4b8202015f0de95a98ed",
+      "contract": {
+        "schema": "tomolab-numerical-input-contract-v1",
+        "profile": "SOURCE_DOMAIN",
+        "lengths": [
+          4,
+          5,
+          6
+        ],
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "nonconstant_centered_ss_min": "1/1000000"
+      },
+      "pair_budget": 96,
+      "target_calls": 73,
+      "oracle_calls": 73,
+      "first_evaluated_valid_inputs": 32,
+      "confirmed_new_failure_inputs": 10,
+      "known_input_replay_calls": 15,
+      "initial_known_replays": 15,
+      "domain_rejections": 0,
+      "oracle_errors": 0,
+      "target_errors": 0,
+      "replay_mismatches": 0,
+      "mechanisms": {
+        "CONSTANT_CENTERING_ROUNDOFF_MISCLASSIFIES_DEGENERACY": 10
+      },
+      "unreviewed_failure_inputs": 0,
+      "first_new_failure_seconds": 1.2120616000029258,
+      "first_new_failure_target_calls": 19,
+      "first_new_failure_oracle_calls": 19,
+      "cost": {
+        "preparation_seconds": 0.28278100000170525,
+        "generation_seconds": 0.9252519000001485,
+        "worker_seconds": 0.0,
+        "host_equivalence_check_seconds": 0.0,
+        "serialization_seconds": 5.4499992984347045e-05,
+        "target_seconds": 0.0006869000062579289,
+        "oracle_seconds": 0.004266400006599724,
+        "comparison_seconds": 0.0014787000400247052,
+        "replay_seconds": 0.007529199996497482,
+        "shrink_seconds": 0.25250170000072103,
+        "current_execution_seconds": 1.1958291999908397,
+        "measured_cold_total_seconds": 1.478610199992545,
+        "archive_reuse_incremental_seconds": 1.1958291999908397,
+        "historical_collection_seconds": "UNKNOWN",
+        "complete_historical_collection_to_discovery_seconds": null
+      },
+      "boundary": {
+        "isolation": "LOGICAL_ISOLATION_ONLY",
+        "backend": "subprocess",
+        "generator_sha256": {
+          "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+          "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+          "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+          "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+          "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+        },
+        "container_image_id": null,
+        "protocol": "tomolab-compact-numerical-protocol-v1",
+        "validated_requests": 1,
+        "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+        "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+        "full_archive_transmitted": false,
+        "oracle_modules_transmitted": false
+      },
+      "final_feedback_allowed": false,
+      "allow_release": false,
+      "serialized_request_bytes": 29748,
+      "generation": {
+        "attempts": 35,
+        "cpu_seconds": 0.484375,
+        "domain_rejections": 5,
+        "duplicate_rejections": 3,
+        "existing_input_rejections": 0,
+        "explicit_replays": 0,
+        "mechanism_filter_rejections": 0,
+        "method": "C",
+        "oracle_calls": 0,
+        "schema": "tomolab-numerical-candidates-v1",
+        "stop": "REQUESTED_CANDIDATES",
+        "target_calls": 0,
+        "wall_seconds": 0.7756834000028903,
+        "generation_boundary": {
+          "isolation": "LOGICAL_ISOLATION_ONLY",
+          "backend": "subprocess",
+          "generator_sha256": {
+            "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+            "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+            "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+            "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+            "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+          },
+          "container_image_id": null,
+          "protocol": "tomolab-compact-numerical-protocol-v1",
+          "validated_requests": 1,
+          "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+          "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+          "full_archive_transmitted": false,
+          "oracle_modules_transmitted": false
+        },
+        "generation_execution": "CLEAN_HOST_SUBPROCESS_BASELINE"
+      },
+      "candidate_count": 32,
+      "candidate_input_digest": "1c5bad38056c304ebdf6c9951fb6fd94bde104ee3535c698ebf662327aaa649b",
+      "confirmed_mechanism_count": 1,
+      "phase_counts": {
+        "fresh_generation": {
+          "source_oracle_pairs": 32,
+          "first_evaluated_valid_inputs": 32
+        },
+        "known_replay": {
+          "source_oracle_pairs": 15,
+          "first_evaluated_valid_inputs": 0
+        },
+        "native_shrink": {
+          "source_oracle_pairs": 4,
+          "first_evaluated_valid_inputs": 0
+        },
+        "new_failure_replay": {
+          "source_oracle_pairs": 20,
+          "first_evaluated_valid_inputs": 0
+        },
+        "shrink_replay": {
+          "source_oracle_pairs": 2,
+          "first_evaluated_valid_inputs": 0
+        }
+      },
+      "distinct_new_mechanisms": 0,
+      "oracle_target_primitive_calls": 146,
+      "guide_unchanged": true,
+      "receipt_sha256": "f417a6320168ca4ce02a00f876bc365f471165083bbaf57ad4f58409d43fe67d",
+      "shrinking": {
+        "schema": "tomolab-numerical-shrink-v1",
+        "witness_mode": "INITIAL_WITNESS_TRANSFORMS",
+        "initial_witness_digest": "4cf5e694ba7372ffd45f2dca63ab34eb3ca410240a88eb57019887289d9ef8e4",
+        "initial_witness_reproduced": true,
+        "initial_witness_preserved": true,
+        "transformation_contract": "PREFIX_LENGTH_COMMON_BINARY_SCALE_AND_COMMON_ADJACENT_STEPS_PRESERVE_CONSTANT_AXES",
+        "predicate_calls": 4,
+        "hypothesis_attempts": 6,
+        "domain_rejections": 3,
+        "structure_rejections": 0,
+        "first_failure_seconds": 0.0014928000018699095,
+        "wall_seconds": 0.25192740000784397,
+        "stop": "COMPLETE",
+        "shrinking": "NATIVE_COMPLETED",
+        "reproduced_twice": true
+      }
+    },
+    {
+      "schema": "tomolab-numerical-execution-v1",
+      "method": "D",
+      "seed": 13,
+      "scope": "SOURCE_DEVELOPMENT_NOT_INDEPENDENT_CORROBORATION",
+      "origin_type": "OBSERVED_VALIDATION_RESULT",
+      "status": "COMPLETE",
+      "source_identity": {
+        "repository": "hibou04-ops/omega-lock",
+        "revision": "14ff508b2974298305d74c1c90bb43d3c0c13b82",
+        "path": "src/omega_lock/walk_forward.py",
+        "function": "pearson_result",
+        "source_blob": "98c9d7eb5651aabd7074b184a544e2c34b04b8ab",
+        "source_file_sha256": "25e8b722b824f15d9607b28158533e618afaf4cb9c80783df5084f3f5265fd1a",
+        "function_ast_serialization_runtime": "CPython 3.12",
+        "function_ast_sha256": {
+          "PearsonResult": "087d9d5087041d3286cb2a90e6d33d58de69a7d556cac33f62390856702b6204",
+          "pearson_result": "b5f7c457f2c8ef0c9f5da9d1a35075f167da0d6dd32cab6e03f9205c3e5f8ede"
+        },
+        "reviewed_extraction_sha256": "a87f8b23fb526cea8f7e55961c40051c67e0c690acf34a2a096f442dc01b6272",
+        "oracle_semantic_sha256": "67f5677cb06220ea835620f4ef1ea6cf04fcb990a2c990c15b3d2b5dad4d88e9",
+        "reviewed_math_helper_sha256": "14412b88f5dd0ef5d46b0c461ea47679be32eb28f160af74f487fa90b8c95139",
+        "oracle_helper_source": "scripts/evaluate-e7.py at E8-R1 e10699f602fb8757098e0ba675b44e54828f960c",
+        "scope": "HISTORICAL_SOURCE_DEVELOPMENT_ONLY_NOT_CURRENT_RELEASE_OR_EXTERNAL_GENERALIZATION",
+        "production_code_modified": false
+      },
+      "comparison_contract": {
+        "kind": "FINITE_JSON",
+        "absolute_tolerance": 1e-10,
+        "relative_tolerance": 1e-08,
+        "undefined": "EXECUTION_ERROR",
+        "exceptions": "EXECUTION_ERROR"
+      },
+      "guide_digest": "c5ac5b4d86a45eb4498af7123eeb928e3974165aa73f4b8202015f0de95a98ed",
+      "contract": {
+        "schema": "tomolab-numerical-input-contract-v1",
+        "profile": "SOURCE_DOMAIN",
+        "lengths": [
+          4,
+          5,
+          6
+        ],
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "nonconstant_centered_ss_min": "1/1000000"
+      },
+      "pair_budget": 96,
+      "target_calls": 64,
+      "oracle_calls": 64,
+      "first_evaluated_valid_inputs": 32,
+      "confirmed_new_failure_inputs": 13,
+      "known_input_replay_calls": 0,
+      "initial_known_replays": 0,
+      "domain_rejections": 0,
+      "oracle_errors": 0,
+      "target_errors": 0,
+      "replay_mismatches": 0,
+      "mechanisms": {
+        "CONSTANT_CENTERING_ROUNDOFF_MISCLASSIFIES_DEGENERACY": 13
+      },
+      "unreviewed_failure_inputs": 0,
+      "first_new_failure_seconds": 19.128150500007905,
+      "first_new_failure_target_calls": 12,
+      "first_new_failure_oracle_calls": 12,
+      "cost": {
+        "preparation_seconds": 16.906752399998368,
+        "generation_seconds": 0.0,
+        "worker_seconds": 1.1097819999995409,
+        "host_equivalence_check_seconds": 1.107464600005187,
+        "serialization_seconds": 5.469999450724572e-05,
+        "target_seconds": 0.0006118999881437048,
+        "oracle_seconds": 0.004030199954286218,
+        "comparison_seconds": 0.0013266000169096515,
+        "replay_seconds": 0.006477400005678646,
+        "shrink_seconds": 0.009374100001878105,
+        "current_execution_seconds": 2.2429575999994995,
+        "measured_cold_total_seconds": 19.149709999997867,
+        "archive_reuse_incremental_seconds": 2.2429575999994995,
+        "historical_collection_seconds": "UNKNOWN",
+        "complete_historical_collection_to_discovery_seconds": null
+      },
+      "boundary": {
+        "isolation": "LOGICAL_ISOLATION_ONLY",
+        "backend": "subprocess",
+        "generator_sha256": {
+          "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+          "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+          "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+          "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+          "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+        },
+        "container_image_id": null,
+        "protocol": "tomolab-compact-numerical-protocol-v1",
+        "validated_requests": 1,
+        "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+        "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+        "full_archive_transmitted": false,
+        "oracle_modules_transmitted": false
+      },
+      "final_feedback_allowed": false,
+      "allow_release": false,
+      "serialized_request_bytes": 33899,
+      "generation": {
+        "attempts": 286,
+        "cpu_seconds": 0.578125,
+        "domain_rejections": 11,
+        "duplicate_rejections": 19,
+        "existing_input_rejections": 0,
+        "explicit_replays": 0,
+        "mechanism_filter_rejections": 224,
+        "method": "D",
+        "oracle_calls": 0,
+        "schema": "tomolab-numerical-candidates-v1",
+        "stop": "REQUESTED_CANDIDATES",
+        "target_calls": 0,
+        "wall_seconds": 0.9614031999954022
+      },
+      "candidate_count": 32,
+      "candidate_input_digest": "59416636811ab0a17b975fe55891a4cea5aa70ae160c8063c15a4fd67477187c",
+      "confirmed_mechanism_count": 1,
+      "phase_counts": {
+        "fresh_generation": {
+          "source_oracle_pairs": 32,
+          "first_evaluated_valid_inputs": 32
+        },
+        "native_shrink": {
+          "source_oracle_pairs": 4,
+          "first_evaluated_valid_inputs": 0
+        },
+        "new_failure_replay": {
+          "source_oracle_pairs": 26,
+          "first_evaluated_valid_inputs": 0
+        },
+        "shrink_replay": {
+          "source_oracle_pairs": 2,
+          "first_evaluated_valid_inputs": 0
+        }
+      },
+      "distinct_new_mechanisms": 0,
+      "oracle_target_primitive_calls": 128,
+      "guide_unchanged": true,
+      "receipt_sha256": "06290b565ba45a01ae1b6fc8975509b4567eda3f3c8c58711c438214bbf8febb",
+      "shrinking": {
+        "schema": "tomolab-numerical-shrink-v1",
+        "witness_mode": "INITIAL_WITNESS_TRANSFORMS",
+        "initial_witness_digest": "25b71b76fda279e45a03336313da48b27b2d2588e8975c2ddf383593a7880ce0",
+        "initial_witness_reproduced": true,
+        "initial_witness_preserved": true,
+        "transformation_contract": "PREFIX_LENGTH_COMMON_BINARY_SCALE_AND_COMMON_ADJACENT_STEPS_PRESERVE_CONSTANT_AXES",
+        "predicate_calls": 4,
+        "hypothesis_attempts": 6,
+        "domain_rejections": 3,
+        "structure_rejections": 0,
+        "first_failure_seconds": 0.0010279999987687916,
+        "wall_seconds": 0.008948599992436357,
+        "stop": "COMPLETE",
+        "shrinking": "NATIVE_COMPLETED",
+        "reproduced_twice": true
+      }
+    },
+    {
+      "schema": "tomolab-numerical-execution-v1",
+      "method": "B",
+      "seed": 47,
+      "scope": "SOURCE_DEVELOPMENT_NOT_INDEPENDENT_CORROBORATION",
+      "origin_type": "OBSERVED_VALIDATION_RESULT",
+      "status": "COMPLETE",
+      "source_identity": {
+        "repository": "hibou04-ops/omega-lock",
+        "revision": "14ff508b2974298305d74c1c90bb43d3c0c13b82",
+        "path": "src/omega_lock/walk_forward.py",
+        "function": "pearson_result",
+        "source_blob": "98c9d7eb5651aabd7074b184a544e2c34b04b8ab",
+        "source_file_sha256": "25e8b722b824f15d9607b28158533e618afaf4cb9c80783df5084f3f5265fd1a",
+        "function_ast_serialization_runtime": "CPython 3.12",
+        "function_ast_sha256": {
+          "PearsonResult": "087d9d5087041d3286cb2a90e6d33d58de69a7d556cac33f62390856702b6204",
+          "pearson_result": "b5f7c457f2c8ef0c9f5da9d1a35075f167da0d6dd32cab6e03f9205c3e5f8ede"
+        },
+        "reviewed_extraction_sha256": "a87f8b23fb526cea8f7e55961c40051c67e0c690acf34a2a096f442dc01b6272",
+        "oracle_semantic_sha256": "67f5677cb06220ea835620f4ef1ea6cf04fcb990a2c990c15b3d2b5dad4d88e9",
+        "reviewed_math_helper_sha256": "14412b88f5dd0ef5d46b0c461ea47679be32eb28f160af74f487fa90b8c95139",
+        "oracle_helper_source": "scripts/evaluate-e7.py at E8-R1 e10699f602fb8757098e0ba675b44e54828f960c",
+        "scope": "HISTORICAL_SOURCE_DEVELOPMENT_ONLY_NOT_CURRENT_RELEASE_OR_EXTERNAL_GENERALIZATION",
+        "production_code_modified": false
+      },
+      "comparison_contract": {
+        "kind": "FINITE_JSON",
+        "absolute_tolerance": 1e-10,
+        "relative_tolerance": 1e-08,
+        "undefined": "EXECUTION_ERROR",
+        "exceptions": "EXECUTION_ERROR"
+      },
+      "guide_digest": "c5ac5b4d86a45eb4498af7123eeb928e3974165aa73f4b8202015f0de95a98ed",
+      "contract": {
+        "schema": "tomolab-numerical-input-contract-v1",
+        "profile": "SOURCE_DOMAIN",
+        "lengths": [
+          4,
+          5,
+          6
+        ],
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "nonconstant_centered_ss_min": "1/1000000"
+      },
+      "pair_budget": 96,
+      "target_calls": 63,
+      "oracle_calls": 63,
+      "first_evaluated_valid_inputs": 35,
+      "confirmed_new_failure_inputs": 11,
+      "known_input_replay_calls": 0,
+      "initial_known_replays": 0,
+      "domain_rejections": 0,
+      "oracle_errors": 0,
+      "target_errors": 0,
+      "replay_mismatches": 0,
+      "mechanisms": {
+        "CONSTANT_CENTERING_ROUNDOFF_MISCLASSIFIES_DEGENERACY": 11
+      },
+      "unreviewed_failure_inputs": 0,
+      "first_new_failure_seconds": 1.0065172000031453,
+      "first_new_failure_target_calls": 4,
+      "first_new_failure_oracle_calls": 4,
+      "cost": {
+        "preparation_seconds": 0.0,
+        "generation_seconds": 1.0050087999989046,
+        "worker_seconds": 0.0,
+        "host_equivalence_check_seconds": 0.0,
+        "serialization_seconds": 3.88999906135723e-05,
+        "target_seconds": 0.0006271000311244279,
+        "oracle_seconds": 0.0037956999585730955,
+        "comparison_seconds": 0.001345199954812415,
+        "replay_seconds": 0.004837200031033717,
+        "shrink_seconds": 0.010097600010340102,
+        "current_execution_seconds": 1.0301471999991918,
+        "measured_cold_total_seconds": 1.0301471999991918,
+        "archive_reuse_incremental_seconds": 1.0301471999991918,
+        "historical_collection_seconds": "UNKNOWN",
+        "complete_historical_collection_to_discovery_seconds": null
+      },
+      "boundary": {
+        "isolation": "LOGICAL_ISOLATION_ONLY",
+        "backend": "subprocess",
+        "generator_sha256": {
+          "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+          "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+          "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+          "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+          "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+        },
+        "container_image_id": null,
+        "protocol": "tomolab-compact-numerical-protocol-v1",
+        "validated_requests": 1,
+        "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+        "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+        "full_archive_transmitted": false,
+        "oracle_modules_transmitted": false
+      },
+      "final_feedback_allowed": false,
+      "allow_release": false,
+      "serialized_request_bytes": 29127,
+      "generation": {
+        "attempts": 162,
+        "cpu_seconds": 0.546875,
+        "domain_rejections": 0,
+        "duplicate_rejections": 23,
+        "existing_input_rejections": 0,
+        "explicit_replays": 0,
+        "mechanism_filter_rejections": 107,
+        "method": "B",
+        "oracle_calls": 0,
+        "schema": "tomolab-numerical-candidates-v1",
+        "stop": "REQUESTED_CANDIDATES",
+        "target_calls": 0,
+        "wall_seconds": 0.8578623999928823,
+        "generation_boundary": {
+          "isolation": "LOGICAL_ISOLATION_ONLY",
+          "backend": "subprocess",
+          "generator_sha256": {
+            "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+            "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+            "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+            "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+            "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+          },
+          "container_image_id": null,
+          "protocol": "tomolab-compact-numerical-protocol-v1",
+          "validated_requests": 1,
+          "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+          "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+          "full_archive_transmitted": false,
+          "oracle_modules_transmitted": false
+        },
+        "generation_execution": "CLEAN_HOST_SUBPROCESS_BASELINE"
+      },
+      "candidate_count": 32,
+      "candidate_input_digest": "80a76058ba64f4407c4e179a7481f3fd954cbcade9728613172c7843afd38d67",
+      "confirmed_mechanism_count": 1,
+      "phase_counts": {
+        "fresh_generation": {
+          "source_oracle_pairs": 32,
+          "first_evaluated_valid_inputs": 32
+        },
+        "native_shrink": {
+          "source_oracle_pairs": 7,
+          "first_evaluated_valid_inputs": 3
+        },
+        "new_failure_replay": {
+          "source_oracle_pairs": 22,
+          "first_evaluated_valid_inputs": 0
+        },
+        "shrink_replay": {
+          "source_oracle_pairs": 2,
+          "first_evaluated_valid_inputs": 0
+        }
+      },
+      "distinct_new_mechanisms": 0,
+      "oracle_target_primitive_calls": 126,
+      "guide_unchanged": true,
+      "receipt_sha256": "9342def451f8760f539bb824ab89df022f56155cc43d5ffe89fadc058d70f67a",
+      "shrinking": {
+        "schema": "tomolab-numerical-shrink-v1",
+        "witness_mode": "INITIAL_WITNESS_TRANSFORMS",
+        "initial_witness_digest": "25bc7ccf754497dac2db9874c5e269a1dcf78a6d3fd6b8d8a43761d78eb13d91",
+        "initial_witness_reproduced": true,
+        "initial_witness_preserved": true,
+        "transformation_contract": "PREFIX_LENGTH_COMMON_BINARY_SCALE_AND_COMMON_ADJACENT_STEPS_PRESERVE_CONSTANT_AXES",
+        "predicate_calls": 7,
+        "hypothesis_attempts": 6,
+        "domain_rejections": 0,
+        "structure_rejections": 0,
+        "first_failure_seconds": 0.0009024000028148293,
+        "wall_seconds": 0.009751499994308688,
+        "stop": "COMPLETE",
+        "shrinking": "NATIVE_COMPLETED",
+        "reproduced_twice": true
+      }
+    },
+    {
+      "schema": "tomolab-numerical-execution-v1",
+      "method": "C",
+      "seed": 47,
+      "scope": "SOURCE_DEVELOPMENT_NOT_INDEPENDENT_CORROBORATION",
+      "origin_type": "OBSERVED_VALIDATION_RESULT",
+      "status": "COMPLETE",
+      "source_identity": {
+        "repository": "hibou04-ops/omega-lock",
+        "revision": "14ff508b2974298305d74c1c90bb43d3c0c13b82",
+        "path": "src/omega_lock/walk_forward.py",
+        "function": "pearson_result",
+        "source_blob": "98c9d7eb5651aabd7074b184a544e2c34b04b8ab",
+        "source_file_sha256": "25e8b722b824f15d9607b28158533e618afaf4cb9c80783df5084f3f5265fd1a",
+        "function_ast_serialization_runtime": "CPython 3.12",
+        "function_ast_sha256": {
+          "PearsonResult": "087d9d5087041d3286cb2a90e6d33d58de69a7d556cac33f62390856702b6204",
+          "pearson_result": "b5f7c457f2c8ef0c9f5da9d1a35075f167da0d6dd32cab6e03f9205c3e5f8ede"
+        },
+        "reviewed_extraction_sha256": "a87f8b23fb526cea8f7e55961c40051c67e0c690acf34a2a096f442dc01b6272",
+        "oracle_semantic_sha256": "67f5677cb06220ea835620f4ef1ea6cf04fcb990a2c990c15b3d2b5dad4d88e9",
+        "reviewed_math_helper_sha256": "14412b88f5dd0ef5d46b0c461ea47679be32eb28f160af74f487fa90b8c95139",
+        "oracle_helper_source": "scripts/evaluate-e7.py at E8-R1 e10699f602fb8757098e0ba675b44e54828f960c",
+        "scope": "HISTORICAL_SOURCE_DEVELOPMENT_ONLY_NOT_CURRENT_RELEASE_OR_EXTERNAL_GENERALIZATION",
+        "production_code_modified": false
+      },
+      "comparison_contract": {
+        "kind": "FINITE_JSON",
+        "absolute_tolerance": 1e-10,
+        "relative_tolerance": 1e-08,
+        "undefined": "EXECUTION_ERROR",
+        "exceptions": "EXECUTION_ERROR"
+      },
+      "guide_digest": "c5ac5b4d86a45eb4498af7123eeb928e3974165aa73f4b8202015f0de95a98ed",
+      "contract": {
+        "schema": "tomolab-numerical-input-contract-v1",
+        "profile": "SOURCE_DOMAIN",
+        "lengths": [
+          4,
+          5,
+          6
+        ],
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "nonconstant_centered_ss_min": "1/1000000"
+      },
+      "pair_budget": 96,
+      "target_calls": 63,
+      "oracle_calls": 63,
+      "first_evaluated_valid_inputs": 32,
+      "confirmed_new_failure_inputs": 5,
+      "known_input_replay_calls": 15,
+      "initial_known_replays": 15,
+      "domain_rejections": 0,
+      "oracle_errors": 0,
+      "target_errors": 0,
+      "replay_mismatches": 0,
+      "mechanisms": {
+        "CONSTANT_CENTERING_ROUNDOFF_MISCLASSIFIES_DEGENERACY": 5
+      },
+      "unreviewed_failure_inputs": 0,
+      "first_new_failure_seconds": 1.2092693000013242,
+      "first_new_failure_target_calls": 18,
+      "first_new_failure_oracle_calls": 18,
+      "cost": {
+        "preparation_seconds": 0.28278100000170525,
+        "generation_seconds": 0.9229301000013947,
+        "worker_seconds": 0.0,
+        "host_equivalence_check_seconds": 0.0,
+        "serialization_seconds": 4.909999552182853e-05,
+        "target_seconds": 0.0006556999578606337,
+        "oracle_seconds": 0.0031926000374369323,
+        "comparison_seconds": 0.0012758000229950994,
+        "replay_seconds": 0.005049099985626526,
+        "shrink_seconds": 0.010109499999089167,
+        "current_execution_seconds": 0.947884699999122,
+        "measured_cold_total_seconds": 1.2306657000008272,
+        "archive_reuse_incremental_seconds": 0.947884699999122,
+        "historical_collection_seconds": "UNKNOWN",
+        "complete_historical_collection_to_discovery_seconds": null
+      },
+      "boundary": {
+        "isolation": "LOGICAL_ISOLATION_ONLY",
+        "backend": "subprocess",
+        "generator_sha256": {
+          "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+          "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+          "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+          "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+          "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+        },
+        "container_image_id": null,
+        "protocol": "tomolab-compact-numerical-protocol-v1",
+        "validated_requests": 1,
+        "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+        "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+        "full_archive_transmitted": false,
+        "oracle_modules_transmitted": false
+      },
+      "final_feedback_allowed": false,
+      "allow_release": false,
+      "serialized_request_bytes": 29748,
+      "generation": {
+        "attempts": 32,
+        "cpu_seconds": 0.484375,
+        "domain_rejections": 5,
+        "duplicate_rejections": 0,
+        "existing_input_rejections": 0,
+        "explicit_replays": 0,
+        "mechanism_filter_rejections": 0,
+        "method": "C",
+        "oracle_calls": 0,
+        "schema": "tomolab-numerical-candidates-v1",
+        "stop": "REQUESTED_CANDIDATES",
+        "target_calls": 0,
+        "wall_seconds": 0.768019799987087,
+        "generation_boundary": {
+          "isolation": "LOGICAL_ISOLATION_ONLY",
+          "backend": "subprocess",
+          "generator_sha256": {
+            "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+            "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+            "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+            "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+            "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+          },
+          "container_image_id": null,
+          "protocol": "tomolab-compact-numerical-protocol-v1",
+          "validated_requests": 1,
+          "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+          "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+          "full_archive_transmitted": false,
+          "oracle_modules_transmitted": false
+        },
+        "generation_execution": "CLEAN_HOST_SUBPROCESS_BASELINE"
+      },
+      "candidate_count": 32,
+      "candidate_input_digest": "7293d2b88ce9c064f4ea0083a521960bd81db4fb425d319d80d99c6331fdb88e",
+      "confirmed_mechanism_count": 1,
+      "phase_counts": {
+        "fresh_generation": {
+          "source_oracle_pairs": 32,
+          "first_evaluated_valid_inputs": 32
+        },
+        "known_replay": {
+          "source_oracle_pairs": 15,
+          "first_evaluated_valid_inputs": 0
+        },
+        "native_shrink": {
+          "source_oracle_pairs": 4,
+          "first_evaluated_valid_inputs": 0
+        },
+        "new_failure_replay": {
+          "source_oracle_pairs": 10,
+          "first_evaluated_valid_inputs": 0
+        },
+        "shrink_replay": {
+          "source_oracle_pairs": 2,
+          "first_evaluated_valid_inputs": 0
+        }
+      },
+      "distinct_new_mechanisms": 0,
+      "oracle_target_primitive_calls": 126,
+      "guide_unchanged": true,
+      "receipt_sha256": "64e8f83f398996643ee078fc395f93f69fa4f8cc065aa62657a41eb9e63a26d8",
+      "shrinking": {
+        "schema": "tomolab-numerical-shrink-v1",
+        "witness_mode": "INITIAL_WITNESS_TRANSFORMS",
+        "initial_witness_digest": "57488fb79657469c74d02959eda0396dbbf581875ff50b5e4b52df21b52d3e87",
+        "initial_witness_reproduced": true,
+        "initial_witness_preserved": true,
+        "transformation_contract": "PREFIX_LENGTH_COMMON_BINARY_SCALE_AND_COMMON_ADJACENT_STEPS_PRESERVE_CONSTANT_AXES",
+        "predicate_calls": 4,
+        "hypothesis_attempts": 6,
+        "domain_rejections": 3,
+        "structure_rejections": 0,
+        "first_failure_seconds": 0.0010808000079123303,
+        "wall_seconds": 0.009545700013404712,
+        "stop": "COMPLETE",
+        "shrinking": "NATIVE_COMPLETED",
+        "reproduced_twice": true
+      }
+    },
+    {
+      "schema": "tomolab-numerical-execution-v1",
+      "method": "D",
+      "seed": 47,
+      "scope": "SOURCE_DEVELOPMENT_NOT_INDEPENDENT_CORROBORATION",
+      "origin_type": "OBSERVED_VALIDATION_RESULT",
+      "status": "COMPLETE",
+      "source_identity": {
+        "repository": "hibou04-ops/omega-lock",
+        "revision": "14ff508b2974298305d74c1c90bb43d3c0c13b82",
+        "path": "src/omega_lock/walk_forward.py",
+        "function": "pearson_result",
+        "source_blob": "98c9d7eb5651aabd7074b184a544e2c34b04b8ab",
+        "source_file_sha256": "25e8b722b824f15d9607b28158533e618afaf4cb9c80783df5084f3f5265fd1a",
+        "function_ast_serialization_runtime": "CPython 3.12",
+        "function_ast_sha256": {
+          "PearsonResult": "087d9d5087041d3286cb2a90e6d33d58de69a7d556cac33f62390856702b6204",
+          "pearson_result": "b5f7c457f2c8ef0c9f5da9d1a35075f167da0d6dd32cab6e03f9205c3e5f8ede"
+        },
+        "reviewed_extraction_sha256": "a87f8b23fb526cea8f7e55961c40051c67e0c690acf34a2a096f442dc01b6272",
+        "oracle_semantic_sha256": "67f5677cb06220ea835620f4ef1ea6cf04fcb990a2c990c15b3d2b5dad4d88e9",
+        "reviewed_math_helper_sha256": "14412b88f5dd0ef5d46b0c461ea47679be32eb28f160af74f487fa90b8c95139",
+        "oracle_helper_source": "scripts/evaluate-e7.py at E8-R1 e10699f602fb8757098e0ba675b44e54828f960c",
+        "scope": "HISTORICAL_SOURCE_DEVELOPMENT_ONLY_NOT_CURRENT_RELEASE_OR_EXTERNAL_GENERALIZATION",
+        "production_code_modified": false
+      },
+      "comparison_contract": {
+        "kind": "FINITE_JSON",
+        "absolute_tolerance": 1e-10,
+        "relative_tolerance": 1e-08,
+        "undefined": "EXECUTION_ERROR",
+        "exceptions": "EXECUTION_ERROR"
+      },
+      "guide_digest": "c5ac5b4d86a45eb4498af7123eeb928e3974165aa73f4b8202015f0de95a98ed",
+      "contract": {
+        "schema": "tomolab-numerical-input-contract-v1",
+        "profile": "SOURCE_DOMAIN",
+        "lengths": [
+          4,
+          5,
+          6
+        ],
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "nonconstant_centered_ss_min": "1/1000000"
+      },
+      "pair_budget": 96,
+      "target_calls": 68,
+      "oracle_calls": 68,
+      "first_evaluated_valid_inputs": 32,
+      "confirmed_new_failure_inputs": 15,
+      "known_input_replay_calls": 0,
+      "initial_known_replays": 0,
+      "domain_rejections": 0,
+      "oracle_errors": 0,
+      "target_errors": 0,
+      "replay_mismatches": 0,
+      "mechanisms": {
+        "CONSTANT_CENTERING_ROUNDOFF_MISCLASSIFIES_DEGENERACY": 15
+      },
+      "unreviewed_failure_inputs": 0,
+      "first_new_failure_seconds": 19.10664430000179,
+      "first_new_failure_target_calls": 7,
+      "first_new_failure_oracle_calls": 7,
+      "cost": {
+        "preparation_seconds": 16.906752399998368,
+        "generation_seconds": 0.0,
+        "worker_seconds": 1.1007669999962673,
+        "host_equivalence_check_seconds": 1.0955708999972558,
+        "serialization_seconds": 5.459999374579638e-05,
+        "target_seconds": 0.0006357000820571557,
+        "oracle_seconds": 0.004185499987215735,
+        "comparison_seconds": 0.001362699971650727,
+        "replay_seconds": 0.006049099989468232,
+        "shrink_seconds": 0.009493199991993606,
+        "current_execution_seconds": 2.2225404000055278,
+        "measured_cold_total_seconds": 19.129292800003896,
+        "archive_reuse_incremental_seconds": 2.2225404000055278,
+        "historical_collection_seconds": "UNKNOWN",
+        "complete_historical_collection_to_discovery_seconds": null
+      },
+      "boundary": {
+        "isolation": "LOGICAL_ISOLATION_ONLY",
+        "backend": "subprocess",
+        "generator_sha256": {
+          "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+          "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+          "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+          "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+          "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+        },
+        "container_image_id": null,
+        "protocol": "tomolab-compact-numerical-protocol-v1",
+        "validated_requests": 1,
+        "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+        "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+        "full_archive_transmitted": false,
+        "oracle_modules_transmitted": false
+      },
+      "final_feedback_allowed": false,
+      "allow_release": false,
+      "serialized_request_bytes": 33899,
+      "generation": {
+        "attempts": 281,
+        "cpu_seconds": 0.6875,
+        "domain_rejections": 4,
+        "duplicate_rejections": 12,
+        "existing_input_rejections": 0,
+        "explicit_replays": 0,
+        "mechanism_filter_rejections": 233,
+        "method": "D",
+        "oracle_calls": 0,
+        "schema": "tomolab-numerical-candidates-v1",
+        "stop": "REQUESTED_CANDIDATES",
+        "target_calls": 0,
+        "wall_seconds": 0.9501591000007465
+      },
+      "candidate_count": 32,
+      "candidate_input_digest": "612402ef3f8deda1ac18f228942b5ed24b2b4894bae74dd9fee5446dabce9b44",
+      "confirmed_mechanism_count": 1,
+      "phase_counts": {
+        "fresh_generation": {
+          "source_oracle_pairs": 32,
+          "first_evaluated_valid_inputs": 32
+        },
+        "native_shrink": {
+          "source_oracle_pairs": 4,
+          "first_evaluated_valid_inputs": 0
+        },
+        "new_failure_replay": {
+          "source_oracle_pairs": 30,
+          "first_evaluated_valid_inputs": 0
+        },
+        "shrink_replay": {
+          "source_oracle_pairs": 2,
+          "first_evaluated_valid_inputs": 0
+        }
+      },
+      "distinct_new_mechanisms": 0,
+      "oracle_target_primitive_calls": 136,
+      "guide_unchanged": true,
+      "receipt_sha256": "7e3c334cfa9d4702a03ba35cb833107f029e866aa46a9c5f181c7a6ca780fa64",
+      "shrinking": {
+        "schema": "tomolab-numerical-shrink-v1",
+        "witness_mode": "INITIAL_WITNESS_TRANSFORMS",
+        "initial_witness_digest": "cdfb0207cfade7c9266fc3001e0e6d996a05133c09721b27fd99cf9892105d0d",
+        "initial_witness_reproduced": true,
+        "initial_witness_preserved": true,
+        "transformation_contract": "PREFIX_LENGTH_COMMON_BINARY_SCALE_AND_COMMON_ADJACENT_STEPS_PRESERVE_CONSTANT_AXES",
+        "predicate_calls": 4,
+        "hypothesis_attempts": 6,
+        "domain_rejections": 3,
+        "structure_rejections": 0,
+        "first_failure_seconds": 0.0010350999946240336,
+        "wall_seconds": 0.009011400004965253,
+        "stop": "COMPLETE",
+        "shrinking": "NATIVE_COMPLETED",
+        "reproduced_twice": true
+      }
+    },
+    {
+      "schema": "tomolab-numerical-execution-v1",
+      "method": "A",
+      "seed": 47,
+      "scope": "SOURCE_DEVELOPMENT_NOT_INDEPENDENT_CORROBORATION",
+      "origin_type": "OBSERVED_VALIDATION_RESULT",
+      "status": "COMPLETE",
+      "source_identity": {
+        "repository": "hibou04-ops/omega-lock",
+        "revision": "14ff508b2974298305d74c1c90bb43d3c0c13b82",
+        "path": "src/omega_lock/walk_forward.py",
+        "function": "pearson_result",
+        "source_blob": "98c9d7eb5651aabd7074b184a544e2c34b04b8ab",
+        "source_file_sha256": "25e8b722b824f15d9607b28158533e618afaf4cb9c80783df5084f3f5265fd1a",
+        "function_ast_serialization_runtime": "CPython 3.12",
+        "function_ast_sha256": {
+          "PearsonResult": "087d9d5087041d3286cb2a90e6d33d58de69a7d556cac33f62390856702b6204",
+          "pearson_result": "b5f7c457f2c8ef0c9f5da9d1a35075f167da0d6dd32cab6e03f9205c3e5f8ede"
+        },
+        "reviewed_extraction_sha256": "a87f8b23fb526cea8f7e55961c40051c67e0c690acf34a2a096f442dc01b6272",
+        "oracle_semantic_sha256": "67f5677cb06220ea835620f4ef1ea6cf04fcb990a2c990c15b3d2b5dad4d88e9",
+        "reviewed_math_helper_sha256": "14412b88f5dd0ef5d46b0c461ea47679be32eb28f160af74f487fa90b8c95139",
+        "oracle_helper_source": "scripts/evaluate-e7.py at E8-R1 e10699f602fb8757098e0ba675b44e54828f960c",
+        "scope": "HISTORICAL_SOURCE_DEVELOPMENT_ONLY_NOT_CURRENT_RELEASE_OR_EXTERNAL_GENERALIZATION",
+        "production_code_modified": false
+      },
+      "comparison_contract": {
+        "kind": "FINITE_JSON",
+        "absolute_tolerance": 1e-10,
+        "relative_tolerance": 1e-08,
+        "undefined": "EXECUTION_ERROR",
+        "exceptions": "EXECUTION_ERROR"
+      },
+      "guide_digest": "c5ac5b4d86a45eb4498af7123eeb928e3974165aa73f4b8202015f0de95a98ed",
+      "contract": {
+        "schema": "tomolab-numerical-input-contract-v1",
+        "profile": "SOURCE_DOMAIN",
+        "lengths": [
+          4,
+          5,
+          6
+        ],
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "nonconstant_centered_ss_min": "1/1000000"
+      },
+      "pair_budget": 96,
+      "target_calls": 32,
+      "oracle_calls": 32,
+      "first_evaluated_valid_inputs": 32,
+      "confirmed_new_failure_inputs": 0,
+      "known_input_replay_calls": 0,
+      "initial_known_replays": 0,
+      "domain_rejections": 0,
+      "oracle_errors": 0,
+      "target_errors": 0,
+      "replay_mismatches": 0,
+      "mechanisms": {},
+      "unreviewed_failure_inputs": 0,
+      "first_new_failure_seconds": null,
+      "first_new_failure_target_calls": null,
+      "first_new_failure_oracle_calls": null,
+      "cost": {
+        "preparation_seconds": 0.0,
+        "generation_seconds": 0.9292207000107737,
+        "worker_seconds": 0.0,
+        "host_equivalence_check_seconds": 0.0,
+        "serialization_seconds": 3.919999289792031e-05,
+        "target_seconds": 0.0005458999803522602,
+        "oracle_seconds": 0.003940700014936738,
+        "comparison_seconds": 0.0007672999781789258,
+        "replay_seconds": 0.0,
+        "shrink_seconds": 0.0,
+        "current_execution_seconds": 0.9424377999966964,
+        "measured_cold_total_seconds": 0.9424377999966964,
+        "archive_reuse_incremental_seconds": 0.9424377999966964,
+        "historical_collection_seconds": "UNKNOWN",
+        "complete_historical_collection_to_discovery_seconds": null
+      },
+      "boundary": {
+        "isolation": "LOGICAL_ISOLATION_ONLY",
+        "backend": "subprocess",
+        "generator_sha256": {
+          "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+          "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+          "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+          "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+          "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+        },
+        "container_image_id": null,
+        "protocol": "tomolab-compact-numerical-protocol-v1",
+        "validated_requests": 1,
+        "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+        "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+        "full_archive_transmitted": false,
+        "oracle_modules_transmitted": false
+      },
+      "final_feedback_allowed": false,
+      "allow_release": false,
+      "serialized_request_bytes": 29127,
+      "generation": {
+        "attempts": 45,
+        "cpu_seconds": 0.53125,
+        "domain_rejections": 13,
+        "duplicate_rejections": 0,
+        "existing_input_rejections": 0,
+        "explicit_replays": 0,
+        "mechanism_filter_rejections": 0,
+        "method": "A",
+        "oracle_calls": 0,
+        "schema": "tomolab-numerical-candidates-v1",
+        "stop": "REQUESTED_CANDIDATES",
+        "target_calls": 0,
+        "wall_seconds": 0.7757486999907997,
+        "generation_boundary": {
+          "isolation": "LOGICAL_ISOLATION_ONLY",
+          "backend": "subprocess",
+          "generator_sha256": {
+            "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+            "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+            "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+            "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+            "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+          },
+          "container_image_id": null,
+          "protocol": "tomolab-compact-numerical-protocol-v1",
+          "validated_requests": 1,
+          "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+          "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+          "full_archive_transmitted": false,
+          "oracle_modules_transmitted": false
+        },
+        "generation_execution": "CLEAN_HOST_SUBPROCESS_BASELINE"
+      },
+      "candidate_count": 32,
+      "candidate_input_digest": "a13bbb7ff320df9d99e478697aef1d4c1592df3d660fae8fc5fee1695fb8541d",
+      "confirmed_mechanism_count": 0,
+      "phase_counts": {
+        "fresh_generation": {
+          "source_oracle_pairs": 32,
+          "first_evaluated_valid_inputs": 32
+        }
+      },
+      "distinct_new_mechanisms": 0,
+      "oracle_target_primitive_calls": 64,
+      "guide_unchanged": true,
+      "receipt_sha256": "5a61c397630a5f2296a4e12bd5a2ca70d8c1168729f3d432dfea6f12882a3e82",
+      "shrinking": null
+    },
+    {
+      "schema": "tomolab-numerical-execution-v1",
+      "method": "C",
+      "seed": 89,
+      "scope": "SOURCE_DEVELOPMENT_NOT_INDEPENDENT_CORROBORATION",
+      "origin_type": "OBSERVED_VALIDATION_RESULT",
+      "status": "COMPLETE",
+      "source_identity": {
+        "repository": "hibou04-ops/omega-lock",
+        "revision": "14ff508b2974298305d74c1c90bb43d3c0c13b82",
+        "path": "src/omega_lock/walk_forward.py",
+        "function": "pearson_result",
+        "source_blob": "98c9d7eb5651aabd7074b184a544e2c34b04b8ab",
+        "source_file_sha256": "25e8b722b824f15d9607b28158533e618afaf4cb9c80783df5084f3f5265fd1a",
+        "function_ast_serialization_runtime": "CPython 3.12",
+        "function_ast_sha256": {
+          "PearsonResult": "087d9d5087041d3286cb2a90e6d33d58de69a7d556cac33f62390856702b6204",
+          "pearson_result": "b5f7c457f2c8ef0c9f5da9d1a35075f167da0d6dd32cab6e03f9205c3e5f8ede"
+        },
+        "reviewed_extraction_sha256": "a87f8b23fb526cea8f7e55961c40051c67e0c690acf34a2a096f442dc01b6272",
+        "oracle_semantic_sha256": "67f5677cb06220ea835620f4ef1ea6cf04fcb990a2c990c15b3d2b5dad4d88e9",
+        "reviewed_math_helper_sha256": "14412b88f5dd0ef5d46b0c461ea47679be32eb28f160af74f487fa90b8c95139",
+        "oracle_helper_source": "scripts/evaluate-e7.py at E8-R1 e10699f602fb8757098e0ba675b44e54828f960c",
+        "scope": "HISTORICAL_SOURCE_DEVELOPMENT_ONLY_NOT_CURRENT_RELEASE_OR_EXTERNAL_GENERALIZATION",
+        "production_code_modified": false
+      },
+      "comparison_contract": {
+        "kind": "FINITE_JSON",
+        "absolute_tolerance": 1e-10,
+        "relative_tolerance": 1e-08,
+        "undefined": "EXECUTION_ERROR",
+        "exceptions": "EXECUTION_ERROR"
+      },
+      "guide_digest": "c5ac5b4d86a45eb4498af7123eeb928e3974165aa73f4b8202015f0de95a98ed",
+      "contract": {
+        "schema": "tomolab-numerical-input-contract-v1",
+        "profile": "SOURCE_DOMAIN",
+        "lengths": [
+          4,
+          5,
+          6
+        ],
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "nonconstant_centered_ss_min": "1/1000000"
+      },
+      "pair_budget": 96,
+      "target_calls": 76,
+      "oracle_calls": 76,
+      "first_evaluated_valid_inputs": 33,
+      "confirmed_new_failure_inputs": 11,
+      "known_input_replay_calls": 15,
+      "initial_known_replays": 15,
+      "domain_rejections": 0,
+      "oracle_errors": 0,
+      "target_errors": 0,
+      "replay_mismatches": 0,
+      "mechanisms": {
+        "CONSTANT_CENTERING_ROUNDOFF_MISCLASSIFIES_DEGENERACY": 11
+      },
+      "unreviewed_failure_inputs": 0,
+      "first_new_failure_seconds": 1.2082859000074677,
+      "first_new_failure_target_calls": 19,
+      "first_new_failure_oracle_calls": 19,
+      "cost": {
+        "preparation_seconds": 0.28278100000170525,
+        "generation_seconds": 0.9218916999961948,
+        "worker_seconds": 0.0,
+        "host_equivalence_check_seconds": 0.0,
+        "serialization_seconds": 4.810000245925039e-05,
+        "target_seconds": 0.000679899996612221,
+        "oracle_seconds": 0.0036152999673504382,
+        "comparison_seconds": 0.001491100003477186,
+        "replay_seconds": 0.00683460000436753,
+        "shrink_seconds": 0.01066020000143908,
+        "current_execution_seconds": 0.9491394000069704,
+        "measured_cold_total_seconds": 1.2319204000086756,
+        "archive_reuse_incremental_seconds": 0.9491394000069704,
+        "historical_collection_seconds": "UNKNOWN",
+        "complete_historical_collection_to_discovery_seconds": null
+      },
+      "boundary": {
+        "isolation": "LOGICAL_ISOLATION_ONLY",
+        "backend": "subprocess",
+        "generator_sha256": {
+          "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+          "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+          "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+          "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+          "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+        },
+        "container_image_id": null,
+        "protocol": "tomolab-compact-numerical-protocol-v1",
+        "validated_requests": 1,
+        "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+        "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+        "full_archive_transmitted": false,
+        "oracle_modules_transmitted": false
+      },
+      "final_feedback_allowed": false,
+      "allow_release": false,
+      "serialized_request_bytes": 29748,
+      "generation": {
+        "attempts": 32,
+        "cpu_seconds": 0.453125,
+        "domain_rejections": 5,
+        "duplicate_rejections": 0,
+        "existing_input_rejections": 0,
+        "explicit_replays": 0,
+        "mechanism_filter_rejections": 0,
+        "method": "C",
+        "oracle_calls": 0,
+        "schema": "tomolab-numerical-candidates-v1",
+        "stop": "REQUESTED_CANDIDATES",
+        "target_calls": 0,
+        "wall_seconds": 0.7695085000013933,
+        "generation_boundary": {
+          "isolation": "LOGICAL_ISOLATION_ONLY",
+          "backend": "subprocess",
+          "generator_sha256": {
+            "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+            "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+            "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+            "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+            "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+          },
+          "container_image_id": null,
+          "protocol": "tomolab-compact-numerical-protocol-v1",
+          "validated_requests": 1,
+          "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+          "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+          "full_archive_transmitted": false,
+          "oracle_modules_transmitted": false
+        },
+        "generation_execution": "CLEAN_HOST_SUBPROCESS_BASELINE"
+      },
+      "candidate_count": 32,
+      "candidate_input_digest": "d7d10aa1cecd3998370c4d4884cfb4bb1a550eb3a20b441ce0889631dd4adac6",
+      "confirmed_mechanism_count": 1,
+      "phase_counts": {
+        "fresh_generation": {
+          "source_oracle_pairs": 32,
+          "first_evaluated_valid_inputs": 32
+        },
+        "known_replay": {
+          "source_oracle_pairs": 15,
+          "first_evaluated_valid_inputs": 0
+        },
+        "native_shrink": {
+          "source_oracle_pairs": 5,
+          "first_evaluated_valid_inputs": 1
+        },
+        "new_failure_replay": {
+          "source_oracle_pairs": 22,
+          "first_evaluated_valid_inputs": 0
+        },
+        "shrink_replay": {
+          "source_oracle_pairs": 2,
+          "first_evaluated_valid_inputs": 0
+        }
+      },
+      "distinct_new_mechanisms": 0,
+      "oracle_target_primitive_calls": 152,
+      "guide_unchanged": true,
+      "receipt_sha256": "cf09bb860eb60b6514b095b18fbc246add3df99b8e4470fe1150491873cad15b",
+      "shrinking": {
+        "schema": "tomolab-numerical-shrink-v1",
+        "witness_mode": "INITIAL_WITNESS_TRANSFORMS",
+        "initial_witness_digest": "0150a016b1fe701464e47bbc5e8168fc240afd49aeb2219d712cd30b122bccc8",
+        "initial_witness_reproduced": true,
+        "initial_witness_preserved": true,
+        "transformation_contract": "PREFIX_LENGTH_COMMON_BINARY_SCALE_AND_COMMON_ADJACENT_STEPS_PRESERVE_CONSTANT_AXES",
+        "predicate_calls": 5,
+        "hypothesis_attempts": 6,
+        "domain_rejections": 2,
+        "structure_rejections": 0,
+        "first_failure_seconds": 0.001002599994535558,
+        "wall_seconds": 0.010268400001223199,
+        "stop": "COMPLETE",
+        "shrinking": "NATIVE_COMPLETED",
+        "reproduced_twice": true
+      }
+    },
+    {
+      "schema": "tomolab-numerical-execution-v1",
+      "method": "D",
+      "seed": 89,
+      "scope": "SOURCE_DEVELOPMENT_NOT_INDEPENDENT_CORROBORATION",
+      "origin_type": "OBSERVED_VALIDATION_RESULT",
+      "status": "COMPLETE",
+      "source_identity": {
+        "repository": "hibou04-ops/omega-lock",
+        "revision": "14ff508b2974298305d74c1c90bb43d3c0c13b82",
+        "path": "src/omega_lock/walk_forward.py",
+        "function": "pearson_result",
+        "source_blob": "98c9d7eb5651aabd7074b184a544e2c34b04b8ab",
+        "source_file_sha256": "25e8b722b824f15d9607b28158533e618afaf4cb9c80783df5084f3f5265fd1a",
+        "function_ast_serialization_runtime": "CPython 3.12",
+        "function_ast_sha256": {
+          "PearsonResult": "087d9d5087041d3286cb2a90e6d33d58de69a7d556cac33f62390856702b6204",
+          "pearson_result": "b5f7c457f2c8ef0c9f5da9d1a35075f167da0d6dd32cab6e03f9205c3e5f8ede"
+        },
+        "reviewed_extraction_sha256": "a87f8b23fb526cea8f7e55961c40051c67e0c690acf34a2a096f442dc01b6272",
+        "oracle_semantic_sha256": "67f5677cb06220ea835620f4ef1ea6cf04fcb990a2c990c15b3d2b5dad4d88e9",
+        "reviewed_math_helper_sha256": "14412b88f5dd0ef5d46b0c461ea47679be32eb28f160af74f487fa90b8c95139",
+        "oracle_helper_source": "scripts/evaluate-e7.py at E8-R1 e10699f602fb8757098e0ba675b44e54828f960c",
+        "scope": "HISTORICAL_SOURCE_DEVELOPMENT_ONLY_NOT_CURRENT_RELEASE_OR_EXTERNAL_GENERALIZATION",
+        "production_code_modified": false
+      },
+      "comparison_contract": {
+        "kind": "FINITE_JSON",
+        "absolute_tolerance": 1e-10,
+        "relative_tolerance": 1e-08,
+        "undefined": "EXECUTION_ERROR",
+        "exceptions": "EXECUTION_ERROR"
+      },
+      "guide_digest": "c5ac5b4d86a45eb4498af7123eeb928e3974165aa73f4b8202015f0de95a98ed",
+      "contract": {
+        "schema": "tomolab-numerical-input-contract-v1",
+        "profile": "SOURCE_DOMAIN",
+        "lengths": [
+          4,
+          5,
+          6
+        ],
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "nonconstant_centered_ss_min": "1/1000000"
+      },
+      "pair_budget": 96,
+      "target_calls": 71,
+      "oracle_calls": 71,
+      "first_evaluated_valid_inputs": 33,
+      "confirmed_new_failure_inputs": 16,
+      "known_input_replay_calls": 0,
+      "initial_known_replays": 0,
+      "domain_rejections": 0,
+      "oracle_errors": 0,
+      "target_errors": 0,
+      "replay_mismatches": 0,
+      "mechanisms": {
+        "CONSTANT_CENTERING_ROUNDOFF_MISCLASSIFIES_DEGENERACY": 16
+      },
+      "unreviewed_failure_inputs": 0,
+      "first_new_failure_seconds": 19.04518069999176,
+      "first_new_failure_target_calls": 3,
+      "first_new_failure_oracle_calls": 3,
+      "cost": {
+        "preparation_seconds": 16.906752399998368,
+        "generation_seconds": 0.0,
+        "worker_seconds": 1.0661576999991667,
+        "host_equivalence_check_seconds": 1.0709353999991436,
+        "serialization_seconds": 5.4199990699999034e-05,
+        "target_seconds": 0.0006873999809613451,
+        "oracle_seconds": 0.005174900026759133,
+        "comparison_seconds": 0.0015956000424921513,
+        "replay_seconds": 0.008938600003602915,
+        "shrink_seconds": 0.01288699998985976,
+        "current_execution_seconds": 2.1689304999890737,
+        "measured_cold_total_seconds": 19.07568289998744,
+        "archive_reuse_incremental_seconds": 2.1689304999890737,
+        "historical_collection_seconds": "UNKNOWN",
+        "complete_historical_collection_to_discovery_seconds": null
+      },
+      "boundary": {
+        "isolation": "LOGICAL_ISOLATION_ONLY",
+        "backend": "subprocess",
+        "generator_sha256": {
+          "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+          "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+          "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+          "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+          "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+        },
+        "container_image_id": null,
+        "protocol": "tomolab-compact-numerical-protocol-v1",
+        "validated_requests": 1,
+        "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+        "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+        "full_archive_transmitted": false,
+        "oracle_modules_transmitted": false
+      },
+      "final_feedback_allowed": false,
+      "allow_release": false,
+      "serialized_request_bytes": 33899,
+      "generation": {
+        "attempts": 232,
+        "cpu_seconds": 0.640625,
+        "domain_rejections": 9,
+        "duplicate_rejections": 14,
+        "existing_input_rejections": 0,
+        "explicit_replays": 0,
+        "mechanism_filter_rejections": 177,
+        "method": "D",
+        "oracle_calls": 0,
+        "schema": "tomolab-numerical-candidates-v1",
+        "stop": "REQUESTED_CANDIDATES",
+        "target_calls": 0,
+        "wall_seconds": 0.9152111999865156
+      },
+      "candidate_count": 32,
+      "candidate_input_digest": "201414556194708a6e6f2c21e0753163c77db94618ca526b38e5a92306487723",
+      "confirmed_mechanism_count": 1,
+      "phase_counts": {
+        "fresh_generation": {
+          "source_oracle_pairs": 32,
+          "first_evaluated_valid_inputs": 32
+        },
+        "native_shrink": {
+          "source_oracle_pairs": 5,
+          "first_evaluated_valid_inputs": 1
+        },
+        "new_failure_replay": {
+          "source_oracle_pairs": 32,
+          "first_evaluated_valid_inputs": 0
+        },
+        "shrink_replay": {
+          "source_oracle_pairs": 2,
+          "first_evaluated_valid_inputs": 0
+        }
+      },
+      "distinct_new_mechanisms": 0,
+      "oracle_target_primitive_calls": 142,
+      "guide_unchanged": true,
+      "receipt_sha256": "69c0dc22df73418f7b7f1930c04d577c71b18560e625c236c304a1cd5997627c",
+      "shrinking": {
+        "schema": "tomolab-numerical-shrink-v1",
+        "witness_mode": "INITIAL_WITNESS_TRANSFORMS",
+        "initial_witness_digest": "0933248b52347bb016bb49cb7034bee90b9de1308d5f662aded6667186d730e1",
+        "initial_witness_reproduced": true,
+        "initial_witness_preserved": true,
+        "transformation_contract": "PREFIX_LENGTH_COMMON_BINARY_SCALE_AND_COMMON_ADJACENT_STEPS_PRESERVE_CONSTANT_AXES",
+        "predicate_calls": 5,
+        "hypothesis_attempts": 6,
+        "domain_rejections": 2,
+        "structure_rejections": 0,
+        "first_failure_seconds": 0.0011628000065684319,
+        "wall_seconds": 0.012224699996295385,
+        "stop": "COMPLETE",
+        "shrinking": "NATIVE_COMPLETED",
+        "reproduced_twice": true
+      }
+    },
+    {
+      "schema": "tomolab-numerical-execution-v1",
+      "method": "A",
+      "seed": 89,
+      "scope": "SOURCE_DEVELOPMENT_NOT_INDEPENDENT_CORROBORATION",
+      "origin_type": "OBSERVED_VALIDATION_RESULT",
+      "status": "COMPLETE",
+      "source_identity": {
+        "repository": "hibou04-ops/omega-lock",
+        "revision": "14ff508b2974298305d74c1c90bb43d3c0c13b82",
+        "path": "src/omega_lock/walk_forward.py",
+        "function": "pearson_result",
+        "source_blob": "98c9d7eb5651aabd7074b184a544e2c34b04b8ab",
+        "source_file_sha256": "25e8b722b824f15d9607b28158533e618afaf4cb9c80783df5084f3f5265fd1a",
+        "function_ast_serialization_runtime": "CPython 3.12",
+        "function_ast_sha256": {
+          "PearsonResult": "087d9d5087041d3286cb2a90e6d33d58de69a7d556cac33f62390856702b6204",
+          "pearson_result": "b5f7c457f2c8ef0c9f5da9d1a35075f167da0d6dd32cab6e03f9205c3e5f8ede"
+        },
+        "reviewed_extraction_sha256": "a87f8b23fb526cea8f7e55961c40051c67e0c690acf34a2a096f442dc01b6272",
+        "oracle_semantic_sha256": "67f5677cb06220ea835620f4ef1ea6cf04fcb990a2c990c15b3d2b5dad4d88e9",
+        "reviewed_math_helper_sha256": "14412b88f5dd0ef5d46b0c461ea47679be32eb28f160af74f487fa90b8c95139",
+        "oracle_helper_source": "scripts/evaluate-e7.py at E8-R1 e10699f602fb8757098e0ba675b44e54828f960c",
+        "scope": "HISTORICAL_SOURCE_DEVELOPMENT_ONLY_NOT_CURRENT_RELEASE_OR_EXTERNAL_GENERALIZATION",
+        "production_code_modified": false
+      },
+      "comparison_contract": {
+        "kind": "FINITE_JSON",
+        "absolute_tolerance": 1e-10,
+        "relative_tolerance": 1e-08,
+        "undefined": "EXECUTION_ERROR",
+        "exceptions": "EXECUTION_ERROR"
+      },
+      "guide_digest": "c5ac5b4d86a45eb4498af7123eeb928e3974165aa73f4b8202015f0de95a98ed",
+      "contract": {
+        "schema": "tomolab-numerical-input-contract-v1",
+        "profile": "SOURCE_DOMAIN",
+        "lengths": [
+          4,
+          5,
+          6
+        ],
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "nonconstant_centered_ss_min": "1/1000000"
+      },
+      "pair_budget": 96,
+      "target_calls": 32,
+      "oracle_calls": 32,
+      "first_evaluated_valid_inputs": 32,
+      "confirmed_new_failure_inputs": 0,
+      "known_input_replay_calls": 0,
+      "initial_known_replays": 0,
+      "domain_rejections": 0,
+      "oracle_errors": 0,
+      "target_errors": 0,
+      "replay_mismatches": 0,
+      "mechanisms": {},
+      "unreviewed_failure_inputs": 0,
+      "first_new_failure_seconds": null,
+      "first_new_failure_target_calls": null,
+      "first_new_failure_oracle_calls": null,
+      "cost": {
+        "preparation_seconds": 0.0,
+        "generation_seconds": 0.9376314999972237,
+        "worker_seconds": 0.0,
+        "host_equivalence_check_seconds": 0.0,
+        "serialization_seconds": 3.8300000596791506e-05,
+        "target_seconds": 0.00038690005021635443,
+        "oracle_seconds": 0.005079699971247464,
+        "comparison_seconds": 0.0008762000070419163,
+        "replay_seconds": 0.0,
+        "shrink_seconds": 0.0,
+        "current_execution_seconds": 0.9534107999934349,
+        "measured_cold_total_seconds": 0.9534107999934349,
+        "archive_reuse_incremental_seconds": 0.9534107999934349,
+        "historical_collection_seconds": "UNKNOWN",
+        "complete_historical_collection_to_discovery_seconds": null
+      },
+      "boundary": {
+        "isolation": "LOGICAL_ISOLATION_ONLY",
+        "backend": "subprocess",
+        "generator_sha256": {
+          "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+          "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+          "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+          "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+          "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+        },
+        "container_image_id": null,
+        "protocol": "tomolab-compact-numerical-protocol-v1",
+        "validated_requests": 1,
+        "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+        "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+        "full_archive_transmitted": false,
+        "oracle_modules_transmitted": false
+      },
+      "final_feedback_allowed": false,
+      "allow_release": false,
+      "serialized_request_bytes": 29127,
+      "generation": {
+        "attempts": 53,
+        "cpu_seconds": 0.546875,
+        "domain_rejections": 20,
+        "duplicate_rejections": 1,
+        "existing_input_rejections": 0,
+        "explicit_replays": 0,
+        "mechanism_filter_rejections": 0,
+        "method": "A",
+        "oracle_calls": 0,
+        "schema": "tomolab-numerical-candidates-v1",
+        "stop": "REQUESTED_CANDIDATES",
+        "target_calls": 0,
+        "wall_seconds": 0.7860557999956654,
+        "generation_boundary": {
+          "isolation": "LOGICAL_ISOLATION_ONLY",
+          "backend": "subprocess",
+          "generator_sha256": {
+            "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+            "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+            "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+            "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+            "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+          },
+          "container_image_id": null,
+          "protocol": "tomolab-compact-numerical-protocol-v1",
+          "validated_requests": 1,
+          "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+          "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+          "full_archive_transmitted": false,
+          "oracle_modules_transmitted": false
+        },
+        "generation_execution": "CLEAN_HOST_SUBPROCESS_BASELINE"
+      },
+      "candidate_count": 32,
+      "candidate_input_digest": "54e7ae5895db156945bb91f9fa22f865ebd5e4d3f578b0b9611f4d3ce86b6591",
+      "confirmed_mechanism_count": 0,
+      "phase_counts": {
+        "fresh_generation": {
+          "source_oracle_pairs": 32,
+          "first_evaluated_valid_inputs": 32
+        }
+      },
+      "distinct_new_mechanisms": 0,
+      "oracle_target_primitive_calls": 64,
+      "guide_unchanged": true,
+      "receipt_sha256": "59753de65266480c8a99a50eae0ab188ba54f9c1a028d845396e0eccbd0a9185",
+      "shrinking": null
+    },
+    {
+      "schema": "tomolab-numerical-execution-v1",
+      "method": "B",
+      "seed": 89,
+      "scope": "SOURCE_DEVELOPMENT_NOT_INDEPENDENT_CORROBORATION",
+      "origin_type": "OBSERVED_VALIDATION_RESULT",
+      "status": "COMPLETE",
+      "source_identity": {
+        "repository": "hibou04-ops/omega-lock",
+        "revision": "14ff508b2974298305d74c1c90bb43d3c0c13b82",
+        "path": "src/omega_lock/walk_forward.py",
+        "function": "pearson_result",
+        "source_blob": "98c9d7eb5651aabd7074b184a544e2c34b04b8ab",
+        "source_file_sha256": "25e8b722b824f15d9607b28158533e618afaf4cb9c80783df5084f3f5265fd1a",
+        "function_ast_serialization_runtime": "CPython 3.12",
+        "function_ast_sha256": {
+          "PearsonResult": "087d9d5087041d3286cb2a90e6d33d58de69a7d556cac33f62390856702b6204",
+          "pearson_result": "b5f7c457f2c8ef0c9f5da9d1a35075f167da0d6dd32cab6e03f9205c3e5f8ede"
+        },
+        "reviewed_extraction_sha256": "a87f8b23fb526cea8f7e55961c40051c67e0c690acf34a2a096f442dc01b6272",
+        "oracle_semantic_sha256": "67f5677cb06220ea835620f4ef1ea6cf04fcb990a2c990c15b3d2b5dad4d88e9",
+        "reviewed_math_helper_sha256": "14412b88f5dd0ef5d46b0c461ea47679be32eb28f160af74f487fa90b8c95139",
+        "oracle_helper_source": "scripts/evaluate-e7.py at E8-R1 e10699f602fb8757098e0ba675b44e54828f960c",
+        "scope": "HISTORICAL_SOURCE_DEVELOPMENT_ONLY_NOT_CURRENT_RELEASE_OR_EXTERNAL_GENERALIZATION",
+        "production_code_modified": false
+      },
+      "comparison_contract": {
+        "kind": "FINITE_JSON",
+        "absolute_tolerance": 1e-10,
+        "relative_tolerance": 1e-08,
+        "undefined": "EXECUTION_ERROR",
+        "exceptions": "EXECUTION_ERROR"
+      },
+      "guide_digest": "c5ac5b4d86a45eb4498af7123eeb928e3974165aa73f4b8202015f0de95a98ed",
+      "contract": {
+        "schema": "tomolab-numerical-input-contract-v1",
+        "profile": "SOURCE_DOMAIN",
+        "lengths": [
+          4,
+          5,
+          6
+        ],
+        "minimum": -1.0,
+        "maximum": 1.0,
+        "nonconstant_centered_ss_min": "1/1000000"
+      },
+      "pair_budget": 96,
+      "target_calls": 49,
+      "oracle_calls": 49,
+      "first_evaluated_valid_inputs": 35,
+      "confirmed_new_failure_inputs": 4,
+      "known_input_replay_calls": 0,
+      "initial_known_replays": 0,
+      "domain_rejections": 0,
+      "oracle_errors": 0,
+      "target_errors": 0,
+      "replay_mismatches": 0,
+      "mechanisms": {
+        "CONSTANT_CENTERING_ROUNDOFF_MISCLASSIFIES_DEGENERACY": 4
+      },
+      "unreviewed_failure_inputs": 0,
+      "first_new_failure_seconds": 0.9497970999946119,
+      "first_new_failure_target_calls": 22,
+      "first_new_failure_oracle_calls": 22,
+      "cost": {
+        "preparation_seconds": 0.0,
+        "generation_seconds": 0.9435942999989493,
+        "worker_seconds": 0.0,
+        "host_equivalence_check_seconds": 0.0,
+        "serialization_seconds": 3.919999289792031e-05,
+        "target_seconds": 0.00048030007747001946,
+        "oracle_seconds": 0.0024201000342145562,
+        "comparison_seconds": 0.0009797999955480918,
+        "replay_seconds": 0.001264999998966232,
+        "shrink_seconds": 0.010629299998981878,
+        "current_execution_seconds": 0.9643931000027806,
+        "measured_cold_total_seconds": 0.9643931000027806,
+        "archive_reuse_incremental_seconds": 0.9643931000027806,
+        "historical_collection_seconds": "UNKNOWN",
+        "complete_historical_collection_to_discovery_seconds": null
+      },
+      "boundary": {
+        "isolation": "LOGICAL_ISOLATION_ONLY",
+        "backend": "subprocess",
+        "generator_sha256": {
+          "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+          "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+          "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+          "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+          "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+        },
+        "container_image_id": null,
+        "protocol": "tomolab-compact-numerical-protocol-v1",
+        "validated_requests": 1,
+        "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+        "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+        "full_archive_transmitted": false,
+        "oracle_modules_transmitted": false
+      },
+      "final_feedback_allowed": false,
+      "allow_release": false,
+      "serialized_request_bytes": 29127,
+      "generation": {
+        "attempts": 66,
+        "cpu_seconds": 0.484375,
+        "domain_rejections": 0,
+        "duplicate_rejections": 17,
+        "existing_input_rejections": 0,
+        "explicit_replays": 0,
+        "mechanism_filter_rejections": 17,
+        "method": "B",
+        "oracle_calls": 0,
+        "schema": "tomolab-numerical-candidates-v1",
+        "stop": "REQUESTED_CANDIDATES",
+        "target_calls": 0,
+        "wall_seconds": 0.7895324000128312,
+        "generation_boundary": {
+          "isolation": "LOGICAL_ISOLATION_ONLY",
+          "backend": "subprocess",
+          "generator_sha256": {
+            "__init__.py": "7ca3f8d2ba1417951bd00b9c9d30c778d533980eefc74ae343c2eabd107b7ec6",
+            "schema.py": "7ff38fd836f33c97b72b8775b0be0d056303c5c9e9009010a8a50513d05be7c7",
+            "numerical_guidance.py": "acb83aad344d678e9009dde349e4f54b071dc6a540142b9c025179ed60da05ea",
+            "compact_guidance.py": "35a12fc92453656e20d12f934381685f24e0fe059e6cee7697b16428f5e6a393",
+            "numerical_worker.py": "6f7438c8bd822615020f8c56428ed4021378d5f175d2a3c892dbfe143a0de671"
+          },
+          "container_image_id": null,
+          "protocol": "tomolab-compact-numerical-protocol-v1",
+          "validated_requests": 1,
+          "transmitted_data": "APPROVED_COMPACT_GUIDE_OR_PUBLIC_BASELINE_CONTRACT_WITH_C_ONLY_REVIEWED_INPUT_EXEMPLARS",
+          "target_execution": "TRUSTED_EVALUATOR_HOST_NOT_SANDBOXED",
+          "full_archive_transmitted": false,
+          "oracle_modules_transmitted": false
+        },
+        "generation_execution": "CLEAN_HOST_SUBPROCESS_BASELINE"
+      },
+      "candidate_count": 32,
+      "candidate_input_digest": "45e613ceca2fd875da5c6a1fc0774c2354e4c3c5b59976d29641ba45d99a358e",
+      "confirmed_mechanism_count": 1,
+      "phase_counts": {
+        "fresh_generation": {
+          "source_oracle_pairs": 32,
+          "first_evaluated_valid_inputs": 32
+        },
+        "native_shrink": {
+          "source_oracle_pairs": 7,
+          "first_evaluated_valid_inputs": 3
+        },
+        "new_failure_replay": {
+          "source_oracle_pairs": 8,
+          "first_evaluated_valid_inputs": 0
+        },
+        "shrink_replay": {
+          "source_oracle_pairs": 2,
+          "first_evaluated_valid_inputs": 0
+        }
+      },
+      "distinct_new_mechanisms": 0,
+      "oracle_target_primitive_calls": 98,
+      "guide_unchanged": true,
+      "receipt_sha256": "43014694010d3ab290a195d8fbba4b1f30f809039a7e99b5f31a59481933354d",
+      "shrinking": {
+        "schema": "tomolab-numerical-shrink-v1",
+        "witness_mode": "INITIAL_WITNESS_TRANSFORMS",
+        "initial_witness_digest": "ced79ffe13cc93318dfd302c78bde868e470a1503d5cd26ce9d85c7962f588ef",
+        "initial_witness_reproduced": true,
+        "initial_witness_preserved": true,
+        "transformation_contract": "PREFIX_LENGTH_COMMON_BINARY_SCALE_AND_COMMON_ADJACENT_STEPS_PRESERVE_CONSTANT_AXES",
+        "predicate_calls": 7,
+        "hypothesis_attempts": 6,
+        "domain_rejections": 0,
+        "structure_rejections": 0,
+        "first_failure_seconds": 0.000905099994270131,
+        "wall_seconds": 0.010182700003497303,
+        "stop": "COMPLETE",
+        "shrinking": "NATIVE_COMPLETED",
+        "reproduced_twice": true
+      }
+    }
+  ],
+  "private_result_file_sha256": "3f058e9fb4228146367655c312697a3510f0421be553be922f3b0a81335eb04b",
+  "public_receipt_sha256": "af8e0a1a3c00929b723af77786e728cae2dd43a171582a337684091f11474b2d"
+}

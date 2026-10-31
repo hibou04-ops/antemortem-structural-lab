@@ -1,14 +1,15 @@
-"""E7 public-module allowlist on the existing reviewed transport."""
+"""Reviewed knowledge-planner modules on the existing bounded transport."""
 from pathlib import Path
 
 from ..mold.boundary import GeneratorBoundary
-from .knowledge_protocol import PROTOCOL, validate_request
+from .knowledge_protocol import PROTOCOL, validate_request, semantic_observation_mode
 
 GENERATOR_FILES = (
     "__init__.py", "schema.py", "features.py", "predicates.py", "engine.py",
     "hypothesis_adapter.py", "solver.py", "transfer.py", "temporal.py",
     "temporal_engine.py", "temporal_transfer.py", "efficient.py",
     "knowledge.py", "knowledge_engine.py", "knowledge_protocol.py", "knowledge_worker.py",
+    "claim_semantics.py",
 )
 
 
@@ -22,10 +23,12 @@ class KnowledgeBoundary(GeneratorBoundary):
     def __init__(self, backend="subprocess", image="tomolab-e7-generator:local", timeout=60):
         self._temporal_contract = None
         self._target_provenance = None
+        self._semantic_mode = False
         super().__init__(backend=backend, image=image, timeout=timeout)
 
     def validate_message(self, message, spec=None):
-        return validate_request(message, spec, self._temporal_contract, self._target_provenance)
+        return validate_request(message, spec, self._temporal_contract, self._target_provenance,
+                                semantic_mode=getattr(self, "_semantic_mode", False))
 
     def _request(self, action, **fields):
         if action == "observe" and self._frozen:
@@ -38,6 +41,7 @@ class KnowledgeBoundary(GeneratorBoundary):
         if action == "init":
             self._temporal_contract = fields.get("temporal_contract")
             self._target_provenance = fields.get("target_provenance")
+            self._semantic_mode = semantic_observation_mode(fields)
         elif action == "plan":
             self._frozen = True
         return result

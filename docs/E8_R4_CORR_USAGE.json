@@ -1,0 +1,34 @@
+{
+  "schema": "tomolab-e8r4-public-corr-usage-v1",
+  "scope": "CORR_DEVELOPMENT_CONSUMED_NOT_FINAL_ELIGIBLE",
+  "implementations": {
+    "python-statistics-correlation": {
+      "version": "3.12.10",
+      "canonical_function_label": "cpython:statistics:correlation",
+      "identity": {
+        "canonical_function_identity": "db099710f0635ba47f4e3758dae83eb68e70b4403f1aff4d03a87cffe2cac43e",
+        "cross_revision_function_key": "db320adf42f36ebad3bfe50bc0c8d153f0c3bf8125bc3d10454ba814598bed6b",
+        "normalized_ast_clone_sha256": "87c381538dd5f98b042b14b95c1edae42cd22693a33ed2c884c35892e6335eca",
+        "implementation_sha256": "c9c338ebe856c3eac401d1a92cf50431e8b6cbf99ff2976cf8eb47e1fca5d86f"
+      }
+    },
+    "scipy-stats-pearsonr": {
+      "version": "1.18.1",
+      "canonical_function_label": "scipy:scipy.stats._stats_py:pearsonr",
+      "identity": {
+        "canonical_function_identity": "b92fcc2d72e7951e66c1acccc336c9d6df550069800df7cee33d430c81b49da8",
+        "cross_revision_function_key": "1acc8f59da7c041edc408ebf5b1cd6ff277cd23a438d3edeadbbc5f1156fc165",
+        "normalized_ast_clone_sha256": "4b6488050461a165376b78e8669636779b1d992e9fd044fc26854b643eb0a06e",
+        "implementation_sha256": "2f10dc94cbecdc7fe119c35955509b468c9fcf36ed8e98e1f57f1acc35cf6023"
+      }
+    }
+  },
+  "authority_id": "6e5bb660c31e8f989cd7b91305ea8f411a469fafb70f50aa24cca0ac4fd8a8a7",
+  "usage_receipt_sha256": "af4de1c6c3738cb35ba0dab161eaac2a4890a2acdc2a97b5eb6bc9fb7b023df7",
+  "first_observation_stage": "REGISTERED_R4_48_RUN_CORR_AFTER_ALL_PLANS_FROZEN",
+  "fixed_local_authority_only": true,
+  "global_prior_nonuse_proven": false,
+  "final_evaluation_authorized": false,
+  "publication_authorized": false,
+  "receipt_sha256": "c2f0e4130f8e05f23f8b0d441770ddf203a7257a5a97187e075ced5c49601005"
+}

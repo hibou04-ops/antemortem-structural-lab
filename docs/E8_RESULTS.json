@@ -1,0 +1,219 @@
+{
+  "schema": "e8-public-development-results-v1",
+  "date": "2026-10-27",
+  "generation_id": "E8-DEVELOPMENT-1",
+  "candidate_version": "0.8.0a1",
+  "baseline": {
+    "tag": "v0.7.0a1",
+    "commit": "2edfb1230bd8519072845d9b9b0e2d4c42ab3837",
+    "historical_e7_records_rewritten": false
+  },
+  "headline": {
+    "EVIDENCE_PIPELINE": "PARTIAL",
+    "PRODUCER_NEUTRAL_INGESTION": "IMPLEMENTED",
+    "DEFAULT_NATIVE_COLLECTOR": "IMPLEMENTED",
+    "FAIL_CLOSED_READINESS_BEHAVIOR": "PASS_WITHIN_RECORDED_BLOCKED_SCOPE",
+    "INDEPENDENT_CORROBORATION": "NOT_ESTABLISHED",
+    "QUALIFIED_GUIDANCE": 0,
+    "EVALUATION_READINESS": "NOT_EXECUTED_READINESS_BLOCKED",
+    "TRANSFER_VALUE": "NOT_EXECUTED",
+    "END_TO_END_COST": "COMPARISON_NOT_EXECUTED",
+    "RELEASE": "NOT_CREATED"
+  },
+  "source": {
+    "evidence_class": "REUSED_E7_V2_DEVELOPMENT_NOT_NEW_BLIND_DATA",
+    "eligible_observations": 371,
+    "source_prefix_records": 256,
+    "same_source_trusted_observation_rows": 115,
+    "records_omitted": 0,
+    "valid_failure_inputs": 5,
+    "known_mechanisms": 1,
+    "candidate_claims": 288,
+    "contradicted_claims": 288,
+    "coordinate_only_claims": 210,
+    "coordinate_only_is_subset_of_candidate_claims": true,
+    "surviving_structural_hypotheses": 0,
+    "reviewed_independent_observations": 0,
+    "qualified_guidance": 0,
+    "replay_kind": "CACHED_OBSERVATION_REPLAY",
+    "replay_limitation": "Matching separate original observations; not two new E8 replay executions.",
+    "legacy_observation_counter_note": "The existing independent_observations=115 field is an observation-row count. These 115 rows have the SAME Source origin and establish zero independent corroboration.",
+    "selection_policy": "Deterministic original-order prefix256 plus all remaining115 via existing same-origin observation API; no omission, seed replacement, outcome-based reordering or increased source/observation caps.",
+    "original_source_and_ingestion_v1_preserved": true,
+    "retired_v1_invalid_oracle_evidence_used": false,
+    "original_hypothesis_package_version": "UNKNOWN_IN_ORIGINAL_RECEIPT",
+    "new_production_target_calls": 0,
+    "new_production_oracle_calls": 0,
+    "summary_source_class": "ACTUAL_PRIVATE_SOURCE_RECONSTRUCTION_PUBLIC_SAFE_SUMMARY",
+    "summary_sha256": "fa965739507633f228fcbfc0fe269e949aef5766821cfd7c7d96784811d73a79"
+  },
+  "independent_corroboration_and_target_review": {
+    "review_scope": "USER_APPROVED_EXISTING_REPOSITORIES_PINNED_GIT_OBJECT_STATIC_REVIEW",
+    "repositories": 5,
+    "reviewed_commits": 182,
+    "reviewed_function_candidates": 18,
+    "complete_accepted_s_c_t_linkages": 0,
+    "verified_independent_corroboration_implementations": 0,
+    "eligible_targets": 0,
+    "new_production_function_calls": 0,
+    "new_oracle_calls": 0,
+    "working_trees_modified": false,
+    "working_tree_dirty_status": "UNKNOWN_OBJECT_ONLY_REVIEW",
+    "missing_c_contract": "Positive and negative membership predictions verified on the SAME separately reviewed independent implementation and Oracle with real lineage independence from Source.",
+    "missing_t_contract": "Unconsumed canonical identity absent from Source/C plus pre-outcome public-contract mapping and evaluator-validated known-positive/clean-control Oracle receipts.",
+    "rejection_scope": "No complete accepted S-C-T linkage within the fixed review budget; not denial that documented historical defects exist.",
+    "historical_problem_classification": "HISTORICAL_DEFECT_REDISCOVERY",
+    "private_final_inputs_answers_plans_read": false,
+    "new_external_code_collection_or_provider_execution": false
+  },
+  "readiness": {
+    "status": "NOT_EXECUTED_READINESS_BLOCKED",
+    "blockers": [
+      "READINESS_BLOCKED_NO_APPLICABLE_TARGET",
+      "READINESS_BLOCKED_NO_EFFECTIVE_GUIDANCE",
+      "READINESS_BLOCKED_NO_INDEPENDENT_CORROBORATION",
+      "READINESS_BLOCKED_NO_SURVIVING_HYPOTHESIS"
+    ],
+    "diagnosis_scope": "NEGATIVE_METADATA_ONLY_NO_AUTHORIZATION",
+    "knowledge_journal_replayed_in_fast_diagnosis": false,
+    "authority_issued": false,
+    "final_execution_started": false,
+    "target_calls": 0,
+    "oracle_calls": 0,
+    "receipt_sha256": "bec1fb7b2e5c36099d28e8053c1b72b5222deec5746459e52f909bbacd342aec",
+    "additional_missing_new_c_t_oracle_and_control_receipts": true
+  },
+  "final_comparison": {
+    "status": "NOT_EXECUTED_READINESS_BLOCKED",
+    "attempts": 0,
+    "actual_target_calls": 0,
+    "actual_oracle_calls": 0,
+    "methods": {
+      "A_Hypothesis_strategy_plan": "NOT_EXECUTED",
+      "B_E8_Empty_Archive": "NOT_EXECUTED",
+      "C_E8_Qualified_Archive": "NOT_EXECUTED",
+      "D_Source_counterexample_reuse": "NOT_EXECUTED"
+    },
+    "unique_defect_mechanisms_found": null,
+    "first_discovery_wall_seconds": null,
+    "normal_control_false_alerts": null,
+    "c_minus_b_effect": null,
+    "c_minus_d_effect": null,
+    "knowledge_harmed_cases": null,
+    "statistical_or_general_superiority": "NOT_ESTABLISHED"
+  },
+  "recorded_development_cost": {
+    "source_cached_full_reconstruction_wall_seconds": 262.9214470000006,
+    "negative_metadata_readiness_wall_seconds": 2.544219499977771,
+    "new_production_target_oracle_pairs": 0,
+    "initial_historical_collection_cost_assumed_free": false,
+    "controlled_method_cost_comparison": false,
+    "first_adoption_roi": null,
+    "automatic_roi_judgment_implemented": false,
+    "final_runner_timing_scope": {
+      "method_timing_excludes_shared_preflight": true,
+      "shared_host_preflight_separately_metered": true,
+      "runner_result_assembly_separately_metered": true,
+      "excluded_tail_costs": [
+        "serialization",
+        "fsync",
+        "COMPLETE_record"
+      ],
+      "actual_final_comparison_executed": false
+    },
+    "cost_scope": "Separate actual host development phases; not A-D comparison time, a total onboarding cost, or evidence of transfer value."
+  },
+  "implemented_collection_scope": {
+    "default_producer": "NativeHypothesis",
+    "existing_native_find_and_shrink_reused": true,
+    "execution_approval_default": false,
+    "fresh_collector_requires_two_explicit_replay_pairs": true,
+    "primitive_budget_unit": "TARGET_PLUS_ORACLE_CALLS_INCLUDING_REPLAY",
+    "comparison_policy": "EXACT_CANONICAL_JSON",
+    "numeric_tolerance_comparison_supported": false,
+    "contractually_normal_exception_comparison_supported": false,
+    "oracle_errors_domain_rejections_execution_errors_and_unverified_replay_quarantined": true,
+    "producer_names_establish_independence": false,
+    "hashes_prove_truth_or_independence": false,
+    "raw_results_or_target_sources_sent_to_generator": false,
+    "local_execution_flag_is_os_sandbox": false,
+    "public_examples_classification": "AUTHORED_FUNCTIONAL_FIXTURE_NOT_RESEARCH"
+  },
+  "final_software_validation": {
+    "status": "LOCAL_SOFTWARE_VALIDATION_PASS_RESEARCH_READINESS_BLOCKED",
+    "historical_baseline_test_count_reference": 409,
+    "historical_baseline_tests": {
+      "status": "PASS",
+      "count": 409,
+      "wall_seconds": 50.541,
+      "existing_test_files_sha_unchanged": 28,
+      "source_class": "ROOT_REPORTED_ACTUAL_VALIDATION"
+    },
+    "publication_path_tests": {
+      "status": "PASS",
+      "count": 14,
+      "source_class": "ROOT_REPORTED_ACTUAL_VALIDATION"
+    },
+    "independent_comparison_audit_tests": {
+      "status": "PASS",
+      "count": 11,
+      "authored_functional_primitive_calls": 52,
+      "authored_target_calls": 25,
+      "authored_oracle_calls": 27,
+      "research_execution": false,
+      "source_class": "ROOT_REPORTED_ACTUAL_VALIDATION"
+    },
+    "component_test_counts_additive": false,
+    "final_passed_test_count": 506,
+    "completed_full_regression": {
+      "status": "PASS",
+      "baseline_tests": 409,
+      "new_tests": 97,
+      "total_tests": 506,
+      "failures": 0,
+      "skipped": 0,
+      "wall_seconds": 82.569,
+      "local_xml_artifact": "e8-full-regression.xml",
+      "source_class": "ROOT_REPORTED_ACTUAL_VALIDATION"
+    },
+    "post_timing_change_focused_tests": {
+      "status": "PASS",
+      "comparison_tests": 11,
+      "final_host_cli_tests": 18,
+      "total_tests": 29,
+      "source_class": "ROOT_REPORTED_ACTUAL_VALIDATION"
+    },
+    "build": "PASS",
+    "metadata_validation": "PASS",
+    "public_scope": "PASS",
+    "installed_wheel": {
+      "status": "PASS",
+      "checks": 37,
+      "dependency_scope": "fresh dependency-free venv; QA reused approved installed dependencies offline"
+    },
+    "readme_examples": {
+      "status": "PASS",
+      "commands": 60,
+      "excluded": "Docker commands deferred to CI; private HOST templates are not runnable public examples"
+    },
+    "ci": "REFER_TO_REQUIRED_CHECKS_ATTACHED_TO_CURRENT_DRAFT_PR_HEAD",
+    "current_code_freeze_files": 71,
+    "prior_E7_Git_revision_freeze": "PASS_57_FILES_UNCHANGED",
+    "validation_scope": "Local candidate build and functional checks; final documentation rebuild is independently rechecked, remote CI belongs to the exact PR head"
+  },
+  "delivery": {
+    "pull_request": "DRAFT_REQUIRED_BECAUSE_READINESS_BLOCKED",
+    "pull_request_url": null,
+    "merge_performed": false,
+    "tag_created": false,
+    "release_created": false,
+    "pypi_published": false,
+    "google_drive_written": false
+  },
+  "public_scope": {
+    "raw_source_corroboration_target_inputs_or_answers_included": false,
+    "raw_host_execution_logs_included": false,
+    "private_target_candidate_ledger_included": false,
+    "safe_aggregate_counts_only": true
+  }
+}
