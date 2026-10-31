@@ -6,7 +6,9 @@
 
 toolz·more-itertools·boltons의 고정 과거 revision을 최소 어댑터와 독립 계약 Oracle로 연결했다. Source 2개, 평가 결함 6개, 수정본 대조 6개이며, 알려진 Target 재현 입력은 적격성 확인 전용이다. 이는 과거 결함 재발견 실험이며 새로운 upstream 결함 발견이 아니다. 원본 함수의 공개 AST·실제 root coverage를 사용하지만 어댑터 인자 대응은 추론하지 않아 거리값은 UNKNOWN이다. 클래스 Source는 명시적 black-box 범위다.
 
-[실제 CLI·Docker 경계·Source/Target 분리 안내](docs/HISTORICAL_USAGE_KO.md)를 참고한다. 기존 E9의 [고정 결과](docs/ONLINE_REPORT_KO.md)는 변경하지 않는다. E9-R1은 같은 미발행 후보 wheel 기능이며 공개 PyPI **0.7.0a1에는 없다**. 연구 비교·비용·미검출·규칙 사용량은 검토된 CI 실행 영수증으로 별도 보고한다. 기존 PR #8·main·태그·PyPI·Drive는 보존하고 PR #10은 draft, `allow_release=false`로 유지한다.
+[실제 CLI·Docker 경계·Source/Target 분리 안내](docs/HISTORICAL_USAGE_KO.md), [R1 결과·비용·한계](docs/HISTORICAL_REPORT_KO.md), [384회 전체 측정](docs/HISTORICAL_RESULTS.json)을 참고한다. 구현 전이에서 A/B/C/D 모두 각 예산에서 과거 결함5/6개를 탐지했다. D는 C 대비 탐지·최초 확인 호출 이득이 없었다. 실제 EMPTY LOMO는 예산24에서 A/B/C/D=6/6·6/6·4/6·0/6 run, 예산48에서6/6·6/6·6/6·0/6이었다. 규칙을 실제 사용한 D의 음의 전이이며, 결과를 보고 조정·재실행하지 않았다. C도 작은 예산에서 A/B보다 손실이 있어 보편적 우위를 주장하지 않는다.
+
+기존 E9의 [고정 결과](docs/ONLINE_REPORT_KO.md)는 변경하지 않는다. E9-R1은 같은 미발행 후보 wheel 기능이며 공개 PyPI **0.7.0a1에는 없다**. 실제 Docker의 원본·수정본 재현과 설치 CLI 검증을 완료했다. 기존 PR #8·main·태그·PyPI·Drive는 보존하고 PR #10은 draft, `allow_release=false`로 유지한다.
 
 ## E9 작업 후보 — 타깃 내부 온라인 탐색과 Source 정책 전이
 
