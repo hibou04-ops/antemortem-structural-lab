@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 import sysconfig
+import time
 from pathlib import Path
 
 from .engine import MODES, run_experiment
@@ -17,6 +18,14 @@ EXAMPLES = (ROOT / "examples" if (ROOT / "pyproject.toml").is_file() else
             ROOT / "share" / "antemortem-structural-lab" / "examples"
             if (ROOT / "share" / "antemortem-structural-lab" / "examples").is_dir() else
             Path(sysconfig.get_path("data")) / "share" / "antemortem-structural-lab" / "examples")
+
+
+def _package_version() -> str:
+    if (ROOT / "pyproject.toml").is_file():
+        import tomllib
+        return tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
+    from importlib.metadata import version
+    return version("antemortem-structural-lab")
 
 
 def _save(payload: dict, output: str | None) -> None:
@@ -42,7 +51,9 @@ def _add_engine_options(parser: argparse.ArgumentParser) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
+    main_started = time.perf_counter()
     p = argparse.ArgumentParser(prog="tomolab", description="Experimental MRI↔CAST behavioral falsification")
+    p.add_argument("--version", action="version", version=f"%(prog)s {_package_version()}")
     cmd = p.add_subparsers(dest="command", required=True)
     pi = cmd.add_parser("inspect", help="AST inspection only; never execute source")
     pi.add_argument("path", type=Path)
@@ -199,9 +210,70 @@ def main(argv: list[str] | None = None) -> int:
 
     from .knowledge_cli import register as register_knowledge
     register_knowledge(cmd)
+    from .e8_cli import register as register_e8
+    register_e8(cmd)
+    from .e8r1_cli import register as register_e8r1
+    register_e8r1(cmd)
+    from .e8r2_cli import register as register_e8r2
+    register_e8r2(cmd)
+    from .e8r3_cli import register as register_e8r3, COMMANDS as R3_COMMANDS
+    register_e8r3(cmd)
+    from .e8r4_cli import register as register_e8r4, COMMANDS as R4_COMMANDS
+    register_e8r4(cmd)
+    from .online_cli import register as register_online, COMMANDS as ONLINE_COMMANDS
+    register_online(cmd)
+    from .historical_cli import register as register_historical, COMMANDS as HISTORICAL_COMMANDS
+    register_historical(cmd)
     args = p.parse_args(argv)
     try:
-        if args.command.startswith("knowledge-"):
+        if args.command in HISTORICAL_COMMANDS:
+            from .historical_cli import dispatch
+            from .e8r3_cli import save_receipt
+            result = dispatch(args, p)
+            save_receipt(result, args.output, main_started=main_started, preserve_mapping_order=True)
+            return 0 if result.get('status') == 'COMPLETE' else 3
+        elif args.command in ONLINE_COMMANDS:
+            from .online_cli import dispatch
+            from .e8r3_cli import save_receipt
+            result = dispatch(args, p, EXAMPLES)
+            save_receipt(result, args.output, main_started=main_started, preserve_mapping_order=True)
+            return 0 if result.get('status') == 'COMPLETE' else 3
+        elif args.command in R4_COMMANDS:
+            from .e8r4_cli import dispatch
+            from .e8r3_cli import save_receipt
+            result = dispatch(args, p, EXAMPLES)
+            save_receipt(result, args.output, main_started=main_started)
+            return 0 if result.get("status", "COMPLETE") == "COMPLETE" else 3
+        elif args.command in R3_COMMANDS:
+            from .e8r3_cli import dispatch, save_receipt
+            result = dispatch(args, p)
+            save_receipt(result, args.output, main_started=main_started)
+            return 0 if result["status"] == "COMPLETE" else 3
+        elif args.command.startswith("numerical-"):
+            from .e8r2_cli import dispatch
+            try:
+                result = dispatch(args, p, EXAMPLES)
+            except ModuleNotFoundError as exc:
+                p.error(f"R2 수치 실행에는 선택 의존성 [qa]가 필요합니다: {exc}")
+            _save(result, args.output)
+            if result.get("status") in ("ABORTED_EXECUTION_ERROR", "INCONCLUSIVE", "INCONCLUSIVE_REPLAY_MISMATCH") or result.get("run",{}).get("status") in ("ABORTED_EXECUTION_ERROR", "INCONCLUSIVE_REPLAY_MISMATCH"):
+                return 3
+        elif args.command.startswith("semantic-"):
+            from .e8r1_cli import dispatch
+            try:
+                result=dispatch(args,p,EXAMPLES)
+            except ModuleNotFoundError as exc:
+                p.error(f"R1 학습·계획·실행에는 검토된 선택 의존성 [qa]가 필요합니다: {exc}")
+            _save(result,args.output)
+            if args.command in ("semantic-run","semantic-demo") and (result.get("status")=="ABORTED_EXECUTION_ERROR" or result.get("run",{}).get("status")=="ABORTED_EXECUTION_ERROR"):
+                return 3
+        elif args.command.startswith(("evidence-", "readiness-")):
+            from .e8_cli import dispatch
+            result = dispatch(args, p, EXAMPLES)
+            _save(result, args.output)
+            if args.command == "readiness-check":
+                return 0 if result["status"] == "PASS" else 3
+        elif args.command.startswith("knowledge-"):
             from .knowledge_cli import dispatch
             _save(dispatch(args, p, EXAMPLES), args.output)
         elif args.command.startswith("stateful-"):

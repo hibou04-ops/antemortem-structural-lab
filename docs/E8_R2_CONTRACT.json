@@ -1,0 +1,201 @@
+{
+  "schema": "tomolab-e8r2-source-development-contract-v1",
+  "scope": "SOURCE_INPUT_GENERALIZATION_ONLY_NOT_INDEPENDENT_TRANSFER",
+  "status": "PREVALIDATION_DECLARATION_NOT_EXECUTED",
+  "research_pr": 8,
+  "research_head_before_integration": "e10699f602fb8757098e0ba675b44e54828f960c",
+  "main_integrated": "3739e7dee2a7064d1c73f2c29dac30dc7c2eefe1",
+  "preserved_public_distribution": {
+    "name": "antemortem-structural-lab",
+    "version": "0.7.0a1",
+    "source_commit": "2edfb1230bd8519072845d9b9b0e2d4c42ab3837",
+    "workflow_commit": "3739e7dee2a7064d1c73f2c29dac30dc7c2eefe1",
+    "wheel_sha256": "c15fed1666eac1a1e0878413059de212150eb98f77a919967cc8a7bd84cab979",
+    "sdist_sha256": "3643ca44dda5ef3feb44a15fea10618421e11e683358ce47dc2e164ec68504e7",
+    "modification_allowed": false,
+    "upload_count_for_r2": 0
+  },
+  "source_identity": {
+    "repository": "hibou04-ops/omega-lock",
+    "revision": "14ff508b2974298305d74c1c90bb43d3c0c13b82",
+    "path": "src/omega_lock/walk_forward.py",
+    "function": "pearson_result",
+    "source_modification_allowed": false,
+    "execution_scope": "REVIEWED_FUNCTION_AND_REQUIRED_TYPES_ONLY"
+  },
+  "public_input_contract": {
+    "schema": "tomolab-numerical-input-contract-v1",
+    "profile": "SOURCE_DOMAIN",
+    "lengths": [3, 4, 5, 6],
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "nonconstant_centered_ss_min": "1/1000000"
+  },
+  "public_input_contract_notes": {
+    "constant_inputs_permitted": true,
+    "unequal_lengths_permitted": false
+  },
+  "comparison_contract": {
+    "kind": "FINITE_JSON",
+    "absolute_tolerance": 1e-10,
+    "relative_tolerance": 1e-8,
+    "undefined": "EXECUTION_ERROR",
+    "exceptions": "EXECUTION_ERROR",
+    "bool_and_none": "EXACT",
+    "oracle_zero_epsilon_and_tolerance_changes": "FORBIDDEN"
+  },
+  "knowledge_origins": [
+    "HAND_SPECIFIED_PRIOR",
+    "SOURCE_CALIBRATED_GUIDANCE",
+    "OBSERVED_VALIDATION_RESULT"
+  ],
+  "calibration": {
+    "scope": "PREVIOUSLY_OBSERVED_SOURCE_DEVELOPMENT",
+    "old_source_rows": 371,
+    "r1_additional_normal_rows": 42,
+    "total_rows": 413,
+    "known_failure_inputs": 5,
+    "known_mechanisms": 1,
+    "user_diagnostic_origin": "USER_PROVIDED_DEVELOPMENT_CLUE_NOT_ENGINE_DISCOVERY",
+    "selection_rule": "1_PLUS_FLOOR_15_FAILURES_OVER_ALL_WITHIN_FAMILY",
+    "right_constant_residual_weight": 16,
+    "other_family_weights": 1,
+    "raw_input_values_in_recipe": false,
+    "oracle_outputs_in_recipe": false
+  },
+  "methods": {
+    "A": "NATIVE_TYPED_HYPOTHESIS",
+    "B": "DOMAIN_INFORMED_HYPOTHESIS_SAME_PUBLIC_NUMERICAL_PRIOR_WITHOUT_FAILURE_CALIBRATION",
+    "C": "SAME_SOURCE_FAILURE_REPLAY_PLUS_GENERIC_TRANSFORMS",
+    "D": "SOURCE_CALIBRATED_RECIPE_THROUGH_COMPACT_WORKER",
+    "public_prior_shared_by": ["B", "C", "D"],
+    "same_source_failure_material_for": ["C", "D"],
+    "primary_comparators_for_d": ["B", "C"]
+  },
+  "generation_context": {
+    "hypothesis_version": "6.170.11",
+    "python_version": "RECORDED_AND_MATCHED_PER_EXECUTION_ENVIRONMENT",
+    "all_methods_use_fresh_minimal_generation_process": true,
+    "copied_product_module_allowlist": [
+      "tomolab.discovery.__init__",
+      "tomolab.discovery.schema",
+      "tomolab.discovery.numerical_guidance",
+      "tomolab.discovery.compact_guidance",
+      "tomolab.discovery.numerical_worker"
+    ],
+    "reviewed_optional_libraries_and_standard_library_permitted": true,
+    "module_bytes_pinned_in_r2_freeze": true,
+    "evaluator_source_oracle_archive_modules_imported_in_generator": false,
+    "native_float_module_ast_numeric_constants_may_influence_generation": true,
+    "public_constant_import_causal_control_source_calls": 0,
+    "public_constant_import_causal_control_oracle_calls": 0,
+    "hypothesis_internal_patch": false,
+    "same_seed_alone_guarantees_same_candidates": false,
+    "host_reference": "SEPARATE_CLEAN_PROCESS_WITH_SAME_MODULE_BYTES_RUNTIME_CONTRACT_AND_PARAMETERS",
+    "baseline_worker_inputs": {
+      "A": "PUBLIC_CONTRACT_SEED_BUDGET_EXCLUSION_DIGESTS_NO_D_RECIPE",
+      "B": "PUBLIC_NUMERICAL_PRIOR_CONTRACT_SEED_BUDGET_EXCLUSION_DIGESTS_NO_D_RECIPE",
+      "C": "BOUNDED_SAME_SOURCE_FAILURE_INPUTS_NO_ORACLE_OUTPUTS_OR_LABELS",
+      "D": "APPROVED_COMPACT_GUIDE_WITHOUT_RAW_FAILURE_INPUTS"
+    },
+    "process_start_and_transport_cost_charged_for_all_methods": true,
+    "host_reference_equivalence_cost_charged": true
+  },
+  "fresh_validation": {
+    "status": "NOT_EXECUTED",
+    "profile": "SOURCE_DOMAIN",
+    "lengths": [4, 5, 6],
+    "seeds": [13, 47, 89],
+    "value_and_representation_axes": {
+      "ordinary": "FINITE_BINARY64_IN_MINUS_ONE_TO_ONE",
+      "binary_numerator": [-16, 16],
+      "binary_exponent": [-12, -4],
+      "decimal_numerator": [-9, 9],
+      "decimal_denominators": [10, 100, 1000],
+      "optional_one_step_nextafter_directions": [-1.0, 1.0],
+      "normal_pattern_anchors": [0.125, 0.25, 0.5],
+      "generic_replay_power_of_two_exponents": [-4, 0],
+      "generic_replay_order": "CYCLIC_REPEAT_TRUNCATE_ROTATE_REVERSE_SWAP_AXES",
+      "axes_are_unseen_holdout_claim": false
+    },
+    "candidates_per_method_seed": 32,
+    "hypothesis_draws_max_per_method_seed": 512,
+    "source_oracle_pairs_max_per_method_seed": 96,
+    "native_shrink_predicate_calls_max": 16,
+    "replay_and_shrink_share_total_pair_budget": true,
+    "known_input_identity": "ACTUAL_FLOAT_VALUES_NOT_JSON_NUMBER_SPELLING",
+    "known_inputs_excluded_from_new_input_count": "OLD_371_PLUS_R1_42_PLUS_ALL_USER_DIAGNOSTICS_AND_PREVALIDATION_SOURCE_UNIT_CASES",
+    "explicit_examples_counted_as_new_generation": false,
+    "axis_policy": "LENGTHS_AND_FLOAT_REPRESENTATION_TRANSFORM_AXES_DECLARED_BEFORE_RESULTS_NOT_ROW_RANDOM_BLIND_SPLIT",
+    "run_order": "DETERMINISTIC_ROTATION_OF_A_B_C_D_BY_SEED_INDEX",
+    "distinct_input_counting": "METHOD_LOCAL_UNION_ACROSS_SEEDS_SEPARATE_FROM_TRIAL_SUM_AND_SHRINK_INPUTS",
+    "method_inputs_may_overlap": true,
+    "comparison_repeats_after_partial_result": "FORBIDDEN_PRESERVE_START_AND_PARTIAL_RECEIPTS",
+    "code_recipe_budget_criteria_frozen_before_validation": true,
+    "validation_feedback_to_recipe": false,
+    "repeat_optimization_of_consumed_batch": false,
+    "blind_or_independent_claim": false
+  },
+  "compact_execution": {
+    "schema_version": "tomolab-compact-numerical-guide-v1",
+    "semantic_contract_version": "e8-r1-claims-v1",
+    "compiler_version": "e8-r2-compact-compiler-v1",
+    "full_archive_bytes": 72801555,
+    "full_archive_location": "TRUSTED_HOST_ONLY",
+    "artifact_canonical_bytes": 3448,
+    "artifact_max_bytes": 1048576,
+    "request_max_bytes": 8000000,
+    "source_linkage": "FULL_EXISTING_ARCHIVE_REPLAY_PLUS_RECALIBRATED_RECIPE_EQUALITY_PLUS_HOST_APPROVAL",
+    "self_rehashed_artifact_is_authority": false,
+    "host_expected_digest_required": true,
+    "raw_inputs_oracle_outputs_journal_code_in_d_guide": false,
+    "c_baseline_raw_failure_inputs_permitted_as_bounded_request": true,
+    "c_baseline_oracle_outputs_or_labels_permitted": false,
+    "frozen_parameter_replacement_allowed": false,
+    "full_archive_docker_execution_claimed": false,
+    "docker_validation_status": "NOT_EXECUTED"
+  },
+  "measurement": {
+    "separate_counts": [
+      "KNOWN_REPLAY",
+      "FIRST_EVALUATED_VALID_INPUT",
+      "CONFIRMED_NEW_FAILURE_INPUT",
+      "VERIFIED_MECHANISM",
+      "DOMAIN_REJECTION",
+      "ORACLE_ERROR"
+    ],
+    "costs": [
+      "COLLECTION",
+      "CALIBRATION",
+      "COMPILATION",
+      "GENERATION",
+      "SERIALIZATION",
+      "WORKER",
+      "SOURCE",
+      "ORACLE",
+      "SHRINK",
+      "REPLAY"
+    ],
+    "historical_collection_cost": "UNKNOWN",
+    "unknown_historical_cost_treated_as_zero": false,
+    "measured_components_can_overlap": "AUTHORITATIVE_TOTAL_IS_ELAPSED_WALL_NOT_SUM_OF_NESTED_TIMERS",
+    "preparation_allocation": "A_B_NO_FAILURE_ARCHIVE;C_CACHED_REVIEWED_FAILURE_MATERIAL_READ;D_MEASURED_SOURCE_ARCHIVE_VALIDATION_CALIBRATION_COMPILATION",
+    "archive_reuse_incremental_cost_reported_separately": true,
+    "first_new_failure_time_includes_current_preparation": true,
+    "primary_added_value_criterion": "MORE_CONFIRMED_NEW_INPUTS_AND_NO_MORE_MEASURED_TOTAL_COST_THAN_B_AND_C",
+    "criterion_is_statistical_superiority": false,
+    "input_count_equals_mechanism_count": false
+  },
+  "added_value_verdict": "NOT_EXECUTED",
+  "independent_corroboration": "NOT_AVAILABLE",
+  "eligible_unconsumed_target": "NOT_AVAILABLE",
+  "external_generalization": "NOT_ESTABLISHED",
+  "publication": {
+    "pr_draft": true,
+    "allow_release": false,
+    "main_merge": "NOT_EXECUTED",
+    "new_tag": "NOT_CREATED",
+    "github_release": "NOT_CREATED",
+    "pypi_uploads": 0
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "status": "VALIDATED",
+  "receipt_id": "authored-identity-review-v1",
+  "oracle_hash": "cd332cc20374d04a05b502c2670cc333ec4889b439199bd0c34903dffd0f7c2e",
+  "public_spec_hash": "55075b20d63125be13c3a4652f02fe60b06e561132e15f0e69bd540ceefa4994",
+  "receipt_sha256": "524304b0f702ea6a30ddb67291ba4a30db48468ceca832f2b9d2ec9a25834035",
+  "authority": "AUTHORED_FUNCTIONAL_FIXTURE_NOT_RESEARCH",
+  "limitations": "Exact integer identity fixture only; no real-project independent corroboration or transfer evidence.",
+  "comparison_policy": "EXACT_CANONICAL_JSON"
+}

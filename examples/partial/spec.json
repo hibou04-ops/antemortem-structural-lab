@@ -1,0 +1,16 @@
+{
+  "schema": "tomolab-discovery-spec-v1",
+  "task_id": "e8r1-authored-partial-addition",
+  "inputs": [
+    {"name": "x", "role": "left", "type": {"kind": "int", "min": -3, "max": 3}},
+    {"name": "y", "role": "right", "type": {"kind": "int", "min": -3, "max": 3}}
+  ],
+  "contract": {
+    "id": "authored-integer-addition-v1",
+    "operation": "integer-addition",
+    "preconditions": [],
+    "invariants": ["reference"],
+    "state_model": "stateless",
+    "graph_signature": "UNKNOWN"
+  }
+}

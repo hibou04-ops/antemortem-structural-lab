@@ -1,0 +1,12 @@
+{
+  "schema": "tomolab-e8-release-authorization-v1",
+  "generation_id": "E8-DEVELOPMENT-1",
+  "status": "NOT_AUTHORIZED_READINESS_BLOCKED",
+  "source_corroboration_linkage": "NOT_ESTABLISHED",
+  "comparison_status": "NOT_EXECUTED_READINESS_BLOCKED",
+  "qualified_guidance": 0,
+  "readiness_receipt_sha256": null,
+  "comparison_receipt_sha256": null,
+  "product_manifest_sha256": null,
+  "reason": "Restored valid development failures do not supply a surviving structural hypothesis and independently corroborated applicable Target. No final evaluation or release is authorized."
+}

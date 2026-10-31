@@ -166,3 +166,15 @@ def diversity_descriptor(measured):
         bucket = -1 if value < 0 else 0 if value == 0 else 1 if value == 1 else 2 if value <= 4 else 3
         parts.append((name,bucket))
     return digest(parts)[:16]
+
+
+def measurements_with_unknowns(inputs, spec, predicates=()):
+    """Opt-in R1 measurements; the legacy measurement API stays unchanged."""
+    from .claim_semantics import measurements3
+    return measurements3(inputs, spec, predicates)
+
+
+def relation_truth(relation, inputs, spec, *, semantic_policy=None, measured=None):
+    """Opt-in three-valued relation truth, including bounded composition."""
+    from .claim_semantics import relation_prediction
+    return relation_prediction(relation, inputs, spec, semantic_policy, measured=measured)

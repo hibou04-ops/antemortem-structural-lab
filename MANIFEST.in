@@ -18,6 +18,8 @@ include docs/E7_CODE_FREEZE.json
 recursive-include examples/discovery *.json
 recursive-include examples/temporal *.json
 recursive-include examples/knowledge *.json
+recursive-include examples/evidence *.json *.md
+recursive-include examples/partial *.json
 recursive-include containers *.Dockerfile
 recursive-include scripts *.ps1
 recursive-include scripts *.py
@@ -29,4 +31,60 @@ prune research/e4
 prune research/e5
 prune research/e6
 prune research/e7
+prune research/e8
+prune e8-evaluation
+prune e8-evidence
+prune e8-private
+include docs/E8_CODE_FREEZE.json
+include docs/E8_EVALUATION_CONTRACT.json
+include docs/E8_DEVELOPMENT_REPORT.md
+include docs/E8_RESULTS.json
+include docs/E8_RELEASE_AUTHORIZATION.json
+include docs/E8_CONSUMED_IDENTITIES.json
+include docs/E8_R1_SEMANTIC_CONTRACT.json
+include docs/E8_R1_DEVELOPMENT_CONTRACT.json
+include docs/E8_R1_CODE_FREEZE.json
+include docs/E8_R1_REPORT.md
+include docs/E8_R1_RESULTS.json
+prune research/e8-r1
+prune e8-r1-evidence
+prune e8-r1-private
 global-exclude PRIVATE_* *EVIDENCE*.zip
+include docs/E8_R2_CONTRACT.json
+include docs/E8_R2_CODE_FREEZE.json
+include docs/E8_R2_RESULTS.json
+include docs/E8_R2_PACKAGING_CODE_FREEZE.json
+include docs/E8_R2_PY313_QA_CODE_FREEZE.json
+recursive-include examples/numerical *.json *.sha256
+prune research/e8-r2
+prune e8-r2-private
+prune e8-r2-evidence
+prune e8-r2-evaluation
+include docs/E8_R3_CODE_FREEZE.json
+include docs/E8_R3_PUBLIC_PROFILE_CONTRACT.json
+include docs/E8_R3_PUBLIC_PROFILE_RESULTS.json
+include docs/E8_R3_SOURCE_CONTRACT.json
+include docs/E8_R3_RESULTS.json
+prune research/e8-r3
+prune e8-r3-private
+prune e8-r3-evidence
+prune e8-r3-evaluation
+include docs/E8_R4_CODE_FREEZE.json
+include docs/E8_R4_EVALUATION_CONTRACT.json
+include docs/E8_R4_RESULTS.json
+include docs/E8_R4_IMPLEMENTATION_REVIEW.json
+include docs/E8_R4_CORR_USAGE.json
+prune research/e8-r4
+prune e8-r4-private
+prune e8-r4-evidence
+prune e8-r4-evaluation
+recursive-include examples/online *.json
+include docs/ONLINE_PROFILE.json
+include docs/ONLINE_RESULTS.json
+recursive-include benchmarks/historical *.json *.txt *.md
+include docs/HISTORICAL_ARTIFACT_RECIPIENT.pem
+include docs/HISTORICAL_PROFILE.json
+include docs/HISTORICAL_RESULTS.json
+recursive-include examples/product *.py *.json
+include docs/PRODUCT_RELEASE_AUTHORIZATION.json
+include THIRD_PARTY_NOTICES.md

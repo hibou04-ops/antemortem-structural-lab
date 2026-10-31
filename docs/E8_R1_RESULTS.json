@@ -1,0 +1,605 @@
+{
+  "schema": "omega-aile-e8-r1-public-development-results-v1",
+  "date": "2026-10-28",
+  "baseline": {
+    "pr": 8,
+    "head": "6ce54758f00a669c9618d9a8cf7fe491c960950b",
+    "original_E8_results_rewritten": false
+  },
+  "semantic_contract": "e8-r1-claims-v1",
+  "status": {
+    "SEMANTIC_CONTRACT_IMPLEMENTATION": "IMPLEMENTED_573_REGRESSION_TESTS_PASS",
+    "LEGACY_EXACT_BEHAVIOR_PRESERVED": "OLD_506_TESTS_UNCHANGED_AND_PASS_WITHIN_573",
+    "PARTIAL_CLAIM_END_TO_END": "IMPLEMENTED_SOURCE_LEARNING_GUIDANCE_ORACLE_AND_CLI_TESTS_PASS",
+    "REAL_SOURCE_EVIDENCE_REPLAY": "COMPLETE_EXISTING_371_DEVELOPMENT_OBSERVATIONS",
+    "SOURCE_VALIDATION": "COMPLETED_42_NEW_SAME_SOURCE_INPUTS_NO_NEW_FAILURE",
+    "EMPIRICAL_GUIDANCE_UTILITY": "NO_UTILITY_DEMONSTRATED_IN_REGISTERED_SOURCE_COMPARISON",
+    "INDEPENDENT_CORROBORATION": "NOT_ESTABLISHED",
+    "TARGET_READINESS": "NOT_EXECUTED_READINESS_BLOCKED",
+    "EXTERNAL_TRANSFER": "NOT_EXECUTED_READINESS_BLOCKED",
+    "PACKAGE_AND_CLI": "LOCAL_WHEEL_INSTALL_48_CHECKS_AND_README_64_COMMANDS_PASS",
+    "PR_AND_RELEASE_STATUS": "DRAFT_PR_8_CURRENT_HEAD_CI_REQUIRED_NO_MERGE_TAG_RELEASE"
+  },
+  "legacy_288": {
+    "observations": 371,
+    "eligible_failure_inputs": 5,
+    "reviewed_defect_mechanisms": 1,
+    "legacy_expressions": 288,
+    "legacy_exact_contradicted": 288,
+    "legacy_mismatch_direction_distribution": {
+      "FP_ONLY": 54,
+      "FP_AND_FN": 234
+    },
+    "legacy_confusion_cells_summed_over_expressions": {
+      "TP": 488,
+      "FP": 35207,
+      "FN": 952,
+      "TN": 70201,
+      "UNKNOWN": 0
+    },
+    "kind_summaries": {
+      "EXACT_FAILURE_PREDICATE": {
+        "semantic_claims": 288,
+        "contradicted": 288,
+        "source_nonvacuous_survivors": 0,
+        "coordinate_only": 210,
+        "zero_TP": 147,
+        "trivial_on_observed_rows": 0,
+        "structural_source_probe_eligible_before_new_validation": 0
+      },
+      "SUFFICIENT_FAILURE_CONDITION": {
+        "semantic_claims": 288,
+        "contradicted": 288,
+        "source_nonvacuous_survivors": 0,
+        "coordinate_only": 210,
+        "zero_TP": 147,
+        "trivial_on_observed_rows": 0,
+        "structural_source_probe_eligible_before_new_validation": 0
+      },
+      "NECESSARY_FAILURE_CONDITION": {
+        "semantic_claims": 288,
+        "contradicted": 234,
+        "source_nonvacuous_survivors": 54,
+        "coordinate_only": 210,
+        "zero_TP": 147,
+        "trivial_on_observed_rows": 0,
+        "structural_source_probe_eligible_before_new_validation": 19
+      },
+      "EMPIRICAL_SEARCH_GUIDANCE": {
+        "semantic_claims": 288,
+        "contradicted": 0,
+        "source_nonvacuous_survivors": 0,
+        "coordinate_only": 210,
+        "zero_TP": 147,
+        "trivial_on_observed_rows": 0,
+        "structural_source_probe_eligible_before_new_validation": 0
+      }
+    },
+    "unique_truth_columns": 233,
+    "coordinate_only_expressions": 210,
+    "feature_vector_groups": 363,
+    "feature_collision_groups": 0,
+    "label_conflict_groups": 0,
+    "legacy_counterevidence_ID_sets_reproduced_exactly": true
+  },
+  "new_source_training": {
+    "source_observations": 371,
+    "unique_expressions": 416,
+    "retained_original_atomic_expressions": 288,
+    "bounded_composite_expressions": 128,
+    "semantic_claims": 1664,
+    "by_kind": {
+      "EXACT_FAILURE_PREDICATE": {
+        "claims": 416,
+        "source_statuses": {
+          "CONTRADICTED": 416
+        },
+        "coordinate_only": 210,
+        "trivial": 2,
+        "no_positive_support": 171,
+        "cells_summed_over_expressions": {
+          "TP": 871,
+          "FP": 54834,
+          "FN": 1209,
+          "TN": 97422,
+          "UNKNOWN": 0
+        }
+      },
+      "SUFFICIENT_FAILURE_CONDITION": {
+        "claims": 416,
+        "source_statuses": {
+          "CONTRADICTED": 415,
+          "HYPOTHESIS": 1
+        },
+        "coordinate_only": 210,
+        "trivial": 2,
+        "no_positive_support": 171,
+        "cells_summed_over_expressions": {
+          "TP": 871,
+          "FP": 54834,
+          "FN": 1209,
+          "TN": 97422,
+          "UNKNOWN": 0
+        }
+      },
+      "NECESSARY_FAILURE_CONDITION": {
+        "claims": 416,
+        "source_statuses": {
+          "OBSERVED_WITHIN_SOURCE": 86,
+          "CONTRADICTED": 330
+        },
+        "coordinate_only": 210,
+        "trivial": 2,
+        "no_positive_support": 171,
+        "cells_summed_over_expressions": {
+          "TP": 871,
+          "FP": 54834,
+          "FN": 1209,
+          "TN": 97422,
+          "UNKNOWN": 0
+        }
+      },
+      "EMPIRICAL_SEARCH_GUIDANCE": {
+        "claims": 416,
+        "source_statuses": {
+          "EMPIRICAL_CANDIDATE": 245,
+          "HYPOTHESIS": 171
+        },
+        "coordinate_only": 210,
+        "trivial": 2,
+        "no_positive_support": 171,
+        "cells_summed_over_expressions": {
+          "TP": 871,
+          "FP": 54834,
+          "FN": 1209,
+          "TN": 97422,
+          "UNKNOWN": 0
+        }
+      }
+    },
+    "kind_replicas_are_independent_knowledge": false,
+    "independent_statistical_samples_established": false,
+    "new_target_calls": 0,
+    "new_oracle_calls": 0,
+    "extra_input_features": 0,
+    "snapshot_bytes": 63604940,
+    "snapshot_sha256": "25d1b830eab5dea759188598fbaff787498d832926911f36bdefeab62ca89d67",
+    "snapshot_receipt_sha256": "07470aaed73fec67bea43a5e2721b4b93a6067e0b883b0bd305b00770becb7f2",
+    "reconstruction_wall_seconds": 7.8571683000191115,
+    "reconstruction_cpu_seconds": 7.859375,
+    "trial_source_gate_claims": 205,
+    "trial_source_gate_is_adoption_or_transfer": false
+  },
+  "source_archive_profile": {
+    "scope": "ONE_SAME_DATA_BEFORE_AFTER_PROFILE_NOT_CONTROLLED_RESEARCH_BENCHMARK",
+    "profile_overhead_included": true,
+    "before_seconds": {
+      "read_parse_seconds": 0.13553649999084882,
+      "from_snapshot_seconds": 18.61086549999891,
+      "source_guidance_seconds": 3.9176298000093084,
+      "total_profiled_seconds": 22.664094000007026
+    },
+    "after_seconds": {
+      "read_parse_seconds": 0.13645709998672828,
+      "from_snapshot_seconds": 9.51358810000238,
+      "source_guidance_seconds": 0.17199319999781437,
+      "total_profiled_seconds": 9.822091800015187
+    },
+    "source_file_receipt_and_claim_count_unchanged": true,
+    "target_calls": 0,
+    "oracle_calls": 0
+  },
+  "semantics_policy": {
+    "semantic_version": "e8-r1-claims-v1",
+    "max_atomic_relations": 512,
+    "max_compound_relations": 128,
+    "max_relations": 640,
+    "max_depth": 3,
+    "max_terms": 3,
+    "max_claims": 4096,
+    "max_events": 512,
+    "extra_features": []
+  },
+  "limits": {
+    "legacy_snapshot_limit_MiB": 8,
+    "explicit_R1_snapshot_limit_MiB": 128,
+    "actual_63MB_archive_worker_transport_verified": false,
+    "actual_large_archive_planning_scope": "TRUSTED_HOST_LOGICAL_BOUNDARY_ONLY",
+    "R1_partial_semantics_scope": "STATELESS_ONLY_LEGACY_STATEFUL_PATH_PRESERVED",
+    "unknown_values_are_false": false,
+    "necessary_conditions_replace_oracle": false,
+    "empirical_adoption_requires_separate_validation_and_cost_utility_receipt": true,
+    "existing_worker_transport_limit_bytes": 8000000
+  },
+  "source_validation_and_comparison": {
+    "status": "COMPLETED_SAME_SOURCE_DEVELOPMENT_ONLY",
+    "contract_sha256": "6de71c32238daa69162f5b267507e515cc19091a185aa7d2be84006321844722",
+    "source_validation": {
+      "status": "COMPLETED_NEW_SOURCE_DEVELOPMENT_NOT_INDEPENDENT_C",
+      "generated_candidates": 128,
+      "new_eligible_inputs": 42,
+      "failure_inputs": 0,
+      "rejections": {
+        "KNOWN_DEVELOPMENT_DUPLICATE": 1,
+        "DOMAIN_REJECTED": 48,
+        "RESOURCE_NOT_EXECUTED": 37
+      },
+      "target_calls": 126,
+      "oracle_calls": 126,
+      "new_execution_pairs": 126,
+      "wall_seconds": 0.0347065000096336,
+      "host_phase_wall_seconds": 7.945037299999967,
+      "evidence_linkage_wall_seconds": 0.45394730000407435,
+      "archive_update_wall_seconds": 6.85118679999141,
+      "timing_scope": "host_phase includes validation/generation/callback/replay/linkage/archive; component times overlap, do not sum",
+      "by_kind": {
+        "EXACT_FAILURE_PREDICATE": {
+          "CONTRADICTED": 322,
+          "NO_POSITIVE_SUPPORT_IN_SOURCE_BATCH": 94
+        },
+        "SUFFICIENT_FAILURE_CONDITION": {
+          "CONTRADICTED": 322,
+          "NO_POSITIVE_SUPPORT_IN_SOURCE_BATCH": 94
+        },
+        "NECESSARY_FAILURE_CONDITION": {
+          "NO_POSITIVE_SUPPORT_IN_SOURCE_BATCH": 416
+        },
+        "EMPIRICAL_SEARCH_GUIDANCE": {
+          "MEASURED_EMPIRICAL": 416
+        }
+      },
+      "source_status_by_kind": {
+        "EXACT_FAILURE_PREDICATE": {
+          "CONTRADICTED": 416
+        },
+        "SUFFICIENT_FAILURE_CONDITION": {
+          "CONTRADICTED": 415,
+          "HYPOTHESIS": 1
+        },
+        "NECESSARY_FAILURE_CONDITION": {
+          "OBSERVED_WITHIN_SOURCE": 86,
+          "CONTRADICTED": 330
+        },
+        "EMPIRICAL_SEARCH_GUIDANCE": {
+          "EMPIRICAL_CANDIDATE": 245,
+          "HYPOTHESIS": 171
+        }
+      },
+      "batch_receipt_sha256": "6dcbdfe725749c463ef8c7f0464fada9dee3cd063562eec65b377827e728edd3",
+      "archive_receipt_sha256": "4208d3065d23bba2c989b9e5d9df84b6536778106dda24b05af10508c2ed2236",
+      "new_source_archive_bytes": 72789151,
+      "common_evidence_summary": {
+        "generation_id": "E8-R1-DEVELOPMENT-1",
+        "record_count": 413,
+        "decision_counts": {
+          "ACCEPTED": 413,
+          "DUPLICATE": 0,
+          "QUARANTINED": 0
+        },
+        "eligible_records": 413,
+        "valid_failures": 5,
+        "unique_reviewed_defect_mechanisms": 1,
+        "unknown_mechanism_failure_groups": 0,
+        "new_target_calls": 126,
+        "new_oracle_calls": 126,
+        "independence": "NOT_INFERRED_FROM_PRODUCER_OR_RECEIPT_HASH"
+      },
+      "expressions_changed": false,
+      "oracle_comparison_changed": false,
+      "external_transfer": "NOT_EXECUTED_READINESS_BLOCKED"
+    },
+    "comparison": {
+      "schema": "e8-r1-Source-development-comparison-public-v1",
+      "scope": "SAME_KNOWN_SOURCE_ONLY_NOT_EXTERNAL_TRANSFER",
+      "contract_sha256": "6de71c32238daa69162f5b267507e515cc19091a185aa7d2be84006321844722",
+      "seed": 313,
+      "guided_seed": 314,
+      "pair_budget_per_method_including_replay": 64,
+      "source_validation_pairs": 126,
+      "comparison_target_calls": 124,
+      "comparison_oracle_calls": 124,
+      "rows": [
+        {
+          "method": "A",
+          "status": "NOT_REFUTED_WITHIN_BUDGET",
+          "found": false,
+          "target_calls": 40,
+          "oracle_calls": 40,
+          "unique_evaluated_inputs": 40,
+          "duplicate_search_evaluations": 0,
+          "guided_search_calls": 0,
+          "native_search_calls": 40,
+          "known_source_reuse_calls": 1,
+          "novel_guided_candidates": 0,
+          "plan_wall_seconds": 0.0,
+          "pre_execution_wall_seconds": 3.3999967854470015e-06,
+          "wall_seconds": 0.2920606000116095,
+          "cpu_seconds": 0.296875,
+          "first_failure": null,
+          "replay_status": "NOT_NEEDED",
+          "input_guard_calls": 62
+        },
+        {
+          "method": "B",
+          "status": "NOT_REFUTED_WITHIN_BUDGET",
+          "found": false,
+          "target_calls": 40,
+          "oracle_calls": 40,
+          "unique_evaluated_inputs": 40,
+          "duplicate_search_evaluations": 0,
+          "guided_search_calls": 0,
+          "native_search_calls": 40,
+          "known_source_reuse_calls": 1,
+          "novel_guided_candidates": 0,
+          "plan_wall_seconds": 0.00017939999816007912,
+          "pre_execution_wall_seconds": 0.00018169998656958342,
+          "wall_seconds": 0.04993259999901056,
+          "cpu_seconds": 0.046875,
+          "first_failure": null,
+          "replay_status": "NOT_NEEDED",
+          "input_guard_calls": 62
+        },
+        {
+          "method": "C",
+          "status": "NOT_REFUTED_WITHIN_BUDGET",
+          "found": false,
+          "target_calls": 41,
+          "oracle_calls": 41,
+          "unique_evaluated_inputs": 40,
+          "duplicate_search_evaluations": 1,
+          "guided_search_calls": 8,
+          "native_search_calls": 33,
+          "known_source_reuse_calls": 2,
+          "novel_guided_candidates": 8,
+          "plan_wall_seconds": 9.05476549998275,
+          "pre_execution_wall_seconds": 9.05476820000331,
+          "wall_seconds": 9.279994700016687,
+          "cpu_seconds": 9.1875,
+          "first_failure": null,
+          "replay_status": "NOT_NEEDED",
+          "input_guard_calls": 64
+        },
+        {
+          "method": "D",
+          "status": "COUNTEREXAMPLE_FOUND",
+          "found": true,
+          "target_calls": 3,
+          "oracle_calls": 3,
+          "unique_evaluated_inputs": 1,
+          "duplicate_search_evaluations": 0,
+          "guided_search_calls": 0,
+          "native_search_calls": 0,
+          "known_source_reuse_calls": 1,
+          "novel_guided_candidates": 0,
+          "plan_wall_seconds": 0.0,
+          "pre_execution_wall_seconds": 2.3200002033263445e-05,
+          "wall_seconds": 0.0005822999810334295,
+          "cpu_seconds": 0.0,
+          "first_failure": {
+            "wall_seconds": 0.000235699990298599,
+            "target_calls": 1,
+            "oracle_calls": 1,
+            "candidate_source": "SOURCE_COUNTEREXAMPLE_REPLAY",
+            "claim_ids": [],
+            "known_development_input": true
+          },
+          "replay_status": "MATCHED_TWICE",
+          "input_guard_calls": 3
+        }
+      ],
+      "C_vs_B_selection_changed": true,
+      "empirical_utility": "NO_UTILITY_DEMONSTRATED_AFTER_RECORDED_REVIEW",
+      "independent_C": 0,
+      "external_transfer": "NOT_EXECUTED_READINESS_BLOCKED",
+      "initial_adoption_source_training_cost_seconds": 7.8571683000191115,
+      "source_original_collection_cost": "UNKNOWN_NOT_ASSUMED_FREE",
+      "raw_outcomes_in_public_summary": false,
+      "fine_grained_inputs_in_public_summary": false,
+      "host_phase_wall_seconds": 10.070570600015344
+    },
+    "utility": {
+      "status": "SOURCE_DEVELOPMENT_UTILITY_REVIEWED",
+      "empirical_utility_statuses": {
+        "NOT_VALIDATED": 402,
+        "NO_UTILITY_DEMONSTRATED": 14
+      },
+      "executed_guide_claims": 64,
+      "first_discovery_new_guided": false,
+      "source_utility_receipt_sha256": "923d5f4ced8aba0f5f3fffe1656f76fb12ad8be189b61f71d37ad544406752e4",
+      "host_phase_wall_seconds": 9.120652100013103,
+      "independent_corroboration": 0,
+      "external_transfer": "NOT_EXECUTED_READINESS_BLOCKED",
+      "new_target_calls": 0,
+      "new_oracle_calls": 0
+    },
+    "A": "Native Hypothesis development find/shrink path",
+    "B": "same execution structure with empty archive",
+    "C": "bounded partial/empirical trial then native path",
+    "D": "same approved known Source counterexample replay",
+    "actual_target_calls_total": 250,
+    "actual_oracle_calls_total": 266,
+    "actual_execution_pairs_total": 250,
+    "oracle_only_control_calls": 16,
+    "empirical_rules_adopted": 0,
+    "known_Source_rediscovery_is_new_defect": false,
+    "independent_implementation_C": 0,
+    "new_untouched_Targets": 0,
+    "first_discovery_new_guided": false,
+    "execution_order": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "timing_limitation": "FIXED_ORDER_AND_LIBRARY_INITIALIZATION_WARMUP_CONFOUNDED_NOT_RANDOMIZED",
+    "claim_attribution": "ASSOCIATED_METHOD_BATCH_NOT_INDIVIDUAL_RULE_CAUSAL_EFFECT",
+    "method_improvement_conclusion": "NO_ADDITIONAL_VALUE_DEMONSTRATED_IN_THIS_BATCH_NOT_A_GENERAL_NO_EFFECT_THEOREM",
+    "observed_phase_wall_seconds": {
+      "source_training": 7.8571683000191115,
+      "additional_source_validation": 7.945037299999967,
+      "A_D_comparison": 10.070570600015344,
+      "utility_recording": 9.120652100013103
+    },
+    "cost_scope": "Learning is reported separately alongside actual method planning and execution. Within-phase component times overlap; original collection cost is UNKNOWN, not free. This is not a complete general first-adoption ROI.",
+    "source_original_collection_cost": "UNKNOWN_NOT_ASSUMED_FREE"
+  },
+  "public_scope": {
+    "private_inputs_answers_and_raw_logs_included": false,
+    "aggregate_counts_only": true
+  },
+  "publication": {
+    "merge_performed": false,
+    "tag_created": false,
+    "release_created": false,
+    "google_drive_written": false,
+    "pypi_published": false
+  },
+  "empirical_utility_contract": {
+    "requires_first_discovery_new_guided": true,
+    "batch_attribution": "ASSOCIATED_METHOD_BATCH_NOT_INDIVIDUAL_RULE_CAUSAL_EFFECT",
+    "known_replay_or_native_first_discovery_credits_rules": false,
+    "claimed_ids_must_be_executed_guidance_ids": true,
+    "negative_comparison_can_use_empty_claim_ids": true,
+    "empty_claim_ids_grant_authority": false
+  },
+  "validated_source_413": {
+    "observations": 413,
+    "retained_old_failure_inputs": 5,
+    "retained_reviewed_mechanisms": 1,
+    "new_failure_inputs": 0,
+    "new_input_rows_are_independent_C": false,
+    "expressions_changed": false,
+    "by_kind_source_status": {
+      "EXACT_FAILURE_PREDICATE": {
+        "CONTRADICTED": 416
+      },
+      "SUFFICIENT_FAILURE_CONDITION": {
+        "CONTRADICTED": 415,
+        "HYPOTHESIS": 1
+      },
+      "NECESSARY_FAILURE_CONDITION": {
+        "OBSERVED_WITHIN_SOURCE": 86,
+        "CONTRADICTED": 330
+      },
+      "EMPIRICAL_SEARCH_GUIDANCE": {
+        "EMPIRICAL_CANDIDATE": 245,
+        "HYPOTHESIS": 171
+      }
+    },
+    "by_kind_new_batch_validation_status": {
+      "EXACT_FAILURE_PREDICATE": {
+        "CONTRADICTED": 322,
+        "NO_POSITIVE_SUPPORT_IN_SOURCE_BATCH": 94
+      },
+      "SUFFICIENT_FAILURE_CONDITION": {
+        "CONTRADICTED": 322,
+        "NO_POSITIVE_SUPPORT_IN_SOURCE_BATCH": 94
+      },
+      "NECESSARY_FAILURE_CONDITION": {
+        "NO_POSITIVE_SUPPORT_IN_SOURCE_BATCH": 416
+      },
+      "EMPIRICAL_SEARCH_GUIDANCE": {
+        "MEASURED_EMPIRICAL": 416
+      }
+    },
+    "by_kind_cells_summed_over_expressions": {
+      "EXACT_FAILURE_PREDICATE": {
+        "TP": 871,
+        "FP": 61037,
+        "FN": 1209,
+        "TN": 108691,
+        "UNKNOWN": 0
+      },
+      "SUFFICIENT_FAILURE_CONDITION": {
+        "TP": 871,
+        "FP": 61037,
+        "FN": 1209,
+        "TN": 108691,
+        "UNKNOWN": 0
+      },
+      "NECESSARY_FAILURE_CONDITION": {
+        "TP": 871,
+        "FP": 61037,
+        "FN": 1209,
+        "TN": 108691,
+        "UNKNOWN": 0
+      },
+      "EMPIRICAL_SEARCH_GUIDANCE": {
+        "TP": 871,
+        "FP": 61037,
+        "FN": 1209,
+        "TN": 108691,
+        "UNKNOWN": 0
+      }
+    },
+    "cell_unit": "416_EXPRESSIONS_TIMES_413_OBSERVATIONS_NOT_INDEPENDENT_SAMPLE_COUNT",
+    "snapshot_bytes_after_new_batch": 72789151,
+    "snapshot_receipt_sha256": "4208d3065d23bba2c989b9e5d9df84b6536778106dda24b05af10508c2ed2236"
+  },
+  "independent_actual_source_audit": {
+    "status": "PASS_DATA_ONLY_SCOPE",
+    "checks": 59,
+    "contract_sha256": "6de71c32238daa69162f5b267507e515cc19091a185aa7d2be84006321844722",
+    "direct_relation_predictions": 171808,
+    "directional_classifications": 687232,
+    "source_validation_is_independent_C": false,
+    "individual_rule_causal_effect": "NOT_ESTABLISHED",
+    "external_generalization": "NOT_ESTABLISHED",
+    "new_source_calls_by_audit": 0,
+    "new_oracle_calls_by_audit": 0
+  },
+  "software_validation": {
+    "status": "REGRESSION_AND_INSTALLED_PACKAGE_PASS_CURRENT_HEAD_REMOTE_CI_SEPARATE",
+    "tests": 573,
+    "old_tests": 506,
+    "new_tests": 67,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "wall_seconds": 115.931,
+    "new_test_file_counts": [
+      18,
+      19,
+      18,
+      5,
+      7
+    ],
+    "source_class": "ACTUAL_LOCAL_JUNIT_READBACK",
+    "package_and_installed_examples": "PASS_48_INSTALLATION_CHECKS_AND_64_README_COMMANDS",
+    "remote_PR_CI": "CURRENT_PR_8_HEAD_GITHUB_CHECKS_SEPARATE_FROM_LOCAL_TESTS"
+  },
+  "package_validation": {
+    "status": "PASS",
+    "version": "0.8.0a1_UNRELEASED",
+    "build": "WHEEL_AND_SDIST_NO_ISOLATION_APPROVED_BUILD_ENVIRONMENT",
+    "twine": "PASS",
+    "public_scope": "PASS",
+    "wheel_installation_checks": 48,
+    "readme_commands": 64,
+    "readme_by_document": {
+      "README.md": 28,
+      "README.ko.md": 36
+    },
+    "semantic_readme_commands": 4,
+    "offline_dependency_source": "EXISTING_APPROVED_QA_ENVIRONMENT_BASE_FRESH_VENV_NO_NETWORK_DOWNLOADS",
+    "source_checkout_import": false,
+    "private_source_execution": false,
+    "artifact_hash_binding": "FINAL_LOCAL_DELIVERY_RECEIPTS_OUTSIDE_PUBLIC_SOURCE_TO_AVOID_SELF_REFERENTIAL_ARCHIVE_HASH",
+    "remote_CI": "CHECK_LATEST_HEAD_OF_EXISTING_DRAFT_PR_8"
+  },
+  "gate_B_actual_readback": {
+    "status": "NOT_EXECUTED_READINESS_BLOCKED",
+    "linked_development_records": 413,
+    "source_evidence_check": "PASS",
+    "source_trial_candidates_not_qualified_transfer_claims": 205,
+    "blockers": [
+      "NO_INDEPENDENT_CORROBORATION",
+      "NO_APPLICABLE_TARGET",
+      "NO_EFFECTIVE_TRANSFER_GUIDANCE"
+    ],
+    "final_target_calls": 0,
+    "final_oracle_calls": 0,
+    "final_execution_started": false
+  },
+  "measurement_vs_final_source": "See E8_R1_DEVELOPMENT_CONTRACT.json post_measurement_reporting_correction; original private raw results preserved, no Source rerun"
+}
