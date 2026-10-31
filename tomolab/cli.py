@@ -236,9 +236,19 @@ def main(argv: list[str] | None = None) -> int:
     register_online(cmd)
     from .historical_cli import register as register_historical, COMMANDS as HISTORICAL_COMMANDS
     register_historical(cmd)
+    recursive_demo = cmd.add_parser("recursive-demo", help="Authored paired learning and generation restart fixture")
+    recursive_demo.add_argument("--workspace", type=Path, required=True)
+    recursive_demo.add_argument("--allow-local-execution", action="store_true")
     args = p.parse_args(argv)
     try:
-        if args.command in HISTORICAL_COMMANDS:
+        if args.command == "recursive-demo":
+            if not args.allow_local_execution:
+                p.error("--allow-local-execution is required for the authored fixture")
+            from .recursive_demo import run_demo
+            result = run_demo(args.workspace)
+            print(json.dumps(result, ensure_ascii=True, indent=2))
+            return 0 if result["status"] == "COMPLETE" else 3
+        elif args.command in HISTORICAL_COMMANDS:
             from .historical_cli import dispatch
             from .e8r3_cli import save_receipt
             result = dispatch(args, p)
