@@ -23,9 +23,12 @@ def main():
     for folder in folders:
         item=dict(environment=folder.name,original_report_sha256=digest(folder/'audit.json'))
         old=read(folder/'audit.json');failed=[x['name'] for x in old['checks'] if x['status']!='PASS']
-        assert failed==['independent-package-inspection'],failed
-        item.update(python=old['python'],os=old['os'],original_checks=len(old['checks']),execution_checks_passed=len(old['checks'])-1,
-            original_only_failure='AUDITOR_PRIVATE_DIRECTORY_MATCHER_FALSE_POSITIVE',original_package_report_sha256=digest(folder/'package.json'))
+        assert 'independent-package-inspection' in failed,failed
+        actual_failures=[row for row in old['checks'] if row['status']!='PASS' and row['name']!='independent-package-inspection']
+        item.update(python=old['python'],os=old['os'],original_checks=len(old['checks']),
+            original_failed_checks=failed,execution_checks_passed=sum(row['status']=='PASS' for row in old['checks']),
+            execution_failures_preserved=actual_failures,
+            corrected_auditor_false_positive='independent-package-inspection',original_package_report_sha256=digest(folder/'package.json'))
         for service in ('pypi','github'):
             for name,sha in EXPECTED.items():assert digest(folder/service/name)==sha
         output=a.output/(folder.name+'-package.json')
