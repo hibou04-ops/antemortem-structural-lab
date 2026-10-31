@@ -78,3 +78,6 @@ prune research/e8-r4
 prune e8-r4-private
 prune e8-r4-evidence
 prune e8-r4-evaluation
+recursive-include examples/online *.json
+include docs/ONLINE_PROFILE.json
+include docs/ONLINE_RESULTS.json

@@ -178,6 +178,45 @@ class UsageLedger:
                 raise PermissionError("CORR identity was already consumed in this fixed usage authority")
             return self._append("START",claim_id,payload,state["receipt_sha256"])
 
+    def claim_experimental(self, targets, profile, *, expected_profile, output=None):
+        """Reserve algorithm-frozen, target-local online development.
+
+        The external host supplies the expected registration. This extension
+        does not reinterpret an E8 permit or a final-readiness receipt. Its
+        tokens use the same append-only authority as CORR and final claims.
+        """
+        required = {"schema", "scope", "authority_id", "algorithm_digest",
+                    "initial_knowledge_digest", "configuration_digest",
+                    "target_local_feedback", "cross_target_feedback",
+                    "final_evaluation_authorized", "publication_authorized"}
+        if (not isinstance(profile, dict) or set(profile) != required
+                or profile != expected_profile
+                or profile["schema"] != "tomolab-online-execution-profile-v1"
+                or profile["scope"] != "EXPERIMENTAL_PROBE"
+                or profile["authority_id"] != self.authority_id
+                or profile["target_local_feedback"] is not True
+                or any(profile[name] is not False for name in
+                       ("cross_target_feedback", "final_evaluation_authorized", "publication_authorized"))):
+            raise PermissionError("externally registered target-local experimental profile required")
+        for name in ("algorithm_digest", "initial_knowledge_digest", "configuration_digest"):
+            if not isinstance(profile[name], str) or not re.fullmatch(r"[a-f0-9]{64}", profile[name]):
+                raise ValueError("frozen algorithm, knowledge and configuration identities required")
+        entries = [{"identity":deepcopy(t.get("identity", t)),
+                    "evaluation_role":t.get("evaluation_role", "EXPERIMENTAL_PROBE"),
+                    "control_group":t.get("control_group")} for t in targets]
+        if not entries:
+            raise ValueError("empty experimental reservation")
+        tokens = batch_identity_tokens(entries)
+        payload = dict(profile=deepcopy(profile), target_identities=[t["identity"] for t in entries],
+                       targets=entries, output=str(Path(output).resolve()) if output is not None else None,
+                       final_evaluation_authorized=False, publication_authorized=False)
+        claim_id = digest(payload)
+        with self._exclusive():
+            state = self.inspect()
+            if tokens & set(state["consumed_tokens"]):
+                raise PermissionError("experimental identity already consumed in this fixed authority")
+            return self._append("START", claim_id, payload, state["receipt_sha256"])
+
     def complete(self, claim_id, summary):
         with self._exclusive():
             state = self.inspect()

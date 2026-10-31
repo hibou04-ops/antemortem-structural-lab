@@ -1,5 +1,14 @@
 # Antemortem Structural Lab
 
+## E9 작업 후보 — 타깃 내부 온라인 탐색과 Source 정책 전이
+
+타깃 내부에서는 실행 반응에 적응하고, 타깃 사이에서는 Source에서 학습한 변형 정책을 제한적으로 재사용한다. 두 효과는 별도로 평가한다.
+
+E9는 E8-R4를 부모로 하는 별도 후속 draft 브랜치의 **미발행 0.8.0a1** 기능이다. 공개 PyPI **0.7.0a1에는 없다**. 같은 온라인 엔진의 C에 학습 provider만 더한 D를 비교하며, D는 실험 옵션이다. [지원 범위·실제 설치/CLI·계약·상태 초기화·비용](docs/ONLINE_USAGE_KO.md)과 [고정 결과·한계](docs/ONLINE_REPORT_KO.md)를 확인한다. 기존 PR #8·main·태그·PyPI와 E8의 발행 차단은 보존한다.
+
+
+이번 작성 기능 비교에서는 C/D 모두 30/30 run을 탐지했고 D의 추가 결함은 0이었다. 실제 프로젝트 독립성은 미확보이며 D는 실험 옵션으로 유지한다.
+
 ## E8-R4 작업 후보 — 동결 가이드의 별도 구현 CORR 검사
 
 **Source에서 작동한 가이드를 다른 구현에 적용하는 검사와, 그 가이드가 다른 구현에서도 유용하다는 결론은 다릅니다.** 미발행 R4는 Python `statistics.correlation`과 SciPy `pearsonr`를 실제 호출하고, 구현별 예외·경고·NaN을 기존 정확 Oracle와 구분해 비교합니다. R3 가이드·가중치·domain·worker·Source·Oracle는 보존합니다. [고정 버전·공통 계약·실제 CLI·비용 경계](docs/E8_R4_USAGE_KO.md)를 참고하세요. CORR는 METHOD_C나 미소비 FINAL_TARGET이 아니며 발행 권한을 부여하지 않습니다. 공개 PyPI `0.7.0a1`에는 이 기능이 없습니다.

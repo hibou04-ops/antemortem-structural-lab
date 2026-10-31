@@ -2,3 +2,5 @@
 # Preserve the exact E5 once-only evaluation source bytes in all checkouts.
 tomolab/discovery/analysis.py -text whitespace=cr-at-eol
 tomolab/discovery/transfer.py -text whitespace=cr-at-eol
+# Preserve the evaluated E9 learner bytes, including its existing final blank line.
+tomolab/discovery/online_learning.py whitespace=-blank-at-eof

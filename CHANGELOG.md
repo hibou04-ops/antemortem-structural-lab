@@ -1,5 +1,12 @@
 # Changelog
 
+## E9 미발행 연구 후보 — 온라인 탐색과 제한된 Source 전이
+
+- 공통 온라인 MRI–CAST와 native Hypothesis 생성·축소를 CLI에 연결하고 C/D의 차이를 Source 학습 provider로 제한합니다.
+- 정상/실패 차분의 기존 typed 편집 선택·합성·적용조건을 empirical Mold에 기록합니다. 다중 축의 작성 기능 비교와 실제 프로젝트 독립성의 한계는 [보고](docs/ONLINE_REPORT_KO.md)에 분리합니다.
+- 기존 E8/R1/R2/R3/R4 증거·readiness·PyPI0.7.0a1을 보존합니다. 이번에는 새 Release·태그·업로드·main 병합이 없습니다.
+
+
 ## E8-R4 — 미발행 독립 구현 CORR 개발 검사
 
 - 실제 `statistics.correlation`·SciPy `pearsonr` 호출 후 반환값·문서화된 예외·경고·NaN을 정규화하고 기존 정확 수학 Oracle와 비교하는 고정 어댑터를 추가했습니다.

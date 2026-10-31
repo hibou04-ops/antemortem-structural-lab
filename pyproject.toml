@@ -39,6 +39,8 @@ include = ["tomolab", "tomolab.*"]
 "share/antemortem-structural-lab/examples/partial" = ["examples/partial/*.py", "examples/partial/*.json"]
 "share/antemortem-structural-lab/examples/numerical" = ["examples/numerical/*.json", "examples/numerical/*.sha256"]
 
+"share/antemortem-structural-lab/examples/online" = ["examples/online/*.py", "examples/online/*.json"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"

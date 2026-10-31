@@ -80,14 +80,15 @@ def dispatch(args, parser):
         output_contract="SEPARATE_IO_RECEIPT_BINDS_WRITTEN_BYTES", result_digest=digest(result))
 
 
-def save_receipt(result, output, *, main_started):
+def save_receipt(result, output, *, main_started, preserve_mapping_order=False):
     """No circular self-timing: the companion binds the completed primary write."""
     from .discovery.numerical_prepared import _write_new
     import hashlib
     output = Path(output)
     output.parent.mkdir(parents=True, exist_ok=True)
     serialization_started = time.perf_counter()
-    payload = (json.dumps(result, ensure_ascii=False, allow_nan=False, sort_keys=True)+"\n").encode("utf-8")
+    payload = (json.dumps(result, ensure_ascii=False, allow_nan=False,
+                          sort_keys=not preserve_mapping_order)+"\n").encode("utf-8")
     serialized = time.perf_counter()-serialization_started
     write_started = time.perf_counter()
     with output.open("xb") as stream:
