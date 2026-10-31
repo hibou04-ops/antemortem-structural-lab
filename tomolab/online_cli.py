@@ -70,7 +70,7 @@ def callable_identity(fn):
                 normalized_ast_clone_sha256=normalized, implementation_sha256=digest(original))
 
 
-def _execute(target, oracle, contract, args, *, mold, replays, configuration):
+def _execute(target, oracle, contract, args, *, mold, replays, configuration, target_identity=None, inspection_target=None):
     from .discovery.evaluation_usage import UsageLedger
     from .discovery.online_engine import run_online
     from .discovery.schema import digest
@@ -85,11 +85,12 @@ def _execute(target, oracle, contract, args, *, mold, replays, configuration):
                    initial_knowledge_digest=digest(mold), configuration_digest=digest(configuration),
                    target_local_feedback=True, cross_target_feedback=False,
                    final_evaluation_authorized=False, publication_authorized=False)
-    start = ledger.claim_experimental([callable_identity(target)], profile,
+    start = ledger.claim_experimental([target_identity or callable_identity(target)], profile,
                                       expected_profile=deepcopy(profile), output=args.output)
     result = run_online(target, oracle, contract, method=args.method, seed=args.seed,
                         budget=args.budget, shrink_budget=args.shrink_budget,
-                        mold=mold, replays=replays, max_seconds=args.max_seconds, mode=args.mode)
+                        mold=mold, replays=replays, max_seconds=args.max_seconds, mode=args.mode,
+                        inspection_target=inspection_target)
     ledger.complete(start["claim_id"], dict(status=result.get("status"), receipt_sha256=digest(result)))
     return dict(schema="tomolab-online-cli-v1", status="COMPLETE" if result.get("status") == "COMPLETE" and result.get("outcome") != "INCONCLUSIVE" else "INCONCLUSIVE", execution_profile=profile,
                 run=result, final_target_eligible=False, allow_release=False,

@@ -1,5 +1,12 @@
 # Changelog
 
+## E9-R1 미발행 후보 — C/D fallback 정합성과 역사적 프로젝트 평가
+
+- C/D 공통 기본 선택·공통 RNG를 보존하고 적용 불가·거절·중복 Source 제안은 C로 rollback한다. 손상 Mold는 별도 오류다.
+- 실제 3개 프로젝트의 Source·buggy/fixed revision·라이선스·계약 Oracle를 기존 공통 러너·사용 장부에 연결했다. 원본 함수의 AST/root coverage와 wrapper를 구별한다.
+- 고정된 OCI 경계 확인, 설치 wheel의 역사 사례 CLI, Source-only 예산 preflight와 수동 1회 연구 실행을 분리했다. 원시 기록은 공개 업로드 전에 암호화한다.
+- E9의 원래 360회 결과는 고정 revision으로 검증하며 새 결과로 덮어쓰지 않는다. 배포·merge·tag·PyPI 업로드는 허용하지 않는다.
+
 ## E9 미발행 연구 후보 — 온라인 탐색과 제한된 Source 전이
 
 - 공통 온라인 MRI–CAST와 native Hypothesis 생성·축소를 CLI에 연결하고 C/D의 차이를 Source 학습 provider로 제한합니다.

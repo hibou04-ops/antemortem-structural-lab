@@ -43,6 +43,17 @@ def environment_identity():
                 hypothesis=hypothesis.__version__)
 
 
+def evaluation_cases(config, *, load=False):
+    """Resolve fixed reviewed cases without executing them during inspection."""
+    if config.get("corpus_profile") == "REVIEWED_HISTORICAL_DEFECTS":
+        if load:
+            from tomolab.historical import require_reviewed_container
+            require_reviewed_container()
+        from benchmarks.historical import cases as historical_cases
+        return historical_cases(load=load)
+    return cases()
+
+
 def validate_registration(registration, config, prepared=None, *, check_environment=True):
     """Integrity check against the explicit host registration, not permission by hash."""
     required = {"schema", "frozen_config", "source_preparation_digest", "initial_molds",
@@ -80,7 +91,7 @@ def validate_registration(registration, config, prepared=None, *, check_environm
         actual = ROOT.joinpath(*path.parts).resolve(strict=True)
         if not actual.is_relative_to(ROOT) or hashlib.sha256(actual.read_bytes()).hexdigest() != expected:
             raise ValueError("algorithm changed after pre-evaluation freeze")
-    targets = [case.metadata() for case in cases() if case.role != "SOURCE"]
+    targets = [case.metadata() for case in evaluation_cases(config) if case.role != "SOURCE"]
     environment = registration["environment"]
     if (not isinstance(environment, dict) or set(environment) != {"python", "implementation", "hypothesis"}
         or any(not isinstance(value,str) or not 1 <= len(value) <= 64 for value in environment.values())):
@@ -161,7 +172,8 @@ def main(argv=None):
     if args.prepare_sources:
         if args.prepared.exists() or args.registration or args.usage_ledger or args.events:
             parser.error("Source 준비는 새 --prepared 파일만 생성하며 평가 등록·원장·events를 사용하지 않습니다")
-        prepared = prepare_sources(config)
+        corpus=evaluation_cases(config,load=True)
+        prepared = prepare_sources(config,corpus=corpus)
         prepared_sha = write_new(args.prepared, prepared)
         receipt = dict(schema="tomolab-online-source-preparation-receipt-v1", status="COMPLETE",
             prepared_file_sha256=prepared_sha, prepared_digest=digest(prepared),
@@ -175,10 +187,18 @@ def main(argv=None):
         prepared = read(args.prepared)
         registration = read(args.registration)
         profile, targets = validate_registration(registration, config, prepared)
+        if config.get("corpus_profile") == "REVIEWED_HISTORICAL_DEFECTS":
+            from tomolab.historical import require_reviewed_container
+            if require_reviewed_container()["binding"] != prepared.get("execution_boundary"):
+                raise PermissionError("Source/Target execution boundary changed before usage reservation")
         ledger = UsageLedger(args.usage_ledger, authority_id=profile["authority_id"])
-        entries = [dict(identity=row["identity"], evaluation_role="EXPERIMENTAL_PROBE") for row in targets]
+        entries = [dict(identity=row["identity"], evaluation_role=row.get("usage_role","EXPERIMENTAL_PROBE"),
+                        control_group=row.get("control_group")) for row in targets]
         start = ledger.claim_experimental(entries,profile,expected_profile=registration["profile"],output=args.output)
-        result = run_comparison(config,prepared,event_path=args.events)
+        # Loading external project code is gated, and occurs only after the
+        # fixed registration has been checked. A START remains consumed on error.
+        corpus=evaluation_cases(config,load=True)
+        result = run_comparison(config,prepared,event_path=args.events,corpus=corpus)
         result["registration_digest"] = registration["registration_digest"]
         result["usage_claim_id"] = start["claim_id"]
         result["completed_at_utc"] = datetime.now(timezone.utc).isoformat()

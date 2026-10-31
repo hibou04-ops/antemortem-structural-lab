@@ -213,9 +213,17 @@ def main(argv: list[str] | None = None) -> int:
     register_e8r4(cmd)
     from .online_cli import register as register_online, COMMANDS as ONLINE_COMMANDS
     register_online(cmd)
+    from .historical_cli import register as register_historical, COMMANDS as HISTORICAL_COMMANDS
+    register_historical(cmd)
     args = p.parse_args(argv)
     try:
-        if args.command in ONLINE_COMMANDS:
+        if args.command in HISTORICAL_COMMANDS:
+            from .historical_cli import dispatch
+            from .e8r3_cli import save_receipt
+            result = dispatch(args, p)
+            save_receipt(result, args.output, main_started=main_started, preserve_mapping_order=True)
+            return 0 if result.get('status') == 'COMPLETE' else 3
+        elif args.command in ONLINE_COMMANDS:
             from .online_cli import dispatch
             from .e8r3_cli import save_receipt
             result = dispatch(args, p, EXAMPLES)

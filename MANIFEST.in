@@ -81,3 +81,7 @@ prune e8-r4-evaluation
 recursive-include examples/online *.json
 include docs/ONLINE_PROFILE.json
 include docs/ONLINE_RESULTS.json
+recursive-include benchmarks/historical *.json *.txt *.md
+include docs/HISTORICAL_ARTIFACT_RECIPIENT.pem
+include docs/HISTORICAL_PROFILE.json
+include docs/HISTORICAL_RESULTS.json

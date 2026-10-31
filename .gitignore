@@ -30,6 +30,8 @@ results/*
 *secret*.json
 *.pem
 *.key
+!docs/HISTORICAL_ARTIFACT_RECIPIENT.pem
+work/
 # Private research and archival data are not part of this public repo
 SYNC/
 HISTORY/

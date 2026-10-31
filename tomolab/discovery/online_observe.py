@@ -134,8 +134,8 @@ def _snapshot(value, depth=0):
     raise ValueError("UNSUPPORTED non-JSON output; reviewed normalization adapter required")
 
 
-def _capture(fn, point, *, tracing):
-    lines, code = [], getattr(fn, "__code__", None)
+def _capture(fn, point, *, tracing, trace_code=None):
+    lines, code = [], trace_code if trace_code is not None else getattr(fn, "__code__", None)
     previous = sys.gettrace()
     def trace(frame, event, arg):
         if frame.f_code is code:
@@ -182,7 +182,7 @@ def _equal(left, right, comparison):
     return a == b
 
 
-def observe(target, oracle, point, contract, structure=None, *, tracing=True):
+def observe(target, oracle, point, contract, structure=None, *, tracing=True, trace_target=None):
     """Oracle output remains host-private; feedback is the only policy input."""
     started = time.perf_counter()
     for fn in (target, oracle):
@@ -197,7 +197,11 @@ def observe(target, oracle, point, contract, structure=None, *, tracing=True):
                     cost=dict(target_seconds=0.0, oracle_seconds=0.0, instrumentation_seconds=0.0))
     # Independent copies prevent a mutating target from changing its reference
     # input or the next candidate. Stateful targets reset from each full trace.
-    actual, lines, target_seconds = _capture(target, deepcopy(point), tracing=tracing)
+    # The host may point line tracing at the reviewed upstream function called
+    # by a thin adapter. It does not call that function a second time.
+    trace_code = getattr(trace_target, "__code__", None) if trace_target is not None else None
+    active_tracing = tracing and (trace_target is None or trace_code is not None)
+    actual, lines, target_seconds = _capture(target, deepcopy(point), tracing=active_tracing, trace_code=trace_code)
     expected, _, oracle_seconds = _capture(oracle, deepcopy(point), tracing=False)
     comparison = contract.get("comparison", {})
     if expected["kind"] == "exception" and expected["exception_type"] not in comparison.get("expected_exceptions", []):
@@ -223,6 +227,6 @@ def observe(target, oracle, point, contract, structure=None, *, tracing=True):
                     exception_type=actual.get("exception_type"), exception_location=lines[-1] if lines and actual["kind"] == "exception" else None)
     return dict(feedback=feedback, private_outcome=private, semantic_digest=digest(private),
                 target_calls=1, oracle_calls=1,
-                observation_scope="EXISTING_TRACE_PRESERVED_NO_OWN_LINE_TRACE" if tracing and sys.gettrace() is not None else ("ROOT_LINE_TRACE" if tracing and getattr(target, "__code__", None) is not None else "BLACK_BOX_EXECUTION"),
+                observation_scope="EXISTING_TRACE_PRESERVED_NO_OWN_LINE_TRACE" if active_tracing and sys.gettrace() is not None else ("UPSTREAM_ROOT_LINE_TRACE" if active_tracing and trace_target is not None else ("ROOT_LINE_TRACE" if active_tracing and getattr(target, "__code__", None) is not None else "BLACK_BOX_EXECUTION")),
                 cost=dict(target_seconds=target_seconds, oracle_seconds=oracle_seconds,
                           instrumentation_seconds=max(0.0, time.perf_counter()-started-target_seconds-oracle_seconds)))

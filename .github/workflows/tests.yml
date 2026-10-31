@@ -47,7 +47,9 @@ jobs:
           python scripts/check-historical-e8r3-freeze.py
           python scripts/check-historical-freeze.py --revision ff74d19737460f4b51910192adbadddf82389560 --manifest docs/E8_R4_CODE_FREEZE.json
       - name: Verify the online algorithm registration without replaying research
-        run: python scripts/evaluate-online.py --check-registration --registration docs/ONLINE_PROFILE.json --output online-registration.json
+        run: python scripts/check-historical-freeze.py --revision c92a094cf9092aa33b180ca733266705150a3d3f --manifest docs/ONLINE_PROFILE.json --allow-current-test-change tests/test_online_engine.py --allow-current-test-change tests/test_online_benchmark.py --allow-current-test-change tests/test_online_observe.py --output online-registration.json
+      - name: Verify the separate R1 registration when present, without target execution
+        run: python scripts/check-historical-freeze.py --current --if-present --manifest docs/HISTORICAL_PROFILE.json
       - name: Check wheel outside the source checkout
         run: python scripts/check-wheel.py
       - name: Check optional QA integration in the installed wheel
@@ -208,4 +210,61 @@ jobs:
         with:
           name: existing-e7-release-verification
           path: ${{ runner.temp }}/pypi-publication-source/verification/existing-e7-release.json
+          if-no-files-found: error
+  historical-functional:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install normal build tools
+        run: python -m pip install build
+      - name: Build the candidate and reviewed dependency-only runtime
+        run: |
+          python -m build
+          docker build -f containers/historical-review.Dockerfile -t tomolab-historical:reviewed .
+      - name: Historical original/adapter/Oracle eligibility and Source-only budget preflight
+        run: python scripts/check-historical-container.py --image tomolab-historical:reviewed --phase preflight --output-directory "${{ runner.temp }}/historical-preflight"
+      - name: Installed wheel historical Source to fixed-control path
+        run: python scripts/check-historical-container.py --image tomolab-historical:reviewed --phase wheel --output-directory "${{ runner.temp }}/historical-wheel"
+      - name: Preserve safe receipts and encrypt raw local research records
+        if: always()
+        run: |
+          python scripts/package-historical-artifacts.py --input "${{ runner.temp }}/historical-preflight" --public "${{ runner.temp }}/historical-public" --recipient docs/HISTORICAL_ARTIFACT_RECIPIENT.pem --label preflight
+          python scripts/package-historical-artifacts.py --input "${{ runner.temp }}/historical-wheel" --public "${{ runner.temp }}/historical-public" --recipient docs/HISTORICAL_ARTIFACT_RECIPIENT.pem --label installed
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: historical-functional-reviewed-container
+          path: ${{ runner.temp }}/historical-public/*
+          if-no-files-found: error
+  historical-study:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/feat/e9-online-structural-transfer'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build the exact reviewed runtime
+        run: docker build -f containers/historical-review.Dockerfile -t tomolab-historical:reviewed .
+      - name: Source preparation, durable algorithm/Mold freeze, then one registered comparison
+        run: python scripts/check-historical-container.py --image tomolab-historical:reviewed --phase study --timeout 1500 --output-directory "${{ runner.temp }}/historical-study"
+      - name: Preserve safe results and encrypted raw evidence
+        if: always()
+        run: python scripts/package-historical-artifacts.py --input "${{ runner.temp }}/historical-study" --public "${{ runner.temp }}/historical-study-public" --recipient docs/HISTORICAL_ARTIFACT_RECIPIENT.pem --label study
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: historical-registered-study-once
+          path: ${{ runner.temp }}/historical-study-public/*
           if-no-files-found: error

@@ -1,0 +1,770 @@
+{
+  "schema": "tomolab-reviewed-historical-corpus-v1",
+  "scope": "HISTORICAL_DEFECT_REDISCOVERY",
+  "external_execution": "REVIEWED_CONTAINER_ONLY",
+  "projects": 3,
+  "target_defects": 6,
+  "source_defects": 2,
+  "source_target_disjoint": true,
+  "selected_without_method_performance": true,
+  "mri_scope": "TRANSPARENT_ADAPTER_ROOT_ONLY_NOT_UPSTREAM_BRANCH_ANALYSIS",
+  "cases": [
+    {
+      "id": "toolz-interpose",
+      "role": "SOURCE",
+      "mechanism": "EMPTY_ITERABLE",
+      "function": "interpose",
+      "adapter": "interpose",
+      "contract": {
+        "kind": "sequence_int",
+        "low": -4,
+        "high": 4,
+        "min_size": 0,
+        "max_size": 8
+      },
+      "issue": "https://github.com/pytoolz/toolz/pull/635",
+      "license": "BSD-3-Clause",
+      "license_file": "vendor/toolz-LICENSE.txt",
+      "public_contract": "Materialize interpose with public separator 0; empty iterable yields no items; otherwise preserve all input values and insert the separator only between values.",
+      "public_parameters": {
+        "separator": 0
+      },
+      "reproduction_input": [],
+      "project": "pytoolz/toolz",
+      "original_path": "toolz/itertoolz.py",
+      "buggy_revision": "55ce42dc3b6f786ed9d4e38633cc5cfe3622a526",
+      "fixed_revision": "d2eba0374a452c2b18fe188b04527e22bda3548c",
+      "implementation_lineage": "pytoolz/toolz:toolz/itertoolz.py:interpose",
+      "classification": "HISTORICAL_DEFECT_REDISCOVERY",
+      "execution_dependencies": [
+        "Python standard library"
+      ],
+      "adapter_limits": "Declared public fixed parameters and iterator materialization only; no generated answer correction; actual kind preserved.",
+      "buggy": {
+        "revision": "55ce42dc3b6f786ed9d4e38633cc5cfe3622a526",
+        "capsule": "vendor/toolz-interpose-buggy.py",
+        "capsule_sha256": "bc373fd82438f9145528571e7a3ee6e64fffcacc04dfafab311ef05e3efcc8d2",
+        "original_git_blob_sha": "354ecf25caa13907f466c95f314ca4c91c299f2a",
+        "original_url": "https://github.com/pytoolz/toolz/blob/55ce42dc3b6f786ed9d4e38633cc5cfe3622a526/toolz/itertoolz.py",
+        "source_statements": [
+          {
+            "name": "concat",
+            "first_line": 471,
+            "last_line": 486,
+            "normalized_lf_source_sha256": "841889c0f71893b7822068dd93145baee875b5e39dd55467c37284d62a699ab0"
+          },
+          {
+            "name": "interpose",
+            "first_line": 520,
+            "last_line": 528,
+            "normalized_lf_source_sha256": "dcd0d35691ea8a65e82ae1bc1065db3019988ff59ac95c8eb3bccb699196ea7e"
+          }
+        ],
+        "extraction": "EXACT_AST_SOURCE_SEGMENTS_LF_NORMALIZED_WITH_REVIEWED_STDLIB_BINDINGS"
+      },
+      "fixed": {
+        "revision": "d2eba0374a452c2b18fe188b04527e22bda3548c",
+        "capsule": "vendor/toolz-interpose-fixed.py",
+        "capsule_sha256": "c1d82047858543ca23b497718e97baef3dec05f9e4e28e9b430d365b55e8e306",
+        "original_git_blob_sha": "05c36cca8ca1ebf242486ec4a3fbd578c6b3009a",
+        "original_url": "https://github.com/pytoolz/toolz/blob/d2eba0374a452c2b18fe188b04527e22bda3548c/toolz/itertoolz.py",
+        "source_statements": [
+          {
+            "name": "concat",
+            "first_line": 471,
+            "last_line": 486,
+            "normalized_lf_source_sha256": "841889c0f71893b7822068dd93145baee875b5e39dd55467c37284d62a699ab0"
+          },
+          {
+            "name": "interpose",
+            "first_line": 520,
+            "last_line": 533,
+            "normalized_lf_source_sha256": "a0ed80833548c711d7205c7df4f39830693160f52fc1433781ebc8e777f7137c"
+          }
+        ],
+        "extraction": "EXACT_AST_SOURCE_SEGMENTS_LF_NORMALIZED_WITH_REVIEWED_STDLIB_BINDINGS"
+      },
+      "license_provenance": {
+        "id": "toolz-interpose",
+        "git_blob_sha": "eeb91b202ca96aebc14d8d1ea5630e6e6212711f",
+        "source_url": "https://github.com/pytoolz/toolz/blob/d2eba0374a452c2b18fe188b04527e22bda3548c/LICENSE.txt",
+        "retained_sha256": "3fea7419c98c143a9d85ca0a77db90a4dbbb5fbfaa73125f16aef649526f3d24",
+        "normalization": "UTF8_LF_PRESERVED_FULL_LICENSE_TEXT"
+      },
+      "fix_evidence": {
+        "fix_title": "Fix interpose([]) raising StopIteration (#635)\n\nCalling next() on the zip/concat pipeline assumes at least one element.\nReturn an empty iterator for empty sequences instead.\n\nCo-authored-by: Pitchfork-and-Torch <pitchfork-and-torch@users.noreply.github.com>",
+        "fix_url": "https://github.com/pytoolz/toolz/commit/d2eba0374a452c2b18fe188b04527e22bda3548c",
+        "retrieved_diff_sha256": "3bfc9b40960b4102d02cf87889e81787ca97b7124ac2ebabdb4ee3bb5e85a4ae",
+        "regression_evidence": "OFFICIAL_COMMIT_DIFF_AND_PUBLIC_ISSUE"
+      }
+    },
+    {
+      "id": "more-bucket",
+      "role": "SOURCE",
+      "mechanism": "FALSEY_VALIDATOR_OPTION",
+      "function": "bucket",
+      "adapter": "bucket",
+      "contract": {
+        "kind": "sequence_int",
+        "low": -4,
+        "high": 4,
+        "min_size": 0,
+        "max_size": 8
+      },
+      "issue": "https://github.com/more-itertools/more-itertools/issues/1308",
+      "license": "MIT",
+      "license_file": "vendor/more-LICENSE.txt",
+      "public_contract": "A callable empty AllowedKeys set rejects every key. Its false truth value must not replace the validator. Fresh bucket state for every full input.",
+      "public_parameters": {
+        "key": "identity",
+        "validator": "upstream regression AllowedKeys(empty set)"
+      },
+      "reproduction_input": [
+        1
+      ],
+      "project": "more-itertools/more-itertools",
+      "original_path": "more_itertools/more.py",
+      "buggy_revision": "1ea82a711c69f590054987b5cb194157f8ce8ac4",
+      "fixed_revision": "67fcf640477c78605580f5ee703a54c73c1e7a8a",
+      "implementation_lineage": "more-itertools/more-itertools:more_itertools/more.py:bucket",
+      "classification": "HISTORICAL_DEFECT_REDISCOVERY",
+      "execution_dependencies": [
+        "Python standard library"
+      ],
+      "adapter_limits": "Declared public fixed parameters and iterator materialization only; no generated answer correction; actual kind preserved.",
+      "buggy": {
+        "revision": "1ea82a711c69f590054987b5cb194157f8ce8ac4",
+        "capsule": "vendor/more-bucket-buggy.py",
+        "capsule_sha256": "32a161e5f5d887cfa801c9469d0f53f365a326e4d56caae0761d1aeb01dd4a14",
+        "original_git_blob_sha": "940b8009cc6ee72518d5f2364a3ef4221854b033",
+        "original_url": "https://github.com/more-itertools/more-itertools/blob/1ea82a711c69f590054987b5cb194157f8ce8ac4/more_itertools/more.py",
+        "source_statements": [
+          {
+            "name": "bucket",
+            "first_line": 1138,
+            "last_line": 1240,
+            "normalized_lf_source_sha256": "aaf02ffd7a47041fe372239df4a5becc7a13c87c3d6ceeadf4e4f79624c98b61"
+          }
+        ],
+        "extraction": "EXACT_AST_SOURCE_SEGMENTS_LF_NORMALIZED_WITH_REVIEWED_STDLIB_BINDINGS"
+      },
+      "fixed": {
+        "revision": "67fcf640477c78605580f5ee703a54c73c1e7a8a",
+        "capsule": "vendor/more-bucket-fixed.py",
+        "capsule_sha256": "8a9d1df7dbbb77f5dbf03ae660618240438092e2c1d3d0b7059d775f96aa6954",
+        "original_git_blob_sha": "9c56ab37558733ece94d676f71d502d8048bc1d5",
+        "original_url": "https://github.com/more-itertools/more-itertools/blob/67fcf640477c78605580f5ee703a54c73c1e7a8a/more_itertools/more.py",
+        "source_statements": [
+          {
+            "name": "bucket",
+            "first_line": 1138,
+            "last_line": 1243,
+            "normalized_lf_source_sha256": "44c0622de07c71f5deb901c32fcbfa92d6ece0a9440abb88b05510882f7428b1"
+          }
+        ],
+        "extraction": "EXACT_AST_SOURCE_SEGMENTS_LF_NORMALIZED_WITH_REVIEWED_STDLIB_BINDINGS"
+      },
+      "license_provenance": {
+        "id": "more-bucket",
+        "git_blob_sha": "0a523bece3e50519653c4d7a38399baa487fefa1",
+        "source_url": "https://github.com/more-itertools/more-itertools/blob/67fcf640477c78605580f5ee703a54c73c1e7a8a/LICENSE",
+        "retained_sha256": "896a962f8ca120f1ba3ab6a980144f0a45edd0261435c194fc492cd039dc0d28",
+        "normalization": "UTF8_LF_PRESERVED_FULL_LICENSE_TEXT"
+      },
+      "fix_evidence": {
+        "fix_title": "fix: honour a falsey validator in bucket (#1308)\n\n`bucket` chose its validator with `validator or (lambda x: True)`, so a\nfalsey but valid callable (e.g. an empty `set` subclass defining\n`__call__`) was silently replaced by the default that accepts every key.\nSelecting such a bucket then returned items the validator rejected, and\nmembership tests wrongly reported them present.\n\nUse an `is None` check instead.",
+        "fix_url": "https://github.com/more-itertools/more-itertools/commit/67fcf640477c78605580f5ee703a54c73c1e7a8a",
+        "retrieved_diff_sha256": "220bb14c12eb08264b5189dba8c2d415986b234a35f56c0649d306233e4d4691",
+        "regression_evidence": "OFFICIAL_COMMIT_DIFF_AND_PUBLIC_ISSUE"
+      }
+    },
+    {
+      "id": "more-windowed",
+      "role": "TARGET",
+      "mechanism": "EMPTY_ITERABLE",
+      "function": "windowed",
+      "adapter": "windowed",
+      "contract": {
+        "kind": "sequence_int",
+        "low": -4,
+        "high": 4,
+        "min_size": 0,
+        "max_size": 8
+      },
+      "issue": "https://github.com/more-itertools/more-itertools/issues/462",
+      "license": "MIT",
+      "license_file": "vendor/more-LICENSE.txt",
+      "public_contract": "Width-two step-one windows preserve order; one value is padded with None; empty input yields no window.",
+      "public_parameters": {
+        "width": 2,
+        "step": 1,
+        "fillvalue": null
+      },
+      "reproduction_input": [],
+      "project": "more-itertools/more-itertools",
+      "original_path": "more_itertools/more.py",
+      "buggy_revision": "8a27da60d70fbfc348b124ce89733d8a7104977a",
+      "fixed_revision": "db4630bc3175d6a884fb07092c645417c9e62d49",
+      "implementation_lineage": "more-itertools/more-itertools:more_itertools/more.py:windowed",
+      "classification": "HISTORICAL_DEFECT_REDISCOVERY",
+      "execution_dependencies": [
+        "Python standard library"
+      ],
+      "adapter_limits": "Declared public fixed parameters and iterator materialization only; no generated answer correction; actual kind preserved.",
+      "buggy": {
+        "revision": "8a27da60d70fbfc348b124ce89733d8a7104977a",
+        "capsule": "vendor/more-windowed-buggy.py",
+        "capsule_sha256": "79dd8e9a6b8948d737789b85a1ff50abb6b1095dc1500265ce694f58951ee9e4",
+        "original_git_blob_sha": "bbcf039a5177413002a5b6cd9f2d472a262f872c",
+        "original_url": "https://github.com/more-itertools/more-itertools/blob/8a27da60d70fbfc348b124ce89733d8a7104977a/more_itertools/more.py",
+        "source_statements": [
+          {
+            "name": "windowed",
+            "first_line": 835,
+            "last_line": 883,
+            "normalized_lf_source_sha256": "0786305ae3c800a73d89e0403fa88353b34f93c1dbb3f96749b03111beebb6e3"
+          }
+        ],
+        "extraction": "EXACT_AST_SOURCE_SEGMENTS_LF_NORMALIZED_WITH_REVIEWED_STDLIB_BINDINGS"
+      },
+      "fixed": {
+        "revision": "db4630bc3175d6a884fb07092c645417c9e62d49",
+        "capsule": "vendor/more-windowed-fixed.py",
+        "capsule_sha256": "02e05eac56a4c7aa09cb57cbcaa6adbbbbede19ce11affe02200f7521542ccfa",
+        "original_git_blob_sha": "6d2b938e730d6bc6bf56b60d6f1e65a3a22b0e6e",
+        "original_url": "https://github.com/more-itertools/more-itertools/blob/db4630bc3175d6a884fb07092c645417c9e62d49/more_itertools/more.py",
+        "source_statements": [
+          {
+            "name": "windowed",
+            "first_line": 835,
+            "last_line": 885,
+            "normalized_lf_source_sha256": "f1371c41d750e87e4d22a5be30841dc0018f8c975b1083fcd9e3c2274c2c9a23"
+          }
+        ],
+        "extraction": "EXACT_AST_SOURCE_SEGMENTS_LF_NORMALIZED_WITH_REVIEWED_STDLIB_BINDINGS"
+      },
+      "license_provenance": {
+        "id": "more-windowed",
+        "git_blob_sha": "0a523bece3e50519653c4d7a38399baa487fefa1",
+        "source_url": "https://github.com/more-itertools/more-itertools/blob/db4630bc3175d6a884fb07092c645417c9e62d49/LICENSE",
+        "retained_sha256": "896a962f8ca120f1ba3ab6a980144f0a45edd0261435c194fc492cd039dc0d28",
+        "normalization": "UTF8_LF_PRESERVED_FULL_LICENSE_TEXT"
+      },
+      "fix_evidence": {
+        "fix_title": "Issue 462: windowed should yield nothing for empty iterables",
+        "fix_url": "https://github.com/more-itertools/more-itertools/commit/db4630bc3175d6a884fb07092c645417c9e62d49",
+        "retrieved_diff_sha256": "fbce73da1fd897b08521031c43baf0a9b4da793fd1263a3deb13087ae3ca8330",
+        "regression_evidence": "OFFICIAL_COMMIT_DIFF_AND_PUBLIC_ISSUE"
+      }
+    },
+    {
+      "id": "toolz-accumulate",
+      "role": "TARGET",
+      "mechanism": "EMPTY_ITERABLE",
+      "function": "accumulate",
+      "adapter": "accumulate",
+      "contract": {
+        "kind": "sequence_int",
+        "low": -4,
+        "high": 4,
+        "min_size": 0,
+        "max_size": 8
+      },
+      "issue": "https://github.com/pytoolz/toolz/pull/410",
+      "license": "BSD-3-Clause",
+      "license_file": "vendor/toolz-LICENSE.txt",
+      "public_contract": "Cumulative integer addition without an initial element; empty iterable yields no accumulated items. Python3.12 PEP479 behavior is part of the fixed execution environment.",
+      "public_parameters": {
+        "binop": "operator.add",
+        "initial": "upstream no_default sentinel"
+      },
+      "reproduction_input": [],
+      "project": "pytoolz/toolz",
+      "original_path": "toolz/itertoolz.py",
+      "buggy_revision": "c789e3cff7887f64a259d1364c589e827f59a654",
+      "fixed_revision": "2bf9e8b7a3ce9e0e9e376bee0795ca194c6fcf95",
+      "implementation_lineage": "pytoolz/toolz:toolz/itertoolz.py:accumulate",
+      "classification": "HISTORICAL_DEFECT_REDISCOVERY",
+      "execution_dependencies": [
+        "Python standard library"
+      ],
+      "adapter_limits": "Declared public fixed parameters and iterator materialization only; no generated answer correction; actual kind preserved.",
+      "buggy": {
+        "revision": "c789e3cff7887f64a259d1364c589e827f59a654",
+        "capsule": "vendor/toolz-accumulate-buggy.py",
+        "capsule_sha256": "4e0a841e78d2561fb6bf131a27244065377c4bd1ece72b4e3c567762c58c5a95",
+        "original_git_blob_sha": "71c7ddc0c2726485f0f9f392c167680271d839ae",
+        "original_url": "https://github.com/pytoolz/toolz/blob/c789e3cff7887f64a259d1364c589e827f59a654/toolz/itertoolz.py",
+        "source_statements": [
+          {
+            "name": "accumulate",
+            "first_line": 31,
+            "last_line": 63,
+            "normalized_lf_source_sha256": "91c15e1f7708d89d00d59628d05496893b0266728012df8b2c41409e43fba497"
+          }
+        ],
+        "extraction": "EXACT_AST_SOURCE_SEGMENTS_LF_NORMALIZED_WITH_REVIEWED_STDLIB_BINDINGS"
+      },
+      "fixed": {
+        "revision": "2bf9e8b7a3ce9e0e9e376bee0795ca194c6fcf95",
+        "capsule": "vendor/toolz-accumulate-fixed.py",
+        "capsule_sha256": "9447535288ab4332c69cedc1ff254688614be3d7de59a7ed5da32309b532fbaa",
+        "original_git_blob_sha": "429f6c30cf614c61bb08e2e365fed767a2f09ab4",
+        "original_url": "https://github.com/pytoolz/toolz/blob/2bf9e8b7a3ce9e0e9e376bee0795ca194c6fcf95/toolz/itertoolz.py",
+        "source_statements": [
+          {
+            "name": "accumulate",
+            "first_line": 31,
+            "last_line": 69,
+            "normalized_lf_source_sha256": "477b1241a45d16fd6fc4bde9064550f6d8e916cc6747226d37f9b25bd82e2b02"
+          }
+        ],
+        "extraction": "EXACT_AST_SOURCE_SEGMENTS_LF_NORMALIZED_WITH_REVIEWED_STDLIB_BINDINGS"
+      },
+      "license_provenance": {
+        "id": "toolz-accumulate",
+        "git_blob_sha": "eeb91b202ca96aebc14d8d1ea5630e6e6212711f",
+        "source_url": "https://github.com/pytoolz/toolz/blob/2bf9e8b7a3ce9e0e9e376bee0795ca194c6fcf95/LICENSE.txt",
+        "retained_sha256": "3fea7419c98c143a9d85ca0a77db90a4dbbb5fbfaa73125f16aef649526f3d24",
+        "normalization": "UTF8_LF_PRESERVED_FULL_LICENSE_TEXT"
+      },
+      "fix_evidence": {
+        "fix_title": "Merge pull request #410 from groutr/fix-accumulate-3.7\n\nFix accumulate for Python 3.7",
+        "fix_url": "https://github.com/pytoolz/toolz/commit/2bf9e8b7a3ce9e0e9e376bee0795ca194c6fcf95",
+        "retrieved_diff_sha256": "7f9a7c7ddcc13fc546c0dda4dace5c813cf86bd34d3240faddafe0780ae2cd28",
+        "regression_evidence": "OFFICIAL_COMMIT_DIFF_AND_PUBLIC_ISSUE"
+      },
+      "reviewed_helper_bindings": [
+        {
+          "version": "buggy",
+          "ref": "c789e3cff7887f64a259d1364c589e827f59a654",
+          "sha": "1002c4649f8dc114f55e1169e3ad5ff23599e256",
+          "source_url": "https://github.com/pytoolz/toolz/blob/c789e3cff7887f64a259d1364c589e827f59a654/toolz/utils.py",
+          "binding": "no_default = '__no__default__'"
+        },
+        {
+          "version": "fixed",
+          "ref": "2bf9e8b7a3ce9e0e9e376bee0795ca194c6fcf95",
+          "sha": "1002c4649f8dc114f55e1169e3ad5ff23599e256",
+          "source_url": "https://github.com/pytoolz/toolz/blob/2bf9e8b7a3ce9e0e9e376bee0795ca194c6fcf95/toolz/utils.py",
+          "binding": "no_default = '__no__default__'"
+        }
+      ]
+    },
+    {
+      "id": "boltons-split",
+      "role": "TARGET",
+      "mechanism": "ZERO_LIMIT_CONTAINER_NESTING",
+      "function": "split_iter",
+      "adapter": "split",
+      "contract": {
+        "kind": "sequence_int",
+        "low": -4,
+        "high": 4,
+        "min_size": 0,
+        "max_size": 8
+      },
+      "issue": "https://github.com/mahmoud/boltons/commit/4aa77cddb5d06def130df6f09aefab4018fa487c",
+      "license": "BSD-3-Clause",
+      "license_file": "vendor/boltons-LICENSE.txt",
+      "public_contract": "Public maxsplit=0 configuration returns exactly one list containing the original iterable values, without an extra nesting level. This is a fixed-argument historical bug slice, not the whole API.",
+      "public_parameters": {
+        "maxsplit": 0,
+        "separator": null
+      },
+      "reproduction_input": [
+        1,
+        2
+      ],
+      "project": "mahmoud/boltons",
+      "original_path": "boltons/iterutils.py",
+      "buggy_revision": "3970a80f63807392e512340c25dc2db473bcba70",
+      "fixed_revision": "4aa77cddb5d06def130df6f09aefab4018fa487c",
+      "implementation_lineage": "mahmoud/boltons:boltons/iterutils.py:split_iter",
+      "classification": "HISTORICAL_DEFECT_REDISCOVERY",
+      "execution_dependencies": [
+        "Python standard library"
+      ],
+      "adapter_limits": "Declared public fixed parameters and iterator materialization only; no generated answer correction; actual kind preserved.",
+      "buggy": {
+        "revision": "3970a80f63807392e512340c25dc2db473bcba70",
+        "capsule": "vendor/boltons-split-buggy.py",
+        "capsule_sha256": "62cba673ccce0fec320987e7f7e103bf4553cf7dba059771387a4ee9a279a652",
+        "original_git_blob_sha": "433eaf5745ed2ae5c8b9ad199ef69b35c05704c5",
+        "original_url": "https://github.com/mahmoud/boltons/blob/3970a80f63807392e512340c25dc2db473bcba70/boltons/iterutils.py",
+        "source_statements": [
+          {
+            "name": "is_iterable",
+            "first_line": 61,
+            "last_line": 76,
+            "normalized_lf_source_sha256": "f94a3870e53eca125489128be6cbb1677006eaf8ca3256963ee9f75e6e0e1169"
+          },
+          {
+            "name": "is_scalar",
+            "first_line": 79,
+            "last_line": 92,
+            "normalized_lf_source_sha256": "c21bd429c08ae47085848fd1b0897f7c2bed4b6ca4f2c5babf152f49878e1461"
+          },
+          {
+            "name": "split_iter",
+            "first_line": 121,
+            "last_line": 190,
+            "normalized_lf_source_sha256": "77523ea06b26c0a11f7d6bfb3347838ebbb936745bccbf2763e07278d39d960e"
+          }
+        ],
+        "extraction": "EXACT_AST_SOURCE_SEGMENTS_LF_NORMALIZED_WITH_REVIEWED_STDLIB_BINDINGS"
+      },
+      "fixed": {
+        "revision": "4aa77cddb5d06def130df6f09aefab4018fa487c",
+        "capsule": "vendor/boltons-split-fixed.py",
+        "capsule_sha256": "eafad2b2cca130bbf47a3de5aefc34b50205719da6e4d68a06b95c342eaff2e4",
+        "original_git_blob_sha": "4e7a37fcf06eca213359f19bcb462c1f33d1cb50",
+        "original_url": "https://github.com/mahmoud/boltons/blob/4aa77cddb5d06def130df6f09aefab4018fa487c/boltons/iterutils.py",
+        "source_statements": [
+          {
+            "name": "is_iterable",
+            "first_line": 61,
+            "last_line": 76,
+            "normalized_lf_source_sha256": "f94a3870e53eca125489128be6cbb1677006eaf8ca3256963ee9f75e6e0e1169"
+          },
+          {
+            "name": "is_scalar",
+            "first_line": 79,
+            "last_line": 92,
+            "normalized_lf_source_sha256": "c21bd429c08ae47085848fd1b0897f7c2bed4b6ca4f2c5babf152f49878e1461"
+          },
+          {
+            "name": "split_iter",
+            "first_line": 121,
+            "last_line": 190,
+            "normalized_lf_source_sha256": "ec6bdc60b5fa96536e8e8de48962c8478dd583dace15e7b952f0c8fd9bee4146"
+          }
+        ],
+        "extraction": "EXACT_AST_SOURCE_SEGMENTS_LF_NORMALIZED_WITH_REVIEWED_STDLIB_BINDINGS"
+      },
+      "license_provenance": {
+        "id": "boltons-split",
+        "git_blob_sha": "6a4c9d2496f53c61c99ae7c113e6ed94b15b038c",
+        "source_url": "https://github.com/mahmoud/boltons/blob/4aa77cddb5d06def130df6f09aefab4018fa487c/LICENSE",
+        "retained_sha256": "0c8ab2ba18e08848f301c4af54fdedb4929afcbf120e14353698ed62872c463a",
+        "normalization": "UTF8_LF_PRESERVED_FULL_LICENSE_TEXT"
+      },
+      "fix_evidence": {
+        "fix_title": "Fix split maxsplit zero handling",
+        "fix_url": "https://github.com/mahmoud/boltons/commit/4aa77cddb5d06def130df6f09aefab4018fa487c",
+        "retrieved_diff_sha256": "47be36ee85a0d733193c46ba820c4d64071d681c2bb6bbf8c236dd833ce139e9",
+        "regression_evidence": "OFFICIAL_COMMIT_DIFF_AND_PUBLIC_ISSUE"
+      }
+    },
+    {
+      "id": "boltons-punct",
+      "role": "TARGET",
+      "mechanism": "REGEX_PUNCTUATION_ESCAPING",
+      "function": "split_punct_ws",
+      "adapter": "punct",
+      "contract": {
+        "kind": "text",
+        "alphabet": "ab\\] !\t",
+        "min_size": 0,
+        "max_size": 8
+      },
+      "issue": "https://github.com/mahmoud/boltons/issues/492",
+      "license": "BSD-3-Clause",
+      "license_file": "vendor/boltons-LICENSE.txt",
+      "public_contract": "Split on ASCII punctuation and whitespace, discard empty tokens, preserve other characters. Restricted public alphabet is declared independently of evaluator-only reproduction.",
+      "public_parameters": {},
+      "reproduction_input": "a\\b",
+      "project": "mahmoud/boltons",
+      "original_path": "boltons/strutils.py",
+      "buggy_revision": "6e0ab7b09acb71ba9d8f2412d6a01a3bda98af5f",
+      "fixed_revision": "f387b64c4b7c4267ea94bcfcd229923ab2f598ea",
+      "implementation_lineage": "mahmoud/boltons:boltons/strutils.py:split_punct_ws",
+      "classification": "HISTORICAL_DEFECT_REDISCOVERY",
+      "execution_dependencies": [
+        "Python standard library"
+      ],
+      "adapter_limits": "Declared public fixed parameters and iterator materialization only; no generated answer correction; actual kind preserved.",
+      "buggy": {
+        "revision": "6e0ab7b09acb71ba9d8f2412d6a01a3bda98af5f",
+        "capsule": "vendor/boltons-punct-buggy.py",
+        "capsule_sha256": "068cc63ca2eb395ef77cd3a22066c4e466dd246b63379b8241d67ba28ca20268",
+        "original_git_blob_sha": "74441c7e39dc5a666d76ca559f2ea6b80b3372c6",
+        "original_url": "https://github.com/mahmoud/boltons/blob/6e0ab7b09acb71ba9d8f2412d6a01a3bda98af5f/boltons/strutils.py",
+        "source_statements": [
+          {
+            "name": "_punct_ws_str",
+            "first_line": 64,
+            "last_line": 64,
+            "normalized_lf_source_sha256": "0bc5945e8aa2dfb1fbe7d406ea6c172540f5ef91355cc0a280a5da1d2009227f"
+          },
+          {
+            "name": "_punct_re",
+            "first_line": 65,
+            "last_line": 65,
+            "normalized_lf_source_sha256": "e76086c22dd10187ce846ea8ecab69a487ac2124aed62175b4a56839baf82d2f"
+          },
+          {
+            "name": "split_punct_ws",
+            "first_line": 115,
+            "last_line": 123,
+            "normalized_lf_source_sha256": "dd8b11f0494c3017cba7c7e6166c9a9d702f97ab010c4cb6c94d71a610282f3d"
+          }
+        ],
+        "extraction": "EXACT_AST_SOURCE_SEGMENTS_LF_NORMALIZED_WITH_REVIEWED_STDLIB_BINDINGS"
+      },
+      "fixed": {
+        "revision": "f387b64c4b7c4267ea94bcfcd229923ab2f598ea",
+        "capsule": "vendor/boltons-punct-fixed.py",
+        "capsule_sha256": "b99a8719e11b42472fb1d453223a3da0a88623e2306e4055fe7f8e7eb4974be6",
+        "original_git_blob_sha": "39ef4492bf4d1e686d309c4ef478f65d4dee7a87",
+        "original_url": "https://github.com/mahmoud/boltons/blob/f387b64c4b7c4267ea94bcfcd229923ab2f598ea/boltons/strutils.py",
+        "source_statements": [
+          {
+            "name": "_punct_ws_str",
+            "first_line": 64,
+            "last_line": 64,
+            "normalized_lf_source_sha256": "0bc5945e8aa2dfb1fbe7d406ea6c172540f5ef91355cc0a280a5da1d2009227f"
+          },
+          {
+            "name": "_punct_re",
+            "first_line": 65,
+            "last_line": 65,
+            "normalized_lf_source_sha256": "a377acc1f5b0d350aa471259015b54ccdbdb1b007c61ae594a1b32c130b8b553"
+          },
+          {
+            "name": "split_punct_ws",
+            "first_line": 115,
+            "last_line": 123,
+            "normalized_lf_source_sha256": "dd8b11f0494c3017cba7c7e6166c9a9d702f97ab010c4cb6c94d71a610282f3d"
+          }
+        ],
+        "extraction": "EXACT_AST_SOURCE_SEGMENTS_LF_NORMALIZED_WITH_REVIEWED_STDLIB_BINDINGS"
+      },
+      "license_provenance": {
+        "id": "boltons-punct",
+        "git_blob_sha": "6a4c9d2496f53c61c99ae7c113e6ed94b15b038c",
+        "source_url": "https://github.com/mahmoud/boltons/blob/f387b64c4b7c4267ea94bcfcd229923ab2f598ea/LICENSE",
+        "retained_sha256": "0c8ab2ba18e08848f301c4af54fdedb4929afcbf120e14353698ed62872c463a",
+        "normalization": "UTF8_LF_PRESERVED_FULL_LICENSE_TEXT"
+      },
+      "fix_evidence": {
+        "fix_title": "strutils: fix backslash punctuation, non-UTF-8 strip_ansi, html2text tail, z plurals, multi-member gunzip, MultiReplace flags, bytes2human (#492, #501, #571, #586, #576, #567, #508, #525)",
+        "fix_url": "https://github.com/mahmoud/boltons/commit/f387b64c4b7c4267ea94bcfcd229923ab2f598ea",
+        "retrieved_diff_sha256": "13e7ce09eadd4b8acdf58249064f87145a3e0016c28666da100e47dc1f9ae63e",
+        "regression_evidence": "OFFICIAL_COMMIT_DIFF_AND_PUBLIC_ISSUE"
+      }
+    },
+    {
+      "id": "boltons-lines",
+      "role": "TARGET",
+      "mechanism": "UNICODE_LINE_TERMINATOR",
+      "function": "iter_splitlines",
+      "adapter": "lines",
+      "contract": {
+        "kind": "text",
+        "alphabet": "ab 28\n\r\u2028\u2029",
+        "min_size": 0,
+        "max_size": 8
+      },
+      "issue": "https://github.com/mahmoud/boltons/issues/475",
+      "license": "BSD-3-Clause",
+      "license_file": "vendor/boltons-LICENSE.txt",
+      "public_contract": "Split at documented CRLF, LF, VT, FF, CR, NEL, U+2028 and U+2029 endings; preserve terminal empty line; empty text yields no lines. ASCII space plus 28/29 is ordinary text.",
+      "public_parameters": {},
+      "reproduction_input": "a\u2028b",
+      "project": "mahmoud/boltons",
+      "original_path": "boltons/strutils.py",
+      "buggy_revision": "967864f89791509f9eb36b22b4579d36b72a6df2",
+      "fixed_revision": "d12d86a4706aa4a367a91679b0ff9b6a572e5298",
+      "implementation_lineage": "mahmoud/boltons:boltons/strutils.py:iter_splitlines",
+      "classification": "HISTORICAL_DEFECT_REDISCOVERY",
+      "execution_dependencies": [
+        "Python standard library"
+      ],
+      "adapter_limits": "Declared public fixed parameters and iterator materialization only; no generated answer correction; actual kind preserved.",
+      "buggy": {
+        "revision": "967864f89791509f9eb36b22b4579d36b72a6df2",
+        "capsule": "vendor/boltons-lines-buggy.py",
+        "capsule_sha256": "2ff6a3323d3724ff6583d593afa63910cd42dce5dcca3ec1fda684cfe830a64a",
+        "original_git_blob_sha": "95f8e12983c13a444baff233dc6802a213063b0a",
+        "original_url": "https://github.com/mahmoud/boltons/blob/967864f89791509f9eb36b22b4579d36b72a6df2/boltons/strutils.py",
+        "source_statements": [
+          {
+            "name": "_line_ending_re",
+            "first_line": 665,
+            "last_line": 666,
+            "normalized_lf_source_sha256": "823e175b41e722f76b5ef7d27e17ffc2563197eea57caa21b525505250d5b6e4"
+          },
+          {
+            "name": "iter_splitlines",
+            "first_line": 669,
+            "last_line": 698,
+            "normalized_lf_source_sha256": "d88a8f8a8ca977fd4d5724a40e3b49eec1886db430afb96ce53ddd8eb62ec0b4"
+          }
+        ],
+        "extraction": "EXACT_AST_SOURCE_SEGMENTS_LF_NORMALIZED_WITH_REVIEWED_STDLIB_BINDINGS"
+      },
+      "fixed": {
+        "revision": "d12d86a4706aa4a367a91679b0ff9b6a572e5298",
+        "capsule": "vendor/boltons-lines-fixed.py",
+        "capsule_sha256": "06dae5f9bca5fe0a555d853a82fc8343b79335fe742d7e37b4948d3b6e9b7d18",
+        "original_git_blob_sha": "526e81cb0325d722721b6f2d5e24ef929f2c9256",
+        "original_url": "https://github.com/mahmoud/boltons/blob/d12d86a4706aa4a367a91679b0ff9b6a572e5298/boltons/strutils.py",
+        "source_statements": [
+          {
+            "name": "_line_ending_re",
+            "first_line": 665,
+            "last_line": 666,
+            "normalized_lf_source_sha256": "53e20f2f31f8e7b285941a0a4cb79d10d5ab7c29c0df00e07581568b0c0f857a"
+          },
+          {
+            "name": "iter_splitlines",
+            "first_line": 669,
+            "last_line": 698,
+            "normalized_lf_source_sha256": "d88a8f8a8ca977fd4d5724a40e3b49eec1886db430afb96ce53ddd8eb62ec0b4"
+          }
+        ],
+        "extraction": "EXACT_AST_SOURCE_SEGMENTS_LF_NORMALIZED_WITH_REVIEWED_STDLIB_BINDINGS"
+      },
+      "license_provenance": {
+        "id": "boltons-lines",
+        "git_blob_sha": "6a4c9d2496f53c61c99ae7c113e6ed94b15b038c",
+        "source_url": "https://github.com/mahmoud/boltons/blob/d12d86a4706aa4a367a91679b0ff9b6a572e5298/LICENSE",
+        "retained_sha256": "0c8ab2ba18e08848f301c4af54fdedb4929afcbf120e14353698ed62872c463a",
+        "normalization": "UTF8_LF_PRESERVED_FULL_LICENSE_TEXT"
+      },
+      "fix_evidence": {
+        "fix_title": "Fix Unicode line separators in iter_splitlines",
+        "fix_url": "https://github.com/mahmoud/boltons/commit/d12d86a4706aa4a367a91679b0ff9b6a572e5298",
+        "retrieved_diff_sha256": "676c868d7aa3ae18d2070cc82effdbff6cef7be5bd5807858ae22fe25fe9162d",
+        "regression_evidence": "OFFICIAL_COMMIT_DIFF_AND_PUBLIC_ISSUE"
+      }
+    },
+    {
+      "id": "boltons-bytes",
+      "role": "TARGET",
+      "mechanism": "ROUNDED_UNIT_BOUNDARY",
+      "function": "bytes2human",
+      "adapter": "bytes",
+      "contract": {
+        "kind": "float",
+        "low": -2048,
+        "high": 2048
+      },
+      "issue": "https://github.com/mahmoud/boltons/pull/525",
+      "license": "BSD-3-Clause",
+      "license_file": "vendor/boltons-LICENSE.txt",
+      "public_contract": "Finite byte counts with ndigits=0: select the unit after display rounding so a rounded magnitude of 1024 bytes uses 1K, preserving sign and normal formatting. Domain only requires B/K units.",
+      "public_parameters": {
+        "ndigits": 0
+      },
+      "reproduction_input": 1023.6,
+      "project": "mahmoud/boltons",
+      "original_path": "boltons/strutils.py",
+      "buggy_revision": "6e0ab7b09acb71ba9d8f2412d6a01a3bda98af5f",
+      "fixed_revision": "f387b64c4b7c4267ea94bcfcd229923ab2f598ea",
+      "implementation_lineage": "mahmoud/boltons:boltons/strutils.py:bytes2human",
+      "classification": "HISTORICAL_DEFECT_REDISCOVERY",
+      "execution_dependencies": [
+        "Python standard library"
+      ],
+      "adapter_limits": "Declared public fixed parameters and iterator materialization only; no generated answer correction; actual kind preserved.",
+      "buggy": {
+        "revision": "6e0ab7b09acb71ba9d8f2412d6a01a3bda98af5f",
+        "capsule": "vendor/boltons-bytes-buggy.py",
+        "capsule_sha256": "fda21a0d451e2cda3c6850a8e55d60189c8ae83ba91215110b932c49ec33b7d7",
+        "original_git_blob_sha": "74441c7e39dc5a666d76ca559f2ea6b80b3372c6",
+        "original_url": "https://github.com/mahmoud/boltons/blob/6e0ab7b09acb71ba9d8f2412d6a01a3bda98af5f/boltons/strutils.py",
+        "source_statements": [
+          {
+            "name": "_SIZE_SYMBOLS",
+            "first_line": 553,
+            "last_line": 553,
+            "normalized_lf_source_sha256": "ad03abbdaad535ae42a7d74f2c35540d41d3d2089e51da3091e6c3f6e02cc96e"
+          },
+          {
+            "name": "_SIZE_BOUNDS",
+            "first_line": 554,
+            "last_line": 554,
+            "normalized_lf_source_sha256": "09c526b27393c9bc110ac5b8d7c9ff4418d413e2fc2cdf8571e89137191abd92"
+          },
+          {
+            "name": "_SIZE_BOUNDS.append",
+            "first_line": 555,
+            "last_line": 555,
+            "normalized_lf_source_sha256": "ddc54cf5d2e36e46ed85cb6518bb9216b412dbcb64bba5c794e3d05abcfab71c"
+          },
+          {
+            "name": "_SIZE_RANGES",
+            "first_line": 556,
+            "last_line": 556,
+            "normalized_lf_source_sha256": "019d476237d395aa9a4abdbdec9a2fc9b9e1fbab9b650e8419b96cbd7ab1231d"
+          },
+          {
+            "name": "bytes2human",
+            "first_line": 559,
+            "last_line": 582,
+            "normalized_lf_source_sha256": "c9ce7cea1841f93ea7046e58cda0191a74ba8c5647c4574ff03ea5355c270e0b"
+          }
+        ],
+        "extraction": "EXACT_AST_SOURCE_SEGMENTS_LF_NORMALIZED_WITH_REVIEWED_STDLIB_BINDINGS"
+      },
+      "fixed": {
+        "revision": "f387b64c4b7c4267ea94bcfcd229923ab2f598ea",
+        "capsule": "vendor/boltons-bytes-fixed.py",
+        "capsule_sha256": "d8915c077261dc5a5caef668e68b9bf359ba95b6212c5af687fb664349ace153",
+        "original_git_blob_sha": "39ef4492bf4d1e686d309c4ef478f65d4dee7a87",
+        "original_url": "https://github.com/mahmoud/boltons/blob/f387b64c4b7c4267ea94bcfcd229923ab2f598ea/boltons/strutils.py",
+        "source_statements": [
+          {
+            "name": "_SIZE_SYMBOLS",
+            "first_line": 549,
+            "last_line": 549,
+            "normalized_lf_source_sha256": "ad03abbdaad535ae42a7d74f2c35540d41d3d2089e51da3091e6c3f6e02cc96e"
+          },
+          {
+            "name": "_SIZE_BOUNDS",
+            "first_line": 550,
+            "last_line": 550,
+            "normalized_lf_source_sha256": "09c526b27393c9bc110ac5b8d7c9ff4418d413e2fc2cdf8571e89137191abd92"
+          },
+          {
+            "name": "_SIZE_BOUNDS.append",
+            "first_line": 551,
+            "last_line": 551,
+            "normalized_lf_source_sha256": "ddc54cf5d2e36e46ed85cb6518bb9216b412dbcb64bba5c794e3d05abcfab71c"
+          },
+          {
+            "name": "_SIZE_RANGES",
+            "first_line": 552,
+            "last_line": 552,
+            "normalized_lf_source_sha256": "019d476237d395aa9a4abdbdec9a2fc9b9e1fbab9b650e8419b96cbd7ab1231d"
+          },
+          {
+            "name": "bytes2human",
+            "first_line": 555,
+            "last_line": 581,
+            "normalized_lf_source_sha256": "e3d9b1c6f601231a0f3303978f3f777afae312ed8f02326e23a959a2c822dc1d"
+          }
+        ],
+        "extraction": "EXACT_AST_SOURCE_SEGMENTS_LF_NORMALIZED_WITH_REVIEWED_STDLIB_BINDINGS"
+      },
+      "license_provenance": {
+        "id": "boltons-bytes",
+        "git_blob_sha": "6a4c9d2496f53c61c99ae7c113e6ed94b15b038c",
+        "source_url": "https://github.com/mahmoud/boltons/blob/f387b64c4b7c4267ea94bcfcd229923ab2f598ea/LICENSE",
+        "retained_sha256": "0c8ab2ba18e08848f301c4af54fdedb4929afcbf120e14353698ed62872c463a",
+        "normalization": "UTF8_LF_PRESERVED_FULL_LICENSE_TEXT"
+      },
+      "fix_evidence": {
+        "fix_title": "strutils: fix backslash punctuation, non-UTF-8 strip_ansi, html2text tail, z plurals, multi-member gunzip, MultiReplace flags, bytes2human (#492, #501, #571, #586, #576, #567, #508, #525)",
+        "fix_url": "https://github.com/mahmoud/boltons/commit/f387b64c4b7c4267ea94bcfcd229923ab2f598ea",
+        "retrieved_diff_sha256": "13e7ce09eadd4b8acdf58249064f87145a3e0016c28666da100e47dc1f9ae63e",
+        "regression_evidence": "OFFICIAL_COMMIT_DIFF_AND_PUBLIC_ISSUE"
+      }
+    }
+  ],
+  "selection_boundary": "OFFICIAL_HISTORY_AND_STATIC_INPUT_API_REVIEW_BEFORE_ANY_METHOD_PERFORMANCE_EXECUTION",
+  "source_coverage_limits": "Sources cover sequence_int only. Text/float targets are typed fallback/routing controls, not positive structural-transfer folds.",
+  "independence_limits": "Fixed revisions are same-function clean controls, not independent implementations. Four of six Targets are from boltons."
+}

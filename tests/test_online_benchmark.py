@@ -237,3 +237,158 @@ def test_ordered_mapping_source_inputs_survive_storage_and_reject_order_tamperin
     output=tmp_path/"ordered-source.json"
     driver.write_new(output,dict(records=[row]))
     assert list(json.loads(output.read_text())["records"][0]["input"]) == ["b","a"]
+
+
+def _historical_runner_fixture_cases():
+    """Metadata/executor unit fixture, never a real-project evidence claim."""
+    from types import SimpleNamespace
+    def build(name, role, kind, mechanism, bug):
+        metadata=dict(id=name,role=role,project="UNIT_FIXTURE_NOT_A_PROJECT",license="TEST_ONLY",
+            bug_identity=bug,mechanism_family=mechanism,input_kind=kind,
+            implementation_lineage="fixture-"+name,buggy_revision="b"*40,fixed_revision="f"*40,
+            identity={field:digest([name,field]) for field in
+                ("canonical_function_identity","cross_revision_function_key","normalized_ast_clone_sha256","implementation_sha256")},
+            oracle_sha256=digest([name,"oracle"]),control_group=bug,
+            usage_role="CLEAN_CONTROL" if role=="CONTROL" else "POSITIVE_REPRODUCTION")
+        return SimpleNamespace(id=name,role=role,axis="PUBLIC_UNIT_TYPE",
+            mechanism=mechanism,contract=dict(kind=kind,min_size=0,max_size=4),
+            target=lambda point:point,oracle=lambda point:point,observation_mode="black_box",
+            metadata=lambda:deepcopy(metadata))
+    return [build("src-empty","SOURCE","sequence_int","EMPTY","src-empty-bug"),
+            build("src-falsey","SOURCE","sequence_int","FALSEY","src-falsey-bug"),
+            build("target-sequence","TARGET","sequence_int","EMPTY","target-sequence-bug"),
+            build("fixed-sequence","CONTROL","sequence_int","EMPTY","target-sequence-bug"),
+            build("target-text","TARGET","text","TEXT_OTHER","target-text-bug"),
+            build("fixed-text","CONTROL","text","TEXT_OTHER","target-text-bug")]
+
+
+def _historical_runner_config():
+    return benchmark.historical_config(budgets=[16,32],seeds=[37],
+        source_budget=16,source_seed=19,shrink_budget=4)
+
+
+def test_historical_profile_requires_development_budget_and_all_criteria():
+    config=_historical_runner_config()
+    assert config["criteria"]["WALL_TIME_GAIN"].startswith("DESCRIPTIVE_ONLY")
+    assert config["success"]["maximum_wall_ratio"] is None
+    for value in ([8,16,32],[32,16],[16,16],[]):
+        changed=deepcopy(config);changed["budgets"]=value
+        with pytest.raises(ValueError):benchmark.validate_config(changed)
+    changed=deepcopy(config);changed["criteria"]["ADDED_VALUE_OVER_C"]="PENDING"
+    with pytest.raises(ValueError):benchmark.validate_config(changed)
+    with pytest.raises(ValueError,match="execution boundary"):
+        benchmark.prepare_sources(config)
+
+
+def test_lomo_mechanism_exclusion_does_not_erase_shared_input_kind():
+    config=_historical_runner_config();corpus=_historical_runner_fixture_cases()
+    plan=benchmark.fold_plan(config,corpus)
+    sequence=next(p for p in plan if p["case_id"]=="target-sequence" and p["evaluation"]=="LEAVE_ONE_MECHANISM_OUT")
+    assert sequence["source_ids"] == ["src-falsey"]
+    assert sequence["type_grammar_contact"] and sequence["execute"]
+    assert sequence["retained_type_rules"] is None
+    text=next(p for p in plan if p["case_id"]=="target-text" and p["evaluation"]=="LEAVE_ONE_MECHANISM_OUT")
+    assert text["classification"]=="ROUTING_FALLBACK_CONTROL" and text["execute"] is False
+    assert next(p for p in plan if p["case_id"]=="target-text" and p["evaluation"]=="IMPLEMENTATION_TRANSFER")["execute"]
+    absent=deepcopy(corpus[2]);absent.id="target-absent-family";absent.mechanism="ABSENT"
+    metadata=absent.metadata()
+    absent.metadata=lambda:{**metadata,"id":absent.id,"bug_identity":"absent-family-bug","mechanism_family":"ABSENT"}
+    routed=next(p for p in benchmark.fold_plan(config,[*corpus,absent])
+                if p["case_id"]==absent.id and p["evaluation"]=="LEAVE_ONE_MECHANISM_OUT")
+    assert routed["type_grammar_contact"] is True and routed["excluded_source_count"]==0
+    assert routed["classification"]=="MECHANISM_ABSENT_FROM_SOURCE" and routed["execute"] is False
+
+
+def test_historical_corpus_preserves_provenance_and_disjoint_bug_roles():
+    from types import SimpleNamespace
+    config=_historical_runner_config();corpus=_historical_runner_fixture_cases()
+    bad=deepcopy(corpus)
+    original=bad[0].metadata()
+    bad[0].metadata=lambda:{**original,"bug_identity":"target-sequence-bug"}
+    with pytest.raises(ValueError,match="disjoint"):benchmark.fold_plan(config,bad)
+    original=corpus[0].metadata()
+    corpus[0].metadata=lambda:{**original,"mechanism_family":"WRONG"}
+    with pytest.raises(ValueError,match="separate contracts"):benchmark.fold_plan(config,corpus)
+
+
+def test_historical_runner_uses_one_engine_and_skips_impossible_lomo(monkeypatch,tmp_path):
+    import sys
+    from types import ModuleType
+    boundary=ModuleType("tomolab.historical")
+    binding=dict(image_id="unit-image",container_id="unit-container")
+    boundary.require_reviewed_container=lambda:dict(binding=deepcopy(binding))
+    monkeypatch.setitem(sys.modules,"tomolab.historical",boundary)
+    config=_historical_runner_config();corpus=_historical_runner_fixture_cases()
+    calls=[]
+    def execute(target,oracle,contract,**options):
+        calls.append((target,deepcopy(options)))
+        point="" if contract["kind"]=="text" else []
+        return dict(status="COMPLETE",events=[],
+            observations=[dict(input=point,input_digest=input_identity(point),status="PASS")],
+            target_calls=1,oracle_calls=1,first_confirmed_failure=None,cost=dict(wall_seconds=.001),scheduler={})
+    prepared=benchmark.prepare_sources(config,corpus=corpus,executor=execute)
+    assert len(calls)==2 and prepared["target_evaluation_calls"]==0
+    assert set(prepared["molds"])=={"ALL","EMPTY"}
+    assert prepared["execution_boundary"]==binding
+    assert prepared["coverage"]["measured_before_registered_target_runs"] is True
+    assert prepared["coverage"]["models"]["ALL"]["rules"]==0
+    before=deepcopy(prepared["molds"]);calls.clear()
+    result=benchmark.run_comparison(config,prepared,event_path=tmp_path/"events.jsonl",
+                                    corpus=corpus,executor=execute)
+    assert len(result["runs"])==48
+    assert prepared["molds"]==before
+    assert all(r["routing"]["type_grammar_contact"] for r in result["runs"]
+               if r["evaluation"]=="LEAVE_ONE_MECHANISM_OUT")
+    assert {r["budget"] for r in result["runs"]}=={16,32}
+    assert all(options["mode"]=="black_box" for _,options in calls)
+    assert result["summary"]["LEAVE_ONE_MECHANISM_OUT"]["status"]=="EVALUATED"
+    assert result["summary"]["IMPLEMENTATION_TRANSFER"]["budgets"]["16"]["methods"]["E9_R1_D"]["missed_runs"]==2
+    boundary.require_reviewed_container=lambda:dict(binding={**binding,"container_id":"changed"})
+    with pytest.raises(PermissionError,match="same reviewed container"):
+        benchmark.run_comparison(config,prepared,corpus=corpus,executor=execute)
+
+
+def test_historical_gain_keeps_misses_and_does_not_invent_cost_success():
+    def row(case,method,first,wall=1):
+        return dict(case=dict(id=case,bug_identity=case,role="TARGET"),seed=1,method="E9_R1_"+method,
+            result=dict(first_confirmed_failure=None if first is None else dict(target_calls=first,seconds=first/10)),
+            executor_call_wall_seconds=wall)
+    rows=[row("joint","C",8),row("joint","D",6,1.1),
+          row("miss","C",None),row("miss","D",None)]
+    assessed=benchmark.assess_historical_gain(rows,benchmark.HISTORICAL_CRITERIA)
+    assert assessed["QUERY_EFFICIENCY_GAIN"]["observed"] is True
+    assert len(assessed["QUERY_EFFICIENCY_GAIN"]["both_missed"])==1
+    assert assessed["WALL_TIME_GAIN"]["status"]=="DESCRIPTIVE_ONLY"
+    assert assessed["NEGATIVE_TRANSFER"]["higher_D_total_wall"] is True
+    assert assessed["ADDED_VALUE_OVER_C"]["composite_efficiency_success"] is False
+    assert not assessed["DETECTION_GAIN"]["observed"]
+    rows += [row("C-only","C",3),row("C-only","D",None)]
+    assert benchmark.assess_historical_gain(rows,benchmark.HISTORICAL_CRITERIA)["QUERY_EFFICIENCY_GAIN"]["observed"] is False
+    unblocked=rows[:4]
+    fixed=row("fixed-control","D",3)
+    fixed["case"]["role"]="CONTROL"
+    assessed=benchmark.assess_historical_gain([*unblocked,fixed],benchmark.HISTORICAL_CRITERIA)
+    assert assessed["QUERY_EFFICIENCY_GAIN"]["observed"] is False
+    assert assessed["ADDED_VALUE_OVER_C"]["status"]=="UNRESOLVED_FIXED_CONTROL_CONTRACT_DIFFERENCE"
+    assert assessed["ADDED_VALUE_OVER_C"]["fixed_control_disagreements"][0]["status"]=="UNRESOLVED_CONTRACT_DIFFERENCE"
+    errored=deepcopy(unblocked)
+    errored[0]["result"]["oracle_errors"]=1
+    assessed=benchmark.assess_historical_gain(errored,benchmark.HISTORICAL_CRITERIA)
+    assert assessed["QUERY_EFFICIENCY_GAIN"]["observed"] is False
+    assert assessed["ADDED_VALUE_OVER_C"]["status"]=="INCONCLUSIVE_EXECUTION_OR_ORACLE_OR_UNKNOWN"
+
+
+def test_source_audit_reports_omitted_rule_types_without_changing_mold():
+    from tomolab.discovery.online_learning import learn_mold
+    contract=dict(kind="sequence_int",low=-2,high=2,min_size=0,max_size=4)
+    rows=[dict(input=[],status="PASS",contract=contract),
+          dict(input=[0],status="FAILURE",contract=contract),
+          dict(input=[1],status="PASS",contract=contract)]
+    audit={}
+    plain=learn_mold(rows,max_rules=1)
+    inspected=learn_mold(rows,max_rules=1,audit=audit)
+    assert plain==inspected
+    summaries=audit["ranked_rule_summaries"]
+    assert len(summaries)==len(plain["rules"])+plain["omitted_rules"]
+    assert {r["rule_id"] for r in summaries if r["selected"]}=={r["rule_id"] for r in plain["rules"]}
+    assert all(set(r)=={"rule_id","kind","edit_composition","preconditions","selected","omission_reason"} for r in summaries)

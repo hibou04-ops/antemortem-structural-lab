@@ -27,6 +27,14 @@ class OnlinePolicy:
     def __init__(self, contract, *, method, seed, budget, mold=None, replays=(), structure=None):
         self.contract, self.method = deepcopy(contract), method.removeprefix("E9_")
         self.rng, self.structure = random.Random(seed), deepcopy(structure or {})
+        # Rule lookup has a private, stable stream. It cannot perturb native,
+        # local/replay mutation or shrinking randomness when guidance fails.
+        self.rule_rng = random.Random(int(digest(dict(seed=seed, stream="source-rule-v1")), 16))
+        if mold is not None:
+            from .online_mold import validate_mold
+            if self.method != "D":
+                raise ValueError("only D receives Source-learned Mold")
+            validate_mold(mold)
         self.mold = deepcopy(mold) if self.method == "D" else None
         self.replays = [deepcopy(p) for p in replays if validate_input(p, contract)] if self.method in ("C", "D") else []
         self.caps = dict(replay=budget // 5, structure=3 * budget // 10)
@@ -36,15 +44,31 @@ class OnlinePolicy:
         self.operator_rewards = dict.fromkeys(common_operators(contract["kind"]), 1)
         self.guidance_rejected = self.duplicate_guidance = self.guidance_lookups = 0
         self.guidance_not_applicable = 0
+        self.guidance_matches = self.guidance_applied = self.guidance_changed_common = 0
+        self.guidance_invalid = self.guidance_duplicates = self.guidance_unexecutable = 0
+        self.guidance_lookup_seconds = 0.0
+        self.last_selection = {}
         self.used_rules = []
         self.seen = set()
 
     def state_digest(self):
         return digest(dict(method=self.method, contract=self.contract, rng=self.rng.getstate(),
+                           rule_rng=self.rule_rng.getstate(),
                            archive=self.archive, last_feedback=self.last_feedback, caps=self.caps,
                            used=self.used, attempts=self.attempts, operator_rewards=self.operator_rewards,
                            seen=sorted(self.seen), used_rules=self.used_rules,
                            mold_digest=self.mold.get("artifact_digest") if self.mold else None))
+
+    def common_state_digest(self):
+        """Fields that must agree before an effective Source edit diverges.
+
+        Method/Mold identities, rule RNG and lookup diagnostics are deliberately
+        excluded; local RNG, replay position, feedback and actual budgets are not.
+        """
+        return digest(dict(contract=self.contract, rng=self.rng.getstate(),
+            archive=self.archive, last_feedback=self.last_feedback, caps=self.caps,
+            used=self.used, attempts=self.attempts, operator_rewards=self.operator_rewards,
+            seen=sorted(self.seen)))
 
     def receive(self, point, feedback, *, phase="base", operator=None):
         # Reject accidental widening to evaluator-private outputs.
@@ -71,8 +95,69 @@ class OnlinePolicy:
             return "boundary"
         return self.rng.choices(operators, weights=[self.operator_rewards[o] for o in operators], k=1)[0]
 
+    def _checked_choice(self, base, point, lane, operator):
+        if point is None or not validate_input(point, self.contract):
+            self.guidance_rejected += 1
+            return deepcopy(base), "base", None, None, "INVALID_GUIDANCE_RETURNED_TO_BASE"
+        if lane != "base" and input_identity(point) in self.seen:
+            self.duplicate_guidance += 1
+            return deepcopy(base), "base", None, None, "DUPLICATE_GUIDANCE_RETURNED_TO_BASE"
+        return point, lane, operator, None, "SELECTED"
+
+    def _common_structure_choice(self, base, anchor):
+        """The one local edit path shared by C and every rejected D proposal."""
+        operator = self._local_operator()
+        point = apply_edit(deepcopy(anchor), operator, self.contract, self.structure)
+        return self._checked_choice(base, point, "structure", operator)
+
+    def _guided_structure_choice(self, anchor, common):
+        # Validation errors must escape. A corrupt artifact is not a normal
+        # inapplicable proposal and never silently falls back.
+        if self.mold is None:
+            self.guidance_not_applicable += 1
+            self.last_selection["source_state"] = "NO_MOLD"
+            return common
+        from .online_mold import select_edit
+        tick = time.perf_counter()
+        self.guidance_lookups += 1
+        try:
+            selected = select_edit(self.mold, deepcopy(anchor), self.contract, self.rule_rng)
+        finally:
+            self.guidance_lookup_seconds += time.perf_counter()-tick
+        if selected is None:
+            self.guidance_not_applicable += 1
+            self.last_selection["source_state"] = "NOT_APPLICABLE"
+            return common
+        self.guidance_matches += 1
+        point = deepcopy(anchor)
+        try:
+            for operator in selected["operators"]:
+                point = apply_edit(point, operator, self.contract, self.structure)
+                if point is None:
+                    break
+        except (TypeError, ValueError, OverflowError):
+            self.guidance_unexecutable += 1
+            self.last_selection["source_state"] = "UNEXECUTABLE"
+            return common
+        if point is None or not validate_input(point, self.contract):
+            self.guidance_invalid += 1
+            self.last_selection["source_state"] = "INVALID_RESULT"
+            return common
+        if input_identity(point) in self.seen:
+            self.guidance_duplicates += 1
+            self.last_selection["source_state"] = "DUPLICATE_RESULT"
+            return common
+        changed = input_identity(point) != input_identity(common[0])
+        self.guidance_applied += 1
+        self.guidance_changed_common += changed
+        self.last_selection.update(source_state="APPLIED", source_changed_common=changed,
+                                   proposed_rule_id=selected["rule_id"])
+        return point, "structure", selected["operators"][-1], selected["rule_id"], "SOURCE_RULE_APPLIED"
+
     def propose(self, base):
         self.attempts += 1
+        self.last_selection = dict(source_state="NOT_A_SOURCE_SLOT", source_changed_common=False,
+                                   common_candidate_digest=None, common_operator=None)
         slot = (self.attempts - 1) % 10
         lane, operator, rule_id, point = "base", None, None, deepcopy(base)
         if self.method in ("C", "D") and slot < 2 and self.replays and self.used["replay"] + 3 <= self.caps["replay"]:
@@ -87,31 +172,12 @@ class OnlinePolicy:
             if self.archive:
                 failures = [r for r in self.archive if r["feedback"]["status"] == "FAILURE"]
                 point = deepcopy((failures or self.archive)[-1]["input"])
-            if self.method == "D" and self.mold is not None:
-                from .online_mold import select_edit
-                self.guidance_lookups += 1
-                selected = select_edit(self.mold, point, self.contract, self.rng)
-                if selected:
-                    rule_id = selected["rule_id"]
-                    for operator in selected["operators"]:
-                        point = apply_edit(point, operator, self.contract, self.structure)
-                        if point is None:
-                            break
-                else:
-                    # No applicable source policy: return the slot to native
-                    # search rather than granting D another target call.
-                    lane, point = "base", deepcopy(base)
-                    self.guidance_not_applicable += 1
-            else:
-                operator = self._local_operator()
-                point = apply_edit(point, operator, self.contract, self.structure)
-        if point is None or not validate_input(point, self.contract):
-            self.guidance_rejected += 1
-            return deepcopy(base), "base", None, None, "INVALID_GUIDANCE_RETURNED_TO_BASE"
-        if lane != "base" and input_identity(point) in self.seen:
-            self.duplicate_guidance += 1
-            return deepcopy(base), "base", None, None, "DUPLICATE_GUIDANCE_RETURNED_TO_BASE"
-        return point, lane, operator, rule_id, "SELECTED"
+            anchor = deepcopy(point)
+            common = self._common_structure_choice(base, anchor)
+            self.last_selection.update(common_candidate_digest=input_identity(common[0]),
+                                       common_operator=common[2])
+            return self._guided_structure_choice(anchor, common) if self.method == "D" else common
+        return self._checked_choice(base, point, lane, operator)
 
 
 def _score(feedback):
@@ -146,7 +212,8 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
                   target_state_reset="FULL_TRACE_ADAPTER_LOCAL_STATE_OR_CALLER_RESPONSIBILITY",
                   target_state_contract="PURE_CALLABLE_OR_REVIEWED_FULL_TRACE_RESET_ADAPTER_REQUIRED",
                   cost=dict(target_seconds=0.0, oracle_seconds=0.0, instrumentation_seconds=0.0,
-                            generation_seconds=0.0, matching_seconds=0.0, solver_seconds=0.0,
+                            generation_seconds=0.0, matching_seconds=0.0, source_lookup_seconds=0.0,
+                            solver_seconds=0.0,
                             initialization_seconds=time.perf_counter()-started,
                             shrink_seconds=0.0, replay_seconds=0.0, wall_seconds=0.0),
                   shrinking=dict(status="NOT_AVAILABLE", minimality="NOT_CLAIMED", witness=None),
@@ -221,6 +288,7 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
             return
         tick = time.perf_counter()
         state_before = policy.state_digest()
+        common_state_before = policy.common_state_digest()
         point, phase, operator, rule_id, decision = policy.propose(base)
         result["cost"]["matching_seconds"] += time.perf_counter()-tick
         if not validate_input(point, contract):
@@ -241,9 +309,11 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
         hypothesis_target(_score(first["feedback"]), label="public_path_and_literal_distance")
         event = result["events"][-1]
         event.update(selection_decision=decision, base_input_digest=input_identity(base),
-                     policy_state_before=state_before)
+                     policy_state_before=state_before, common_policy_state_before=common_state_before,
+                     source_selection=deepcopy(policy.last_selection))
         confirm(point, first, phase, operator, rule_id, origin)
         event["policy_state_after"] = policy.state_digest()
+        event["common_policy_state_after"] = policy.common_state_digest()
     try:
         tick = time.perf_counter()
         before = sum(result["cost"][k] for k in ("target_seconds", "oracle_seconds", "instrumentation_seconds", "matching_seconds"))
@@ -319,12 +389,21 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
         result["cost"]["shrink_seconds"] = time.perf_counter()-tick
     if expired():
         result["status"] = "WALL_LIMIT_REACHED"
-    result["scheduler"] = dict(policy="COMMON_C_D_CALL_CAPS_V1", discovery_call_limit=discovery_limit,
+    result["scheduler"] = dict(policy="COMMON_C_D_LOCAL_FALLBACK_V2", discovery_call_limit=discovery_limit,
         caps=policy.caps, actual=policy.used, guidance_rejected=policy.guidance_rejected,
         duplicate_guidance=policy.duplicate_guidance, learned_lookups=policy.guidance_lookups,
         guidance_not_applicable=policy.guidance_not_applicable,
-        learned_rule_uses=policy.used_rules, rejected_slots="RETURNED_TO_NATIVE_BASE_WITHOUT_EXTRA_CALL",
+        learned_rule_matches=policy.guidance_matches, learned_valid_proposals=policy.guidance_applied,
+        learned_changed_common_proposals=policy.guidance_changed_common,
+        learned_invalid_results=policy.guidance_invalid, learned_duplicate_results=policy.guidance_duplicates,
+        learned_unexecutable_results=policy.guidance_unexecutable,
+        learned_changed_common_executions=sum(bool(event.get("rule_id")) and
+            event.get("source_selection", {}).get("source_changed_common", False)
+            for event in result["events"]),
+        learned_rule_uses=policy.used_rules, rejected_slots="SHARED_C_LOCAL_EDIT_THEN_COMMON_VALIDATION",
+        rule_rng="SHA256_CANONICAL_SEED_SOURCE_RULE_V1_SEPARATE_FROM_COMMON_RNG",
         base_minimum_scope="HALF_OF_DISCOVERY_CALL_BUDGET_IF_EXHAUSTED; confirmation charged to origin lane")
+    result["cost"]["source_lookup_seconds"] = policy.guidance_lookup_seconds
     result["cost"].update(wall_seconds=time.perf_counter()-started, intervals_nested_not_additive=True,
         target_seconds_include_line_tracing=True, wall_limit="COOPERATIVE_BETWEEN_CALLS_NOT_OS_TIMEOUT")
     result["new_valid_inputs"] = len(seen - known_replay_identities)
@@ -336,7 +415,7 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
 
 
 def run_online(target, oracle, contract, *, method="C", seed=7, budget=48, shrink_budget=8,
-               mold=None, replays=(), max_seconds=30, mode="structural"):
+               mold=None, replays=(), max_seconds=30, mode="structural", inspection_target=None):
     """Fresh data-only search process; trusted Target/Oracle stay on the host.
 
     The existing reviewed process loader, allowlisted copies and sanitized
@@ -351,7 +430,20 @@ def run_online(target, oracle, contract, *, method="C", seed=7, budget=48, shrin
     for fn in (target, oracle):
         if not callable(fn) or inspect.iscoroutinefunction(fn) or inspect.isgeneratorfunction(fn) or inspect.isasyncgenfunction(fn) or inspect.iscoroutinefunction(getattr(fn, "__call__", None)):
             raise ValueError("reviewed synchronous non-generator callables required")
-    structure = inspect_target(target, contract, mode=mode)
+    if inspection_target is oracle and target is not oracle:
+        raise ValueError("an Oracle cannot be supplied as the public Target inspection reference")
+    inspected = target if inspection_target is None else inspection_target
+    structure = inspect_target(inspected, contract, mode=mode)
+    if inspection_target is not None and inspection_target is not target and mode == "structural":
+        # Adapter argument mappings are not inferred. Preserve public literals
+        # and actual upstream root coverage, but do not fabricate distances
+        # between a wrapper JSON value and an upstream scalar parameter.
+        for guard in structure["comparisons"]:
+            line=guard["line"]
+            guard.clear();guard.update(line=line,status="UNKNOWN",distance_scope="NOT_COMPUTED")
+        structure["limitations"].append("ADAPTER_ARGUMENT_MAPPING_NOT_MODELED; upstream root lines only")
+        if structure["status"] == "SUPPORTED_BOUNDED_OBSERVATION":
+            structure["status"] = "PARTIAL"
     if not isinstance(replays, (list, tuple)) or len(replays) > 2048:
         raise ValueError("bounded approved replay input list required")
     approved_replays = [p for p in replays if validate_input(p, contract)] if method in ("C", "D") else []
@@ -366,7 +458,8 @@ def run_online(target, oracle, contract, *, method="C", seed=7, budget=48, shrin
         if reference is not None:
             if type(reference) is not int or not 0 <= reference < len(host_rows) or host_rows[reference]["input_digest"] != input_identity(point):
                 raise ValueError("reproduction reference must be a prior evaluation of the same input")
-        observation = observe(target, oracle, point, contract, structure, tracing=mode == "structural")
+        observation = observe(target, oracle, point, contract, structure, tracing=mode == "structural",
+                              trace_target=inspection_target)
         for key in counters:
             counters[key] += observation[key]
         observation_id = len(host_rows)

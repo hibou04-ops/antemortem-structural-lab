@@ -1,0 +1,127 @@
+{
+  "schema": "tomolab-historical-candidate-catalog-v1",
+  "candidate_limit": 20,
+  "project_limit": 5,
+  "considered_candidates": 15,
+  "considered_projects": 3,
+  "selected_source": 2,
+  "selected_targets": 6,
+  "selection_stage": "OFFICIAL_HISTORY_AND_STATIC_API_REVIEW",
+  "selected_without_method_performance": true,
+  "external_code_executed_on_work": 0,
+  "candidates": [
+    {
+      "id": "toolz-interpose",
+      "project": "pytoolz/toolz",
+      "status": "SELECTED_SOURCE",
+      "evidence": "https://github.com/pytoolz/toolz/pull/635",
+      "fix_url": "https://github.com/pytoolz/toolz/commit/d2eba0374a452c2b18fe188b04527e22bda3548c",
+      "reason": "Reviewed official historical non-security defect; exact function extraction, independent bounded public-contract Oracle, natural typed input and pinned fixed clean control."
+    },
+    {
+      "id": "more-bucket",
+      "project": "more-itertools/more-itertools",
+      "status": "SELECTED_SOURCE",
+      "evidence": "https://github.com/more-itertools/more-itertools/issues/1308",
+      "fix_url": "https://github.com/more-itertools/more-itertools/commit/67fcf640477c78605580f5ee703a54c73c1e7a8a",
+      "reason": "Reviewed official historical non-security defect; exact function extraction, independent bounded public-contract Oracle, natural typed input and pinned fixed clean control."
+    },
+    {
+      "id": "more-windowed",
+      "project": "more-itertools/more-itertools",
+      "status": "SELECTED_TARGET",
+      "evidence": "https://github.com/more-itertools/more-itertools/issues/462",
+      "fix_url": "https://github.com/more-itertools/more-itertools/commit/db4630bc3175d6a884fb07092c645417c9e62d49",
+      "reason": "Reviewed official historical non-security defect; exact function extraction, independent bounded public-contract Oracle, natural typed input and pinned fixed clean control."
+    },
+    {
+      "id": "toolz-accumulate",
+      "project": "pytoolz/toolz",
+      "status": "SELECTED_TARGET",
+      "evidence": "https://github.com/pytoolz/toolz/pull/410",
+      "fix_url": "https://github.com/pytoolz/toolz/commit/2bf9e8b7a3ce9e0e9e376bee0795ca194c6fcf95",
+      "reason": "Reviewed official historical non-security defect; exact function extraction, independent bounded public-contract Oracle, natural typed input and pinned fixed clean control."
+    },
+    {
+      "id": "boltons-split",
+      "project": "mahmoud/boltons",
+      "status": "SELECTED_TARGET",
+      "evidence": "https://github.com/mahmoud/boltons/commit/4aa77cddb5d06def130df6f09aefab4018fa487c",
+      "fix_url": "https://github.com/mahmoud/boltons/commit/4aa77cddb5d06def130df6f09aefab4018fa487c",
+      "reason": "Reviewed official historical non-security defect; exact function extraction, independent bounded public-contract Oracle, natural typed input and pinned fixed clean control."
+    },
+    {
+      "id": "boltons-punct",
+      "project": "mahmoud/boltons",
+      "status": "SELECTED_TARGET",
+      "evidence": "https://github.com/mahmoud/boltons/issues/492",
+      "fix_url": "https://github.com/mahmoud/boltons/commit/f387b64c4b7c4267ea94bcfcd229923ab2f598ea",
+      "reason": "Reviewed official historical non-security defect; exact function extraction, independent bounded public-contract Oracle, natural typed input and pinned fixed clean control."
+    },
+    {
+      "id": "boltons-lines",
+      "project": "mahmoud/boltons",
+      "status": "SELECTED_TARGET",
+      "evidence": "https://github.com/mahmoud/boltons/issues/475",
+      "fix_url": "https://github.com/mahmoud/boltons/commit/d12d86a4706aa4a367a91679b0ff9b6a572e5298",
+      "reason": "Reviewed official historical non-security defect; exact function extraction, independent bounded public-contract Oracle, natural typed input and pinned fixed clean control."
+    },
+    {
+      "id": "boltons-bytes",
+      "project": "mahmoud/boltons",
+      "status": "SELECTED_TARGET",
+      "evidence": "https://github.com/mahmoud/boltons/pull/525",
+      "fix_url": "https://github.com/mahmoud/boltons/commit/f387b64c4b7c4267ea94bcfcd229923ab2f598ea",
+      "reason": "Reviewed official historical non-security defect; exact function extraction, independent bounded public-contract Oracle, natural typed input and pinned fixed clean control."
+    },
+    {
+      "id": "toolz-topk-key-zero",
+      "project": "pytoolz/toolz",
+      "status": "REJECTED_UNSUPPORTED_INPUT_KIND",
+      "evidence": "https://github.com/pytoolz/toolz/commit/dd87e4f20f6ef591a57f3d28f43c1d1eb1318794",
+      "reason": "The documented key=0 failure requires record/tuple elements. Flattening or invented singleton records would disguise original roles or fail to preserve the historical defect. No record encoding was introduced."
+    },
+    {
+      "id": "toolz-partition-all-comparison",
+      "project": "pytoolz/toolz",
+      "status": "REJECTED_UNSUPPORTED_INPUT_KIND",
+      "evidence": "https://github.com/pytoolz/toolz/pull/399",
+      "reason": "The regression requires a custom NoCompare element with equality semantics; the current public JSON sequence_int contract does not preserve this type. No custom equality was injected."
+    },
+    {
+      "id": "more-interleave-evenly-empty",
+      "project": "more-itertools/more-itertools",
+      "status": "REJECTED_UNSUPPORTED_INPUT_KIND",
+      "evidence": "https://github.com/more-itertools/more-itertools/commit/f51a53bfd2fe9504063a33ef5f4a73e30d82d0e2",
+      "reason": "The original API accepts an iterable of iterables. Encoding a flat sequence as artificial singleton iterables would narrow or change the typed roles. No nested-sequence adapter was introduced."
+    },
+    {
+      "id": "more-chunked-even-zero",
+      "project": "more-itertools/more-itertools",
+      "status": "NOT_SELECTED_BOUNDED_STATIC_REVIEW",
+      "evidence": "https://github.com/more-itertools/more-itertools/commit/fbd55137fe47b44f55190c3714c75f1b21bf834d",
+      "reason": "The six distinct Target functions and requested three projects were already selected before any method execution. An additional fixed-parameter zero-size chunk slice was not added. This is not a performance rejection, a claim of incompatibility, or an assertion that the function hangs."
+    },
+    {
+      "id": "boltons-pluralize-z",
+      "project": "mahmoud/boltons",
+      "status": "REJECTED_ORACLE_SCOPE",
+      "evidence": "https://github.com/mahmoud/boltons/commit/f387b64c4b7c4267ea94bcfcd229923ab2f598ea",
+      "reason": "The public English inflection contract requires a reviewed word/inflection oracle beyond the bounded character-string grammar. No invented dictionary was used to make a target."
+    },
+    {
+      "id": "boltons-strip-ansi-non-utf8",
+      "project": "mahmoud/boltons",
+      "status": "REJECTED_UNSUPPORTED_INPUT_KIND",
+      "evidence": "https://github.com/mahmoud/boltons/commit/f387b64c4b7c4267ea94bcfcd229923ab2f598ea",
+      "reason": "The historical defect concerns non-UTF8 bytes. Current text inputs are Unicode strings and cannot honestly preserve the original byte-encoding contract."
+    },
+    {
+      "id": "boltons-split-negative",
+      "project": "mahmoud/boltons",
+      "status": "REJECTED_DUPLICATE_FUNCTION_LINEAGE",
+      "evidence": "https://github.com/mahmoud/boltons/commit/6270b5e35ed902859df6188970eec5bee5ab73d1",
+      "reason": "A different maxsplit defect in the already-selected split_iter function was not counted as a new independent Target implementation."
+    }
+  ]
+}
