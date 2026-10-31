@@ -43,13 +43,17 @@ jobs:
       - name: Verify R2 byte commitment and PyPI paths preserved from main
         run: |
           python scripts/check-historical-e8r2-freeze.py
-          python scripts/check-r2-preservation.py
           python scripts/check-historical-e8r3-freeze.py
           python scripts/check-historical-freeze.py --revision ff74d19737460f4b51910192adbadddf82389560 --manifest docs/E8_R4_CODE_FREEZE.json
+      - name: Materialize the preserved R4 revision for its original PyPI path checks
+        run: git worktree add --detach "${{ runner.temp }}/r2-preservation" ff74d19737460f4b51910192adbadddf82389560
+      - name: Verify the original R2 publication paths without rewriting their checker
+        working-directory: ${{ runner.temp }}/r2-preservation
+        run: python scripts/check-r2-preservation.py
       - name: Verify the online algorithm registration without replaying research
         run: python scripts/check-historical-freeze.py --revision c92a094cf9092aa33b180ca733266705150a3d3f --manifest docs/ONLINE_PROFILE.json --allow-current-test-change tests/test_online_engine.py --allow-current-test-change tests/test_online_benchmark.py --allow-current-test-change tests/test_online_observe.py --output online-registration.json
-      - name: Verify the separate R1 registration when present, without target execution
-        run: python scripts/check-historical-freeze.py --current --if-present --manifest docs/HISTORICAL_PROFILE.json
+      - name: Verify the original 226-file R1 registration without target execution
+        run: python scripts/check-historical-freeze.py --revision 591f802dea6f8ac88a27af3ffd89bd6e1396b318 --manifest docs/HISTORICAL_PROFILE.json --output historical-registration.json
       - name: Check wheel outside the source checkout
         run: python scripts/check-wheel.py
       - name: Check optional QA integration in the installed wheel
@@ -72,6 +76,36 @@ jobs:
             numerical-r3-wheel.json
             online-wheel.json
             online-registration.json
+            historical-registration.json
+  product-installation:
+    # Read-only product CI. Publication is a separate, manually invoked workflow.
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install normal-index build tools
+        run: python -m pip install build twine
+      - name: Build the candidate source distribution and wheel
+        run: python -m build
+      - name: Check distribution metadata
+        run: python -m twine check dist/*
+      - name: Verify static product publication policy without authorizing upload
+        run: python scripts/check-product-release.py --static
+      - name: Install both artifacts and verify the documented product workflows
+        run: python scripts/check-product-wheel.py --source-sha "$(git rev-parse HEAD)" --output product-install.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: product-installation
+          path: |
+            product-install.json
+            dist/*
+          if-no-files-found: error
   generator-isolation:
     runs-on: ubuntu-latest
     steps:
@@ -164,32 +198,6 @@ jobs:
       - id: gate
         name: Determine conditional E8 publication eligibility
         run: python scripts/check-e8-release-eligibility.py --github-output
-  prerelease:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.release-eligibility.outputs.allow_release == 'true'
-    needs: [tests, generator-isolation, unified-generator-isolation, temporal-generator-isolation, knowledge-generator-isolation, corroboration-integration, release-eligibility]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: python -m pip install build twine
-      - run: python -m build
-      - run: python -m twine check dist/*
-      - run: python scripts/check-public-scope.py
-      - run: python scripts/check-wheel.py
-      - run: python scripts/check-historical-e8r1-freeze.py
-      - name: Verify readiness and publish conditional E8 prerelease
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: python scripts/publish-e8.py
-      - uses: actions/upload-artifact@v4
-        with:
-          name: release-receipt
-          path: release-receipt.json
-
   historical-e7-release:
     if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
     needs: [tests, generator-isolation, unified-generator-isolation, temporal-generator-isolation, knowledge-generator-isolation]

@@ -6,14 +6,16 @@ build-backend = "setuptools.build_meta"
 name = "antemortem-structural-lab"
 version = "0.8.0a1"
 requires-python = ">=3.11"
-description = "Experimental structural falsification and counterexample-guided mold learning"
+description = "Experimental contract-driven Python counterexample search, replay and evidence recording"
 readme = "README.md"
-license = "Apache-2.0"
+license = "Apache-2.0 AND MIT AND BSD-3-Clause"
 license-files = ["LICENSE", "benchmarks/historical/vendor/*-LICENSE.txt"]
 
 [project.urls]
 Repository = "https://github.com/hibou04-ops/antemortem-structural-lab"
 Changelog = "https://github.com/hibou04-ops/antemortem-structural-lab/blob/main/CHANGELOG.md"
+Documentation = "https://github.com/hibou04-ops/antemortem-structural-lab#readme"
+Issues = "https://github.com/hibou04-ops/antemortem-structural-lab/issues"
 
 [project.scripts]
 tomolab = "tomolab.cli:main"
@@ -28,7 +30,7 @@ corr = ["scipy==1.18.1; python_version >= '3.12'", "numpy==2.5.3; python_version
 include = ["tomolab", "tomolab.*"]
 
 [tool.setuptools.data-files]
-"share/antemortem-structural-lab" = ["README.md", "README.ko.md", "SECURITY.md", "PUBLIC_IMPORT_NOTICE.md"]
+"share/antemortem-structural-lab" = ["README.md", "README.ko.md", "SECURITY.md", "PUBLIC_IMPORT_NOTICE.md", "THIRD_PARTY_NOTICES.md"]
 "share/antemortem-structural-lab/examples" = ["examples/*.py"]
 "share/antemortem-structural-lab/examples/claim_only" = ["examples/claim_only/*.py"]
 "share/antemortem-structural-lab/examples/mold" = ["examples/mold/*.py", "examples/mold/*.json"]
@@ -40,6 +42,7 @@ include = ["tomolab", "tomolab.*"]
 "share/antemortem-structural-lab/examples/numerical" = ["examples/numerical/*.json", "examples/numerical/*.sha256"]
 
 "share/antemortem-structural-lab/examples/online" = ["examples/online/*.py", "examples/online/*.json"]
+"share/antemortem-structural-lab/examples/product" = ["examples/product/*.py", "examples/product/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
