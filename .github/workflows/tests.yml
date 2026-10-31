@@ -8,7 +8,58 @@ on:
   pull_request:
   workflow_dispatch:
 jobs:
+  # This repair branch is authorized for product checks only. The legacy jobs
+  # below include Source learning and historical preflight, so they must not run
+  # on this branch's PR. Main and other branches retain their existing checks.
+  product-runtime-regression:
+    if: startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-')
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ['3.11', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install documented contributor dependencies
+        run: |
+          python -m pip install -e ".[qa]"
+          python -m pip install pytest build twine
+      - name: Collect contributor tests without running research
+        run: python -m pytest --collect-only -q
+      - name: Run bounded product regressions
+        # The excluded legacy unit case trains a tiny Mold; this mission does
+        # not need that path and authorizes no Source learning.
+        run: python -m pytest tests/test_product_runtime_regressions.py tests/test_product_workflows.py -k "not explicit_D" -q --junitxml=product-regressions.xml
+      - name: Build verification artifacts without publishing
+        run: python -m build
+      - name: Check distribution metadata
+        run: python -m twine check dist/*
+      - name: Check public source and verification artifact scope
+        run: python scripts/check-public-scope.py
+      - name: Verify original historical registration without executing targets
+        run: python scripts/check-historical-freeze.py --revision 591f802dea6f8ac88a27af3ffd89bd6e1396b318 --manifest docs/HISTORICAL_PROFILE.json --output historical-preservation.json
+      - name: Install wheel and sdist outside checkout and exercise authored fixtures
+        run: python scripts/check-product-runtime.py --output product-runtime.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: product-runtime-${{ matrix.os }}-${{ matrix.python-version }}
+          path: |
+            product-regressions.xml
+            product-runtime.json
+            historical-preservation.json
+            dist/*
+          if-no-files-found: error
   tests:
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -78,6 +129,7 @@ jobs:
             online-registration.json
             historical-registration.json
   product-installation:
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') }}
     # Read-only product CI. Publication is a separate, manually invoked workflow.
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -107,6 +159,7 @@ jobs:
             dist/*
           if-no-files-found: error
   generator-isolation:
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -118,6 +171,7 @@ jobs:
       - name: Verify restricted generator filesystem and network
         run: python scripts/check-isolation.py
   unified-generator-isolation:
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -130,6 +184,7 @@ jobs:
       - name: Verify actual E5 access control and integrated discovery
         run: python scripts/check-discovery-isolation.py
   temporal-generator-isolation:
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -142,6 +197,7 @@ jobs:
       - name: Verify E6 access controls, native state learning and replay
         run: python scripts/check-temporal-isolation.py
   knowledge-generator-isolation:
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -167,6 +223,7 @@ jobs:
             compact-r3-docker.json
           if-no-files-found: error
   corroboration-integration:
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') }}
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -187,6 +244,7 @@ jobs:
           path: corroboration-wheel.json
           if-no-files-found: error
   release-eligibility:
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') }}
     runs-on: ubuntu-latest
     outputs:
       allow_release: ${{ steps.gate.outputs.allow_release }}
@@ -199,7 +257,7 @@ jobs:
         name: Determine conditional E8 publication eligibility
         run: python scripts/check-e8-release-eligibility.py --github-output
   historical-e7-release:
-    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
+    if: (!startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-')) && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')
     needs: [tests, generator-isolation, unified-generator-isolation, temporal-generator-isolation, knowledge-generator-isolation]
     runs-on: ubuntu-latest
     steps:
@@ -220,6 +278,7 @@ jobs:
           path: ${{ runner.temp }}/pypi-publication-source/verification/existing-e7-release.json
           if-no-files-found: error
   historical-functional:
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
