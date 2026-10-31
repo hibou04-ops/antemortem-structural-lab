@@ -14,7 +14,20 @@ def _load_module(path: Path, name: str):
     if spec is None or spec.loader is None:
         raise ValueError(f"cannot load trusted module: {path}")
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    # Normal imports expose metadata during execution, including dataclass
+    # resolution of postponed annotations. Restore a prior trusted load after
+    # failure rather than retaining a half-initialized replacement.
+    missing = object()
+    previous = sys.modules.get(name, missing)
+    sys.modules[name] = module
+    try:
+        spec.loader.exec_module(module)
+    except BaseException:
+        if previous is missing:
+            sys.modules.pop(name, None)
+        else:
+            sys.modules[name] = previous
+        raise
     return module
 
 

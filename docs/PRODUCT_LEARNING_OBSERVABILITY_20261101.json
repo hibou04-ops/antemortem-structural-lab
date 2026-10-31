@@ -1,0 +1,122 @@
+{
+  "schema": "read-only-e9r1-observability-v1",
+  "research_executions": 0,
+  "source_files_sha256": {
+    "results.json": "d1cdea50e8a0fb9ea7459c346971f3b63b4f6ca61b22694669756e83e98a25e7",
+    "prepared.json": "c6159e46e4dd2c738c7c85f388da128e7ac05a192fd4a4961e361d27b9fc42eb",
+    "registration.json": "f33eb29eb0c3a56eaae1300d80ddf867e14d3b86fe4419bce750d3f248e0eb5a",
+    "results.public.json": "13e214974bd826181fc897d543b056b7b576521d02cded605fc5d65b2aa955b3",
+    "events.jsonl": "4ed73eafc458f9defe57844998be074266d32f657b1472babd7fcced4944e89b"
+  },
+  "preserved_unchanged": true,
+  "total_runs": 384,
+  "source_target_calls_observed": 88,
+  "source_oracle_calls_observed": 88,
+  "changed_execution_pairing": {
+    "changed_learned_executions": 240,
+    "local_neutral": 47,
+    "common_input_observed_elsewhere_same_C_run_not_same_state": 49,
+    "conditional_input_only_neutral": 47,
+    "unknown_no_same_common_state_candidate": 185,
+    "only_D_candidate_outcome_observed_in_matched_C_D_run": 136,
+    "local_loss": 8,
+    "conditional_input_only_loss": 2
+  },
+  "by_evaluation": {
+    "IMPLEMENTATION_TRANSFER": {
+      "changed_learned_executions": 128,
+      "local_neutral": 31,
+      "unknown_no_same_common_state_candidate": 97
+    },
+    "LEAVE_ONE_MECHANISM_OUT": {
+      "changed_learned_executions": 112,
+      "local_loss": 8,
+      "unknown_no_same_common_state_candidate": 88,
+      "local_neutral": 16
+    }
+  },
+  "policy_detection_matrix": {
+    "IMPLEMENTATION_TRANSFER/24/TARGET": {
+      "True_True": 15,
+      "False_False": 3
+    },
+    "IMPLEMENTATION_TRANSFER/48/TARGET": {
+      "True_True": 15,
+      "False_False": 3
+    },
+    "IMPLEMENTATION_TRANSFER/24/CONTROL": {
+      "False_False": 18
+    },
+    "IMPLEMENTATION_TRANSFER/48/CONTROL": {
+      "False_False": 18
+    },
+    "LEAVE_ONE_MECHANISM_OUT/24/TARGET": {
+      "True_False": 4,
+      "False_False": 2
+    },
+    "LEAVE_ONE_MECHANISM_OUT/48/TARGET": {
+      "True_False": 6
+    },
+    "LEAVE_ONE_MECHANISM_OUT/24/CONTROL": {
+      "False_False": 6
+    },
+    "LEAVE_ONE_MECHANISM_OUT/48/CONTROL": {
+      "False_False": 6
+    }
+  },
+  "source_learning_input": {
+    "ALL": {
+      "records": 88,
+      "record_fields": [
+        "contract",
+        "input",
+        "input_digest",
+        "source_axis",
+        "source_identity",
+        "source_mechanism",
+        "source_project",
+        "status"
+      ],
+      "learning_audit_matched_pairs": 9,
+      "rules": 3,
+      "missing_for_policy_marginal_label": [
+        "common_policy_state_before",
+        "anchor_identity",
+        "common_candidate_digest",
+        "learned_candidate_digest",
+        "paired_common_outcome",
+        "paired_learned_outcome",
+        "proposal_slot"
+      ]
+    },
+    "EMPTY_ITERABLE": {
+      "records": 45,
+      "record_fields": [
+        "contract",
+        "input",
+        "input_digest",
+        "source_axis",
+        "source_identity",
+        "source_mechanism",
+        "source_project",
+        "status"
+      ],
+      "learning_audit_matched_pairs": 2,
+      "rules": 2,
+      "missing_for_policy_marginal_label": [
+        "common_policy_state_before",
+        "anchor_identity",
+        "common_candidate_digest",
+        "learned_candidate_digest",
+        "paired_common_outcome",
+        "paired_learned_outcome",
+        "proposal_slot"
+      ]
+    }
+  },
+  "limitations": [
+    "Local pairing relies on recorded shared-state digest plus same native input, contract, case identity, frozen implementation, and reviewed deterministic/reset Target/Oracle assumptions.",
+    "No target or Oracle was called. Missing counterfactual outcomes remain unknown.",
+    "Same common state does not restore complete Hypothesis internal state or an alternative policy trajectory."
+  ]
+}

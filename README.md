@@ -60,6 +60,8 @@ python -m tomolab online-replay my-check/run.json --source my-check/target.py --
 
 The default function names are `implementation` and `reference`; `online-run --function` and `--oracle` select other names. New receipts bind the reviewed files and contract. Replay checks that binding and re-executes stored evidence; it is not a new search. Local receipts may contain inputs, outputs, and paths: review them before sharing.
 
+Aliases such as `implementation = actual_function` are supported. New receipts record the selected export name, while the usage ledger keeps the callable's own identity. Replay must use the same selected names; unchanged file hashes and the binding digest remain required. The binding format stays `tomolab-online-replay-binding-v1`. Older receipts that stored the callable's own name remain readable: use that recorded name with `online-replay --function` (and `--oracle` for an Oracle alias). Changing names in a receipt or bypassing its checks is not a compatibility path.
+
 An Oracle is **your explicit expected-behavior model**. An incorrect Oracle can create false disagreement reports. Preserve the specification, numeric tolerance, expected exceptions, and state-reset policy; do not change them just to obtain a passing result.
 
 ### Adapting a function with several arguments
@@ -105,6 +107,12 @@ Read `run.status`, `run.outcome`, error counters, and confirmation/shrinking rec
 | Replay `REPRODUCED` / `NOT_REPRODUCED` / `NO_CONFIRMED_FAILURE` | Existing evidence reproduced, differed, or contained no confirmed failure to replay. |
 
 `COMPLETE` means the run completed, not that the Target is correct. Shrinking produces a budget-bounded reduction, not a global minimality proof. Replay mismatches remain inconclusive. Use `online-run --help` and `online-replay --help` for the current arguments.
+
+### Numeric tolerance preserves exact zero
+
+For two finite nonzero float outputs of the same type, `comparison.absolute` and `comparison.relative` are the `abs_tol` and `rel_tol` arguments of `math.isclose`: `abs(a-b) <= max(relative * max(abs(a), abs(b)), absolute)`. Both default to zero. If either float is zero, exact equality takes priority regardless of those tolerances; `-0.0` and `0.0` compare equal. Different output types still differ, and the same rules apply recursively to supported output containers.
+
+For example, `{"absolute":1e-6,"relative":0.0}` accepts `1.0` versus `1.000000001`, but rejects `0.0` versus `1e-9`. With `{"absolute":0.0,"relative":1e-6}`, `100.0` versus `100.00001` is accepted. This is the existing exact-zero contract, so a positive absolute tolerance does not extend to comparisons involving zero. This patch changes its documentation, not its meaning or past research judgments.
 
 ### Exceptions belong to the comparison contract
 

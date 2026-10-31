@@ -60,6 +60,8 @@ python -m tomolab online-replay my-check/run.json --source my-check/target.py --
 
 기본 함수명은 `implementation`과 `reference`입니다. 다른 이름은 `online-run --function`, `--oracle`로 지정합니다. 새 영수증은 검토한 파일과 계약의 identity를 연결합니다. replay는 연결을 확인하고 저장된 증거를 다시 실행하며 새 탐색을 하지 않습니다. 로컬 영수증에는 입력·출력·경로가 들어갈 수 있으므로 공유 전에 검토합니다.
 
+`implementation = actual_function` 같은 별칭도 지원합니다. 새 영수증은 선택한 공개 이름을 기록하고, usage ledger는 callable 자체의 identity를 유지합니다. replay에서도 같은 선택 이름을 사용해야 하며 파일 해시와 binding digest 검사는 유지됩니다. 형식은 `tomolab-online-replay-binding-v1` 그대로입니다. callable 자체 이름을 기록한 구형 영수증도 읽을 수 있습니다. 기록된 이름을 `online-replay --function`으로 지정하고 Oracle도 별칭이면 `--oracle`를 지정합니다. 영수증 이름을 수정하거나 검사를 우회하는 방식은 호환 경로가 아닙니다.
+
 Oracle는 **사용자가 명시한 기대 동작 모델**입니다. Oracle가 틀리면 불일치 보고도 잘못될 수 있습니다. 실제 명세·수치 허용오차·기대 예외·상태 초기화 정책을 유지하며 결과를 맞추려고 변경하지 않습니다.
 
 ### 여러 인자를 받는 함수 연결하기
@@ -105,6 +107,12 @@ def implementation(point):
 | replay의 `REPRODUCED` / `NOT_REPRODUCED` / `NO_CONFIRMED_FAILURE` | 기존 증거가 재현됐거나, 달라졌거나, 재현할 확정 실패가 없었습니다. |
 
 `COMPLETE`는 실행을 끝냈다는 뜻이며 Target이 정확하다는 뜻이 아닙니다. 축소는 예산 안의 반례 감소이며 전역 최소성 증명이 아닙니다. 재현 불일치는 `INCONCLUSIVE`로 남깁니다. 현재 인자는 `online-run --help`, `online-replay --help`에서 확인합니다.
+
+### 수치 허용오차와 정확한 0 비교
+
+같은 타입의 유한한 0이 아닌 float 출력끼리는 `comparison.absolute`와 `comparison.relative`가 `math.isclose`의 `abs_tol`, `rel_tol`에 해당합니다. 판정식은 `abs(a-b) <= max(relative * max(abs(a), abs(b)), absolute)`이며 둘 다 기본값은 0입니다. 어느 한쪽 float가 0이면 허용오차와 관계없이 정확 비교가 우선합니다. `-0.0`과 `0.0`은 같습니다. 출력 타입이 다르면 불일치이며 지원하는 출력 컨테이너 내부에도 같은 규칙을 재귀 적용합니다.
+
+예를 들어 `{"absolute":1e-6,"relative":0.0}`은 `1.0` 대 `1.000000001`을 수락하지만 `0.0` 대 `1e-9`는 거절합니다. `{"absolute":0.0,"relative":1e-6}`이면 `100.0` 대 `100.00001`을 수락합니다. 양의 절대 허용오차가 있어도 0을 포함한 비교에는 확장되지 않는 현행 계약입니다. 이번 패치는 설명만 추가하며 수치 의미나 과거 연구 판정을 바꾸지 않습니다.
 
 ### 예외도 비교 계약에 명시하기
 

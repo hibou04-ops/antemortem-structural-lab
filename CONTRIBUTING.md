@@ -7,14 +7,14 @@
 Python 3.11 이상:
 
 ```bash
-python -m pip install -e .
+python -m pip install -e ".[qa]"
 python -m pip install pytest build twine
 python -m pytest -q
 python -m build
 python -m twine check dist/*
 ```
 
-Z3 경로를 검사하려면 `python -m pip install -e ".[solver]"`로 선택적 의존성을 설치합니다. 기본 실행은 유한 영역 열거를 사용합니다. Docker 생성기는 Docker Engine과 명시적으로 받은 `python:3.12-slim` 이미지가 필요합니다. 설치한 wheel에서도 새 하위 패키지와 CLI 예제가 실행되는지 확인해야 합니다.
+Z3 경로를 검사하려면 `python -m pip install -e ".[qa,solver]"`로 선택적 의존성을 설치합니다. 기본 실행은 유한 영역 열거를 사용합니다. Docker 생성기는 Docker Engine과 명시적으로 받은 `python:3.12-slim` 이미지가 필요합니다. 설치한 wheel에서도 새 하위 패키지와 CLI 예제가 실행되는지 확인해야 합니다.
 
 ## 변경 검토 기준
 
