@@ -204,8 +204,8 @@
     "final_local_regressions": {
       "platform": "Windows",
       "python": "3.12.10",
-      "collected": 309,
-      "passed": 308,
+      "collected": 312,
+      "passed": 311,
       "failed": 0,
       "skipped": 1,
       "skip_scope": "LOCAL_WINDOWS_SYMLINK_CAPABILITY_CHECK"
@@ -232,6 +232,26 @@
       "status": "PASS",
       "historical_files": 226,
       "regression_files": 60
+    },
+    "initial_pre_compatibility_local_regressions": {
+      "platform": "Windows",
+      "python": "3.12.10",
+      "collected": 309,
+      "passed": 308,
+      "failed": 0,
+      "skipped": 1,
+      "skip_scope": "LOCAL_WINDOWS_SYMLINK_CAPABILITY_CHECK"
+    },
+    "initial_remote_ci_failure": {
+      "run_id": 41239869015,
+      "status": "FAILURE",
+      "matrix_jobs_failed": 4,
+      "source_bytes_identical": true,
+      "cause": "RUNTIME_AST_DUMP_EMPTY_FIELD_REPRESENTATION_DIFFERS_ACROSS_PYTHON_311_312_313",
+      "correction": "EXPLICIT_312_COMPAT_CANONICAL_AST_SERIALIZER_PRESERVES_NEW_NONEMPTY_FIELDS",
+      "original_snapshot_and_consumed_sources_changed": false,
+      "pinned_146_tokens_preserved": true,
+      "final_run": "SEE_PR_BODY_FOR_POST_FIX_REMOTE_READBACK"
     }
   },
   "usage": {

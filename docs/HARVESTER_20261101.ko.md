@@ -99,8 +99,14 @@ G2의 common 복귀는 반증에 따른 기권 기능을 확인한 것이며 양
 
 ## 검증 상태·미해결 판단
 
-새 source client·review/execution·registry·learning·공급망 통합 검사는 `tests/test_harvester_*.py`에 있다. GitHub client의 로컬 fixture 20개와 공급망 통합 6개가 개별 실행에서 통과했고, **최종 로컬 Windows/Python 3.12.10 한정 통합 회귀는 308 PASS·symlink 검사 1 SKIP(수집 309개)**다. wheel/sdist 새 설치 2개에서 제품 검사 36개가 통과했고, 설치된 Harvester에서도 작성 후보 4개·재실행 중복 4개·새 프로세스 3개·새 탐색 변경 0/1/0·실제 적격 수 0을 확인했다. 역사 226파일·60회귀 보존도 통과했다. 이 버전 관리 문서는 push 전 로컬 검증을 기록한다. 원격 CI와 최종 HEAD·draft PR 및 비공개 SYNC 완료 판정은 같은 PR 본문의 후속 readback 기록을 따른다. 2026-11-01 05:32 KST 공개 readback에서도 기존 제품 버전은 `0.8.0a1`로 확인했으며 이번 개발을 새로 발행하지 않았다. [검증 집계](HARVESTER_VERIFICATION_20261101.json)는 공개 가능한 숫자와 상태만 포함한다.
+새 source client·review/execution·registry·learning·공급망 통합 검사는 `tests/test_harvester_*.py`에 있다. GitHub client의 로컬 fixture 20개와 공급망 통합 6개가 개별 실행에서 통과했고, **최종 로컬 Windows/Python 3.12.10 한정 통합 회귀는 311 PASS·symlink 검사 1 SKIP(수집 312개)**다. wheel/sdist 새 설치 2개에서 제품 검사 36개가 통과했고, 설치된 Harvester에서도 작성 후보 4개·재실행 중복 4개·새 프로세스 3개·새 탐색 변경 0/1/0·실제 적격 수 0을 확인했다. 역사 226파일·60회귀 보존도 통과했다. 이 버전 관리 문서는 push 전 로컬 검증을 기록한다. 원격 CI와 최종 HEAD·draft PR 및 비공개 SYNC 완료 판정은 같은 PR 본문의 후속 readback 기록을 따른다. 2026-11-01 05:32 KST 공개 readback에서도 기존 제품 버전은 `0.8.0a1`로 확인했으며 이번 개발을 새로 발행하지 않았다. [검증 집계](HARVESTER_VERIFICATION_20261101.json)는 공개 가능한 숫자와 상태만 포함한다.
 
 확인된 사실은 실제 후보 발견·중복 방지·대기열 등록과 작성 fixture의 재귀 업데이트다. 책임 있는 Oracle/reset 검토, 실제 컨테이너 경계, 적격 개발자료와 독립 평가자료가 부족하다. 지금 가장 큰 병목은 이 검토·실행 자격이며, 표현력·selector·추가 비용 중 무엇이 실제 성능을 제한하는지는 아직 `UNKNOWN`이다. 같은 총비용의 정책 우월성은 별도 실험 전 `NOT_ESTABLISHED`로 유지한다.
 
 공개 GitHub에는 코드·작성 fixture·검토 가능한 집계만 남긴다. 원시 수집 cache·실행 영수증·개인 경로·비공개 Drive 정본 및 ID는 로컬/비공개 증거 패킷에 보존한다. Drive의 최종 증분 COMMITTED 여부는 manifest 최후 게시와 원본 bytes·detached receipt readback을 마친 뒤 별도로 확정한다. 이번 변경의 main 병합·태그·Release·PyPI 게시 권한은 없다.
+
+## 첫 원격 CI에서 발견한 호환성 오류와 교정
+
+첫 개발 커밋의 Windows/Linux × Python 3.11/3.13 CI는 소비 snapshot 재계산 불일치로 실패했다. 실제 동일 Git blob 5개와 원본 capsule 16개를 세 Python 버전에서 대조한 결과 source bytes는 같았다. 원인은 `ast.dump`가 Python 3.11에서 빈 `type_params`를 갖지 않고 3.13에서는 빈 필드를 기본 생략하는 표현 차이다. 단순 재시도나 snapshot 교체로 통과시키지 않았다.
+
+후속 교정은 Python 3.12의 명시적 필드 표현을 안정된 serializer로 고정한다. 알려진 빈 compatibility 필드만 채우며 nonempty type parameter와 새 parser field는 보존한다. 표현할 수 없는 구조는 UNKNOWN으로 반환한다. 세 버전에서 원래 146개 token과 registry digest `6ad4c924aa0c0142cf09d49b4e71b026d495080237a6ff4614bf2632ce1a47e5`가 그대로 일치했다. 기존 소비 문서·snapshot·capsule bytes는 변경하지 않았다. 실패한 첫 CI와 원인 검증 원문은 비공개 증거에 보존하고 최종 원격 run과 artifact readback은 PR 본문에 기록한다.
