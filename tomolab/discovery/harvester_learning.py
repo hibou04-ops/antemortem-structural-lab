@@ -5,6 +5,7 @@ The real-data path has no host external-code execution fallback.
 from copy import deepcopy
 from fractions import Fraction
 import json
+import math
 from pathlib import Path
 import re
 import subprocess
@@ -87,6 +88,91 @@ def m0_verdict(receipts,lineage_ids,*,measurement_complete=True,within_budget=Tr
     return dict(status=status,lineages=stats,unknown_fraction=float(Fraction(unknown,len(receipts) or 1)),
         equal_lineage_utility=float(utility) if utility is not None else None,
         scope="LOCAL_CONDITIONAL_DIAGNOSTIC_NOT_POLICY_SUPERIORITY")
+
+
+def _m0_run_measurement(run,diagnostics):
+    """Validate complete host coverage without relabelling retained UNKNOWNs.
+
+    A COMPLETE worker trace is not proof that host validation or every reserved
+    pair completed. This returns a separate host assessment; run bytes and the
+    existing run receipt are never rewritten. No evaluator callable is invoked.
+    """
+    from .recursive_observe import validate_diagnostics, validate_trace
+    started=time.perf_counter()
+    reservations=receipts=None
+    try:
+        diagnostics=validate_diagnostics(diagnostics)
+        config=diagnostics["public"]
+        if not isinstance(run,dict) or run.get("status")=="INCONCLUSIVE_BOUNDARY_ERROR":
+            raise ValueError("C transport did not complete its trusted host boundary")
+        trace=validate_trace(run.get("diagnostic_trace"),config=config)
+        if trace["status"]!="COMPLETE" or trace["unknown_reasons"]:
+            raise ValueError("worker diagnostic trace is incomplete")
+        reservations=trace["reservations"]
+        host=run.get("paired_diagnostics")
+        required={"schema","status","receipts","cost","slots","worker_instrumentation_cost",
+            "unknown_reasons","transport_calls_not_in_diagnostic_cost","scope"}
+        optional={"trace_validation_seconds","host_reconstruction_proposals"}
+        if not isinstance(host,dict) or not required<=host.keys() or host.keys()-required-optional:
+            raise ValueError("complete bounded host paired envelope required")
+        if host["schema"]!="tomolab-paired-host-result-v1" or host["status"] not in ("COMPLETE","HOLD_MEASUREMENT"):
+            raise ValueError("unsupported host paired measurement state")
+        if host["slots"]!=trace["slots"] or host["worker_instrumentation_cost"]!=trace["cost"]:
+            raise ValueError("host measurement differs from the preserved worker trace")
+        if host["transport_calls_not_in_diagnostic_cost"] is not True or host["scope"]!="CONDITIONAL_LOCAL_PAIRS_NOT_POLICY_UTILITY_OR_GENERALIZATION":
+            raise ValueError("paired and transport accounting scope changed")
+        expected={row["reservation_id"]:row for row in reservations}
+        receipts=host["receipts"]
+        if not isinstance(receipts,list) or len(receipts)!=len(expected):
+            raise ValueError("reserved pair is missing from the host receipt batch")
+        ids,receipt_ids=set(),set()
+        for receipt in receipts:
+            validate_pair_receipt(receipt)
+            token=receipt["reservation_id"]
+            if token not in expected or token in ids or receipt["pair_receipt_sha256"] in receipt_ids:
+                raise ValueError("host paired receipt identity is unexpected or duplicated")
+            if digest(receipt["reservation"])!=digest(expected[token]):
+                raise ValueError("host receipt replaced its reserved candidate state")
+            if receipt["identity"]!=diagnostics["identity"] or any(receipt[name]!=config[name]
+                    for name in ("source_lineage_id","project_id","mechanism_id","experiment_contract_sha256")):
+                raise ValueError("host receipt differs from the reviewed development identity")
+            ids.add(token);receipt_ids.add(receipt["pair_receipt_sha256"])
+        if ids!=set(expected):
+            raise ValueError("host receipt coverage does not equal the reserved pair set")
+        reasons=host["unknown_reasons"]
+        expected_reasons=[] if receipts else ["NO_ELIGIBLE_RESERVATIONS"]
+        if reasons!=expected_reasons:
+            raise ValueError("unhandled host measurement failure must remain HOLD")
+        unknown=sum(row["label"]=="UNKNOWN" for row in receipts)
+        expected_status="COMPLETE" if receipts and unknown==0 else "HOLD_MEASUREMENT"
+        if host["status"]!=expected_status:
+            raise ValueError("host HOLD/COMPLETE state does not match its preserved outcomes")
+        keys(host["cost"],("target_calls","oracle_calls","reset_calls","wall_seconds"))
+        for name in ("target_calls","oracle_calls","reset_calls"):
+            if type(host["cost"][name]) is not int or host["cost"][name]!=sum(row["cost"][name] for row in receipts):
+                raise ValueError("host paired cost omits actual receipt execution costs")
+        if max(host["cost"]["target_calls"],host["cost"]["oracle_calls"])>config["max_pair_calls"]:
+            raise ValueError("paired host call ceiling exceeded")
+        seconds=host["cost"]["wall_seconds"]
+        if type(seconds) not in (int,float) or not math.isfinite(seconds) or seconds<0:
+            raise ValueError("host paired wall time must be measured and finite")
+        pair_seconds=math.fsum(row["cost"]["wall_seconds"] for row in receipts)
+        # The sum has at most twelve finite terms. Allow only the corresponding
+        # floating addition ULPs; this is accounting precision, not a criterion
+        # for changing an Oracle, reward or scientific utility threshold.
+        rounding=math.ulp(max(seconds,pair_seconds))*(len(receipts)+1)
+        if pair_seconds>seconds+rounding or seconds>config["max_pair_seconds"]:
+            raise ValueError("host paired wall accounting or frozen phase ceiling differs")
+        return dict(status="COMPLETE",reserved_pairs=len(reservations),preserved_pairs=len(receipts),
+            preserved_unknown_pairs=unknown,source_reconstruction_proposals=3*len(reservations),
+            host_pair_wall_seconds=seconds,summed_pair_wall_seconds=pair_seconds,
+            wall_seconds=time.perf_counter()-started,
+            scope="HOST_COVERAGE_ONLY_UNKNOWN_FRACTION_REMAINS_M0_VERDICT_INPUT")
+    except (ValueError,TypeError,KeyError,OverflowError,PermissionError) as error:
+        return dict(status="HOLD_MEASUREMENT",reason=type(error).__name__+":"+str(error)[:200],
+            reserved_pairs=len(reservations) if isinstance(reservations,list) else None,
+            preserved_pairs=len(receipts) if isinstance(receipts,list) else None,
+            source_reconstruction_proposals=None,wall_seconds=time.perf_counter()-started)
 
 
 def _append_update(registry,receipts,manifest,generation_store,*,generation_id,m0_record,cost_ledger=None):
@@ -232,6 +318,12 @@ def run_harvest_m0(workspace,contract,*,allow_external_execution=False):
         raise ValueError("M0 contract digest mismatch")
     if any(type(contract[name]) is not int for name in ("seed_repetitions","max_target_calls","max_oracle_calls","max_wall_seconds")) or contract["seed_repetitions"]!=2 or contract["max_target_calls"]!=1152 or contract["max_oracle_calls"]!=1152 or contract["max_wall_seconds"]!=1200:
         raise ValueError("preserve the frozen first M0 resource contract")
+    from .online_schema import validate_contract
+    input_contract=validate_contract(contract["input_contract"])
+    if input_contract["kind"]!="sequence_int":
+        return dict(schema="tomolab-harvest-m0-result-v1",status="HOLD",m0="HOLD_APPLICABILITY",
+            reason="FROZEN_ALL_MOLD_SUPPORTS_SEQUENCE_INT_ONLY",real_target_calls=0,real_oracle_calls=0,
+            experiment_contract_sha256=experiment)
     registry=HarvestRegistry(workspace)
     try:
         rows=_qualified_rows(registry,contract["candidate_ids"])
@@ -276,7 +368,7 @@ def run_harvest_m0(workspace,contract,*,allow_external_execution=False):
         candidate_ids=contract["candidate_ids"],evidence_class="REVIEWED_REAL_DEVELOPMENT"),batch_id="m0-"+experiment[:24])
     started=time.perf_counter()
     deadline=started+1200
-    receipts,runs,ledgers=[],[],[]
+    receipts,runs,ledgers,measurements=[],[],[],[]
     for row in rows:
         cid=row["candidate"]["candidate_id"]
         for repeat in range(2):
@@ -297,7 +389,10 @@ def run_harvest_m0(workspace,contract,*,allow_external_execution=False):
             result=run_online(target,oracle,contract["input_contract"],method="C",mold=None,replays=contract["replays"],
                 seed=seed,budget=72,shrink_budget=9,max_seconds=max(0.001,min(30,deadline-time.perf_counter()-5)),mode="black_box",diagnostics=cfg,
                 diagnostic_reset=lambda:target.reset() is True and oracle.reset() is True)
-            save_new(folder/(run_id+".json"),dict(run=result,target_oci_ledger=target.ledger,oracle_oci_ledger=oracle.ledger))
+            measurement=_m0_run_measurement(result,cfg)
+            measurements.append(dict(run_id=run_id,**measurement))
+            save_new(folder/(run_id+".json"),dict(run=result,m0_measurement=measurement,
+                target_oci_ledger=target.ledger,oracle_oci_ledger=oracle.ledger))
             runs.append(result)
             receipts.extend(result.get("paired_diagnostics",{}).get("receipts",[]))
             ledgers.extend([target.ledger,oracle.ledger])
@@ -308,13 +403,15 @@ def run_harvest_m0(workspace,contract,*,allow_external_execution=False):
     unknown_external=sum(l["unresolved_call_receipts"] for l in ledgers)
     elapsed=time.perf_counter()-started
     within_budget=target_attempts<=1152 and oracle_attempts<=1152 and elapsed<=1200
-    measured=len(runs)==8 and all(r.get("diagnostic_trace",{}).get("status")=="COMPLETE" for r in runs)
+    measured=len(runs)==len(measurements)==8 and all(r["status"]=="COMPLETE" for r in measurements)
     verdict=m0_verdict(receipts,[r["lineage"]["source_lineage_id"] for r in rows],
         measurement_complete=measured,within_budget=within_budget,unknown_external_calls=unknown_external)
     reset_callbacks=sum(r.get("paired_diagnostics",{}).get("cost",{}).get("reset_calls",0) for r in runs)
     external_resets=sum(l["external_reset_calls"] for l in ledgers)
+    validation_seconds=sum(r["wall_seconds"] for r in measurements)
     cost=dict(target_calls=target_attempts,oracle_calls=oracle_attempts,reset_calls=reset_callbacks+external_resets,
-        observation_wall_seconds=elapsed,learning_seconds=0.0,validation_seconds=0.0,io_seconds=0.0)
+        observation_wall_seconds=max(0.0,elapsed-validation_seconds),learning_seconds=0.0,
+        validation_seconds=validation_seconds,io_seconds=0.0)
     qualification={r["lineage"]["source_lineage_id"]:dict(target_calls=r["execution_receipt"]["external_target_calls"],
         oracle_calls=r["execution_receipt"]["external_oracle_calls"],reset_calls=r["execution_receipt"]["external_reset_calls"],
         observation_wall_seconds=r["execution_receipt"]["wall_seconds"],learning_seconds=0.0,validation_seconds=0.0,io_seconds=0.0) for r in rows}
@@ -328,6 +425,7 @@ def run_harvest_m0(workspace,contract,*,allow_external_execution=False):
         adapter_target_attempts=target_attempts,adapter_oracle_attempts=oracle_attempts,
         host_reset_callbacks=reset_callbacks,external_reset_calls=external_resets,
         development_cost_ledger=cost,qualification_cost_by_lineage=qualification,measurement_verdict=verdict,
+        run_measurements=measurements,
         cost_scope="Adapter attempts charged; verified inner external calls separate; unresolved inner counts retained",
         wall_seconds=elapsed)
     save_new(folder/"development-manifest.json",manifest)

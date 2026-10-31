@@ -99,7 +99,7 @@ G2의 common 복귀는 반증에 따른 기권 기능을 확인한 것이며 양
 
 ## 검증 상태·미해결 판단
 
-새 source client·review/execution·registry·learning·공급망 통합 검사는 `tests/test_harvester_*.py`에 있다. GitHub client의 로컬 fixture 20개와 공급망 통합 6개가 개별 실행에서 통과했고, **최종 로컬 Windows/Python 3.12.10 한정 통합 회귀는 311 PASS·symlink 검사 1 SKIP(수집 312개)**다. wheel/sdist 새 설치 2개에서 제품 검사 36개가 통과했고, 설치된 Harvester에서도 작성 후보 4개·재실행 중복 4개·새 프로세스 3개·새 탐색 변경 0/1/0·실제 적격 수 0을 확인했다. 역사 226파일·60회귀 보존도 통과했다. 이 버전 관리 문서는 push 전 로컬 검증을 기록한다. 원격 CI와 최종 HEAD·draft PR 및 비공개 SYNC 완료 판정은 같은 PR 본문의 후속 readback 기록을 따른다. 2026-11-01 05:32 KST 공개 readback에서도 기존 제품 버전은 `0.8.0a1`로 확인했으며 이번 개발을 새로 발행하지 않았다. [검증 집계](HARVESTER_VERIFICATION_20261101.json)는 공개 가능한 숫자와 상태만 포함한다.
+새 source client·review/execution·registry·learning·공급망 통합 검사는 `tests/test_harvester_*.py`에 있다. GitHub client의 로컬 fixture 20개와 공급망 통합 6개가 개별 실행에서 통과했고, **최종 로컬 Windows/Python 3.12.10 한정 통합 회귀는 317 PASS·symlink 검사 1 SKIP(수집 318개)**다. wheel/sdist 새 설치 2개에서 제품 검사 36개가 통과했고, 설치된 Harvester에서도 작성 후보 4개·재실행 중복 4개·새 프로세스 3개·새 탐색 변경 0/1/0·실제 적격 수 0을 확인했다. 역사 226파일·60회귀 보존도 통과했다. 이 버전 관리 문서는 push 전 로컬 검증을 기록한다. 원격 CI와 최종 HEAD·draft PR 및 비공개 SYNC 완료 판정은 같은 PR 본문의 후속 readback 기록을 따른다. 2026-11-01 05:32 KST 공개 readback에서도 기존 제품 버전은 `0.8.0a1`로 확인했으며 이번 개발을 새로 발행하지 않았다. [검증 집계](HARVESTER_VERIFICATION_20261101.json)는 공개 가능한 숫자와 상태만 포함한다.
 
 확인된 사실은 실제 후보 발견·중복 방지·대기열 등록과 작성 fixture의 재귀 업데이트다. 책임 있는 Oracle/reset 검토, 실제 컨테이너 경계, 적격 개발자료와 독립 평가자료가 부족하다. 지금 가장 큰 병목은 이 검토·실행 자격이며, 표현력·selector·추가 비용 중 무엇이 실제 성능을 제한하는지는 아직 `UNKNOWN`이다. 같은 총비용의 정책 우월성은 별도 실험 전 `NOT_ESTABLISHED`로 유지한다.
 
@@ -110,3 +110,11 @@ G2의 common 복귀는 반증에 따른 기권 기능을 확인한 것이며 양
 첫 개발 커밋의 Windows/Linux × Python 3.11/3.13 CI는 소비 snapshot 재계산 불일치로 실패했다. 실제 동일 Git blob 5개와 원본 capsule 16개를 세 Python 버전에서 대조한 결과 source bytes는 같았다. 원인은 `ast.dump`가 Python 3.11에서 빈 `type_params`를 갖지 않고 3.13에서는 빈 필드를 기본 생략하는 표현 차이다. 단순 재시도나 snapshot 교체로 통과시키지 않았다.
 
 후속 교정은 Python 3.12의 명시적 필드 표현을 안정된 serializer로 고정한다. 알려진 빈 compatibility 필드만 채우며 nonempty type parameter와 새 parser field는 보존한다. 표현할 수 없는 구조는 UNKNOWN으로 반환한다. 세 버전에서 원래 146개 token과 registry digest `6ad4c924aa0c0142cf09d49b4e71b026d495080237a6ff4614bf2632ce1a47e5`가 그대로 일치했다. 기존 소비 문서·snapshot·capsule bytes는 변경하지 않았다. 실패한 첫 CI와 원인 검증 원문은 비공개 증거에 보존하고 최종 원격 run과 artifact readback은 PR 본문에 기록한다.
+
+## 실제 M0 진입 전 추가된 완결성 보호
+
+독립 검토에서 아직 실제 실행하지 않은 개발 M0 경로의 두 선행 gate를 보완했다. 동결 ALL Mold는 `sequence_int`만 지원하므로 다른 입력 계약은 registry·예산 예약·OCI 진입 전 `HOLD_APPLICABILITY`, Target/Oracle0으로 종료한다. 지원하지 않는 타입을 sequence로 축소하지 않는다.
+
+worker trace의 COMPLETE만으로 host 측정을 완료로 세지 않는다. 별도 `_m0_run_measurement`가 기존 검증기를 재사용하여 host envelope·예약별 정확한 영수증 coverage·동일 후보 상태·Oracle/reset 정체성·정수 비용합과 단계 wall 상한을 검사한다. host 검증 오류나 누락 영수증은 HOLD다. 완전하게 보존된 UNKNOWN은 UNKNOWN으로 남기고 기존 M0의 25% 기준에 전달하며 정상 0예약도 조작하지 않는다. 원래 run 영수증은 바꾸지 않고 별도 sidecar를 저장한다. 추가 검증 시간은 observation wall에서 분리해 validation 비용으로 보존하며 허용오차나 평가 정답을 바꾸지 않는다.
+
+관련 작성 fixture·정적 envelope 검증은 40 PASS이며 실제 외부 코드나 연구 Target을 실행하지 않았다. 이 교정은 실제 batch 50개·현재 적격0·real M0 미실행이라는 관측을 바꾸지 않는다.
