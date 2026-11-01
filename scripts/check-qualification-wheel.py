@@ -43,6 +43,8 @@ def main():
         assert summary["learning_updates"] == 0 and summary["independent_oos_cases"] == 0
         assert summary["utility"] == "NOT_ESTABLISHED"
         assert summary["equal_cost_mode"] is True and summary["baseline_method"] == "E9_C"
+        assert summary["reset_symmetry_verified"] is True
+        assert summary["actual"]["reset_calls"] == summary["actual"]["target_calls"] + summary["actual"]["oracle_calls"]
         assert all(row["hard_call_parity"]["identical_hard_caps"] is True for row in summary["cases"])
         assert all(summary["actual"][k] <= summary["caps"][k] for k in summary["actual"])
         audit_help = subprocess.run([str(python), "-I", "-m", "tomolab", "transfer-audit", "--help"],
@@ -71,11 +73,21 @@ def main():
         assert triage["outcomes"] == {"EXCLUDE_DOC_OR_NON_CODE": 1}
         assert triage["qualified"] == triage["target_calls"] == triage["oracle_calls"] == triage["network_requests"] == 0
         assert triage["source_imported"] is False and triage["source_executed"] is False
+        from tomolab.discovery.m0_readiness import make_manifest
+        readiness_input = scratch / "authored-empty-readiness.json"
+        readiness_output = scratch / "authored-empty-readiness-result.json"
+        readiness_input.write_text(json.dumps(make_manifest(dict(kind="sequence_int",low=0,high=9,min_size=1,max_size=8),[])),encoding="utf8")
+        readiness_run = subprocess.run([str(python),"-I","-m","tomolab","m0-readiness","--manifest",str(readiness_input),"--output",str(readiness_output)],cwd=scratch,capture_output=True,timeout=30)
+        assert readiness_run.returncode == 3
+        readiness = json.loads(readiness_output.read_bytes())
+        assert readiness["status"] == "HOLD" and readiness["execution_authorized"] is False
+        assert readiness["target_calls"] == readiness["oracle_calls"] == readiness["network_requests"] == 0
         receipt = dict(schema="tomolab-qualification-installed-check-v1", status="PASS" if summary["status"] == "FUNCTIONAL_COMPLETE" and summary["hard_budget_parity"] == "PASS" else "HOLD_MEASUREMENT",
             installation_status="PASS",equal_cost_mode=True,baseline_method="E9_C",hard_budget_parity=summary["hard_budget_parity"],
             actual_call_spending_equal=summary["actual_call_spending_equal"],
             hard_call_meters=[row["hard_call_parity"] for row in summary["cases"]],
             harvest_triage_cli="PASS",triage_denominator=triage["denominator"],triage_qualified=triage["qualified"],
+            m0_readiness_cli="PASS",reset_symmetry_verified=True,
             triage_target_calls=triage["target_calls"],triage_oracle_calls=triage["oracle_calls"],
             triage_scope="AUTHORED_DOCS_ONLY_INSTALLATION_FIXTURE_NO_TARGET_EXECUTION",
             artifact=artifact.name, artifact_sha256=hashlib.sha256(artifact.read_bytes()).hexdigest(),

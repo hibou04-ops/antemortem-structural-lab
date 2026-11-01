@@ -25,7 +25,7 @@ jobs:
   # Legacy Source/historical jobs are excluded for both branch families;
   # actual new research is never hidden in the synthetic functional job.
   harvester-functional:
-    if: startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') || (startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') && github.event_name == 'pull_request')
+    if: startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') || (startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') && github.event_name == 'pull_request') || (startsWith(github.head_ref || github.ref_name, 'feat/post-v7-') && github.event_name == 'pull_request')
     runs-on: ${{ matrix.os }}
     timeout-minutes: 25
     strategy:
@@ -46,7 +46,7 @@ jobs:
           python -m pip install -e ".[qa,solver]"
           python -m pip install pytest build twine
       - name: Verify authored supply chain and preserved product paths
-        run: python -m pytest tests/test_harvester_github.py tests/test_harvester_registry.py tests/test_harvester_review.py tests/test_harvester_execution.py tests/test_harvester_learning.py tests/test_harvester_integration.py tests/test_harvester_adversarial.py tests/test_recursive_observe.py tests/test_recursive_policy.py tests/test_recursive_store.py tests/test_recursive_integration.py tests/test_recursive_review.py tests/test_online_engine.py tests/test_online_boundary.py tests/test_online_observe.py tests/test_online_learning.py tests/test_online_authority.py tests/test_product_runtime_regressions.py tests/test_product_workflows.py tests/test_e7_knowledge.py tests/test_relational_candidates.py tests/test_structural_probe.py tests/test_transfer_audit.py tests/test_oci_probe.py tests/test_real_qualification.py tests/test_prequalification_triage.py tests/test_triage_cli.py tests/test_call_meter.py tests/test_sequence_qualification.py -q --junitxml=harvester-regressions.xml
+        run: python -m pytest tests/test_harvester_github.py tests/test_harvester_registry.py tests/test_harvester_review.py tests/test_harvester_execution.py tests/test_harvester_learning.py tests/test_harvester_integration.py tests/test_harvester_adversarial.py tests/test_recursive_observe.py tests/test_recursive_policy.py tests/test_recursive_store.py tests/test_recursive_integration.py tests/test_recursive_review.py tests/test_online_engine.py tests/test_online_boundary.py tests/test_online_observe.py tests/test_online_learning.py tests/test_online_authority.py tests/test_product_runtime_regressions.py tests/test_product_workflows.py tests/test_e7_knowledge.py tests/test_relational_candidates.py tests/test_structural_probe.py tests/test_transfer_audit.py tests/test_oci_probe.py tests/test_real_qualification.py tests/test_prequalification_triage.py tests/test_triage_cli.py tests/test_call_meter.py tests/test_sequence_qualification.py tests/test_reset_symmetry.py tests/test_m0_readiness.py tests/test_workflow_audit.py -q --junitxml=harvester-regressions.xml
       - name: Run authored candidate to generation and restart example
         run: python -m tomolab harvest-demo --workspace work/harvester-example --allow-local-execution
       - name: Run exposed relational candidate probe with native Hypothesis
@@ -67,13 +67,14 @@ jobs:
         run: python scripts/check-product-runtime.py --output product-runtime.json
       - name: Publish functional verification readback summary
         if: always()
-        run: python scripts/summarize-post-v6-ci.py --mode functional
+        run: python scripts/summarize-post-v8-ci.py --mode functional
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: harvester-functional-${{ matrix.os }}-${{ matrix.python-version }}
           path: |
-            post-v6-functional-readback.json
+            post-v8-functional-readback.json
+            workflow-conditions-audit.json
             harvester-regressions.xml
             work/harvester-example/summary.json
             harvester-installed.json
@@ -84,7 +85,7 @@ jobs:
             dist/*
           if-no-files-found: error
   qualification-oci:
-    if: startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') && (github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && (inputs.run_real_qualification == true || inputs.run_sequence_qualification == true)))
+    if: startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') && (github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && (inputs.run_real_qualification == true || inputs.run_sequence_qualification == true))) || (startsWith(github.head_ref || github.ref_name, 'feat/post-v7-') && github.event_name == 'pull_request')
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -118,19 +119,24 @@ jobs:
           qualification_image_id="$(cat work/qualification-image.id)"
           python scripts/check-real-qualification.py --workspace work/public-qualification --image "$qualification_image_id" --allow-external-execution
       - name: Qualify only the frozen sequence_int track after its actual control gate
-        if: success() && (github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.run_sequence_qualification == true))
+        if: success() && startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') && (github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.run_sequence_qualification == true))
         run: |
           qualification_image_id="$(cat work/qualification-image.id)"
           python scripts/check-sequence-qualification.py --workspace work/sequence-qualification --manifest docs/SEQUENCE_QUALIFICATION_V7_20261101.json --image "$qualification_image_id" --allow-external-execution --allow-reviewed-development --source-cache docs/sequence-v7-source
       - name: Publish offline OCI qualification readback summary
-        if: always()
+        if: always() && startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-')
         run: python scripts/summarize-post-v6-ci.py --mode oci
+      - name: Publish post-v7 first-party control readback
+        if: always() && startsWith(github.head_ref || github.ref_name, 'feat/post-v7-')
+        run: python scripts/summarize-post-v8-ci.py --mode control
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: qualification-oci-${{ github.event_name }}
           path: |
             post-v6-oci-readback.json
+            post-v8-control-readback.json
+            workflow-conditions-audit.json
             work/qualification-image.id
             work/oci-control/oci-probe.json
             work/oci-control/container/*.json
@@ -235,7 +241,7 @@ jobs:
             dist/*
           if-no-files-found: error
   tests:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') && !startsWith(github.head_ref || github.ref_name, 'feat/post-v7-') }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -305,7 +311,7 @@ jobs:
             online-registration.json
             historical-registration.json
   product-installation:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') && !startsWith(github.head_ref || github.ref_name, 'feat/post-v7-') }}
     # Read-only product CI. Publication is a separate, manually invoked workflow.
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -335,7 +341,7 @@ jobs:
             dist/*
           if-no-files-found: error
   generator-isolation:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') && !startsWith(github.head_ref || github.ref_name, 'feat/post-v7-') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -347,7 +353,7 @@ jobs:
       - name: Verify restricted generator filesystem and network
         run: python scripts/check-isolation.py
   unified-generator-isolation:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') && !startsWith(github.head_ref || github.ref_name, 'feat/post-v7-') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -360,7 +366,7 @@ jobs:
       - name: Verify actual E5 access control and integrated discovery
         run: python scripts/check-discovery-isolation.py
   temporal-generator-isolation:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') && !startsWith(github.head_ref || github.ref_name, 'feat/post-v7-') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -373,7 +379,7 @@ jobs:
       - name: Verify E6 access controls, native state learning and replay
         run: python scripts/check-temporal-isolation.py
   knowledge-generator-isolation:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') && !startsWith(github.head_ref || github.ref_name, 'feat/post-v7-') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -399,7 +405,7 @@ jobs:
             compact-r3-docker.json
           if-no-files-found: error
   corroboration-integration:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') && !startsWith(github.head_ref || github.ref_name, 'feat/post-v7-') }}
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -420,7 +426,7 @@ jobs:
           path: corroboration-wheel.json
           if-no-files-found: error
   release-eligibility:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') && !startsWith(github.head_ref || github.ref_name, 'feat/post-v7-') }}
     runs-on: ubuntu-latest
     outputs:
       allow_release: ${{ steps.gate.outputs.allow_release }}
@@ -433,7 +439,7 @@ jobs:
         name: Determine conditional E8 publication eligibility
         run: python scripts/check-e8-release-eligibility.py --github-output
   historical-e7-release:
-    if: (!startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-')) && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')
+    if: (!startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') && !startsWith(github.head_ref || github.ref_name, 'feat/post-v7-')) && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')
     needs: [tests, generator-isolation, unified-generator-isolation, temporal-generator-isolation, knowledge-generator-isolation]
     runs-on: ubuntu-latest
     steps:
@@ -454,7 +460,7 @@ jobs:
           path: ${{ runner.temp }}/pypi-publication-source/verification/existing-e7-release.json
           if-no-files-found: error
   historical-functional:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') && !startsWith(github.head_ref || github.ref_name, 'feat/post-v7-') }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:

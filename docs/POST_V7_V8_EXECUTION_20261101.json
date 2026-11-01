@@ -1,0 +1,20 @@
+{
+  "schema": "tomolab-post-v7-v8-execution-contract-v1",
+  "baseline": "c8b640f9cf3dcbb266d6caaa4b3c50f230381139",
+  "state": "FROZEN_PRE_CI_EXECUTION_CONTRACT",
+  "next_gate": "COMMON_CONTRACT_FOUR_INDEPENDENT_REPRODUCED_LINEAGES_TWO_PROJECTS_TWO_MECHANISMS",
+  "implementation": ["OFFLINE_M0_READINESS", "STRUCTURAL_PROBE_PER_ENTRY_RESET", "WORKFLOW_CONDITION_AUDIT"],
+  "reset_symmetry": "TARGET_N_PLUS_ORACLE_N_REQUIRES_RESET_2N_ON_COMPLETE_PROBES",
+  "partial_reset_failure": "HOLD_PRESERVE_ACTUAL_ENTRIES_AND_ATTEMPTS_NO_DUMMY_FILL",
+  "new_source_collection": false,
+  "external_known_witness_replay": false,
+  "subagents": 0,
+  "paid_api_calls": 0,
+  "additional_github_api_gets": 0,
+  "release": false,
+  "m0": "HOLD",
+  "utility": "NOT_ESTABLISHED",
+  "oos": "NOT_ESTABLISHED",
+  "old_v7_artifacts_rewritten": false,
+  "postcommit_authority": "ACTUAL_CI_ARTIFACTS_AND_PRIVATE_SYNC_MANIFEST_DUAL_DETACHED_RECEIPTS"
+}
