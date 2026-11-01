@@ -454,10 +454,14 @@ def validate_pair_receipt(receipt):
 
 
 def execute_pairs(trace, *, config, identity, target, oracle, contract, structure,
-                  reset=None, tracing=True, trace_target=None):
+                  reset=None, tracing=True, trace_target=None, call_meter=None):
     """Host-only post-worker replay. No observation returns to the worker."""
     from .online_observe import observe
     validate_identity(identity)
+    if call_meter is not None:
+        from .call_meter import HardCallMeter,HardBudgetExhausted,ResetNotVerified
+        if type(call_meter) is not HardCallMeter:
+            raise ValueError("one concrete host-only hard call meter required")
     validate_trace(trace, config=config)
     if trace["status"] != "COMPLETE":
         raise ValueError("incomplete worker measurement cannot execute pairs")
@@ -467,7 +471,14 @@ def execute_pairs(trace, *, config, identity, target, oracle, contract, structur
     started = time.perf_counter()
     totals = dict(target_calls=0, oracle_calls=0, reset_calls=0, wall_seconds=0.0)
     receipts = []
+    meter_holds=[]
     for reservation in trace["reservations"]:
+        if call_meter is not None:
+            try:
+                call_meter.require_capacity(6,6,phase="paired_group_admission")
+            except HardBudgetExhausted:
+                meter_holds.append("HARD_BUDGET_EXHAUSTED_NO_EXECUTION")
+                break
         tick = time.perf_counter()
         branches, reasons = dict(common=[], learned=[]), []
         local = dict(target_calls=0, oracle_calls=0, reset_calls=0, wall_seconds=0.0)
@@ -477,30 +488,63 @@ def execute_pairs(trace, *, config, identity, target, oracle, contract, structur
                 if max(totals["target_calls"], totals["oracle_calls"]) >= config["max_pair_calls"] or time.perf_counter()-started >= config["max_pair_seconds"]:
                     reasons.append("DIAGNOSTIC_RESOURCE_LIMIT")
                     break
-                reset_success, error_type = False, None
-                if reset is not None:
-                    totals["reset_calls"] += 1
-                    local["reset_calls"] += 1
+                if call_meter is not None:
+                    prior=(call_meter.target_calls_used,call_meter.oracle_calls_used,call_meter.reset_calls_used)
+                    observation=None
+                    reset_success,error_type=False,None
                     try:
-                        reset_success = reset() is True
-                    except Exception as error:
-                        error_type = type(error).__name__
-                if not reset_success:
-                    row = dict(observation_id=digest(dict(reservation=reservation["reservation_id"], branch=name, repeat=repeat)), repeat=repeat, status="UNKNOWN", semantic_digest=None,
-                        feedback_digest=None, reset_success=False, target_calls=0, oracle_calls=0, error_type=error_type or "RESET_NOT_VERIFIED")
-                    reasons.append("RESET_NOT_VERIFIED")
+                        call_meter.require_capacity(phase="paired_"+name)
+                        if reset is None:
+                            call_meter.note_unresolved(phase="paired_"+name,reason="RESET_NOT_PROVIDED")
+                        else:
+                            observation=call_meter.evaluate(target,oracle,reservation[name+"_input"],contract,structure,
+                                reset=reset,tracing=tracing,trace_target=trace_target,phase="paired_"+name)
+                            reset_success=True
+                    except HardBudgetExhausted:
+                        reasons.append("HARD_BUDGET_EXHAUSTED_NO_EXECUTION")
+                        break
+                    except ResetNotVerified:
+                        error_type="RESET_NOT_VERIFIED"
+                    increments=(call_meter.target_calls_used-prior[0],call_meter.oracle_calls_used-prior[1],call_meter.reset_calls_used-prior[2])
+                    for key,value in zip(("target_calls","oracle_calls","reset_calls"),increments):
+                        totals[key]+=value;local[key]+=value
+                    if observation is None:
+                        row=dict(observation_id=digest(dict(reservation=reservation["reservation_id"],branch=name,repeat=repeat)),
+                            repeat=repeat,status="UNKNOWN",semantic_digest=None,feedback_digest=None,reset_success=False,
+                            target_calls=increments[0],oracle_calls=increments[1],error_type=error_type or "RESET_NOT_VERIFIED")
+                        reasons.append("RESET_NOT_VERIFIED")
+                    else:
+                        row=dict(observation_id=digest(dict(reservation=reservation["reservation_id"],branch=name,repeat=repeat)),
+                            repeat=repeat,status=observation["feedback"]["status"],semantic_digest=observation.get("semantic_digest"),
+                            feedback_digest=digest(observation["feedback"]),reset_success=reset_success,
+                            target_calls=increments[0],oracle_calls=increments[1],error_type=None)
                 else:
-                    observation = observe(target, oracle, reservation[name+"_input"], contract,
-                        structure, tracing=tracing, trace_target=trace_target)
-                    row = dict(observation_id=digest(dict(reservation=reservation["reservation_id"], branch=name, repeat=repeat)), repeat=repeat,
-                        status=observation["feedback"]["status"], semantic_digest=observation.get("semantic_digest"),
-                        feedback_digest=digest(observation["feedback"]), reset_success=True,
-                        target_calls=observation["target_calls"], oracle_calls=observation["oracle_calls"], error_type=None)
-                    for key in ("target_calls", "oracle_calls"):
-                        totals[key] += row[key]
-                        local[key] += row[key]
+                    reset_success, error_type = False, None
+                    if reset is not None:
+                        totals["reset_calls"] += 1
+                        local["reset_calls"] += 1
+                        try:
+                            reset_success = reset() is True
+                        except Exception as error:
+                            error_type = type(error).__name__
+                    if not reset_success:
+                        row = dict(observation_id=digest(dict(reservation=reservation["reservation_id"], branch=name, repeat=repeat)), repeat=repeat, status="UNKNOWN", semantic_digest=None,
+                            feedback_digest=None, reset_success=False, target_calls=0, oracle_calls=0, error_type=error_type or "RESET_NOT_VERIFIED")
+                        reasons.append("RESET_NOT_VERIFIED")
+                    else:
+                        observation = observe(target, oracle, reservation[name+"_input"], contract,
+                            structure, tracing=tracing, trace_target=trace_target)
+                        row = dict(observation_id=digest(dict(reservation=reservation["reservation_id"], branch=name, repeat=repeat)), repeat=repeat,
+                            status=observation["feedback"]["status"], semantic_digest=observation.get("semantic_digest"),
+                            feedback_digest=digest(observation["feedback"]), reset_success=True,
+                            target_calls=observation["target_calls"], oracle_calls=observation["oracle_calls"], error_type=None)
+                        for key in ("target_calls", "oracle_calls"):
+                            totals[key] += row[key]
+                            local[key] += row[key]
                 branches[name].append(row)
         label = derive_label(branches)
+        if call_meter is not None and label == "UNKNOWN":
+            call_meter.note_unresolved(phase="paired_receipt",reason="PAIR_REPETITION_UNRESOLVED")
         if label == "UNKNOWN" and not reasons:
             reasons.append("REPETITION_STATUS_OR_SEMANTICS_UNRESOLVED")
         local["wall_seconds"] = time.perf_counter()-tick
@@ -516,6 +560,6 @@ def execute_pairs(trace, *, config, identity, target, oracle, contract, structur
     return dict(schema="tomolab-paired-host-result-v1", status="COMPLETE" if receipts and trace["status"] == "COMPLETE" and all(r["label"] != "UNKNOWN" for r in receipts) else "HOLD_MEASUREMENT",
                 receipts=receipts, cost=totals, slots=deepcopy(trace["slots"]),
                 worker_instrumentation_cost=deepcopy(trace["cost"]),
-                unknown_reasons=[] if receipts else ["NO_ELIGIBLE_RESERVATIONS"],
+                unknown_reasons=[] if receipts else meter_holds or ["NO_ELIGIBLE_RESERVATIONS"],
                 transport_calls_not_in_diagnostic_cost=True,
                 scope="CONDITIONAL_LOCAL_PAIRS_NOT_POLICY_UTILITY_OR_GENERALIZATION")

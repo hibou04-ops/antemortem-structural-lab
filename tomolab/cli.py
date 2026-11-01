@@ -243,9 +243,16 @@ def main(argv: list[str] | None = None) -> int:
     register_harvester(cmd)
     from .qualification_cli import register as register_qualification, COMMANDS as QUALIFICATION_COMMANDS
     register_qualification(cmd)
+    from .triage_cli import register as register_triage, COMMANDS as TRIAGE_COMMANDS
+    register_triage(cmd)
     args = p.parse_args(argv)
     try:
-        if args.command in QUALIFICATION_COMMANDS:
+        if args.command in TRIAGE_COMMANDS:
+            from .triage_cli import dispatch
+            result = dispatch(args)
+            print(json.dumps(result, ensure_ascii=True, indent=2))
+            return 0 if result.get("status") == "COMPLETE" else 3
+        elif args.command in QUALIFICATION_COMMANDS:
             from .qualification_cli import dispatch
             result = dispatch(args)
             print(json.dumps(result, ensure_ascii=True, indent=2))

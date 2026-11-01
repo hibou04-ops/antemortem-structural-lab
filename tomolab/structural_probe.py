@@ -95,32 +95,53 @@ def _resolved(rows):
     return rows[0]["status"]
 
 
-def _measure_pair(target,oracle,common,candidate,*,reset,structure,contract=CONTRACT):
+def _measure_pair(target,oracle,common,candidate,*,reset,structure,contract=CONTRACT,call_meter=None):
     """Actual candidate-level repetitions, not full policy counterfactuals."""
+    if call_meter is not None:
+        from .discovery.call_meter import HardCallMeter,HardBudgetExhausted,ResetNotVerified
+        if type(call_meter) is not HardCallMeter:
+            raise ValueError("one concrete per-arm hard call meter required")
+        call_meter.require_capacity(6,6,phase="paired_group_admission")
     tick=time.perf_counter()
     branches={"common":[],"relational":[]}
     cost=dict(target_calls=0,oracle_calls=0,reset_calls=0,wall_seconds=0.0)
     for name,point in (("common",common),("relational",candidate)):
         for repeat in range(3):
-            cost["reset_calls"]+=1
-            try:
-                reset_ok=reset() is True
-            except Exception:
-                reset_ok=False
-            if not reset_ok:
-                row=dict(repeat=repeat,status="UNKNOWN",semantic_digest=None,reset_success=False,
-                         target_calls=0,oracle_calls=0,reason="RESET_NOT_VERIFIED")
+            if call_meter is not None:
+                prior=(call_meter.target_calls_used,call_meter.oracle_calls_used,call_meter.reset_calls_used)
+                try:
+                    observation=call_meter.evaluate(target,oracle,point,contract,structure,reset=reset,
+                        tracing=False,phase="relational_pair_"+name)
+                    row=dict(repeat=repeat,status=observation["feedback"]["status"],semantic_digest=observation.get("semantic_digest"),
+                        reset_success=True,target_calls=observation["target_calls"],oracle_calls=observation["oracle_calls"],reason=None)
+                except ResetNotVerified:
+                    row=dict(repeat=repeat,status="UNKNOWN",semantic_digest=None,reset_success=False,
+                        target_calls=0,oracle_calls=0,reason="RESET_NOT_VERIFIED")
+                for key,value in zip(("target_calls","oracle_calls","reset_calls"),
+                    (call_meter.target_calls_used-prior[0],call_meter.oracle_calls_used-prior[1],call_meter.reset_calls_used-prior[2])):
+                    cost[key]+=value
             else:
-                observation=observe(target,oracle,point,contract,structure,tracing=False)
-                row=dict(repeat=repeat,status=observation["feedback"]["status"],
-                    semantic_digest=observation.get("semantic_digest"),reset_success=True,
-                    target_calls=observation["target_calls"],oracle_calls=observation["oracle_calls"],reason=None)
-                cost["target_calls"]+=row["target_calls"]; cost["oracle_calls"]+=row["oracle_calls"]
+                cost["reset_calls"]+=1
+                try:
+                    reset_ok=reset() is True
+                except Exception:
+                    reset_ok=False
+                if not reset_ok:
+                    row=dict(repeat=repeat,status="UNKNOWN",semantic_digest=None,reset_success=False,
+                             target_calls=0,oracle_calls=0,reason="RESET_NOT_VERIFIED")
+                else:
+                    observation=observe(target,oracle,point,contract,structure,tracing=False)
+                    row=dict(repeat=repeat,status=observation["feedback"]["status"],
+                        semantic_digest=observation.get("semantic_digest"),reset_success=True,
+                        target_calls=observation["target_calls"],oracle_calls=observation["oracle_calls"],reason=None)
+                    cost["target_calls"]+=row["target_calls"]; cost["oracle_calls"]+=row["oracle_calls"]
             branches[name].append(row)
     c,l=(_resolved(branches[name]) for name in ("common","relational"))
     label="UNKNOWN" if c is None or l is None else {
         ("PASS","FAILURE"):"gain",("FAILURE","PASS"):"loss",
         ("PASS","PASS"):"neutral_pass",("FAILURE","FAILURE"):"neutral_failure"}[(c,l)]
+    if call_meter is not None and label=="UNKNOWN":
+        call_meter.note_unresolved(phase="relational_pair_receipt",reason="PAIR_REPETITION_UNRESOLVED")
     cost["wall_seconds"]=time.perf_counter()-tick
     receipt=dict(schema="tomolab-relational-authored-pair-v1",evidence_class=EVIDENCE_CLASS,
         common_input=deepcopy(common),relational_input=deepcopy(candidate),
@@ -133,7 +154,7 @@ def _measure_pair(target,oracle,common,candidate,*,reset,structure,contract=CONT
     return receipt
 
 
-def _run_relational(target,oracle,operator,*,seed,budget):
+def _run_relational(target,oracle,operator,*,seed,budget,call_meter=None):
     from hypothesis import given,settings,seed as hypothesis_seed,target as hypothesis_target,Phase,HealthCheck
     structure=inspect_target(target,CONTRACT)
     signature=extract_relational_signature(target,CONTRACT)
@@ -141,6 +162,9 @@ def _run_relational(target,oracle,operator,*,seed,budget):
     receipts,seen,decisions=[],set(),[]
     started=time.perf_counter()
     max_pairs=budget//6
+    if call_meter is not None:
+        from .discovery.call_meter import HardBudgetExhausted
+        call_meter.require_capacity(budget,budget,phase="relational_arm_admission")
     @hypothesis_seed(seed)
     @settings(max_examples=budget*4,database=None,deadline=None,
               phases=(Phase.generate,Phase.target),suppress_health_check=list(HealthCheck))
@@ -154,7 +178,15 @@ def _run_relational(target,oracle,operator,*,seed,budget):
         if not proposal["candidates"]:
             return
         selected=proposal["candidates"][0]
-        receipt=_measure_pair(target,oracle,base,selected["input"],reset=_reset_authored_fixture,structure=structure)
+        if call_meter is None:
+            receipt=_measure_pair(target,oracle,base,selected["input"],reset=_reset_authored_fixture,structure=structure)
+        else:
+            try:
+                receipt=_measure_pair(target,oracle,base,selected["input"],reset=_reset_authored_fixture,structure=structure,call_meter=call_meter)
+            except HardBudgetExhausted:
+                decisions.append(dict(status="NO_EXECUTION_BUDGET_EXHAUSTED",reasons=["HARD_CAP_REJECTED_BEFORE_ANY_ENTRY"],
+                    anchor_digest=input_identity(base),proposal_count=0))
+                return
         receipt.update(mutator_id=operator,signature_sha256=digest(signature),
             proposal_sha256=digest(proposal),relationship=selected["relationship"])
         receipt.pop("receipt_sha256"); receipt["receipt_sha256"]=digest(receipt)
@@ -164,12 +196,18 @@ def _run_relational(target,oracle,operator,*,seed,budget):
     search()
     cost={name:sum(r["cost"][name] for r in receipts) for name in ("target_calls","oracle_calls","reset_calls")}
     cost["wall_seconds"]=time.perf_counter()-started
-    return dict(schema="tomolab-relational-native-functional-v1",evidence_class=EVIDENCE_CLASS,
+    result=dict(schema="tomolab-relational-native-functional-v1",evidence_class=EVIDENCE_CLASS,
         engine="NATIVE_HYPOTHESIS_GIVEN_TARGET_PUBLIC_STRATEGY",seed=seed,budget=budget,
         actual=cost,receipts=receipts,decisions=decisions,signature=signature,
         routing="AUTHORED_MECHANISM_SELECTION_NOT_LEARNED_OR_BLIND",
         status="COMPLETE" if receipts and all(r["label"]!="UNKNOWN" for r in receipts) else "HOLD_MEASUREMENT",
         learning_updates=0,external_target_calls=0,scope="FUNCTIONAL_ONLY_NOT_EQUAL_COST_POLICY_UTILITY")
+    if call_meter is not None:
+        result["hard_call_meter"]=call_meter.snapshot()
+        result["arm_kind"]="COMMON_PRIOR_RELATIONAL_NOT_SOURCE_LEARNED_D"
+        result["scope"]="EXPOSED_FUNCTIONAL_EQUAL_HARD_CAPS_NOT_POLICY_UTILITY"
+        result["pair_control_scope"]="NATIVE_ANCHOR_NOT_BASELINE_C_COUNTERFACTUAL"
+    return result
 
 
 def _write(path,value):
@@ -178,7 +216,7 @@ def _write(path,value):
         stream.write("\n")
 
 
-def run_probe(workspace,*,allow_local_execution=False,seed=47,budget=24):
+def run_probe(workspace,*,allow_local_execution=False,seed=47,budget=24,equal_cost=False):
     """Run only this module's four exposed fixtures, with explicit opt-in.
 
     Each of the two paths has a per-fixture Target/Oracle ceiling of budget.
@@ -188,33 +226,55 @@ def run_probe(workspace,*,allow_local_execution=False,seed=47,budget=24):
         raise PermissionError("explicit --allow-local-execution is required for authored fixtures")
     if type(seed) is not int or not 0<=seed<2**32 or type(budget) is not int or not 12<=budget<=48:
         raise ValueError("seed must be uint32; per-path functional budget must be 12..48")
+    if type(equal_cost) is not bool:
+        raise ValueError("equal cost mode must be an exact boolean")
     workspace=Path(workspace)
     workspace.mkdir(parents=True,exist_ok=False)
     started=time.perf_counter()
     registration=dict(schema="tomolab-structural-probe-contract-v1",evidence_class=EVIDENCE_CLASS,
         contract=CONTRACT,seed=seed,budget_per_fixture_per_path=budget,
         total_target_cap=len(_cases())*2*budget,total_oracle_cap=len(_cases())*2*budget,
-        total_reset_cap=len(_cases())*(budget//6)*6,
+        total_reset_cap=len(_cases())*((budget if equal_cost else 0)+(budget//6)*6),
         source=dict(sha256=CONSULTATION_SHA256,pages=[23,24,25,26,27,28,29,30,31,32,33,34,37,38,39]),
         cases=[dict(mutator_id=o,implementation_sha256=_sha(t),oracle_sha256=_sha(r)) for o,t,r in _cases()],
         real_eligible=0,real_research_execution=False,independent_oos=False,allow_release=False,
-        all_m0_modified=False,learning_updates=0,baseline="EXISTING_RUN_ONLINE_METHOD_A_NATIVE_HYPOTHESIS",
+        all_m0_modified=False,learning_updates=0,baseline="EXISTING_RUN_ONLINE_METHOD_C_NATIVE_HYPOTHESIS" if equal_cost else "EXISTING_RUN_ONLINE_METHOD_A_NATIVE_HYPOTHESIS",
         relational="SEPARATE_NATIVE_GIVEN_FUNCTIONAL_LOCAL_PAIRS",guarantees_no_regression=False)
+    if equal_cost:
+        registration["hard_budget_contract"]=dict(independent_per_arm_budget=True,target_cap_per_arm=budget,oracle_cap_per_arm=budget,
+            reset_callback_sha256=_sha(_reset_authored_fixture),shared_meter_implementation="tomolab.discovery.call_meter.HardCallMeter",
+            baseline_method="C",relational_arm="COMMON_PRIOR_RELATIONAL_NOT_SOURCE_LEARNED_D",
+            phases="ALL_NATIVE_CONFIRM_SHRINK_REPLAY_AND_RELATIONAL_PAIR_ENTRIES_CHARGED",
+            unused_policy="PRESERVE_UNUSED_NO_DUMMY_FILL",unknown_policy="HOLD_PRESERVE_ERRORS_NOT_FORCE_ZERO")
     registration["contract_sha256"]=digest(registration)
     _write(workspace/"contract.json",registration)
     rows=[]
     for index,(operator,target,reference) in enumerate(_cases()):
-        baseline=run_online(target,reference,CONTRACT,method="A",seed=seed,budget=budget,
-                            shrink_budget=0,max_seconds=10,mode="structural")
-        relational=_run_relational(target,reference,operator,seed=seed,budget=budget)
+        if equal_cost:
+            from .discovery.call_meter import independent_arm_meters,parity_receipt
+            meters=independent_arm_meters(["C_BASELINE","COMMON_PRIOR_RELATIONAL"],target_budget=budget,oracle_budget=budget)
+            baseline=run_online(target,reference,CONTRACT,method="C",seed=seed,budget=budget,
+                shrink_budget=0,max_seconds=10,mode="structural",call_meter=meters["C_BASELINE"],
+                fresh_reset=_reset_authored_fixture,hard_budget=True)
+            relational=_run_relational(target,reference,operator,seed=seed,budget=budget,call_meter=meters["COMMON_PRIOR_RELATIONAL"])
+            preparation=dict(scope="SEPARATE_CURRENT_RUN_PREPARATION",target_calls=0,oracle_calls=0,reset_calls=0,
+                basis="FOUR_EXPOSED_AUTHORED_STATIC_PRIORS_NO_PREPARATION_EVALUATIONS_IN_THIS_RUN",
+                prior_source_design_cost="NOT_REACQUIRED_NOT_ASSUMED_TO_BE_ZERO_LIFETIME_COST")
+            parity=parity_receipt(meters,preparation_cost_ledger=preparation)
+        else:
+            baseline=run_online(target,reference,CONTRACT,method="A",seed=seed,budget=budget,
+                                shrink_budget=0,max_seconds=10,mode="structural")
+            relational=_run_relational(target,reference,operator,seed=seed,budget=budget)
         _write(workspace/("case-"+str(index+1)+".json"),dict(native_baseline=baseline,relational=relational))
         rows.append(dict(mutator_id=operator,native_baseline=dict(method=baseline["method"],
             engine=baseline.get("hypothesis",{}).get("engine","BOUNDARY_ERROR"),status=baseline["status"],
-            target_calls=baseline["target_calls"],oracle_calls=baseline["oracle_calls"],reset_calls=0,
+            target_calls=baseline["target_calls"],oracle_calls=baseline["oracle_calls"],reset_calls=baseline.get("reset_calls",0),
             confirmed_inputs=len(baseline["confirmed_failures"])),
             relational=dict(engine=relational["engine"],status=relational["status"],**relational["actual"],
                 pairs=len(relational["receipts"]),labels={label:sum(r["label"]==label for r in relational["receipts"])
                     for label in ("gain","loss","neutral_pass","neutral_failure","UNKNOWN")})))
+        if equal_cost:
+            rows[-1]["hard_call_parity"]=parity
     actual={name:sum(row[path][name] for row in rows for path in ("native_baseline","relational"))
             for name in ("target_calls","oracle_calls","reset_calls")}
     summary=dict(schema="tomolab-structural-probe-summary-v1",evidence_class=EVIDENCE_CLASS,
@@ -227,5 +287,14 @@ def run_probe(workspace,*,allow_local_execution=False,seed=47,budget=24):
         limitation="EXPOSED_AUTHORED_FIXTURES_AND_MECHANISM_SELECTED_PROPOSALS_NOT_BLIND_TRANSFER")
     if any(actual[name]>summary["caps"][name] for name in actual):
         raise ValueError("actual functional calls exceeded frozen caps")
+    if equal_cost:
+        summary["equal_cost_mode"]=True
+        summary["baseline_method"]="E9_C"
+        summary["relational_arm"]="COMMON_PRIOR_RELATIONAL_NOT_SOURCE_LEARNED_D"
+        summary["hard_budget_parity"]="PASS" if all(row["hard_call_parity"]["status"]=="PASS" for row in rows) else "HOLD"
+        summary["preparation_cost_scope"]="SEPARATE_EXPLICIT_LEDGER_NOT_HIDDEN_IN_EVALUATION_CALLS"
+        summary["pair_control_scope"]="NATIVE_ANCHOR_NOT_BASELINE_C_COUNTERFACTUAL"
+        summary["actual_call_spending_equal"]=all(row["hard_call_parity"]["actual_calls_equal"] for row in rows)
+        if summary["hard_budget_parity"]!="PASS": summary["status"]="HOLD_MEASUREMENT"
     _write(workspace/"summary.json",summary)
     return summary
