@@ -10,6 +10,7 @@ def register(commands):
     probe.add_argument("--seed",type=int,default=47)
     probe.add_argument("--budget",type=int,default=24)
     probe.add_argument("--allow-local-execution",action="store_true")
+    probe.add_argument("--equal-cost",action="store_true",help="Use native C and independent hard-metered relational arms; no dummy fill")
     audit=commands.add_parser("transfer-audit",help="Audit declared evidence scope without running a target or changing a generation")
     audit.add_argument("--manifest",type=Path,required=True)
     audit.add_argument("--output",type=Path)
@@ -18,7 +19,7 @@ def register(commands):
 def dispatch(args):
     if args.command=="structural-probe":
         from .structural_probe import run_probe
-        return run_probe(args.workspace,allow_local_execution=args.allow_local_execution,seed=args.seed,budget=args.budget)
+        return run_probe(args.workspace,allow_local_execution=args.allow_local_execution,seed=args.seed,budget=args.budget,equal_cost=args.equal_cost)
     from .discovery.transfer_audit import audit_transfer_scope
     from .discovery.harvester_service import save_new
     path=args.manifest

@@ -1,0 +1,58 @@
+{
+  "schema": "tomolab-post-v6-public-development-contract-v1",
+  "state": "FROZEN_POST_V6_R2_CI_PLAN",
+  "public_release": "0.8.0a1",
+  "development_base": "a2f1858c1e49f9eb6ee9d002dba398c5a85c86f6",
+  "original46": {
+    "classification": {
+      "EXCLUDE_DOC_OR_NON_CODE": 11,
+      "HOLD_CONTRACT_OR_IMPURE": 34,
+      "HOLD_INSUFFICIENT_STATIC_EVIDENCE": 1,
+      "CANDIDATE_SEQUENCE_INT": 0,
+      "CANDIDATE_TEXT": 0
+    },
+    "source_execution": 0,
+    "api_requests": 200,
+    "api_cap": 552,
+    "classification_history": [
+      {
+        "revision": "r1",
+        "EXCLUDE_DOC_OR_NON_CODE": 11,
+        "HOLD_CONTRACT_OR_IMPURE": 31,
+        "HOLD_INSUFFICIENT_STATIC_EVIDENCE": 4,
+        "CANDIDATE_SEQUENCE_INT": 0,
+        "CANDIDATE_TEXT": 0
+      }
+    ],
+    "current_revision": "offline-r2",
+    "additional_gets_r2": 0,
+    "source_binding": "EXACT_PINNED_REF_CONTENTS_AND_GIT_BLOB; PR_FILES_ROW_SHA_DIFFERENCE_REASON_UNKNOWN"
+  },
+  "tracks": [
+    "TRACK_SEQ_INT",
+    "TRACK_TEXT"
+  ],
+  "equal_cost": "IDENTICAL_PER_ARM_HARD_UPPER_BOUNDS_AND_ACTUAL_USAGE_NOT_DUMMY_CALL_EQUALIZATION",
+  "unknown": "PRESERVE_HOLD_NEVER_DELETE_IMPUTE_OR_REPLACE",
+  "real_m0": "HOLD_PENDING_4_ELIGIBLE_SEQ_INT_2_PROJECTS_2_MECHANISMS",
+  "utility": "NOT_ESTABLISHED",
+  "oos": "NOT_ESTABLISHED",
+  "real_new_qualification": "TWO_FROZEN_CASES_OFFLINE_CACHE_IN_INSPECTED_LINUX_PR_CI",
+  "text_v6_reexecuted": false,
+  "postcommit_authority": "PR15_FINAL_RAW_CI_AND_PRIVATE_DETACHED_SYNC_RECEIPTS",
+  "main_merge": false,
+  "release": false,
+  "paid_jev": false,
+  "batch03": {
+    "metadata": 18,
+    "detail": 10,
+    "deep_reserved": 2,
+    "gets": 58,
+    "get_cap": 92,
+    "replacements": 0,
+    "slot_backfill": 0
+  },
+  "reentry_guard": "REJECT_ACTIVE_METER_BEFORE_NESTED_ENTRY_KEEP_UNRESOLVED_EVIDENCE",
+  "additional_github_gets": 0,
+  "source_host_execution": 0
+}

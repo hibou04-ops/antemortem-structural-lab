@@ -211,13 +211,15 @@ def _validate_configuration(contract, method, seed, budget, shrink_budget, max_s
 
 
 def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget=48, shrink_budget=8,
-                     mold=None, replays=(), max_seconds=30, _started=None, diagnostics=None, selector=None):
+                     mold=None, replays=(), max_seconds=30, _started=None, diagnostics=None, selector=None, hard_budget=False):
     """Worker-only search. Its callback receives no Target or Oracle objects."""
     started = time.perf_counter() if _started is None else _started
     from hypothesis import given, target as hypothesis_target, settings, seed as hypothesis_seed
     from hypothesis import Phase, HealthCheck, find
     from hypothesis.errors import NoSuchExample, Unsatisfiable
     contract, method = _validate_configuration(contract, method, seed, budget, shrink_budget, max_seconds, mold)
+    if type(hard_budget) is not bool:
+        raise ValueError("hard budget tail mode must be an exact boolean")
     discovery_limit = budget - shrink_budget
     policy = OnlinePolicy(contract, method=method, seed=seed, budget=discovery_limit,
                           mold=mold, replays=replays, structure=structure, selector=selector)
@@ -311,7 +313,7 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
     @given(strategy)
     def search(base):
         nonlocal shadow_rule_state
-        if result["target_calls"] + 3 > discovery_limit or expired():
+        if result["target_calls"] + (1 if hard_budget else 3) > discovery_limit or expired():
             return
         tick = time.perf_counter()
         state_before = policy.state_digest()
@@ -459,7 +461,7 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
 
 def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrink_budget=8,
                mold=None, replays=(), max_seconds=30, mode="structural", inspection_target=None,
-               diagnostics=None, diagnostic_reset=None, selector=None):
+               diagnostics=None, diagnostic_reset=None, selector=None, call_meter=None, fresh_reset=None, hard_budget=False):
     """Fresh data-only search process; trusted Target/Oracle stay on the host.
 
     The existing reviewed process loader, allowlisted copies and sanitized
@@ -474,6 +476,18 @@ def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrin
     for fn in (target, oracle):
         if not callable(fn) or inspect.iscoroutinefunction(fn) or inspect.isgeneratorfunction(fn) or inspect.isasyncgenfunction(fn) or inspect.iscoroutinefunction(getattr(fn, "__call__", None)):
             raise ValueError("reviewed synchronous non-generator callables required")
+    if type(hard_budget) is not bool or fresh_reset is not None and not callable(fresh_reset):
+        raise ValueError("explicit hard-budget mode and reviewed fresh reset required")
+    if call_meter is not None or hard_budget or fresh_reset is not None:
+        from .call_meter import HardCallMeter
+        if call_meter is None:
+            call_meter=HardCallMeter(budget,budget,arm_id="E9_"+method)
+        if type(call_meter) is not HardCallMeter:
+            raise ValueError("one concrete host-only hard call meter required")
+        call_meter.require_capacity(budget,budget,phase="online_run_admission")
+        meter_before=call_meter.snapshot()
+    else:
+        meter_before=None
     if inspection_target is oracle and target is not oracle:
         raise ValueError("an Oracle cannot be supplied as the public Target inspection reference")
     if diagnostics is not None:
@@ -516,8 +530,12 @@ def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrin
         if reference is not None:
             if type(reference) is not int or not 0 <= reference < len(host_rows) or host_rows[reference]["input_digest"] != input_identity(point):
                 raise ValueError("reproduction reference must be a prior evaluation of the same input")
-        observation = observe(target, oracle, point, contract, structure, tracing=mode == "structural",
-                              trace_target=inspection_target)
+        if call_meter is None:
+            observation = observe(target, oracle, point, contract, structure, tracing=mode == "structural",
+                                  trace_target=inspection_target)
+        else:
+            observation = call_meter.evaluate(target,oracle,point,contract,structure,reset=fresh_reset,
+                tracing=mode == "structural",trace_target=inspection_target,phase="online_"+phase)
         for key in counters:
             counters[key] += observation[key]
         observation_id = len(host_rows)
@@ -539,6 +557,8 @@ def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrin
         config["diagnostics"] = diagnostics["public"]
     if selector is not None:
         config["selector"] = selector
+    if hard_budget:
+        config["hard_budget"]=True
     boundary_receipt, inventory = None, None
     try:
         with OnlineBoundary(timeout=max_seconds+5) as boundary:
@@ -608,7 +628,7 @@ def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrin
             result["paired_diagnostics"] = execute_pairs(trace, config=diagnostics["public"],
                 identity=diagnostics["identity"], target=target, oracle=oracle, contract=contract,
                 structure=structure, reset=diagnostic_reset, tracing=mode == "structural",
-                trace_target=inspection_target)
+                trace_target=inspection_target,call_meter=call_meter)
             result["paired_diagnostics"]["trace_validation_seconds"] = diagnostic_validation_seconds
             result["paired_diagnostics"]["host_reconstruction_proposals"] = 5*len(trace["reservations"])
         except (ValueError, TypeError, KeyError, OverflowError) as error:
@@ -625,6 +645,22 @@ def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrin
     result["boundary"]["transmitted_data"] = result["boundary"]["transferred"]
     result["replay_inputs_rejected_before_transport"] = rejected_replays
     result["cost"].update(wall_seconds=time.perf_counter()-started, includes_worker_startup_import_ipc_shutdown=True)
+    if call_meter is not None:
+        measured=call_meter.snapshot()
+        result["hard_call_meter"]=measured
+        result["hard_budget_tail_mode"]=hard_budget
+        result["reset_calls"]=measured["reset_calls_used"]-meter_before["reset_calls_used"]
+        result["fresh_reset_count"]=measured["fresh_reset_count"]-meter_before["fresh_reset_count"]
+        result["metered_run_actual"]={name:measured[name]-meter_before[name]
+            for name in ("target_calls_used","oracle_calls_used","reset_calls_used","fresh_reset_count")}
+        result["meter_scope"]="ALL_HOST_EVALUATIONS_INCLUDING_CONFIRM_SHRINK_AND_OPTIONAL_PAIRED_REMEASUREMENT"
+        failed_resets=measured["reset_failures"]-meter_before["reset_failures"]
+        result["unknown"]+=failed_resets
+        unresolved=(failed_resets+measured["unknown_observations"]-meter_before["unknown_observations"]
+            +measured["unresolved_measurement_events"]-meter_before["unresolved_measurement_events"])
+        if result.get("reproduction_mismatches",0) or unresolved or (diagnostics is not None and result.get("paired_diagnostics",{}).get("status")!="COMPLETE"):
+            if result["status"]=="COMPLETE": result["status"]="HOLD_MEASUREMENT"
+        result["metered_unresolved_events"]=unresolved
     result.pop("receipt_sha256", None)
     result["receipt_sha256"] = digest(result)
     return result

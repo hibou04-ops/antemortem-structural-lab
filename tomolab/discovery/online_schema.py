@@ -295,9 +295,11 @@ def validate_online_parameters(contract, method, seed, budget, shrink_budget, ma
 def validate_online_config(config):
     """The same whitelist runs before transport and inside the fresh worker."""
     required = {"contract", "structure", "method", "seed", "budget", "shrink_budget", "mold", "replays", "max_seconds", "_started"}
-    if type(config) is not dict or not required <= set(config) or set(config)-required-{"diagnostics", "selector"}:
+    if type(config) is not dict or not required <= set(config) or set(config)-required-{"diagnostics", "selector", "hard_budget"}:
         raise ValueError("only public online configuration fields may cross")
     validate_online_parameters(*(config[key] for key in ("contract", "method", "seed", "budget", "shrink_budget", "max_seconds", "mold")))
+    if "hard_budget" in config and type(config["hard_budget"]) is not bool:
+        raise ValueError("hard budget tail selection must be an explicit boolean")
     if "diagnostics" in config:
         from .recursive_observe import validate_public_diagnostics
         validate_public_diagnostics(config["diagnostics"])
