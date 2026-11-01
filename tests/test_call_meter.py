@@ -232,10 +232,10 @@ def test_nondeterministic_paired_semantics_hold_without_erasing_actual_calls():
     def unstable(xs):state["i"]+=1;return state["i"]
     def reference(xs):return 0
     def reset():return True
-    meter=HardCallMeter(24,arm_id="RELATIONAL")
+    meter=HardCallMeter(24,arm_id="RELATIONAL",reset_per_entry=True)
     receipt=_measure_pair(unstable,reference,[1],[2],reset=reset,structure={},call_meter=meter)
     assert receipt["label"]=="UNKNOWN" and receipt["cost"]["target_calls"]==receipt["cost"]["oracle_calls"]==6
-    other=HardCallMeter(24,arm_id="C")
+    other=HardCallMeter(24,arm_id="C",reset_per_entry=True)
     result=parity_receipt({"RELATIONAL":meter,"C":other},preparation_cost_ledger=prep())
     assert result["status"]=="HOLD_UNRESOLVED_OBSERVATION" and result["arms"]["RELATIONAL"]["unresolved_measurement_events"]==1
 
@@ -269,13 +269,14 @@ def test_equal_cost_probe_is_actual_c_vs_prior_relational_with_all_calls_metered
     assert summary["status"]=="FUNCTIONAL_COMPLETE" and summary["baseline_method"]=="E9_C"
     assert summary["relational_arm"]=="COMMON_PRIOR_RELATIONAL_NOT_SOURCE_LEARNED_D"
     assert summary["hard_budget_parity"]=="PASS" and summary["actual_call_spending_equal"] is True
-    assert summary["actual"]==dict(target_calls=8*budget,oracle_calls=8*budget,reset_calls=8*budget)
+    assert summary["actual"]==dict(target_calls=8*budget,oracle_calls=8*budget,reset_calls=16*budget)
     for i,row in enumerate(summary["cases"],1):
         assert row["native_baseline"]["method"]=="E9_C"
         parity=row["hard_call_parity"]
         for arm in parity["arms"].values():
             assert arm["target_budget"]==arm["oracle_budget"]==budget
-            assert arm["target_calls_used"]==arm["oracle_calls_used"]==arm["fresh_reset_count"]==budget
+            assert arm["target_calls_used"]==arm["oracle_calls_used"]==budget
+            assert arm["fresh_reset_count"]==2*budget and arm["reset_per_entry"] is True
             assert arm["unknown_observations"]==arm["reset_failures"]==arm["unresolved_measurement_events"]==0
         raw=json.loads((tmp_path/str(budget)/("case-"+str(i)+".json")).read_text())
         assert raw["native_baseline"]["hard_call_meter"]["target_calls_used"]==budget

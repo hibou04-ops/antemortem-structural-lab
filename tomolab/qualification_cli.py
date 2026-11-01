@@ -2,9 +2,13 @@
 import json
 from pathlib import Path
 
-COMMANDS={"structural-probe","transfer-audit"}
+COMMANDS={"structural-probe","transfer-audit","m0-readiness"}
 
 def register(commands):
+    readiness=commands.add_parser("m0-readiness",help="Audit frozen M0 material without execution or registry writes")
+    readiness.add_argument("--manifest",type=Path,required=True)
+    readiness.add_argument("--output",type=Path)
+    readiness.add_argument("--allow-reviewed-evidence",action="store_true")
     probe=commands.add_parser("structural-probe",help="Run four exposed authored relational development fixtures")
     probe.add_argument("--workspace",type=Path,required=True)
     probe.add_argument("--seed",type=int,default=47)
@@ -17,6 +21,15 @@ def register(commands):
     audit.add_argument("--allow-reviewed-evidence",action="store_true")
 
 def dispatch(args):
+    if args.command=="m0-readiness":
+        from .discovery.m0_readiness import assess_m0_readiness
+        from .discovery.harvester_service import save_new
+        path=args.manifest
+        if path.is_symlink() or not path.is_file() or path.stat().st_size>16*1024*1024:
+            raise ValueError("bounded regular readiness manifest required")
+        result=assess_m0_readiness(json.loads(path.read_bytes()),trusted_review=args.allow_reviewed_evidence)
+        if args.output is not None:save_new(args.output,result)
+        return result
     if args.command=="structural-probe":
         from .structural_probe import run_probe
         return run_probe(args.workspace,allow_local_execution=args.allow_local_execution,seed=args.seed,budget=args.budget,equal_cost=args.equal_cost)

@@ -87,7 +87,7 @@ def _sha(fn):
 
 def _resolved(rows):
     if len(rows)!=3 or any(row["reset_success"] is not True or row["status"] not in ("PASS","FAILURE")
-        or row["target_calls"]!=1 or row["oracle_calls"]!=1
+        or row["target_calls"]!=1 or row["oracle_calls"]!=1 or row.get("reset_calls")!=2
         or type(row["semantic_digest"]) is not str or re.fullmatch(r"[0-9a-f]{64}",row["semantic_digest"]) is None for row in rows):
         return None
     if len({row["status"] for row in rows})!=1 or len({row["semantic_digest"] for row in rows})!=1:
@@ -96,51 +96,36 @@ def _resolved(rows):
 
 
 def _measure_pair(target,oracle,common,candidate,*,reset,structure,contract=CONTRACT,call_meter=None):
-    """Actual candidate-level repetitions, not full policy counterfactuals."""
-    if call_meter is not None:
-        from .discovery.call_meter import HardCallMeter,HardBudgetExhausted,ResetNotVerified
-        if type(call_meter) is not HardCallMeter:
-            raise ValueError("one concrete per-arm hard call meter required")
-        call_meter.require_capacity(6,6,phase="paired_group_admission")
+    """Actual repetitions with a reviewed reset before each callable entry."""
+    from .discovery.call_meter import HardCallMeter,ResetNotVerified
+    if call_meter is None:
+        call_meter=HardCallMeter(6,6,arm_id="LOCAL_PAIR",reset_per_entry=True)
+    if type(call_meter) is not HardCallMeter or call_meter.reset_per_entry is not True:
+        raise ValueError("structural pairs require a concrete per-entry-reset meter")
+    call_meter.require_capacity(6,6,phase="paired_group_admission")
     tick=time.perf_counter()
     branches={"common":[],"relational":[]}
     cost=dict(target_calls=0,oracle_calls=0,reset_calls=0,wall_seconds=0.0)
     for name,point in (("common",common),("relational",candidate)):
         for repeat in range(3):
-            if call_meter is not None:
-                prior=(call_meter.target_calls_used,call_meter.oracle_calls_used,call_meter.reset_calls_used)
-                try:
-                    observation=call_meter.evaluate(target,oracle,point,contract,structure,reset=reset,
-                        tracing=False,phase="relational_pair_"+name)
-                    row=dict(repeat=repeat,status=observation["feedback"]["status"],semantic_digest=observation.get("semantic_digest"),
-                        reset_success=True,target_calls=observation["target_calls"],oracle_calls=observation["oracle_calls"],reason=None)
-                except ResetNotVerified:
-                    row=dict(repeat=repeat,status="UNKNOWN",semantic_digest=None,reset_success=False,
-                        target_calls=0,oracle_calls=0,reason="RESET_NOT_VERIFIED")
-                for key,value in zip(("target_calls","oracle_calls","reset_calls"),
-                    (call_meter.target_calls_used-prior[0],call_meter.oracle_calls_used-prior[1],call_meter.reset_calls_used-prior[2])):
-                    cost[key]+=value
-            else:
-                cost["reset_calls"]+=1
-                try:
-                    reset_ok=reset() is True
-                except Exception:
-                    reset_ok=False
-                if not reset_ok:
-                    row=dict(repeat=repeat,status="UNKNOWN",semantic_digest=None,reset_success=False,
-                             target_calls=0,oracle_calls=0,reason="RESET_NOT_VERIFIED")
-                else:
-                    observation=observe(target,oracle,point,contract,structure,tracing=False)
-                    row=dict(repeat=repeat,status=observation["feedback"]["status"],
-                        semantic_digest=observation.get("semantic_digest"),reset_success=True,
-                        target_calls=observation["target_calls"],oracle_calls=observation["oracle_calls"],reason=None)
-                    cost["target_calls"]+=row["target_calls"]; cost["oracle_calls"]+=row["oracle_calls"]
+            prior=(call_meter.target_calls_used,call_meter.oracle_calls_used,call_meter.reset_calls_used,call_meter.fresh_reset_count)
+            try:
+                observation=call_meter.evaluate(target,oracle,point,contract,structure,reset=reset,
+                    tracing=False,phase="relational_pair_"+name)
+                row=dict(repeat=repeat,status=observation["feedback"]["status"],semantic_digest=observation.get("semantic_digest"),
+                    reset_success=call_meter.fresh_reset_count-prior[3]==2,reason=None)
+            except ResetNotVerified:
+                row=dict(repeat=repeat,status="UNKNOWN",semantic_digest=None,reset_success=False,reason="RESET_NOT_VERIFIED")
+            for key,value in zip(("target_calls","oracle_calls","reset_calls"),
+                (call_meter.target_calls_used-prior[0],call_meter.oracle_calls_used-prior[1],call_meter.reset_calls_used-prior[2])):
+                cost[key]+=value
+                row[key]=value
             branches[name].append(row)
     c,l=(_resolved(branches[name]) for name in ("common","relational"))
     label="UNKNOWN" if c is None or l is None else {
         ("PASS","FAILURE"):"gain",("FAILURE","PASS"):"loss",
         ("PASS","PASS"):"neutral_pass",("FAILURE","FAILURE"):"neutral_failure"}[(c,l)]
-    if call_meter is not None and label=="UNKNOWN":
+    if label=="UNKNOWN":
         call_meter.note_unresolved(phase="relational_pair_receipt",reason="PAIR_REPETITION_UNRESOLVED")
     cost["wall_seconds"]=time.perf_counter()-tick
     receipt=dict(schema="tomolab-relational-authored-pair-v1",evidence_class=EVIDENCE_CLASS,
@@ -148,6 +133,7 @@ def _measure_pair(target,oracle,common,candidate,*,reset,structure,contract=CONT
         common_digest=input_identity(common),relational_digest=input_identity(candidate),
         implementation_sha256=_sha(target),oracle_sha256=_sha(oracle),
         reset_sha256=_sha(reset),contract_sha256=digest(contract),branches=branches,label=label,cost=cost,
+        reset_policy="BEFORE_EACH_TARGET_AND_ORACLE_ENTRY",
         unknown_reasons=["RESET_STATUS_OR_SEMANTIC_REPETITION_UNRESOLVED"] if label=="UNKNOWN" else [],
         scope="AUTHORED_STATELESS_SAME_ANCHOR_LOCAL_PAIR_NOT_POLICY_UTILITY")
     receipt["receipt_sha256"]=digest(receipt)
@@ -234,7 +220,8 @@ def run_probe(workspace,*,allow_local_execution=False,seed=47,budget=24,equal_co
     registration=dict(schema="tomolab-structural-probe-contract-v1",evidence_class=EVIDENCE_CLASS,
         contract=CONTRACT,seed=seed,budget_per_fixture_per_path=budget,
         total_target_cap=len(_cases())*2*budget,total_oracle_cap=len(_cases())*2*budget,
-        total_reset_cap=len(_cases())*((budget if equal_cost else 0)+(budget//6)*6),
+        total_reset_cap=len(_cases())*4*budget,
+        reset_policy="BEFORE_EACH_TARGET_AND_ORACLE_ENTRY",
         source=dict(sha256=CONSULTATION_SHA256,pages=[23,24,25,26,27,28,29,30,31,32,33,34,37,38,39]),
         cases=[dict(mutator_id=o,implementation_sha256=_sha(t),oracle_sha256=_sha(r)) for o,t,r in _cases()],
         real_eligible=0,real_research_execution=False,independent_oos=False,allow_release=False,
@@ -252,7 +239,7 @@ def run_probe(workspace,*,allow_local_execution=False,seed=47,budget=24,equal_co
     for index,(operator,target,reference) in enumerate(_cases()):
         if equal_cost:
             from .discovery.call_meter import independent_arm_meters,parity_receipt
-            meters=independent_arm_meters(["C_BASELINE","COMMON_PRIOR_RELATIONAL"],target_budget=budget,oracle_budget=budget)
+            meters=independent_arm_meters(["C_BASELINE","COMMON_PRIOR_RELATIONAL"],target_budget=budget,oracle_budget=budget,reset_per_entry=True)
             baseline=run_online(target,reference,CONTRACT,method="C",seed=seed,budget=budget,
                 shrink_budget=0,max_seconds=10,mode="structural",call_meter=meters["C_BASELINE"],
                 fresh_reset=_reset_authored_fixture,hard_budget=True)
@@ -262,9 +249,13 @@ def run_probe(workspace,*,allow_local_execution=False,seed=47,budget=24,equal_co
                 prior_source_design_cost="NOT_REACQUIRED_NOT_ASSUMED_TO_BE_ZERO_LIFETIME_COST")
             parity=parity_receipt(meters,preparation_cost_ledger=preparation)
         else:
+            from .discovery.call_meter import independent_arm_meters
+            meters=independent_arm_meters(["A_BASELINE","COMMON_PRIOR_RELATIONAL"],
+                target_budget=budget,oracle_budget=budget,reset_per_entry=True)
             baseline=run_online(target,reference,CONTRACT,method="A",seed=seed,budget=budget,
-                                shrink_budget=0,max_seconds=10,mode="structural")
-            relational=_run_relational(target,reference,operator,seed=seed,budget=budget)
+                shrink_budget=0,max_seconds=10,mode="structural",call_meter=meters["A_BASELINE"],
+                fresh_reset=_reset_authored_fixture,hard_budget=True)
+            relational=_run_relational(target,reference,operator,seed=seed,budget=budget,call_meter=meters["COMMON_PRIOR_RELATIONAL"])
         _write(workspace/("case-"+str(index+1)+".json"),dict(native_baseline=baseline,relational=relational))
         rows.append(dict(mutator_id=operator,native_baseline=dict(method=baseline["method"],
             engine=baseline.get("hypothesis",{}).get("engine","BOUNDARY_ERROR"),status=baseline["status"],
@@ -284,7 +275,11 @@ def run_probe(workspace,*,allow_local_execution=False,seed=47,budget=24,equal_co
         wall_seconds=time.perf_counter()-started,real_eligible=0,external_target_calls=0,
         paid_api_calls=0,learning_updates=0,independent_oos_cases=0,
         utility="NOT_ESTABLISHED",policy_no_regression="NOT_GUARANTEED",
+        reset_policy="BEFORE_EACH_TARGET_AND_ORACLE_ENTRY",
+        reset_symmetry_verified=actual["reset_calls"]==actual["target_calls"]+actual["oracle_calls"],
         limitation="EXPOSED_AUTHORED_FIXTURES_AND_MECHANISM_SELECTED_PROPOSALS_NOT_BLIND_TRANSFER")
+    if summary["status"]=="FUNCTIONAL_COMPLETE" and not summary["reset_symmetry_verified"]:
+        raise ValueError("completed structural probe lacks per-entry reset symmetry")
     if any(actual[name]>summary["caps"][name] for name in actual):
         raise ValueError("actual functional calls exceeded frozen caps")
     if equal_cost:

@@ -256,7 +256,7 @@ def main(argv: list[str] | None = None) -> int:
             from .qualification_cli import dispatch
             result = dispatch(args)
             print(json.dumps(result, ensure_ascii=True, indent=2))
-            return 0 if result.get("status") in ("PASS", "FUNCTIONAL_COMPLETE") else 3
+            return 0 if result.get("status") in ("PASS", "FUNCTIONAL_COMPLETE", "READY_FOR_PREREGISTRATION") else 3
         elif args.command in HARVESTER_COMMANDS:
             from .harvester_cli import dispatch
             result = dispatch(args)

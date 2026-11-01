@@ -34,7 +34,7 @@ def test_each_mechanism_has_a_valid_relation_candidate_and_actual_repeated_failu
         assert any(r["label"]=="gain" for r in pairs)
         for pair in pairs:
             assert pair["cost"]["target_calls"]==pair["cost"]["oracle_calls"]==6
-            assert pair["cost"]["reset_calls"]==6
+            assert pair["cost"]["reset_calls"]==12
             assert pair["evidence_class"]=="DEVELOPMENT_SYNTHETIC_EXPOSED"
 
 

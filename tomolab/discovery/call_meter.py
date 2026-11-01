@@ -28,7 +28,7 @@ class MeterReentryError(RuntimeError):
 
 
 class HardCallMeter:
-    def __init__(self, target_budget, oracle_budget=None, *, arm_id, scope="EVALUATION_ALL_PHASES"):
+    def __init__(self, target_budget, oracle_budget=None, *, arm_id, scope="EVALUATION_ALL_PHASES", reset_per_entry=False):
         if oracle_budget is None: oracle_budget=target_budget
         if any(type(v) is not int or not 0 <= v <= 10000 for v in (target_budget,oracle_budget)):
             raise ValueError("bounded exact integer Target/Oracle budgets required")
@@ -36,6 +36,9 @@ class HardCallMeter:
             raise ValueError("explicit bounded arm identity required")
         if scope not in ("EVALUATION_ALL_PHASES","PREPARATION","DEVELOPMENT_DIAGNOSTIC"):
             raise ValueError("explicit accounting scope required")
+        if type(reset_per_entry) is not bool:
+            raise ValueError("reset policy must be an exact boolean")
+        self.reset_per_entry=reset_per_entry
         self.target_budget,self.oracle_budget=target_budget,oracle_budget
         self.arm_id,self.scope=arm_id,scope
         self.target_calls_used=self.oracle_calls_used=0
@@ -84,6 +87,11 @@ class HardCallMeter:
             return observe(target,oracle,point,contract,structure,tracing=tracing,trace_target=trace_target)
         if not callable(target) or not callable(oracle):
             raise ValueError("reviewed Target and Oracle callables required")
+        if self.reset_per_entry:
+            if reset is None:
+                raise ValueError("per-entry reset requires an explicit reviewed callback")
+            return self._evaluate_per_entry(target,oracle,point,contract,structure,reset=reset,
+                tracing=tracing,trace_target=trace_target,phase=phase)
         token=input_identity(point)
         with self._lock:
             if self._active:
@@ -155,6 +163,85 @@ class HardCallMeter:
                 self.observation_wall_seconds+=time.perf_counter()-tick
                 self._active=False
 
+    def _evaluate_per_entry(self,target,oracle,point,contract,structure,*,reset,tracing,trace_target,phase):
+        """Reset separately before each actual Target and Oracle entry.
+
+        A partial pair is retained as unresolved. A failed Oracle reset never
+        fabricates an Oracle entry or rewrites an already executed Target.
+        """
+        from .online_observe import observe
+        token=input_identity(point)
+        with self._lock:
+            if self._active:
+                self.reentry_rejections+=1
+                self.note_unresolved(phase=phase,reason="REENTRANT_EVALUATION_REJECTED_BEFORE_ENTRY")
+                raise MeterReentryError("REENTRANT_EVALUATION_REJECTED_NO_EXECUTION")
+            self.require_capacity(phase=phase)
+            self._active=True
+            tick=time.perf_counter()
+            before=(self.target_calls_used,self.oracle_calls_used,self.reset_calls_used,self.fresh_reset_count)
+            reentries_before=self.reentry_rejections
+            unresolved_before=self.unresolved_measurement_events
+            entered={"target_calls":0,"oracle_calls":0}
+            reset_failed=False
+            validated=False
+            observation=None
+
+            def fresh_reset():
+                nonlocal reset_failed
+                if reset_failed:
+                    raise ResetNotVerified("PREVIOUS_ENTRY_RESET_FAILED")
+                self.reset_calls_used+=1
+                interrupted=None
+                try:
+                    okay=reset() is True
+                except BaseException as error:
+                    okay=False
+                    if not isinstance(error,Exception):interrupted=error
+                okay=(okay and self.reentry_rejections==reentries_before
+                      and self.unresolved_measurement_events==unresolved_before)
+                if not okay:
+                    reset_failed=True
+                    self.reset_failures+=1
+                    if interrupted is not None:raise interrupted
+                    raise ResetNotVerified("ENTRY_RESET_NOT_VERIFIED_NO_CALLABLE_ENTRY")
+                self.fresh_reset_count+=1
+
+            def entry(fn,key,value):
+                if entered[key]:
+                    self.note_unresolved(phase=phase,reason="OBSERVER_DUPLICATE_ENTRY_REJECTED")
+                    raise ValueError("OBSERVER_SINGLE_ENTRY_CONTRACT_VIOLATED")
+                self.require_capacity(int(key=="target_calls"),int(key=="oracle_calls"),phase=phase)
+                fresh_reset()
+                entered[key]+=1
+                if key=="target_calls":self.target_calls_used+=1
+                else:self.oracle_calls_used+=1
+                return fn(value)
+
+            try:
+                inspected=target if trace_target is None else trace_target
+                observation=observe(lambda value:entry(target,"target_calls",value),
+                    lambda value:entry(oracle,"oracle_calls",value),point,contract,structure,
+                    tracing=tracing,trace_target=inspected)
+                if reset_failed:
+                    raise ResetNotVerified("PAIR_INCOMPLETE_AFTER_ENTRY_RESET_FAILURE")
+                if any(entered[name]!=1 or type(observation[name]) is not int or observation[name]!=entered[name] for name in entered):
+                    raise ValueError("observed increments differ from actual metered entries")
+                if self.reentry_rejections!=reentries_before or self.unresolved_measurement_events!=unresolved_before:
+                    observation["feedback"]["status"]="EXECUTION_ERROR"
+                validated=True
+                return observation
+            finally:
+                status=observation["feedback"]["status"] if validated else "UNKNOWN_MEASUREMENT_ERROR"
+                unknown=status in ("UNKNOWN","ORACLE_ERROR","EXECUTION_ERROR","UNKNOWN_MEASUREMENT_ERROR")
+                self.unknown_observations+=int(unknown)
+                self.events.append(dict(kind="ACTUAL_OBSERVATION",phase=phase,input_digest=token,
+                    target_calls=self.target_calls_used-before[0],oracle_calls=self.oracle_calls_used-before[1],
+                    reset_calls=self.reset_calls_used-before[2],fresh_reset_count=self.fresh_reset_count-before[3],
+                    status=status,unknown=unknown,reset_per_entry=True))
+                self.observation_wall_seconds+=time.perf_counter()-tick
+                self._active=False
+
     def note_unresolved(self,*,phase,reason):
         if type(phase) is not str or type(reason) is not str or not 1<=len(phase)<=128 or not 1<=len(reason)<=160:
             raise ValueError("bounded unresolved event identity required")
@@ -188,15 +275,16 @@ class HardCallMeter:
                 phases=phases,events=deepcopy(self.events),observation_wall_seconds=self.observation_wall_seconds,
                 meter_lifetime_wall_seconds=time.perf_counter()-self._started,
                 count_scope="DESIGNATED_HOST_CALLABLE_ENTRIES_NOT_INTERNAL_RECURSION",
+                reset_per_entry=self.reset_per_entry,
                 reset_scope="ACTUAL_REVIEWED_CALLBACK_ATTEMPTS_AND_TRUE_RETURNS_NOT_UNIVERSAL_RESET_PROOF")
             value["meter_sha256"]=digest(value)
             return value
 
 
-def independent_arm_meters(arm_ids,*,target_budget,oracle_budget=None):
+def independent_arm_meters(arm_ids,*,target_budget,oracle_budget=None,reset_per_entry=False):
     if type(arm_ids) not in (list,tuple) or not 1 <= len(arm_ids) <= 32 or len(set(arm_ids))!=len(arm_ids):
         raise ValueError("bounded distinct comparison arm IDs required")
-    return {arm:HardCallMeter(target_budget,oracle_budget,arm_id=arm) for arm in arm_ids}
+    return {arm:HardCallMeter(target_budget,oracle_budget,arm_id=arm,reset_per_entry=reset_per_entry) for arm in arm_ids}
 
 
 def parity_receipt(meters,*,preparation_cost_ledger):
@@ -209,6 +297,8 @@ def parity_receipt(meters,*,preparation_cost_ledger):
         raise ValueError("arm ledger identity mismatch")
     budgets={(m.target_budget,m.oracle_budget) for m in meters.values()}
     if len(budgets)!=1: raise ValueError("all comparison arms require identical hard budgets")
+    if len({m.reset_per_entry for m in meters.values()})!=1:
+        raise ValueError("comparison arms require identical reset policies")
     if type(preparation_cost_ledger) is not dict or not preparation_cost_ledger:
         raise ValueError("explicit separate preparation cost ledger required")
     rows={name:m.snapshot() for name,m in meters.items()}
