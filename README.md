@@ -8,11 +8,11 @@ An experimental Python testing tool for **your reviewed functions, an explicit i
 
 | Surface | Identifier | Scope |
 |---|---|---|
-| GitHub research/source checkpoint tag | `v0.8.1` | Source and engineering evidence; not production or OOS qualification |
-| Source distribution and runtime `tomolab.__version__` | `0.8.1a1` | Experimental alpha; the `a1` suffix is retained |
+| GitHub research/source checkpoint tag | `v0.8.2` | Source and engineering evidence; not production or OOS qualification |
+| Source distribution and runtime `tomolab.__version__` | `0.8.2a1` | Experimental alpha; the `a1` suffix is retained |
 | Preserved earlier publication authorization | `0.8.0a1` | Historical scope only; it does not authorize a new PyPI publication |
 
-This checkpoint publishes source through GitHub tags. The installation below reads `v0.8.1` directly; it does not claim that `0.8.1a1` is on PyPI. Earlier package files, research ledgers and frozen conclusions retain their original identities.
+This checkpoint publishes source through GitHub tags. The installation below reads `v0.8.2` directly; it does not claim that `0.8.2a1` is on PyPI. Earlier package files, research ledgers and frozen conclusions retain their original identities.
 
 ## Mixed C/D budget and negative-transfer protection
 
@@ -26,10 +26,10 @@ The authored generation fixture still executes the controlled `common → learne
 
 ## Install and try an example
 
-Python 3.11+ is required. The **0.8.1a1 prerelease** online commands need the `qa` extra.
+Python 3.11+ is required. The **0.8.2a1 prerelease** online commands need the `qa` extra.
 
 ```bash
-python -m pip install "antemortem-structural-lab[qa] @ https://github.com/hibou04-ops/antemortem-structural-lab/archive/refs/tags/v0.8.1.zip"
+python -m pip install "antemortem-structural-lab[qa] @ https://github.com/hibou04-ops/antemortem-structural-lab/archive/refs/tags/v0.8.2.zip"
 python -m tomolab --help
 python -m tomolab online-demo --workspace demo-work --usage-ledger demo-usage.jsonl --allow-local-execution --budget 24 --shrink-budget 6 --output demo-result.json
 ```
@@ -173,7 +173,7 @@ Project code is Apache-2.0. Historical extracts retain their original MIT/BSD li
 
 ## Troubleshooting
 
-- **Missing Hypothesis / `qa`:** install it into the interpreter running the command: `python -m pip install "antemortem-structural-lab[qa] @ https://github.com/hibou04-ops/antemortem-structural-lab/archive/refs/tags/v0.8.1.zip"`.
+- **Missing Hypothesis / `qa`:** install it into the interpreter running the command: `python -m pip install "antemortem-structural-lab[qa] @ https://github.com/hibou04-ops/antemortem-structural-lab/archive/refs/tags/v0.8.2.zip"`.
 - **Existing workspace or output rejected:** choose a new run path and preserve the previous receipts. The examples intentionally do not overwrite them.
 - **Unsupported signature:** provide one synchronous positional JSON argument; adapt multi-argument functions explicitly as above. Async/generator functions and arbitrary callable objects are not accepted by this file CLI.
 - **Unexpected failure or `ORACLE_ERROR`:** review the independent reference, domain, expected exceptions, and numeric comparison before treating a mismatch as a bug. Inspect error and UNKNOWN counters rather than interpreting a budget miss as a pass.

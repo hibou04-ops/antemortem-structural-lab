@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.8.2 / package 0.8.2a1 — CI-aligned research source release
+
+- Identify the tested source with a new immutable research tag and separate alpha package metadata.
+- Preserve the mixed-policy scheduler, frozen research records, M0 HOLD and external OOS boundaries.
+- This research/source release does not publish the alpha package to PyPI; the earlier 0.8.0a1 publication authorization remains unchanged.
+
 ## 0.8.0a1 — Experimental product release
 
 - Default online search is A (native Hypothesis with shared public priors). B, explicit Source replay C, and experimental learned guidance D remain opt-in. A/B demos perform no Source collection or learning.
