@@ -38,7 +38,28 @@ def main():
             raise RuntimeError("installed example failed: " + run.stderr[-2000:])
         summary = json.loads((workspace / "summary.json").read_text(encoding="utf-8"))
         assert summary["choices"] == ["common", "learned", "common"]
-        assert summary["resumed"][1]["full_new_search_changed_common"] >= 1
+        assert summary["executed_candidates"] == [[-1,-2],[1,1],[-1,-2]]
+        assert [row["status"] for row in summary["resumed"]] == ["PASS","FAILURE","PASS"]
+        assert len({row["process_id"] for row in summary["resumed"]}) == 3
+        for row in summary["resumed"]:
+            execution = json.loads((workspace/(row["generation_id"]+"-online.json")).read_text(encoding="utf-8"))
+            measured = execution["run"]
+            scheduler = measured["scheduler"]
+            assert execution["selector_digest"] == row["selector_digest"]
+            assert execution["generation_digest"] == row["generation_digest"]
+            assert measured["status"] == row["full_new_search_status"] == "COMPLETE"
+            assert scheduler["allocation_policy"] == "STATIC_C_FLOOR_D_CIRCUIT_BREAKER_V3"
+            assert scheduler["epsilon_static_floor"] == 0.5
+            actual = scheduler["mixed_policy"]["actual"]
+            assert actual == row["full_new_search_policy_calls"]
+            for kind in ("target_calls", "oracle_calls"):
+                assert actual["C"][kind] >= (measured["budget"]+1)//2
+                assert actual["D"][kind] <= measured["budget"]//2
+                assert measured[kind] == row["full_new_search_cost"][kind] == sum(actual[arm][kind] for arm in ("C","D"))
+            changes = sum(bool(event.get("rule_id")) and event.get("source_selection",{}).get("source_changed_common",False)
+                          for event in measured["events"])
+            assert row["full_new_search_changed_common"] == scheduler["learned_changed_common_executions"] == changes
+            assert all(scheduler["actual"][lane] <= cap for lane,cap in scheduler["caps"].items())
         check = subprocess.run([str(python), "-m", "pip", "check"], cwd=scratch,
             capture_output=True, text=True, timeout=30)
         assert check.returncode == 0, check.stdout
@@ -47,6 +68,8 @@ def main():
             outside_checkout=True, isolated_python=True, fresh_environment=True,
             choices=summary["choices"], actual_candidates=summary["executed_candidates"],
             new_search_changed_common=[row["full_new_search_changed_common"] for row in summary["resumed"]],
+            new_search_policy_calls=[row["full_new_search_policy_calls"] for row in summary["resumed"]],
+            new_search_guidance_scope="ACTUAL_EXECUTED_COUNTS_NOT_PROMISED_BY_FIXED_SLOT",
             process_restarts=3, pip_check="PASS", evidence_class="AUTHORED_SYNTHETIC_FIXTURE",
             real_research_calls=0, wall_seconds=time.perf_counter()-started)
     with args.output.open("x", encoding="utf-8") as stream:

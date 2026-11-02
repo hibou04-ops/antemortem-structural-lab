@@ -8,6 +8,7 @@ recursive calls made inside an already-entered reviewed callable.
 from copy import deepcopy
 import re
 import inspect
+import math
 import threading
 import time
 
@@ -25,6 +26,10 @@ class ResetNotVerified(RuntimeError):
 
 class MeterReentryError(RuntimeError):
     """An active meter cannot recursively admit another evaluation."""
+
+
+class PolicyBudgetExhausted(HardBudgetExhausted):
+    """A policy reservation rejected a request before reset or callable entry."""
 
 
 class HardCallMeter:
@@ -50,7 +55,168 @@ class HardCallMeter:
         self.events=[]
         self._lock=threading.RLock()
         self._active=False
+        self._active_policy=None
+        self._policy_counts={name:dict(actual_target_calls=0,actual_oracle_calls=0,
+            actual_reset_calls=0,actual_fresh_reset_count=0,reset_failures=0)
+            for name in ("C","D","UNATTRIBUTED")}
+        self._policy_reservation=None
+        self._last_completed_policy_reservation=None
+        self.policy_budget_blocked_requests=0
         self._started=time.perf_counter()
+
+    @staticmethod
+    def _policy_identity(policy_id):
+        value="UNATTRIBUTED" if policy_id is None else policy_id
+        if type(value) is not str or value not in ("C","D","UNATTRIBUTED"):
+            raise ValueError("explicit policy identity must be C, D or UNATTRIBUTED")
+        return value
+
+    def configure_policy_reservation(self,*,budget,epsilon_static_floor=0.5):
+        """Reserve C capacity for one run, including confirmations and shrinking.
+
+        The floor preserves available capacity; it does not promise that an
+        early-stopped or finite-domain run actually enters that many calls.
+        Existing totals are retained and become this run's accounting offsets.
+        """
+        if type(budget) is not int or not 0<=budget<=10000:
+            raise ValueError("bounded exact per-run policy budget required")
+        if (type(epsilon_static_floor) not in (int,float) or not math.isfinite(epsilon_static_floor)
+            or not 0<=epsilon_static_floor<=1):
+            raise ValueError("epsilon_static_floor must be finite and in [0,1]")
+        with self._lock:
+            self._reject_active_policy_change("policy_reservation")
+            if self._policy_reservation is not None:
+                raise ValueError("release the existing policy reservation before configuring another run")
+            self.require_capacity(budget,budget,phase="policy_reservation_admission")
+            static=math.ceil(epsilon_static_floor*budget)
+            learned=budget-static
+            self._policy_reservation=dict(budget=budget,epsilon_static_floor=float(epsilon_static_floor),
+                reserved_static_calls=static,initial_learned_cap=learned,
+                learned_target_cap=learned,learned_oracle_cap=learned,
+                baseline_target_calls=self.target_calls_used,baseline_oracle_calls=self.oracle_calls_used,
+                baseline_policy_counts=deepcopy(self._policy_counts),
+                circuit_breaker_triggered=False,circuit_breaker_reason=None,
+                reclaimed_learned_target_calls=0,reclaimed_learned_oracle_calls=0,
+                scope="ALL_RUN_PHASES_INCLUDING_CONFIRMATION_AND_SHRINK",
+                floor_semantics="CAPACITY_RESERVED_NOT_ACTUAL_MINIMUM_EXECUTION_GUARANTEE")
+            return self._policy_reservation_snapshot()
+
+    def _reject_active_policy_change(self,phase):
+        if self._active:
+            self.reentry_rejections+=1
+            self.note_unresolved(phase=phase,reason="REENTRANT_POLICY_MUTATION_REJECTED_BEFORE_ENTRY")
+            raise MeterReentryError("REENTRANT_POLICY_MUTATION_REJECTED_NO_EXECUTION")
+
+    def _policy_run_counts(self,policy_id):
+        reservation=self._policy_reservation
+        if reservation is None:
+            return deepcopy(self._policy_counts[policy_id])
+        return {key:value-reservation["baseline_policy_counts"][policy_id][key]
+            for key,value in self._policy_counts[policy_id].items()}
+
+    def _policy_capacity(self,policy_id,target_calls,oracle_calls):
+        reservation=self._policy_reservation
+        if reservation is None:
+            return True
+        if policy_id=="UNATTRIBUTED":
+            raise ValueError("configured mixed policy reservations require C or D attribution")
+        if (self.target_calls_used-reservation["baseline_target_calls"]+target_calls>reservation["budget"]
+            or self.oracle_calls_used-reservation["baseline_oracle_calls"]+oracle_calls>reservation["budget"]):
+            return False
+        if policy_id=="D":
+            used=self._policy_run_counts("D")
+            if (used["actual_target_calls"]+target_calls>reservation["learned_target_cap"]
+                or used["actual_oracle_calls"]+oracle_calls>reservation["learned_oracle_cap"]):
+                return False
+        return True
+
+    def can_afford_policy(self,policy_id,target_calls=1,oracle_calls=1):
+        """Read current admission capacity without charging a proposal as a call."""
+        policy_id=self._policy_identity(policy_id)
+        with self._lock:
+            return (self.can_afford(target_calls,oracle_calls)
+                    and self._policy_capacity(policy_id,target_calls,oracle_calls))
+
+    def _require_policy_capacity(self,policy_id,target_calls=1,oracle_calls=1,*,phase):
+        self.require_capacity(target_calls,oracle_calls,phase=phase)
+        if not self._policy_capacity(policy_id,target_calls,oracle_calls):
+            self.budget_blocked_requests+=1
+            self.policy_budget_blocked_requests+=1
+            self.events.append(dict(kind="NO_EXECUTION_POLICY_RESERVATION",phase=phase,policy_id=policy_id,
+                target_calls=0,oracle_calls=0,reset_calls=0,unknown=False))
+            raise PolicyBudgetExhausted("POLICY_RESERVATION_NO_RESET_OR_CALLABLE_ENTRY")
+
+    def trigger_policy_circuit_breaker(self,*,reason):
+        """Freeze new D entries; unspent learned capacity is now available to C.
+
+        The host scheduler owns the evidence-based trigger condition. This
+        method enforces its decision and records actual unspent capacity.
+        """
+        if type(reason) is not str or not 1<=len(reason)<=160:
+            raise ValueError("bounded explicit circuit breaker reason required")
+        with self._lock:
+            self._reject_active_policy_change("policy_circuit_breaker")
+            reservation=self._policy_reservation
+            if reservation is None:
+                raise ValueError("configure a policy reservation before triggering its breaker")
+            if not reservation["circuit_breaker_triggered"]:
+                used=self._policy_run_counts("D")
+                reservation["reclaimed_learned_target_calls"]=max(0,reservation["learned_target_cap"]-used["actual_target_calls"])
+                reservation["reclaimed_learned_oracle_calls"]=max(0,reservation["learned_oracle_cap"]-used["actual_oracle_calls"])
+                reservation["learned_target_cap"]=used["actual_target_calls"]
+                reservation["learned_oracle_cap"]=used["actual_oracle_calls"]
+                reservation["circuit_breaker_triggered"]=True
+                reservation["circuit_breaker_reason"]=reason
+            return self._policy_reservation_snapshot()
+
+    def _policy_reservation_snapshot(self):
+        if self._policy_reservation is None:
+            return None
+        value=deepcopy(self._policy_reservation)
+        value["active"]=True
+        value["actual_policy_calls"]={name:self._policy_run_counts(name) for name in ("C","D","UNATTRIBUTED")}
+        value["remaining_target_calls"]=max(0,value["budget"]-(self.target_calls_used-value["baseline_target_calls"]))
+        value["remaining_oracle_calls"]=max(0,value["budget"]-(self.oracle_calls_used-value["baseline_oracle_calls"]))
+        value["remaining_budget_policy"]="C" if value["circuit_breaker_triggered"] else "MIXED_WITH_STATIC_RESERVATION"
+        return value
+
+    def release_policy_reservation(self):
+        """Close one run's reservation without erasing entries or its receipt.
+
+        The host captures its run snapshot before releasing enforcement. A
+        closed receipt remains available when this meter is reused later.
+        """
+        with self._lock:
+            self._reject_active_policy_change("policy_reservation_release")
+            if self._policy_reservation is None:
+                return None
+            receipt=self._policy_reservation_snapshot()
+            receipt["active"]=False
+            self._last_completed_policy_reservation=deepcopy(receipt)
+            self._policy_reservation=None
+            return receipt
+
+    def _policy_accounting_snapshot(self):
+        value=deepcopy(self._policy_counts)
+        failures={name:set() for name in value}
+        for name,row in value.items():
+            row.update(complete_observations=0,unknown_observations=0,unresolved_measurement_events=0)
+        for event in self.events:
+            name=event.get("policy_id","UNATTRIBUTED")
+            row=value[name]
+            if event["kind"]=="ACTUAL_OBSERVATION":
+                row["unknown_observations"]+=int(event["unknown"])
+                complete=(event["target_calls"]==1 and event["oracle_calls"]==1 and not event["unknown"])
+                row["complete_observations"]+=int(complete)
+                if complete and event.get("status")=="FAILURE":
+                    failures[name].add(event["input_digest"])
+            elif event["kind"]=="UNRESOLVED_MEASUREMENT_NO_NEW_EXECUTION":
+                row["unresolved_measurement_events"]+=1
+        for name,row in value.items():
+            row["observed_failure_input_digests"]=sorted(failures[name])
+            row["observed_unique_failure_inputs"]=len(failures[name])
+            row["failure_identity_scope"]="VALIDATED_OBSERVED_INPUTS_NOT_CONFIRMED_DEFECT_PHENOTYPES"
+        return value
 
     def can_afford(self,target_calls=1,oracle_calls=1):
         if any(type(v) is not int or v<0 for v in (target_calls,oracle_calls)):
@@ -64,11 +230,12 @@ class HardCallMeter:
             if not self.can_afford(target_calls,oracle_calls):
                 self.budget_blocked_requests+=1
                 self.events.append(dict(kind="NO_EXECUTION_BUDGET_EXHAUSTED",phase=phase,
-                    target_calls=0,oracle_calls=0,reset_calls=0,unknown=False))
+                    target_calls=0,oracle_calls=0,reset_calls=0,unknown=False,
+                    policy_id=self._active_policy or "UNATTRIBUTED"))
                 raise HardBudgetExhausted("NO_EXECUTION_BUDGET_EXHAUSTED")
 
     def evaluate(self,target,oracle,point,contract,structure=None,*,reset=None,
-                 tracing=True,trace_target=None,phase="evaluation"):
+                 tracing=True,trace_target=None,phase="evaluation",policy_id=None):
         """One serial observed pair with atomic admission before any entry.
 
         Invalid inputs do not spend a reset or callable entry. A failed reset
@@ -77,6 +244,7 @@ class HardCallMeter:
         from .online_observe import observe
         if type(phase) is not str or not 1 <= len(phase) <= 128:
             raise ValueError("bounded phase identity required")
+        policy_id=self._policy_identity(policy_id)
         if reset is not None and not callable(reset):
             raise ValueError("reviewed reset must be a host callable")
         for fn in (target,oracle):
@@ -91,15 +259,16 @@ class HardCallMeter:
             if reset is None:
                 raise ValueError("per-entry reset requires an explicit reviewed callback")
             return self._evaluate_per_entry(target,oracle,point,contract,structure,reset=reset,
-                tracing=tracing,trace_target=trace_target,phase=phase)
+                tracing=tracing,trace_target=trace_target,phase=phase,policy_id=policy_id)
         token=input_identity(point)
         with self._lock:
             if self._active:
                 self.reentry_rejections+=1
                 self.note_unresolved(phase=phase,reason="REENTRANT_EVALUATION_REJECTED_BEFORE_ENTRY")
                 raise MeterReentryError("REENTRANT_EVALUATION_REJECTED_NO_EXECUTION")
-            self.require_capacity(phase=phase)
+            self._require_policy_capacity(policy_id,phase=phase)
             self._active=True
+            self._active_policy=policy_id
             tick=time.perf_counter()
             before=(self.target_calls_used,self.oracle_calls_used)
             reentries_before=self.reentry_rejections
@@ -107,6 +276,7 @@ class HardCallMeter:
             try:
                 if reset is not None:
                     self.reset_calls_used+=1
+                    self._policy_counts[policy_id]["actual_reset_calls"]+=1
                     interrupted=None
                     try:
                         okay=reset() is True
@@ -119,25 +289,29 @@ class HardCallMeter:
                           and self.unresolved_measurement_events==unresolved_before)
                     if not okay:
                         self.reset_failures+=1
+                        self._policy_counts[policy_id]["reset_failures"]+=1
                         self.events.append(dict(kind="UNKNOWN_RESET_NOT_VERIFIED",phase=phase,input_digest=token,
-                            target_calls=0,oracle_calls=0,reset_calls=1,fresh_reset_count=0,unknown=True))
+                            target_calls=0,oracle_calls=0,reset_calls=1,fresh_reset_count=0,unknown=True,policy_id=policy_id))
                         if interrupted is not None: raise interrupted
                         raise ResetNotVerified("RESET_NOT_VERIFIED_NO_TARGET_OR_ORACLE_ENTRY")
                     self.fresh_reset_count+=1
+                    self._policy_counts[policy_id]["actual_fresh_reset_count"]+=1
                 entered={"target_calls":0,"oracle_calls":0}
                 def target_entry(value):
                     if entered["target_calls"]:
                         self.note_unresolved(phase=phase,reason="OBSERVER_DUPLICATE_TARGET_ENTRY_REJECTED")
                         raise ValueError("OBSERVER_SINGLE_ENTRY_CONTRACT_VIOLATED")
-                    self.require_capacity(1,0,phase=phase)
+                    self._require_policy_capacity(policy_id,1,0,phase=phase)
                     self.target_calls_used+=1;entered["target_calls"]+=1
+                    self._policy_counts[policy_id]["actual_target_calls"]+=1
                     return target(value)
                 def oracle_entry(value):
                     if entered["oracle_calls"]:
                         self.note_unresolved(phase=phase,reason="OBSERVER_DUPLICATE_ORACLE_ENTRY_REJECTED")
                         raise ValueError("OBSERVER_SINGLE_ENTRY_CONTRACT_VIOLATED")
-                    self.require_capacity(0,1,phase=phase)
+                    self._require_policy_capacity(policy_id,0,1,phase=phase)
                     self.oracle_calls_used+=1;entered["oracle_calls"]+=1
+                    self._policy_counts[policy_id]["actual_oracle_calls"]+=1
                     return oracle(value)
                 observation=None
                 validated=False
@@ -158,12 +332,13 @@ class HardCallMeter:
                     self.events.append(dict(kind="ACTUAL_OBSERVATION",phase=phase,input_digest=token,
                         target_calls=self.target_calls_used-before[0],oracle_calls=self.oracle_calls_used-before[1],
                         reset_calls=int(reset is not None),fresh_reset_count=int(reset is not None),
-                        status=status,unknown=status in ("UNKNOWN","ORACLE_ERROR","EXECUTION_ERROR","UNKNOWN_MEASUREMENT_ERROR")))
+                        status=status,unknown=status in ("UNKNOWN","ORACLE_ERROR","EXECUTION_ERROR","UNKNOWN_MEASUREMENT_ERROR"),policy_id=policy_id))
             finally:
                 self.observation_wall_seconds+=time.perf_counter()-tick
                 self._active=False
+                self._active_policy=None
 
-    def _evaluate_per_entry(self,target,oracle,point,contract,structure,*,reset,tracing,trace_target,phase):
+    def _evaluate_per_entry(self,target,oracle,point,contract,structure,*,reset,tracing,trace_target,phase,policy_id):
         """Reset separately before each actual Target and Oracle entry.
 
         A partial pair is retained as unresolved. A failed Oracle reset never
@@ -176,8 +351,9 @@ class HardCallMeter:
                 self.reentry_rejections+=1
                 self.note_unresolved(phase=phase,reason="REENTRANT_EVALUATION_REJECTED_BEFORE_ENTRY")
                 raise MeterReentryError("REENTRANT_EVALUATION_REJECTED_NO_EXECUTION")
-            self.require_capacity(phase=phase)
+            self._require_policy_capacity(policy_id,phase=phase)
             self._active=True
+            self._active_policy=policy_id
             tick=time.perf_counter()
             before=(self.target_calls_used,self.oracle_calls_used,self.reset_calls_used,self.fresh_reset_count)
             reentries_before=self.reentry_rejections
@@ -192,6 +368,7 @@ class HardCallMeter:
                 if reset_failed:
                     raise ResetNotVerified("PREVIOUS_ENTRY_RESET_FAILED")
                 self.reset_calls_used+=1
+                self._policy_counts[policy_id]["actual_reset_calls"]+=1
                 interrupted=None
                 try:
                     okay=reset() is True
@@ -203,19 +380,25 @@ class HardCallMeter:
                 if not okay:
                     reset_failed=True
                     self.reset_failures+=1
+                    self._policy_counts[policy_id]["reset_failures"]+=1
                     if interrupted is not None:raise interrupted
                     raise ResetNotVerified("ENTRY_RESET_NOT_VERIFIED_NO_CALLABLE_ENTRY")
                 self.fresh_reset_count+=1
+                self._policy_counts[policy_id]["actual_fresh_reset_count"]+=1
 
             def entry(fn,key,value):
                 if entered[key]:
                     self.note_unresolved(phase=phase,reason="OBSERVER_DUPLICATE_ENTRY_REJECTED")
                     raise ValueError("OBSERVER_SINGLE_ENTRY_CONTRACT_VIOLATED")
-                self.require_capacity(int(key=="target_calls"),int(key=="oracle_calls"),phase=phase)
+                self._require_policy_capacity(policy_id,int(key=="target_calls"),int(key=="oracle_calls"),phase=phase)
                 fresh_reset()
                 entered[key]+=1
-                if key=="target_calls":self.target_calls_used+=1
-                else:self.oracle_calls_used+=1
+                if key=="target_calls":
+                    self.target_calls_used+=1
+                    self._policy_counts[policy_id]["actual_target_calls"]+=1
+                else:
+                    self.oracle_calls_used+=1
+                    self._policy_counts[policy_id]["actual_oracle_calls"]+=1
                 return fn(value)
 
             try:
@@ -238,9 +421,10 @@ class HardCallMeter:
                 self.events.append(dict(kind="ACTUAL_OBSERVATION",phase=phase,input_digest=token,
                     target_calls=self.target_calls_used-before[0],oracle_calls=self.oracle_calls_used-before[1],
                     reset_calls=self.reset_calls_used-before[2],fresh_reset_count=self.fresh_reset_count-before[3],
-                    status=status,unknown=unknown,reset_per_entry=True))
+                    status=status,unknown=unknown,reset_per_entry=True,policy_id=policy_id))
                 self.observation_wall_seconds+=time.perf_counter()-tick
                 self._active=False
+                self._active_policy=None
 
     def note_unresolved(self,*,phase,reason):
         if type(phase) is not str or type(reason) is not str or not 1<=len(phase)<=128 or not 1<=len(reason)<=160:
@@ -248,7 +432,8 @@ class HardCallMeter:
         with self._lock:
             self.unresolved_measurement_events+=1
             self.events.append(dict(kind="UNRESOLVED_MEASUREMENT_NO_NEW_EXECUTION",phase=phase,reason=reason,
-                                    target_calls=0,oracle_calls=0,reset_calls=0,unknown=True))
+                                    target_calls=0,oracle_calls=0,reset_calls=0,unknown=True,
+                                    policy_id=self._active_policy or "UNATTRIBUTED"))
 
     def snapshot(self):
         with self._lock:
@@ -277,6 +462,12 @@ class HardCallMeter:
                 count_scope="DESIGNATED_HOST_CALLABLE_ENTRIES_NOT_INTERNAL_RECURSION",
                 reset_per_entry=self.reset_per_entry,
                 reset_scope="ACTUAL_REVIEWED_CALLBACK_ATTEMPTS_AND_TRUE_RETURNS_NOT_UNIVERSAL_RESET_PROOF")
+            value["policy_accounting"]=self._policy_accounting_snapshot()
+            value["policy_reservation"]=self._policy_reservation_snapshot()
+            value["policy_reservation_active"]=self._policy_reservation is not None
+            value["last_completed_policy_reservation"]=deepcopy(self._last_completed_policy_reservation)
+            value["policy_budget_blocked_requests"]=self.policy_budget_blocked_requests
+            value["policy_attribution_scope"]="EXPLICIT_HOST_TAGGED_ACTUAL_CALLABLE_ENTRIES_NOT_SCHEDULED_PROPOSALS"
             value["meter_sha256"]=digest(value)
             return value
 

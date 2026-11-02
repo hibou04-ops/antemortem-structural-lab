@@ -95,10 +95,12 @@ def test_same_seed_and_initial_state_reproduce_all_policy_choices():
 
 
 def test_c_d_share_scheduler_and_caps_even_when_d_has_no_applicable_rule():
+    """D-v3 adds a C-policy reserve while preserving the global guided-lane caps."""
     from tomolab.discovery.online_learning import learn_mold
     empty = learn_mold([])
     c = run_online(target, oracle, CONTRACT, method="C", seed=29, budget=40, shrink_budget=8, replays=[8])
     d = run_online(target, oracle, CONTRACT, method="D", seed=29, budget=40, shrink_budget=8, replays=[8], mold=empty)
+    assert c["status"] == d["status"] == "COMPLETE"
     assert c["scheduler"]["policy"] == d["scheduler"]["policy"]
     assert c["scheduler"]["caps"] == d["scheduler"]["caps"]
     for result in (c, d):
@@ -106,6 +108,33 @@ def test_c_d_share_scheduler_and_caps_even_when_d_has_no_applicable_rule():
         assert actual["replay"] <= caps["replay"]
         assert actual["structure"] <= caps["structure"]
         assert sum(actual.values()) <= result["scheduler"]["discovery_call_limit"]
+        initial_discovery = result["budget"] - result["shrink_budget"]
+        if sum(actual.values()) >= initial_discovery:
+            # This is the native-base lane reservation, distinct from C's policy floor.
+            assert actual["base"] >= initial_discovery / 2
+    scheduler = d["scheduler"]
+    assert scheduler["caps_semantics"] == "SHARED_RUN_GLOBAL_LANE_CAPS_WITH_CONFIRMATION_CHARGED_TO_ORIGIN"
+    assert scheduler["caps"] == dict(replay=32 // 5, structure=3 * 32 // 10)
+    assert scheduler["actual"] == {
+        lane: sum(values[lane] for values in scheduler["actual_by_policy"].values())
+        for lane in ("base", "replay", "structure")
+    }
+    observed = {arm: dict(base=0, replay=0, structure=0) for arm in ("C", "D")}
+    current_origin = {}
+    for event in d["events"]:
+        arm, phase = event["policy_id"], event["phase"]
+        if phase in ("base", "replay", "structure"):
+            current_origin[arm] = phase
+            observed[arm][phase] += 1
+        elif phase == "confirmation":
+            observed[arm][current_origin[arm]] += 1
+    assert scheduler["actual_by_policy"] == observed
+    mixed = scheduler["mixed_policy"]
+    assert mixed["static_c_budget_reserved"] == mixed["initial_d_budget_cap"] == 20
+    assert mixed["actual"]["D"]["target_calls"] <= 20
+    assert mixed["actual"]["D"]["oracle_calls"] <= 20
+    if d["target_calls"] == 40:
+        assert mixed["actual"]["C"]["target_calls"] >= 20
     assert not d["scheduler"]["learned_rule_uses"]
 
 
@@ -263,6 +292,12 @@ def normalized_control_trace(result):
 
 @pytest.mark.parametrize("case", ["none", "empty", "wrong_kind", "false", "unknown", "invalid", "duplicate"])
 def test_real_worker_no_effective_guidance_matches_c_semantics(case):
+    """D-v3 preserves common edits, but its two-policy allocation differs from C.
+
+    The former whole-D-trace == whole-C-trace assertion described the old
+    single-policy algorithm. Keep C as a completed legacy control, and compare
+    the mixed D algorithm to its own deterministic rerun plus actual host costs.
+    """
     from tomolab.discovery.online_learning import learn_mold
     mold = _learned_operator_mold(["negate"], kind="int",observations=[(1,"PASS"),(-1,"FAILURE")])
     mold = _only_rule(mold,["negate"])
@@ -288,10 +323,40 @@ def test_real_worker_no_effective_guidance_matches_c_semantics(case):
         replays = [5]
     c = run_online(target,oracle,contract,method="C",seed=611,budget=30,shrink_budget=6,replays=replays)
     d = run_online(target,oracle,contract,method="D",seed=611,budget=30,shrink_budget=6,replays=replays,mold=mold)
+    d_repeat = run_online(target,oracle,contract,method="D",seed=611,budget=30,shrink_budget=6,replays=replays,mold=mold)
     assert c["status"] == d["status"] == "COMPLETE"
-    assert normalized_control_trace(c) == normalized_control_trace(d)
+    assert d_repeat["status"] == "COMPLETE"
+    assert normalized_control_trace(d) == normalized_control_trace(d_repeat)
+    assert d["scheduler"]["mixed_policy"] == d_repeat["scheduler"]["mixed_policy"]
+    assert d["target_calls"] == d["oracle_calls"] == len(d["events"]) <= 30
+    assert c["target_calls"] == c["oracle_calls"] <= 30
+    mixed = d["scheduler"]["mixed_policy"]
+    assert d["scheduler"]["allocation_policy"] == "STATIC_C_FLOOR_D_CIRCUIT_BREAKER_V3"
+    assert d["scheduler"]["host_accounting_authoritative"] is True
+    assert mixed["static_c_budget_reserved"] == mixed["initial_d_budget_cap"] == 15
+    assert mixed["actual"]["D"]["target_calls"] <= 15
+    assert mixed["actual"]["D"]["oracle_calls"] <= 15
+    # This target's return mismatches have no public exception phenotype.
+    # Unclassified D failures must remain UNKNOWN rather than becoming zero gain.
+    assert mixed["observed_d_marginal_phenotypes"] is None
+    assert mixed["marginal_gain_status"] == "UNKNOWN"
+    assert mixed["uncertainty"]["D"]
+    assert mixed["circuit_breaker_triggered"] is False
+    for arm in ("C", "D"):
+        events = [event for event in d["events"] if event["policy_id"] == arm]
+        assert mixed["actual"][arm]["target_calls"] == mixed["actual"][arm]["oracle_calls"] == len(events)
+    assert sum(row["target_calls"] for row in mixed["actual"].values()) == d["target_calls"]
+    if d["target_calls"] == 30:
+        assert mixed["actual"]["C"]["target_calls"] >= 15
+    assert d["hard_call_meter"]["target_calls_used"] == d["target_calls"]
+    assert all(row["policy_id"] == event["policy_id"] for row, event in zip(d["observations"], d["events"]))
     assert not d["scheduler"]["learned_rule_uses"]
+    assert d["scheduler"]["learned_changed_common_executions"] == 0
     assert d["cost"]["source_lookup_seconds"] >= 0
+    if case in ("empty", "wrong_kind", "false", "unknown"):
+        assert d["scheduler"]["guidance_not_applicable"] > 0
+    if case == "invalid":
+        assert d["scheduler"]["learned_invalid_results"] > 0
     if case == "duplicate":
         assert d["scheduler"]["learned_duplicate_results"] > 0
 

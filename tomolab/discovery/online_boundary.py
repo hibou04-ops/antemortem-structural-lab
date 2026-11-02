@@ -42,6 +42,7 @@ class OnlineBoundary(GeneratorBoundary):
         self.process.stdin.flush()
         self._accepted_requests = 1
         request_count = 0
+        reallocation_count = 0
         while True:
             try:
                 line = self.messages.get(timeout=self.timeout)
@@ -54,13 +55,29 @@ class OnlineBoundary(GeneratorBoundary):
                 raise ValueError("invalid online response")
             action = message.get("action")
             if action == "evaluate":
-                if set(message) != {"action", "request_id", "input", "phase", "reference"} or message["request_id"] != request_count:
+                fields = {"action", "request_id", "input", "phase", "reference"}
+                if config["method"] == "D":
+                    fields.add("policy_id")
+                if set(message) != fields or message["request_id"] != request_count:
                     raise ValueError("unexpected online evaluation envelope or sequence")
                 if type(message["request_id"]) is not int or message["phase"] not in ("base", "structure", "replay", "confirmation", "native_shrink", "delta_shrink", "shrink_confirmation") or not validate_input(message["input"], config["contract"]):
                     raise ValueError("invalid generated domain, phase or actual request counter")
                 if message["reference"] is not None and (type(message["reference"]) is not int or not 0 <= message["reference"] < request_count):
                     raise ValueError("a reproduction reference must name a prior observation")
-                response = execute(message["input"], phase=message["phase"], reference=message["reference"])
+                policy_options = {}
+                if config["method"] == "D":
+                    if message["policy_id"] not in ("C", "D"):
+                        raise ValueError("unsupported policy identity")
+                    policy_options["policy_id"] = message["policy_id"]
+                response = execute(message["input"], phase=message["phase"], reference=message["reference"], **policy_options)
+                if response.get("policy_reallocation_required"):
+                    if config["method"] != "D" or message["policy_id"] != "D" or reallocation_count >= config["budget"]*4:
+                        raise ValueError("invalid or unbounded no-execution reallocation")
+                    self.process.stdin.write(bounded_message(dict(action="reallocate", request_id=request_count,
+                        reason=response["reason"], circuit_breaker_triggered=response["circuit_breaker_triggered"])))
+                    self.process.stdin.flush()
+                    reallocation_count += 1
+                    continue
                 validate_online_observation(response, request_id=request_count, point=message["input"], contract=config["contract"])
                 self.process.stdin.write(bounded_message(dict(action="feedback", request_id=request_count, observation=response)))
                 self.process.stdin.flush()

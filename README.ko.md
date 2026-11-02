@@ -4,12 +4,32 @@
 
 [English](https://github.com/hibou04-ops/antemortem-structural-lab/blob/main/README.md) · [0.8 마이그레이션](https://github.com/hibou04-ops/antemortem-structural-lab/blob/main/docs/MIGRATION_0_8.md) · [변경 이력](https://github.com/hibou04-ops/antemortem-structural-lab/blob/main/CHANGELOG.md)
 
+## 소스 체크포인트와 패키지 식별자
+
+| 구분 | 식별자 | 범위 |
+|---|---|---|
+| GitHub 연구·소스 체크포인트 태그 | `v0.8.1` | 소스와 엔지니어링 근거이며 실전 배포·OOS 자격 승격이 아님 |
+| 소스 배포 메타데이터와 runtime `tomolab.__version__` | `0.8.1a1` | 실험적 alpha이며 `a1` 접미사를 유지 |
+| 보존된 이전 출판 권한 | `0.8.0a1` | 과거 범위만 해당하며 새 PyPI 게시를 승인하지 않음 |
+
+이 체크포인트는 GitHub 태그로 소스를 게시합니다. 아래 설치는 `v0.8.1`을 직접 읽으며 `0.8.1a1`이 PyPI에 게시됐다는 뜻이 아닙니다. 이전 패키지 파일·연구 원장·동결 판정은 원래 식별자를 유지합니다.
+
+## C/D 혼합 예산과 음의 전이 방어
+
+`method="D"`에서 `run_online`과 `OnlinePolicy`는 `epsilon_static_floor=0.5`를 노출하며 실제 호출 기준 워밍업의 기본값은 `circuit_breaker_warmup=6`입니다. 비학습 C는 별도 정책 인스턴스이며 native-base lane의 이름을 바꾼 것이 아닙니다. 전체 실행 예산 `B`에서 C에 `ceil(epsilon_static_floor * B)`회분을 예약하고 D는 나머지만 사용할 수 있습니다. Target과 Oracle에 각각 강제하며 확인·축소 호출도 포함하고 원래 arm에 귀속합니다. 두 arm에는 기존 replay/structure 전역 상한도 공유 적용합니다. 시간 제한이나 유한 입력 영역 때문에 예약분이 남을 수 있으므로 예약을 C의 실제 실행 완료량으로 주장하지 않습니다.
+
+양쪽 arm의 워밍업이 끝난 뒤 D만 확인한 예외 phenotype이 0이고 D의 고유 phenotype 발견율이 C보다 낮으면 `circuit_breaker_triggered=True`가 됩니다. 호스트 HardCallMeter는 잔여 D 용량을 즉시 닫고 새로 생성하는 C 후보에 회수합니다. D의 모든 관측이 PASS이고 C에 세 번의 일치 실행으로 확인한 실패가 하나 이상이면, 고유 결함 수를 꾸며내지 않고 C 발견율의 양의 하한으로도 차단할 수 있습니다. `UNKNOWN`·부분 측정·식별 불가 또는 미확인 D 실패는 이득 0 판정을 막습니다. 워밍업 미완료는 `INSUFFICIENT_WARMUP`입니다.
+
+지원하는 실패 서명은 세 번의 일치 실행 뒤 공개 계약과 예외 타입·위치를 사용합니다. 이는 관측한 phenotype이며 입증된 고유 결함이나 입력·출력 digest가 아닙니다. 반환값 불일치는 미분류로 남습니다. 영수증은 실제 C/D 진입·예약 용량·확인 phenotype·불확실성·차단 상태·회수 예산을 기록합니다. 거부된 D 제안에는 Target·Oracle·reset 진입이 없으며, D 작업의 이름만 C로 바꾸지 않고 C가 새 후보를 생성합니다.
+
+작성한 세대 fixture는 실제 프로세스 재시작 뒤 통제된 슬롯에서 `common → learned → common` 선택을 계속 실행합니다. 해당 전체 mixed search에서 관측한 변경 가이드 실행 수는 `[0, 0, 0]`입니다. 통제 슬롯의 학습 선택 보존이 새 탐색에서의 사용이나 효용을 보장하지 않습니다. 엔지니어링 회귀 근거는 `M0 HOLD` 및 효용·외부 OOS `NOT_ESTABLISHED`와 별개입니다. 이번 변경으로 동결 연구 코호트를 재실행하거나 판정을 승격하지 않았습니다.
+
 ## 설치하고 작은 예제 실행하기
 
-Python 3.11 이상이 필요합니다. **0.8.0a1 사전 릴리스**의 온라인 명령에는 `qa` extra를 설치합니다.
+Python 3.11 이상이 필요합니다. **0.8.1a1 사전 릴리스**의 온라인 명령에는 `qa` extra를 설치합니다.
 
 ```bash
-python -m pip install "antemortem-structural-lab[qa]==0.8.0a1"
+python -m pip install "antemortem-structural-lab[qa] @ https://github.com/hibou04-ops/antemortem-structural-lab/archive/refs/tags/v0.8.1.zip"
 python -m tomolab --help
 python -m tomolab online-demo --workspace demo-work --usage-ledger demo-usage.jsonl --allow-local-execution --budget 24 --shrink-budget 6 --output demo-result.json
 ```
@@ -131,9 +151,9 @@ Oracle의 일반 예외 타입이 전체 이름으로 `comparison.expected_excep
 | **A — 기본값** | native Hypothesis와 공통 관측·확인·축소 |
 | B | 같은 native 기반과 공통 온라인 편집 정책 |
 | C | B에 명시적으로 제공한 Source 입력 재생·일반 변형 추가 |
-| **D — 명시적으로 선택하는 실험 옵션** | C에 동결된 Source 학습 선택·적용 정책 추가 |
+| **D — 명시적으로 선택하는 실험 옵션** | C 용량 예약·동결 Source 학습 D·호스트 서킷 브레이커를 갖춘 명시적 C/D 혼합 |
 
-B/C/D는 `--method`로 선택합니다. C에는 입력만 담은 JSON list를 `--replays`로 줄 수 있습니다. D는 `--mold`와 별도로 승인한 `--expected-digest`도 필요합니다. `online-learn`은 검토한 Source 관측에서 Mold를 준비합니다. 명시적 C/D 데모는 기존 Source 준비 경로를 실행하고 비용을 기록합니다. D는 검증된 개선 방법이 아닙니다. 적용할 규칙이 없을 때 공통 fallback은 C와 같으며 손상 아티팩트는 오류로 처리합니다.
+B/C/D는 `--method`로 선택합니다. C에는 입력만 담은 JSON list를 `--replays`로 줄 수 있습니다. D는 `--mold`와 별도로 승인한 `--expected-digest`도 필요합니다. `online-learn`은 검토한 Source 관측에서 Mold를 준비합니다. 명시적 C/D 데모는 기존 Source 준비 경로를 실행하고 비용을 기록합니다. D는 검증된 개선 방법이 아닙니다. 거부된 학습 제안은 D arm의 공통 fallback을 사용하며 전체 혼합 실행의 순서가 단독 C 실행과 같다는 뜻은 아닙니다. 손상 아티팩트는 오류로 처리합니다.
 
 기존 MRI 코드 관측, CAST 실행 관측, Claim-to-Witness, Mold/Version Space, 수치·상태 명령은 `--help`에서 계속 사용할 수 있습니다. 각 기능의 제한된 계약은 별도 문서로 제공합니다. 온라인 인터페이스가 이를 범용 프로그램 검증기로 바꾸지는 않습니다.
 
@@ -153,7 +173,7 @@ B/C/D는 `--method`로 선택합니다. C에는 입력만 담은 JSON list를 `-
 
 ## 설치·실행 문제 해결
 
-- **Hypothesis 또는 `qa` 누락:** 명령을 실행하는 interpreter에 `python -m pip install "antemortem-structural-lab[qa]==0.8.0a1"`로 설치합니다.
+- **Hypothesis 또는 `qa` 누락:** 명령을 실행하는 interpreter에 `python -m pip install "antemortem-structural-lab[qa] @ https://github.com/hibou04-ops/antemortem-structural-lab/archive/refs/tags/v0.8.1.zip"`로 설치합니다.
 - **기존 workspace·출력 거절:** 이전 영수증을 보존하고 새 실행 경로를 사용합니다. 예제는 기존 파일을 덮어쓰지 않습니다.
 - **지원하지 않는 함수 signature:** 동기 함수의 위치 인자 하나로 JSON 값을 받습니다. 여러 인자는 위 wrapper처럼 명시적으로 대응시킵니다. 이 파일 CLI는 async·generator 함수나 임의 callable 객체를 받지 않습니다.
 - **예상 밖 실패·`ORACLE_ERROR`:** 불일치를 결함으로 판단하기 전에 독립 reference·domain·기대 예외·수치 비교를 검토합니다. 오류·UNKNOWN 수를 확인하며 예산 내 미검출을 정상 판정으로 해석하지 않습니다.
@@ -180,7 +200,7 @@ python scripts/check-public-scope.py
 
 ## 제한된 GitHub 증거 수집
 
-`python -m tomolab harvest-run --workspace work/harvest`는 공개 GitHub API에서 최대 50개 후보를 등록하고 검토 대기열을 만듭니다. 기본 동작은 외부 코드 실행과 학습을 포함하지 않습니다. 적격성·독립 Oracle·OCI 실행·재귀 API 연결 및 작성 fixture 예제는 [Harvester 사용·검증 기록](docs/HARVESTER_20261101.ko.md)을 따릅니다. 실제 추가 효용은 미입증입니다.
+`python -m tomolab harvest-run --workspace work/harvest`는 공개 GitHub API에서 최대 50개 후보를 등록하고 검토 대기열을 만듭니다. 기본 동작은 외부 코드 실행과 학습을 포함하지 않습니다. 적격성·독립 Oracle·OCI 실행·재귀 API 연결 및 작성 fixture 예제는 [Harvester 사용·검증 기록](docs/HARVESTER_20261101.ko.md)을 따릅니다. 후보 메타데이터 수와 신규 고유 결함 수를 구분하며 실제 추가 효용은 미입증입니다.
 
 ## 실제 증거 자격과 구조적 후보 개발
 

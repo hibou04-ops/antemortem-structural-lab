@@ -42,7 +42,7 @@ def test_harvested_source_receipt_generation_and_actual_restart_are_connected(co
     registry = HarvestRegistry(workspace)
     candidates = registry.candidates()
     assert summary["executed_candidates"] == [[-1,-2],[1,1],[-1,-2]]
-    assert summary["fresh_search_changed_common"] == [0,1,0]
+    assert summary["fixed_slot_learning_effect"] == "COMMON_LEARNED_COMMON_ACTUAL_EXECUTIONS"
     assert len({row["process_id"] for row in summary["resumed"]}) == 3
     generations = [row["generation"] for row in GenerationStore(workspace/"generations.jsonl").records()]
     assert [g["generation_id"] for g in generations] == ["G0","G1","G2"]
@@ -50,6 +50,27 @@ def test_harvested_source_receipt_generation_and_actual_restart_are_connected(co
     assert [g["cost_ledger"]["oracle_calls"] for g in generations] == [0,14,28]
     assert generations[1]["parent_generation_digest"] == generations[0]["sha256"]
     assert generations[2]["parent_generation_digest"] == generations[1]["sha256"]
+    observed_changes = []
+    for row, generation in zip(summary["resumed"], generations):
+        receipt = json.loads((workspace/(row["generation_id"]+"-online.json")).read_text(encoding="utf-8"))
+        run, scheduler = receipt["run"], receipt["run"]["scheduler"]
+        assert receipt["selector_digest"] == generation["selector"]["selector_digest"] == row["selector_digest"]
+        assert receipt["generation_digest"] == generation["sha256"] == row["generation_digest"]
+        assert row["full_new_search_status"] == run["status"] == "COMPLETE"
+        assert row["full_new_search_allocation_policy"] == "STATIC_C_FLOOR_D_CIRCUIT_BREAKER_V3"
+        assert row["full_new_search_epsilon_static_floor"] == 0.5
+        changes = sum(bool(event.get("rule_id")) and
+            event.get("source_selection", {}).get("source_changed_common", False) for event in run["events"])
+        assert row["full_new_search_changed_common"] == changes == scheduler["learned_changed_common_executions"]
+        observed_changes.append(changes)
+        actual = row["full_new_search_policy_calls"]
+        assert actual == scheduler["mixed_policy"]["actual"]
+        for kind in ("target_calls", "oracle_calls"):
+            assert actual["C"][kind] >= 36 and actual["D"][kind] <= 36
+            assert row["full_new_search_cost"][kind] == run[kind] == sum(actual[arm][kind] for arm in ("C", "D"))
+            assert run[kind] <= 72
+        assert all(scheduler["actual"][lane] <= cap for lane, cap in scheduler["caps"].items())
+    assert summary["fresh_search_changed_common"] == observed_changes
     assert summary["authored_development_cost"]["reset_calls"] == 24
     for wave in summary["wave_results"]:
         development = json.loads((workspace/(wave["generation_id"]+"-development.json")).read_text(encoding="utf-8"))

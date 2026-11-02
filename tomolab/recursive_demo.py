@@ -117,10 +117,50 @@ def _resume(workspace, generation_id):
         rule_id=rule_id, decision=decision, status=observation["feedback"]["status"],
         fixed_slot_actual_calls=dict(target_calls=observation["target_calls"], oracle_calls=observation["oracle_calls"]),
         full_new_search_status=run["status"],
-        full_new_search_changed_common=run["run"]["scheduler"].get("learned_changed_common_executions", 0),
+        full_new_search_changed_common=run["run"]["scheduler"]["learned_changed_common_executions"],
+        full_new_search_allocation_policy=run["run"]["scheduler"]["allocation_policy"],
+        full_new_search_epsilon_static_floor=run["run"]["scheduler"]["epsilon_static_floor"],
+        full_new_search_policy_calls=run["run"]["scheduler"]["mixed_policy"]["actual"],
+        full_new_search_receipt_sha256=run["sha256"], selector_digest=run["selector_digest"],
         full_new_search_cost=run["cost"], evidence_class="AUTHORED_SYNTHETIC_FIXTURE")
     save_private_receipt(workspace / (generation_id+"-resumed.json"), row)
     return row
+
+
+def _validate_resumed_mixed_run(workspace, row):
+    """Check authored restart receipts without requiring a favorable search gain.
+
+    The controlled slot demonstrates selector persistence. A new mixed search
+    may correctly abstain or reject duplicates, so its executed guidance count
+    is an observation rather than a promised consequence of that slot result.
+    """
+    workspace = Path(workspace)
+    generation = GenerationStore(workspace/"generations.jsonl").get(row["generation_id"])
+    receipt = json.loads((workspace/(row["generation_id"]+"-online.json")).read_text(encoding="utf-8"))
+    assert receipt["sha256"] == digest({k:v for k,v in receipt.items() if k != "sha256"})
+    assert row["full_new_search_receipt_sha256"] == receipt["sha256"]
+    assert receipt["generation_digest"] == row["generation_digest"] == generation["sha256"]
+    assert receipt["selector_digest"] == row["selector_digest"] == generation["selector"]["selector_digest"]
+    run, costs = receipt["run"], row["full_new_search_cost"]
+    scheduler = run["scheduler"]
+    assert run["status"] == row["full_new_search_status"] == "COMPLETE"
+    assert scheduler["allocation_policy"] == row["full_new_search_allocation_policy"] == "STATIC_C_FLOOR_D_CIRCUIT_BREAKER_V3"
+    assert scheduler["epsilon_static_floor"] == row["full_new_search_epsilon_static_floor"] == 0.5
+    actual = scheduler["mixed_policy"]["actual"]
+    assert row["full_new_search_policy_calls"] == actual
+    reservation = run["hard_call_meter"]["policy_reservation"]
+    assert reservation["reserved_static_calls"] == (run["budget"]+1)//2
+    for kind in ("target_calls", "oracle_calls"):
+        assert costs[kind] == run[kind] == sum(actual[arm][kind] for arm in ("C", "D"))
+        assert actual["C"][kind] >= reservation["reserved_static_calls"]
+        assert actual["D"][kind] <= reservation["initial_learned_cap"]
+        assert run[kind] <= run["budget"]
+        assert all(actual[arm][kind] == reservation["actual_policy_calls"][arm]["actual_"+kind]
+                   for arm in ("C", "D"))
+    observed_changes = sum(bool(event.get("rule_id")) and
+        event.get("source_selection", {}).get("source_changed_common", False) for event in run["events"])
+    assert row["full_new_search_changed_common"] == scheduler["learned_changed_common_executions"] == observed_changes
+    assert all(scheduler["actual"][lane] <= cap for lane, cap in scheduler["caps"].items())
 
 
 def run_demo(workspace):
@@ -179,7 +219,8 @@ def run_demo(workspace):
         resumed.append(json.loads((workspace / (generation_id+"-resumed.json")).read_text(encoding="utf-8")))
     actual = [row["input"] for row in resumed]
     assert actual == [[-1,-2], [1,1], [-1,-2]], actual
-    assert resumed[1]["full_new_search_changed_common"] >= 1, resumed
+    for row in resumed:
+        _validate_resumed_mixed_run(workspace, row)
     assert len({row["process_id"] for row in resumed}) == 3
     assert all(row["full_new_search_status"] == "COMPLETE" for row in resumed)
     summary = dict(schema="tomolab-recursive-functional-summary-v1", status="COMPLETE",
@@ -190,6 +231,8 @@ def run_demo(workspace):
         carrier_cost=carrier_cost, resumed=resumed,
         wall_seconds=time.perf_counter()-started,
         feature_status="FUNCTIONALLY_VERIFIED", real_utility="NOT_ESTABLISHED",
+        fixed_slot_learning_effect="COMMON_LEARNED_COMMON_ACTUAL_EXECUTIONS",
+        full_new_search_guidance_scope="OBSERVED_EXECUTED_GUIDANCE_NOT_GUARANTEED_BY_FIXED_SLOT",
         generalization="NOT_ESTABLISHED", generation_performance_improvement="NOT_ESTABLISHED",
         real_pilot="HOLD_INSUFFICIENT_REVIEWED_NEW_DEVELOPMENT_MATERIAL",
         default_adoption="HOLD", allow_release=False)

@@ -1,7 +1,9 @@
-"""Algorithm-frozen, target-local online search using public Hypothesis APIs.
+"""Target-local online search with legacy A/B/C and explicit mixed C/D policy.
 
-A is native @given + target; B/C/D add the same explicit local edit policy.
-C adds replay; D only replaces the structural-slot provider with learned edits.
+A is native @given + target; B/C retain the existing local edit/replay policy.
+D mixes an explicit unlearned C policy with a frozen Source-guided D policy.
+Both arms share the original global replay/structure caps. Actual host entries,
+including confirmation and shrinking, consume the same fixed run reservation.
 No global policy or Hypothesis example database survives a run.
 """
 from copy import deepcopy
@@ -22,9 +24,18 @@ class _ShrinkBudgetExhausted(BaseException):
     """
 
 
+def _lane_caps(budget):
+    return dict(replay=budget // 5, structure=3 * budget // 10)
+
+
 class OnlinePolicy:
     """Explicit policy state. Only limited feedback can change the next edit."""
-    def __init__(self, contract, *, method, seed, budget, mold=None, replays=(), structure=None, selector=None):
+    def __init__(self, contract, *, method, seed, budget, mold=None, replays=(), structure=None, selector=None,
+                 epsilon_static_floor=0.5):
+        from .recursive_policy import validate_mixed_policy_parameters
+        validate_mixed_policy_parameters(1, epsilon_static_floor, 1)
+        self.epsilon_static_floor = float(epsilon_static_floor)
+        self._mixed_scheduler = None
         self.contract, self.method = deepcopy(contract), method.removeprefix("E9_")
         self.rng, self.structure = random.Random(seed), deepcopy(structure or {})
         # Rule lookup has a private, stable stream. It cannot perturb native,
@@ -45,7 +56,7 @@ class OnlinePolicy:
             if self.selector["input_contract_digest"] is not None and self.selector["input_contract_digest"] != digest(contract):
                 raise ValueError("selector input contract identity mismatch")
         self.replays = [deepcopy(p) for p in replays if validate_input(p, contract)] if self.method in ("C", "D") else []
-        self.caps = dict(replay=budget // 5, structure=3 * budget // 10)
+        self.caps = _lane_caps(budget)
         self.used = dict(base=0, replay=0, structure=0)
         self.archive, self.last_feedback = [], None
         self.attempts = 0
@@ -58,6 +69,10 @@ class OnlinePolicy:
         self.last_selection = {}
         self.used_rules = []
         self.seen = set()
+
+    @property
+    def circuit_breaker_triggered(self):
+        return bool(self._mixed_scheduler is not None and self._mixed_scheduler.circuit_breaker_triggered)
 
     def state_digest(self):
         state = dict(method=self.method, contract=self.contract, rng=self.rng.getstate(),
@@ -211,18 +226,41 @@ def _validate_configuration(contract, method, seed, budget, shrink_budget, max_s
 
 
 def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget=48, shrink_budget=8,
-                     mold=None, replays=(), max_seconds=30, _started=None, diagnostics=None, selector=None, hard_budget=False):
+                     mold=None, replays=(), max_seconds=30, _started=None, diagnostics=None, selector=None, hard_budget=False,
+                     epsilon_static_floor=0.5, circuit_breaker_warmup=6):
     """Worker-only search. Its callback receives no Target or Oracle objects."""
     started = time.perf_counter() if _started is None else _started
     from hypothesis import given, target as hypothesis_target, settings, seed as hypothesis_seed
     from hypothesis import Phase, HealthCheck, find
     from hypothesis.errors import NoSuchExample, Unsatisfiable
+    from .recursive_policy import PolicyReallocationRequired
     contract, method = _validate_configuration(contract, method, seed, budget, shrink_budget, max_seconds, mold)
     if type(hard_budget) is not bool:
         raise ValueError("hard budget tail mode must be an exact boolean")
     discovery_limit = budget - shrink_budget
     policy = OnlinePolicy(contract, method=method, seed=seed, budget=discovery_limit,
-                          mold=mold, replays=replays, structure=structure, selector=selector)
+                          mold=mold, replays=replays, structure=structure, selector=selector,
+                          epsilon_static_floor=epsilon_static_floor)
+    mixed, static_policy = None, None
+    if method == "D":
+        from .recursive_policy import MixedPolicyScheduler, PolicyReallocationRequired
+        mixed = MixedPolicyScheduler(budget, epsilon_static_floor=epsilon_static_floor,
+                                     warmup_calls=circuit_breaker_warmup)
+        static_policy = OnlinePolicy(contract, method="C", seed=seed, budget=discovery_limit,
+                                     replays=replays, structure=structure, epsilon_static_floor=epsilon_static_floor)
+        policy._mixed_scheduler = static_policy._mixed_scheduler = mixed
+    active_policy, active_policy_id = policy, None
+    global_lane_caps = dict(policy.caps)
+
+    def shared_lane_proposal(base, proposed):
+        if mixed is None:
+            return proposed
+        _, phase, _, _, _ = proposed
+        if phase in global_lane_caps and (
+                policy.used[phase] + static_policy.used[phase] + 3 > global_lane_caps[phase]):
+            active_policy.last_selection["source_state"] = "GLOBAL_LANE_CAP_RETURNED_TO_NATIVE_BASE"
+            return deepcopy(base), "base", None, None, "GLOBAL_LANE_CAP_RETURNED_TO_NATIVE_BASE"
+        return proposed
     strategy = hypothesis_strategy(contract, structure)
     result = dict(schema="tomolab-online-result-v1", status="COMPLETE", method="E9_"+method,
                   seed=seed, budget=budget, shrink_budget=shrink_budget, contract=deepcopy(contract),
@@ -254,12 +292,29 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
     known_replay_identities = {input_identity(p) for p in replays if validate_input(p, contract)}
     first_witness = None
     first_witness_reference = None
+    first_witness_policy_id = None
     def expired():
         return time.perf_counter()-started >= max_seconds
-    def evaluate(point, phase, *, operator=None, rule_id=None, origin="native_hypothesis", track_policy=True, reference=None):
+    def evaluate(point, phase, *, operator=None, rule_id=None, origin="native_hypothesis", track_policy=True, reference=None, policy_id=None):
         if result["target_calls"] >= budget or expired():
             return None
-        observation = execute(point, phase=phase, reference=reference)
+        selected_arm = active_policy_id if policy_id is None else policy_id
+        if mixed is not None:
+            if not mixed.can_allocate(selected_arm):
+                return None
+            try:
+                observation = execute(point, phase=phase, reference=reference, policy_id=selected_arm)
+            except PolicyReallocationRequired as error:
+                if phase in ("base", "structure", "replay"):
+                    raise
+                mixed.host_reallocated(error.reason, circuit_breaker_triggered=error.circuit_breaker_triggered)
+                return None
+            if observation.get("policy_id") != selected_arm:
+                raise ValueError("actual policy identity differs from the admitted proposal")
+            mixed.record_execution(selected_arm, target_calls=observation["target_calls"],
+                oracle_calls=observation["oracle_calls"], feedback=observation["feedback"])
+        else:
+            observation = execute(point, phase=phase, reference=reference)
         feedback = observation["feedback"]
         result["target_calls"] += observation["target_calls"]
         result["oracle_calls"] += observation["oracle_calls"]
@@ -278,19 +333,26 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
                                     target_calls=result["target_calls"], oracle_calls=result["oracle_calls"],
                                     seconds=time.perf_counter()-started))
         result["events"][-1]["observation_id"] = observation["observation_id"]
+        if mixed is not None:
+            row["policy_id"] = selected_arm
+            result["events"][-1]["policy_id"] = selected_arm
         if track_policy:
-            policy.receive(point, feedback, phase=phase, operator=operator)
+            active_policy.receive(point, feedback, phase=phase, operator=operator)
         return observation
     def confirm(point, first, phase, operator, rule_id, origin):
-        nonlocal first_witness, first_witness_reference
+        nonlocal first_witness, first_witness_reference, first_witness_policy_id
         if first["feedback"]["status"] != "FAILURE" or result["target_calls"] + 2 > discovery_limit:
+            if mixed is not None and first["feedback"]["status"] == "FAILURE":
+                mixed.mark_unconfirmed_failure(active_policy_id)
             return
         tick = time.perf_counter()
         replay = [evaluate(point, "confirmation", origin=origin, track_policy=False,
                            reference=first["observation_id"]) for _ in range(2)]
         result["cost"]["replay_seconds"] += time.perf_counter()-tick
-        policy.used[phase] += sum(row is not None and row["target_calls"] for row in replay)
+        active_policy.used[phase] += sum(row is not None and row["target_calls"] for row in replay)
         if all(row is not None and row["feedback"]["status"] == "FAILURE" and row["reference_match"] is True for row in replay):
+            if mixed is not None:
+                mixed.confirm_failure(active_policy_id, first["feedback"])
             token = input_identity(point)
             if token not in confirmed:
                 confirmed.add(token)
@@ -301,10 +363,13 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
             if first_witness is None:
                 first_witness = deepcopy(point)
                 first_witness_reference = first["observation_id"]
+                first_witness_policy_id = active_policy_id
                 result["first_confirmed_failure"] = dict(input_digest=token, target_calls=result["target_calls"],
                     oracle_calls=result["oracle_calls"], seconds=time.perf_counter()-started,
                     origin=origin, phase=phase, confirmation_calls=3)
         else:
+            if mixed is not None:
+                mixed.mark_unconfirmed_failure(active_policy_id)
             result.setdefault("reproduction_mismatches", 0)
             result["reproduction_mismatches"] += 1
     @hypothesis_seed(seed)
@@ -312,17 +377,21 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
               suppress_health_check=list(HealthCheck), report_multiple_bugs=False)
     @given(strategy)
     def search(base):
-        nonlocal shadow_rule_state
+        nonlocal shadow_rule_state, active_policy, active_policy_id
         if result["target_calls"] + (1 if hard_budget else 3) > discovery_limit or expired():
             return
         tick = time.perf_counter()
-        state_before = policy.state_digest()
-        common_state_before = policy.common_state_digest()
+        if mixed is not None:
+            active_policy_id = mixed.choose_policy(confirmation_credit=3,
+                                                   learned_tail_reserve=shrink_budget)
+            active_policy = static_policy if active_policy_id == "C" else policy
+        state_before = active_policy.state_digest()
+        common_state_before = active_policy.common_state_digest()
         diagnostic_tick = time.perf_counter()
         diagnostic_before = deepcopy(policy) if diagnostic_trace is not None and diagnostic_trace["status"] == "COMPLETE" else None
         if diagnostic_before is not None:
             diagnostic_trace["cost"]["snapshot_seconds"] += time.perf_counter()-diagnostic_tick
-        point, phase, operator, rule_id, decision = policy.propose(base)
+        point, phase, operator, rule_id, decision = shared_lane_proposal(base, active_policy.propose(base))
         if diagnostic_before is not None:
             from .recursive_observe import observe_proposal
             try:
@@ -340,23 +409,42 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
         token = input_identity(point)
         if token in seen:
             result["duplicate_candidates"] += 1
+            if mixed is not None and rule_id:
+                active_policy.guidance_duplicates += 1
+                active_policy.last_selection["source_state"] = "GLOBAL_DUPLICATE_RESULT"
             return
-        seen.add(token); policy.seen.add(token)
         origin = "source_replay" if phase == "replay" and operator is None else ("source_replay_mutation" if phase == "replay" else ("source_learned_policy" if rule_id else ("target_local_adaptation" if phase == "structure" else "native_hypothesis")))
-        first = evaluate(point, phase, operator=operator, rule_id=rule_id, origin=origin)
+        try:
+            first = evaluate(point, phase, operator=operator, rule_id=rule_id, origin=origin)
+        except PolicyReallocationRequired as error:
+            if mixed is None or active_policy_id != "D":
+                raise
+            mixed.host_reallocated(error.reason, circuit_breaker_triggered=error.circuit_breaker_triggered)
+            active_policy, active_policy_id = static_policy, "C"
+            state_before, common_state_before = active_policy.state_digest(), active_policy.common_state_digest()
+            point, phase, operator, rule_id, decision = shared_lane_proposal(base, active_policy.propose(base))
+            token = input_identity(point)
+            if token in seen or not validate_input(point, contract):
+                result["duplicate_candidates"] += token in seen
+                return
+            origin = "source_replay" if phase == "replay" and operator is None else ("source_replay_mutation" if phase == "replay" else ("target_local_adaptation" if phase == "structure" else "native_hypothesis"))
+            first = evaluate(point, phase, operator=operator, rule_id=rule_id, origin=origin)
         if first is None:
             return
-        policy.used[phase] += first["target_calls"]
+        seen.add(token); active_policy.seen.add(token)
+        active_policy.used[phase] += first["target_calls"]
         if rule_id:
-            policy.used_rules.append(rule_id)
+            active_policy.used_rules.append(rule_id)
         hypothesis_target(_score(first["feedback"]), label="public_path_and_literal_distance")
         event = result["events"][-1]
         event.update(selection_decision=decision, base_input_digest=input_identity(base),
                      policy_state_before=state_before, common_policy_state_before=common_state_before,
-                     source_selection=deepcopy(policy.last_selection))
+                     source_selection=deepcopy(active_policy.last_selection))
         confirm(point, first, phase, operator, rule_id, origin)
-        event["policy_state_after"] = policy.state_digest()
-        event["common_policy_state_after"] = policy.common_state_digest()
+        if mixed is not None:
+            mixed.checkpoint()
+        event["policy_state_after"] = active_policy.state_digest()
+        event["common_policy_state_after"] = active_policy.common_state_digest()
     try:
         tick = time.perf_counter()
         before = sum(result["cost"][k] for k in ("target_seconds", "oracle_seconds", "instrumentation_seconds", "matching_seconds"))
@@ -381,7 +469,7 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
             if native_calls >= native_cap or result["target_calls"] + 2 >= budget or expired():
                 raise _ShrinkBudgetExhausted()
             native_calls += 1
-            row = evaluate(point, "native_shrink", track_policy=False)
+            row = evaluate(point, "native_shrink", track_policy=False, policy_id=first_witness_policy_id)
             if row is None:
                 raise _ShrinkBudgetExhausted()
             is_failure = row["feedback"]["status"] == "FAILURE"
@@ -413,13 +501,13 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
             point = apply_edit(witness, operator, contract)
             if point is None or point == witness:
                 continue
-            row = evaluate(point, "delta_shrink", operator=operator, track_policy=False)
+            row = evaluate(point, "delta_shrink", operator=operator, track_policy=False, policy_id=first_witness_policy_id)
             checked.append(operator)
             if row is not None and row["feedback"]["status"] == "FAILURE":
                 witness = deepcopy(point)
                 witness_reference = row["observation_id"]
         confirmations = [evaluate(witness, "shrink_confirmation", track_policy=False,
-                                  reference=witness_reference) for _ in range(2)]
+                                  reference=witness_reference, policy_id=first_witness_policy_id) for _ in range(2)]
         reproduced = all(row is not None and row["feedback"]["status"] == "FAILURE" for row in confirmations)
         if reproduced:
             reproduced = all(row["reference_match"] is True for row in confirmations)
@@ -429,7 +517,27 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
             native_status=native_status, witness_reference_event=witness_reference,
             target_calls=result["target_calls"]-shrink_start, budget=shrink_budget,
             pair_status="AVAILABLE" if any(r["status"] == "PASS" for r in result["observations"]) else "UNAVAILABLE")
+        if mixed is not None:
+            result["shrinking"]["confirmation_event_ids"] = [row["observation_id"] for row in confirmations if row is not None]
         result["cost"]["shrink_seconds"] = time.perf_counter()-tick
+    if mixed is not None and result["target_calls"] + 3 <= budget and not expired():
+        # An unused shrinking/D allocation is real C search capacity, not a
+        # relabelled learned witness. Each candidate is generated afresh by C.
+        mixed.d_exhausted = True
+        discovery_limit = budget
+        before_tail = result["target_calls"]
+        search_body = search.hypothesis.inner_test
+        @hypothesis_seed(seed ^ 0x43464C52)
+        @settings(max_examples=budget*4, database=None, deadline=None,
+                  phases=(Phase.generate, Phase.target), suppress_health_check=list(HealthCheck))
+        @given(strategy)
+        def static_tail(base):
+            search_body(base)
+        try:
+            static_tail()
+        except Unsatisfiable:
+            pass
+        result["static_c_tail_actual_calls"] = result["target_calls"]-before_tail
     if expired():
         result["status"] = "WALL_LIMIT_REACHED"
     result["scheduler"] = dict(policy="COMMON_C_D_LOCAL_FALLBACK_V2", discovery_call_limit=discovery_limit,
@@ -446,6 +554,21 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
         learned_rule_uses=policy.used_rules, rejected_slots="SHARED_C_LOCAL_EDIT_THEN_COMMON_VALIDATION",
         rule_rng="SHA256_CANONICAL_SEED_SOURCE_RULE_V1_SEPARATE_FROM_COMMON_RNG",
         base_minimum_scope="HALF_OF_DISCOVERY_CALL_BUDGET_IF_EXHAUSTED; confirmation charged to origin lane")
+    if mixed is not None:
+        by_policy_actual = dict(C=deepcopy(static_policy.used), D=deepcopy(policy.used))
+        by_policy_caps = dict(C=deepcopy(static_policy.caps), D=deepcopy(policy.caps))
+        result["scheduler"].update(allocation_policy="STATIC_C_FLOOR_D_CIRCUIT_BREAKER_V3",
+            epsilon_static_floor=mixed.epsilon_static_floor,
+            circuit_breaker_triggered=mixed.circuit_breaker_triggered,
+            mixed_policy=mixed.snapshot(),
+            initial_discovery_call_limit=budget-shrink_budget,
+            shrink_budget_reserved=shrink_budget,
+            actual_scope="DISCOVERY_AND_CONFIRMATION_IN_ORIGIN_LANES_SHRINKING_RECORDED_SEPARATELY_BY_HOST_METER",
+            actual={lane: sum(values[lane] for values in by_policy_actual.values()) for lane in policy.used},
+            caps=global_lane_caps,
+            caps_semantics="SHARED_RUN_GLOBAL_LANE_CAPS_WITH_CONFIRMATION_CHARGED_TO_ORIGIN",
+            actual_by_policy=by_policy_actual, caps_by_policy=by_policy_caps,
+            static_c_policy_actual=by_policy_actual["C"], learned_d_policy_actual=by_policy_actual["D"])
     result["cost"]["source_lookup_seconds"] = policy.guidance_lookup_seconds
     result["cost"].update(wall_seconds=time.perf_counter()-started, intervals_nested_not_additive=True,
         target_seconds_include_line_tracing=True, wall_limit="COOPERATIVE_BETWEEN_CALLS_NOT_OS_TIMEOUT")
@@ -459,16 +582,17 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
     return result
 
 
-def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrink_budget=8,
+def _run_online_host(target, oracle, contract, *, method="A", seed=7, budget=48, shrink_budget=8,
                mold=None, replays=(), max_seconds=30, mode="structural", inspection_target=None,
-               diagnostics=None, diagnostic_reset=None, selector=None, call_meter=None, fresh_reset=None, hard_budget=False):
+               diagnostics=None, diagnostic_reset=None, selector=None, call_meter=None, fresh_reset=None, hard_budget=False,
+               epsilon_static_floor=0.5, circuit_breaker_warmup=6, _started=None, _reservation_owner=None):
     """Fresh data-only search process; trusted Target/Oracle stay on the host.
 
     The existing reviewed process loader, allowlisted copies and sanitized
     environment prevent Hypothesis from implicitly mining evaluator modules
     for constants. This is cooperative logical isolation, not an OS sandbox.
     """
-    started = time.perf_counter()
+    started = time.perf_counter() if _started is None else _started
     import inspect
     from .online_boundary import OnlineBoundary
     from .online_observe import inspect_target, observe
@@ -478,7 +602,7 @@ def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrin
             raise ValueError("reviewed synchronous non-generator callables required")
     if type(hard_budget) is not bool or fresh_reset is not None and not callable(fresh_reset):
         raise ValueError("explicit hard-budget mode and reviewed fresh reset required")
-    if call_meter is not None or hard_budget or fresh_reset is not None:
+    if call_meter is not None or hard_budget or fresh_reset is not None or method == "D":
         from .call_meter import HardCallMeter
         if call_meter is None:
             call_meter=HardCallMeter(budget,budget,arm_id="E9_"+method)
@@ -522,7 +646,19 @@ def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrin
     rejected_replays = len(replays)-len(approved_replays) if method in ("C", "D") else 0
     allowed_phases = {"base", "structure", "replay", "confirmation", "native_shrink", "delta_shrink", "shrink_confirmation"}
     host_rows, counters = [], dict(target_calls=0, oracle_calls=0)
-    def execute(point, *, phase, reference):
+    host_mixed, host_confirmed, host_pending_failures = None, set(), set()
+    policy_reallocations = []
+    if method == "D":
+        from .recursive_policy import MixedPolicyScheduler
+        host_mixed = MixedPolicyScheduler(budget, epsilon_static_floor=epsilon_static_floor,
+                                          warmup_calls=circuit_breaker_warmup)
+        # Acquire the reservation and its ownership token in the same lock.
+        # A concurrent run that fails admission must not close this one.
+        with call_meter._lock:
+            call_meter.configure_policy_reservation(budget=budget, epsilon_static_floor=epsilon_static_floor)
+            if _reservation_owner is not None:
+                _reservation_owner["reservation"] = call_meter._policy_reservation
+    def execute(point, *, phase, reference, policy_id=None):
         if phase not in allowed_phases:
             raise ValueError("unsupported evaluator request phase")
         if max(counters.values()) >= budget or time.perf_counter()-started >= max_seconds:
@@ -530,12 +666,29 @@ def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrin
         if reference is not None:
             if type(reference) is not int or not 0 <= reference < len(host_rows) or host_rows[reference]["input_digest"] != input_identity(point):
                 raise ValueError("reproduction reference must be a prior evaluation of the same input")
+            if host_mixed is not None and policy_id != host_rows[reference]["policy_id"]:
+                raise ValueError("confirmation and shrinking must retain their originating policy")
+        if host_mixed is not None:
+            if policy_id not in ("C", "D"):
+                raise ValueError("host mixed evaluations require explicit C/D identity")
+            if not call_meter.can_afford_policy(policy_id):
+                if policy_id != "D":
+                    raise ValueError("static policy exhausted the actual host run budget")
+                if phase == "confirmation":
+                    host_mixed.mark_unconfirmed_failure(policy_id)
+                    host_pending_failures.discard(reference)
+                policy_reallocations.append(dict(requested_policy="D", next_policy="C", phase=phase,
+                    actual_target_calls=0, actual_oracle_calls=0, actual_reset_calls=0,
+                    reason="D_POLICY_CAP_OR_CIRCUIT_BREAKER_NO_EXECUTION"))
+                return dict(policy_reallocation_required=True, reason="D_POLICY_CAP_OR_CIRCUIT_BREAKER_NO_EXECUTION",
+                    circuit_breaker_triggered=host_mixed.circuit_breaker_triggered)
         if call_meter is None:
             observation = observe(target, oracle, point, contract, structure, tracing=mode == "structural",
                                   trace_target=inspection_target)
         else:
             observation = call_meter.evaluate(target,oracle,point,contract,structure,reset=fresh_reset,
-                tracing=mode == "structural",trace_target=inspection_target,phase="online_"+phase)
+                tracing=mode == "structural",trace_target=inspection_target,phase="online_"+phase,
+                policy_id=policy_id)
         for key in counters:
             counters[key] += observation[key]
         observation_id = len(host_rows)
@@ -546,10 +699,34 @@ def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrin
             semantic_digest=observation.get("semantic_digest"), target_calls=observation["target_calls"],
             oracle_calls=observation["oracle_calls"], cost=observation["cost"],
             reference=reference, reference_match=reference_match))
+        if host_mixed is not None:
+            host_rows[-1]["policy_id"] = policy_id
+            host_mixed.record_execution(policy_id, target_calls=observation["target_calls"],
+                oracle_calls=observation["oracle_calls"], feedback=observation["feedback"])
+            if phase in ("base", "structure", "replay") and observation["feedback"]["status"] == "FAILURE":
+                host_pending_failures.add(observation_id)
+            completed_candidate = phase in ("base", "structure", "replay") and observation["feedback"]["status"] != "FAILURE"
+            if phase == "confirmation" and len(host_rows) >= 3:
+                first, repeated = host_rows[-3], host_rows[-2:]
+                if (first["phase"] in ("base", "structure", "replay") and first["feedback"]["status"] == "FAILURE"
+                        and all(row["phase"] == "confirmation" and row["reference"] == observation_id-2
+                                and row["policy_id"] == first["policy_id"] for row in repeated)):
+                    host_pending_failures.discard(observation_id-2)
+                    if all(row["reference_match"] is True and row["feedback"]["status"] == "FAILURE" for row in repeated):
+                        host_mixed.confirm_failure(first["policy_id"], first["feedback"])
+                        host_confirmed.add(observation_id-2)
+                    else:
+                        host_mixed.mark_unconfirmed_failure(first["policy_id"])
+                    completed_candidate = True
+            if completed_candidate and not host_pending_failures and host_mixed.checkpoint():
+                call_meter.trigger_policy_circuit_breaker(reason=host_mixed.trigger["reason"])
         # Output-derived hashes and raw values never enter this envelope.
-        return dict(feedback=observation["feedback"], target_calls=observation["target_calls"],
+        response = dict(feedback=observation["feedback"], target_calls=observation["target_calls"],
                     oracle_calls=observation["oracle_calls"], cost=observation["cost"],
                     observation_id=observation_id, reference_match=reference_match)
+        if host_mixed is not None:
+            response["policy_id"] = policy_id
+        return response
     config = dict(contract=contract, structure=structure, method=method, seed=seed, budget=budget,
                   shrink_budget=shrink_budget, mold=mold, replays=approved_replays,
                   max_seconds=max_seconds, _started=started)
@@ -559,6 +736,8 @@ def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrin
         config["selector"] = selector
     if hard_budget:
         config["hard_budget"]=True
+    if method == "D":
+        config.update(epsilon_static_floor=epsilon_static_floor, circuit_breaker_warmup=circuit_breaker_warmup)
     boundary_receipt, inventory = None, None
     try:
         with OnlineBoundary(timeout=max_seconds+5) as boundary:
@@ -574,6 +753,28 @@ def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrin
             for index, (row, event, actual) in enumerate(zip(result["observations"], result["events"], host_rows)):
                 if row["input_digest"] != actual["input_digest"] or input_identity(row["input"]) != actual["input_digest"] or row["status"] != actual["feedback"]["status"] or row["contract"] != contract or row["phase"] != actual["phase"] or event["feedback"] != actual["feedback"] or event["phase"] != actual["phase"] or event.get("observation_id") != index:
                     raise ValueError("online result changed its observed input or feedback")
+                if host_mixed is not None and (row.get("policy_id") != actual["policy_id"] or event.get("policy_id") != actual["policy_id"]):
+                    raise ValueError("worker changed the actual host policy identity")
+            if host_mixed is not None:
+                for index, actual in enumerate(host_rows):
+                    if actual["phase"] in ("base", "structure", "replay") and actual["feedback"]["status"] == "FAILURE" and index not in host_confirmed:
+                        host_mixed.mark_unconfirmed_failure(actual["policy_id"])
+                worker_mixed = result.get("scheduler", {}).get("mixed_policy", {})
+                actual_mixed = host_mixed.snapshot()
+                for field in ("actual", "confirmed_phenotypes", "unclassified_confirmed_failures", "uncertainty", "circuit_breaker_triggered"):
+                    if worker_mixed.get(field) != actual_mixed[field]:
+                        raise ValueError("worker mixed-policy receipt differs from actual host observations: "+field)
+                actual_lanes = dict(base=0, replay=0, structure=0)
+                for actual in host_rows:
+                    lane = actual["phase"]
+                    if lane == "confirmation" and actual["reference"] is not None:
+                        lane = host_rows[actual["reference"]]["phase"]
+                    if lane in actual_lanes:
+                        actual_lanes[lane] += actual["target_calls"]
+                caps = _lane_caps(budget-shrink_budget)
+                if (result["scheduler"].get("actual") != actual_lanes
+                        or any(actual_lanes[lane] > caps[lane] for lane in caps)):
+                    raise ValueError("mixed policy changed actual shared lane accounting or exceeded its global cap")
             verified, first_verified = set(), None
             for index, actual in enumerate(host_rows[:-2]):
                 if actual["phase"] not in ("base", "structure", "replay") or actual["feedback"]["status"] != "FAILURE":
@@ -592,7 +793,10 @@ def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrin
             shrinking = result.get("shrinking", {})
             if shrinking.get("status") == "REPRODUCED":
                 reference = shrinking.get("witness_reference_event")
-                if type(reference) is not int or not 0 <= reference < len(host_rows) or input_identity(shrinking["witness"]) != host_rows[reference]["input_digest"] or not all(row["phase"] == "shrink_confirmation" and row["reference"] == reference and row["reference_match"] is True and row["feedback"]["status"] == "FAILURE" for row in host_rows[-2:]):
+                confirmation_ids = shrinking.get("confirmation_event_ids", list(range(max(0,len(host_rows)-2),len(host_rows))))
+                if type(confirmation_ids) is not list or len(confirmation_ids) != 2 or any(type(i) is not int or not 0 <= i < len(host_rows) for i in confirmation_ids) or confirmation_ids[1] != confirmation_ids[0]+1:
+                    raise ValueError("shrinking requires two actual contiguous confirmation events")
+                if type(reference) is not int or not 0 <= reference < len(host_rows) or input_identity(shrinking["witness"]) != host_rows[reference]["input_digest"] or not all(row["phase"] == "shrink_confirmation" and row["reference"] == reference and row["reference_match"] is True and row["feedback"]["status"] == "FAILURE" for row in (host_rows[i] for i in confirmation_ids)):
                     raise ValueError("shrink reproduction lacks its original host witness and matching replays")
             shutdown_started = time.perf_counter()
         result["cost"]["process_shutdown_seconds"] = time.perf_counter()-shutdown_started
@@ -615,6 +819,10 @@ def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrin
             shrinking=dict(status="INCOMPLETE_BOUNDARY_ERROR", minimality="NOT_CLAIMED", witness=None),
             scheduler={}, new_valid_inputs=0, source_replay_calls=0, duplicate_candidates=0,
             policy_state_reused=False, target_state_reset="CALLER_RESPONSIBILITY", allow_release=False)
+    except BaseException:
+        if host_mixed is not None:
+            call_meter.release_policy_reservation()
+        raise
     if diagnostics is not None:
         from .recursive_observe import validate_trace, execute_pairs
         try:
@@ -637,6 +845,10 @@ def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrin
                 reset_calls=0, wall_seconds=0.0), unknown_reasons=[type(error).__name__+":"+str(error)[:200]])
     result["private_outcomes"] = [dict(event=i, outcome=r["private_outcome"], semantic_digest=r["semantic_digest"])
                                     for i, r in enumerate(host_rows)]
+    if host_mixed is not None:
+        result["policy_reallocations"] = policy_reallocations
+        for row, event, actual in zip(result["observations"], result["events"], host_rows):
+            row["policy_id"] = event["policy_id"] = actual["policy_id"]
     result["boundary"] = dict(boundary_receipt or {}, **(inventory or {}),
         transferred="PUBLIC_CONTRACT_MRI_MOLD_REPLAYS_LIMITED_CAST_AND_REPRODUCTION_BOOLEAN",
         target_code_transferred=False, oracle_code_transferred=False, oracle_values_transferred=False,
@@ -661,6 +873,58 @@ def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrin
         if result.get("reproduction_mismatches",0) or unresolved or (diagnostics is not None and result.get("paired_diagnostics",{}).get("status")!="COMPLETE"):
             if result["status"]=="COMPLETE": result["status"]="HOLD_MEASUREMENT"
         result["metered_unresolved_events"]=unresolved
+        if host_mixed is not None:
+            reservation = measured["policy_reservation"]
+            for pending in host_pending_failures:
+                host_mixed.mark_unconfirmed_failure(host_rows[pending]["policy_id"])
+            for arm in ("C", "D"):
+                counts = reservation["actual_policy_calls"][arm]
+                actual = dict(target_calls=counts["actual_target_calls"], oracle_calls=counts["actual_oracle_calls"])
+                if actual != host_mixed.actual[arm]:
+                    host_mixed.actual[arm] = actual
+                    host_mixed.uncertainty[arm].add("PARTIAL_HOST_ENTRY_WITHOUT_COMPLETE_OBSERVATION")
+            result["scheduler"].update(allocation_policy="STATIC_C_FLOOR_D_CIRCUIT_BREAKER_V3",
+                epsilon_static_floor=host_mixed.epsilon_static_floor,
+                circuit_breaker_triggered=host_mixed.circuit_breaker_triggered,
+                mixed_policy=host_mixed.snapshot(), host_accounting_authoritative=True)
+            actual_target = result["metered_run_actual"]["target_calls_used"]
+            actual_oracle = result["metered_run_actual"]["oracle_calls_used"]
+            result["host_partial_calls_without_observation"] = dict(
+                target_calls=actual_target-counters["target_calls"], oracle_calls=actual_oracle-counters["oracle_calls"])
+            result["target_calls"], result["oracle_calls"] = actual_target, actual_oracle
+            result["completed_policy_reservation"] = call_meter.release_policy_reservation()
     result.pop("receipt_sha256", None)
     result["receipt_sha256"] = digest(result)
     return result
+
+
+def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrink_budget=8,
+               mold=None, replays=(), max_seconds=30, mode="structural", inspection_target=None,
+               diagnostics=None, diagnostic_reset=None, selector=None, call_meter=None, fresh_reset=None, hard_budget=False,
+               epsilon_static_floor=0.5, circuit_breaker_warmup=6):
+    """Run trusted host evaluation and always close this run's mixed reservation.
+
+    Cleanup includes receipt-generation errors and BaseException interruption.
+    An already-open reservation belongs to its caller and is never released
+    when this run fails admission before acquiring a reservation of its own.
+    """
+    started = time.perf_counter()
+    from .call_meter import HardCallMeter
+    _, normalized_method = _validate_configuration(contract, method, seed, budget, shrink_budget, max_seconds, mold)
+    if normalized_method == "D" and call_meter is None:
+        call_meter = HardCallMeter(budget, budget, arm_id="E9_D")
+    managed_meter = call_meter if normalized_method == "D" and type(call_meter) is HardCallMeter else None
+    reservation_owner = {}
+    try:
+        return _run_online_host(target, oracle, contract, method=method, seed=seed, budget=budget,
+            shrink_budget=shrink_budget, mold=mold, replays=replays, max_seconds=max_seconds, mode=mode,
+            inspection_target=inspection_target, diagnostics=diagnostics, diagnostic_reset=diagnostic_reset,
+            selector=selector, call_meter=call_meter, fresh_reset=fresh_reset, hard_budget=hard_budget,
+            epsilon_static_floor=epsilon_static_floor, circuit_breaker_warmup=circuit_breaker_warmup,
+            _started=started, _reservation_owner=reservation_owner)
+    finally:
+        if managed_meter is not None:
+            with managed_meter._lock:
+                owned = reservation_owner.get("reservation")
+                if owned is not None and managed_meter._policy_reservation is owned:
+                    managed_meter.release_policy_reservation()

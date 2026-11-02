@@ -34,6 +34,173 @@ LINEAGE_FIELDS = ("source_lineage_id", "project_id", "mechanism_id",
     "independence_id", "review_id")
 
 
+def validate_mixed_policy_parameters(budget, epsilon_static_floor, warmup_calls):
+    """A fixed total budget reserves the configured fraction for unlearned C."""
+    if type(budget) is not int or budget < 1:
+        raise ValueError("a positive integer mixed-policy budget is required")
+    if type(epsilon_static_floor) not in (int, float) or not math.isfinite(epsilon_static_floor) or not 0 <= epsilon_static_floor <= 1:
+        raise ValueError("epsilon_static_floor must be finite and between 0 and 1")
+    if type(warmup_calls) is not int or warmup_calls < 1:
+        raise ValueError("circuit_breaker_warmup must be a positive integer")
+
+
+def public_failure_phenotype(feedback):
+    """A public exception phenotype, never an input/output hash or defect proof.
+
+    Return mismatches have no supported mechanism identity. They remain
+    unclassified rather than becoming zero marginal gain for the breaker.
+    """
+    if feedback.get("status") != "FAILURE" or not feedback.get("exception_type"):
+        return None
+    return digest(dict(schema="tomolab-public-exception-phenotype-v1",
+        contract=feedback["contract_checked"], exception_type=feedback["exception_type"],
+        exception_location=feedback.get("exception_location")))
+
+
+class PolicyReallocationRequired(Exception):
+    """A rejected D proposal made no Target, Oracle or reset entry."""
+    def __init__(self, reason, circuit_breaker_triggered=False):
+        super().__init__(reason)
+        self.reason = reason
+        self.circuit_breaker_triggered = circuit_breaker_triggered
+
+
+class MixedPolicyScheduler:
+    """Budgeted C/D selection from actual calls and confirmed public phenotypes.
+
+    C is a separate OnlinePolicy(method='C'), not a renamed native-base lane.
+    The floor reserves nominal run capacity; early termination may leave it
+    unused. All confirmation and shrinking costs remain charged to their arm.
+    """
+    def __init__(self, total_budget, *, epsilon_static_floor=0.5, warmup_calls=6):
+        validate_mixed_policy_parameters(total_budget, epsilon_static_floor, warmup_calls)
+        self.budget = total_budget
+        self.epsilon_static_floor = float(epsilon_static_floor)
+        self.warmup_calls = warmup_calls
+        self.static_reserved = math.ceil(self.epsilon_static_floor * total_budget)
+        self.initial_d_cap = total_budget - self.static_reserved
+        self.actual = {arm: dict(target_calls=0, oracle_calls=0) for arm in ("C", "D")}
+        self.signatures = {arm: set() for arm in ("C", "D")}
+        self.uncertainty = {arm: set() for arm in ("C", "D")}
+        self.unclassified_failures = dict(C=0, D=0)
+        self.observation_statuses = {arm: set() for arm in ("C", "D")}
+        self.circuit_breaker_triggered = False
+        self.trigger = None
+        self.d_exhausted = False
+
+    def can_allocate(self, policy_id, calls=1):
+        if policy_id not in self.actual or type(calls) is not int or calls < 1:
+            raise ValueError("explicit C/D policy and positive actual-call credit required")
+        if any(sum(self.actual[arm][key] for arm in self.actual) + calls > self.budget
+               for key in ("target_calls", "oracle_calls")):
+            return False
+        return policy_id == "C" or (not self.circuit_breaker_triggered and not self.d_exhausted
+            and all(self.actual["D"][key] + calls <= self.initial_d_cap
+                    for key in ("target_calls", "oracle_calls")))
+
+    def choose_policy(self, *, confirmation_credit=3, learned_tail_reserve=0):
+        credit = confirmation_credit + learned_tail_reserve
+        total = max(sum(self.actual[arm][key] for arm in self.actual)
+                    for key in ("target_calls", "oracle_calls"))
+        c_calls = min(self.actual["C"].values())
+        if c_calls < self.epsilon_static_floor * (total + confirmation_credit):
+            return "C"
+        return "D" if self.can_allocate("D", credit) else "C"
+
+    def record_execution(self, policy_id, *, target_calls, oracle_calls, feedback):
+        if policy_id not in self.actual:
+            raise ValueError("actual calls require an explicit C/D policy")
+        for name, value in (("target_calls", target_calls), ("oracle_calls", oracle_calls)):
+            if type(value) is not int or value not in (0, 1):
+                raise ValueError("actual single-entry counters required")
+        for name, value in (("target_calls", target_calls), ("oracle_calls", oracle_calls)):
+            self.actual[policy_id][name] += value
+        if target_calls or oracle_calls:
+            self.observation_statuses[policy_id].add(feedback["status"])
+        if feedback["status"] in ("UNKNOWN", "EXECUTION_ERROR", "ORACLE_ERROR") or target_calls != oracle_calls:
+            self.uncertainty[policy_id].add("UNKNOWN_OR_PARTIAL_MEASUREMENT")
+
+    def confirm_failure(self, policy_id, feedback):
+        if feedback.get("status") != "FAILURE":
+            raise ValueError("a confirmed failure observation is required")
+        signature = public_failure_phenotype(feedback)
+        if signature is None:
+            self.unclassified_failures[policy_id] += 1
+            self.uncertainty[policy_id].add("OUTPUT_MISMATCH_UNCLASSIFIED")
+        else:
+            self.signatures[policy_id].add(signature)
+        return signature
+
+    def mark_unconfirmed_failure(self, policy_id):
+        self.uncertainty[policy_id].add("FAILURE_NOT_CONFIRMED")
+
+    def checkpoint(self):
+        """Only call after the candidate's complete confirmation transaction."""
+        if self.circuit_breaker_triggered:
+            return self.circuit_breaker_triggered
+        c_calls, d_calls = (min(self.actual[arm].values()) for arm in ("C", "D"))
+        if min(c_calls, d_calls) < self.warmup_calls:
+            return False
+        c_lower_bound = int(bool(self.signatures["C"] or self.unclassified_failures["C"]))
+        pass_only_d = self.observation_statuses["D"] == {"PASS"} and not self.uncertainty["D"]
+        if (pass_only_d and c_lower_bound
+                and not self.uncertainty["C"]-{"OUTPUT_MISMATCH_UNCLASSIFIED"}):
+            self.circuit_breaker_triggered = True
+            self.trigger = dict(reason="NO_D_FAILURE_OBSERVED_AND_POSITIVE_CONFIRMED_C_YIELD_LOWER_BOUND",
+                metric="C_AT_LEAST_ONE_CONFIRMED_FAILURE_D_PASS_ONLY_NOT_UNIQUE_DEFECT_COUNT",
+                actual=deepcopy(self.actual), confirmed_c_failure_lower_bound=c_lower_bound,
+                observed_d_failures=0,
+                reclaimed_d_budget=self.initial_d_cap-max(self.actual["D"].values()))
+            return True
+        if any(self.uncertainty.values()):
+            return False
+        c_unique, d_unique = len(self.signatures["C"]), len(self.signatures["D"])
+        if not (self.signatures["D"] - self.signatures["C"]) and d_unique * c_calls < c_unique * d_calls:
+            self.circuit_breaker_triggered = True
+            self.trigger = dict(reason="ZERO_CONFIRMED_MARGINAL_PHENOTYPES_AND_LOWER_YIELD",
+                actual=deepcopy(self.actual), confirmed_c=c_unique, confirmed_d=d_unique,
+                reclaimed_d_budget=self.initial_d_cap-max(self.actual["D"].values()))
+        return self.circuit_breaker_triggered
+
+    def host_reallocated(self, reason, *, circuit_breaker_triggered=False):
+        self.d_exhausted = True
+        if circuit_breaker_triggered:
+            self.circuit_breaker_triggered = True
+            self.trigger = self.trigger or dict(reason=reason,
+                actual=deepcopy(self.actual), host_enforced=True,
+                reclaimed_d_budget=self.initial_d_cap-max(self.actual["D"].values()))
+
+    def snapshot(self):
+        lower_bound_comparison = bool(self.trigger and self.trigger.get("metric") ==
+            "C_AT_LEAST_ONE_CONFIRMED_FAILURE_D_PASS_ONLY_NOT_UNIQUE_DEFECT_COUNT")
+        marginal_unknown = any(self.uncertainty.values()) and not lower_bound_comparison
+        warmup_complete = min(min(values.values()) for values in self.actual.values()) >= self.warmup_calls
+        return dict(schema="tomolab-mixed-cd-scheduler-v1", epsilon_static_floor=self.epsilon_static_floor,
+            total_budget=self.budget, static_c_budget_reserved=self.static_reserved,
+            initial_d_budget_cap=self.initial_d_cap, actual=deepcopy(self.actual),
+            static_floor_actual_reached=all(v >= self.static_reserved for v in self.actual["C"].values()),
+            floor_scope="RESERVED_TOTAL_RUN_CAPACITY_INCLUDING_CONFIRMATION_AND_SHRINKING_NOT_ACTUAL_MINIMUM_ON_EARLY_STOP",
+            failure_signature_scope="CONFIRMED_PUBLIC_EXCEPTION_PHENOTYPE_CONTRACT_TYPE_LOCATION_NOT_UNIQUE_DEFECT_PROOF",
+            input_or_output_digest_used_as_defect_identity=False,
+            confirmed_phenotypes={arm: sorted(values) for arm, values in self.signatures.items()},
+            confirmed_unique_phenotypes={arm: len(values) for arm, values in self.signatures.items()},
+            observed_d_marginal_phenotypes=(None if marginal_unknown or not warmup_complete else
+                len(self.signatures["D"]-self.signatures["C"])),
+            raw_observed_d_only_phenotype_count=len(self.signatures["D"]-self.signatures["C"]),
+            unclassified_confirmed_failures=deepcopy(self.unclassified_failures),
+            observation_statuses={arm: sorted(values) for arm, values in self.observation_statuses.items()},
+            uncertainty={arm: sorted(values) for arm, values in self.uncertainty.items()},
+            marginal_gain_status=("ZERO_D_FAILURES_CONFIRMED_C_LOWER_BOUND_ONLY" if lower_bound_comparison else
+                "UNKNOWN" if marginal_unknown else "INSUFFICIENT_WARMUP" if not warmup_complete else
+                "OBSERVED_PUBLIC_PHENOTYPES_ONLY"),
+            warmup_calls=self.warmup_calls, warmup_complete=warmup_complete,
+            circuit_breaker_triggered=self.circuit_breaker_triggered,
+            circuit_breaker=self.trigger,
+            remaining_d_budget=0 if self.circuit_breaker_triggered or self.d_exhausted else self.initial_d_cap-max(self.actual["D"].values()),
+            reclaimed_d_budget=(self.trigger or {}).get("reclaimed_d_budget", 0),
+            generalization="NOT_ESTABLISHED")
+
+
 def _sha(value):
     if not isinstance(value, str) or not re.fullmatch("[a-f0-9]{64}", value):
         raise ValueError("SHA256 identity required")

@@ -29,12 +29,22 @@ def main():
             raise ValueError("one immutable online run configuration required")
         config = validate_online_config(request["config"])
         from .online_engine import _run_online_core
+        from .recursive_policy import PolicyReallocationRequired
         counter = 0
-        def execute(point, *, phase, reference):
+        def execute(point, *, phase, reference, policy_id=None):
             nonlocal counter
             request_id = counter
-            _write(dict(action="evaluate", request_id=request_id, input=point, phase=phase, reference=reference))
+            message = dict(action="evaluate", request_id=request_id, input=point, phase=phase, reference=reference)
+            if config["method"] == "D":
+                if policy_id not in ("C", "D"):
+                    raise ValueError("mixed evaluation requires an explicit policy identity")
+                message["policy_id"] = policy_id
+            _write(message)
             response = _read()
+            if response.get("action") == "reallocate":
+                if config["method"] != "D" or policy_id != "D" or set(response) != {"action", "request_id", "reason", "circuit_breaker_triggered"} or response["request_id"] != request_id or type(response["reason"]) is not str or type(response["circuit_breaker_triggered"]) is not bool:
+                    raise ValueError("invalid no-execution policy reallocation")
+                raise PolicyReallocationRequired(response["reason"], response["circuit_breaker_triggered"])
             if type(response) is not dict or set(response) != {"action", "request_id", "observation"} or response["action"] != "feedback" or response["request_id"] != request_id:
                 raise ValueError("online feedback envelope or sequence mismatch")
             observation = validate_online_observation(response["observation"], request_id=request_id,

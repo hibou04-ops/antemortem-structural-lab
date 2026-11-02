@@ -265,8 +265,10 @@ def run_demo(workspace):
             raise RuntimeError("saved harvest generation failed to execute in a new process")
         resumed.append(json.loads((workspace/(generation_id+"-resumed.json")).read_text(encoding="utf-8")))
     actual = [value["input"] for value in resumed]
-    if actual != [[-1,-2],[1,1],[-1,-2]] or resumed[1]["full_new_search_changed_common"] < 1:
+    if actual != [[-1,-2],[1,1],[-1,-2]]:
         raise AssertionError("authored harvest experience did not change next execution")
+    for value in resumed:
+        recursive_demo._validate_resumed_mixed_run(workspace, value)
     if len({value["process_id"] for value in resumed}) != len(resumed):
         raise AssertionError("distinct actual restart processes required")
     summary = dict(schema="tomolab-harvest-functional-summary-v1", status="COMPLETE",
@@ -281,6 +283,8 @@ def run_demo(workspace):
         source_authority_bindings=[value[1] for value in authorities.values()],
         wave_results=wave_results, executed_candidates=actual,
         fresh_search_changed_common=[value["full_new_search_changed_common"] for value in resumed],
+        fixed_slot_learning_effect="COMMON_LEARNED_COMMON_ACTUAL_EXECUTIONS",
+        fresh_search_guidance_scope="OBSERVED_EXECUTED_GUIDANCE_NOT_GUARANTEED_BY_FIXED_SLOT",
         restarted_processes=len(resumed), resumed=resumed,
         authored_development_cost={key:sum(value["development_cost_ledger"][key] for value in wave_results)
             for key in ("target_calls", "oracle_calls", "reset_calls", "observation_wall_seconds")},

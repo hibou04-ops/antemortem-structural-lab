@@ -295,9 +295,15 @@ def validate_online_parameters(contract, method, seed, budget, shrink_budget, ma
 def validate_online_config(config):
     """The same whitelist runs before transport and inside the fresh worker."""
     required = {"contract", "structure", "method", "seed", "budget", "shrink_budget", "mold", "replays", "max_seconds", "_started"}
-    if type(config) is not dict or not required <= set(config) or set(config)-required-{"diagnostics", "selector", "hard_budget"}:
+    if type(config) is not dict or not required <= set(config) or set(config)-required-{"diagnostics", "selector", "hard_budget", "epsilon_static_floor", "circuit_breaker_warmup"}:
         raise ValueError("only public online configuration fields may cross")
     validate_online_parameters(*(config[key] for key in ("contract", "method", "seed", "budget", "shrink_budget", "max_seconds", "mold")))
+    if "epsilon_static_floor" in config or "circuit_breaker_warmup" in config:
+        from .recursive_policy import validate_mixed_policy_parameters
+        if config["method"] != "D":
+            raise ValueError("mixed policy options require D")
+        validate_mixed_policy_parameters(config["budget"], config.get("epsilon_static_floor", 0.5),
+                                         config.get("circuit_breaker_warmup", 6))
     if "hard_budget" in config and type(config["hard_budget"]) is not bool:
         raise ValueError("hard budget tail selection must be an explicit boolean")
     if "diagnostics" in config:
@@ -364,8 +370,10 @@ def validate_online_config(config):
 
 def validate_online_observation(observation, *, request_id, point, contract):
     fields = {"feedback", "target_calls", "oracle_calls", "cost", "observation_id", "reference_match"}
-    if type(observation) is not dict or set(observation) != fields or type(observation["observation_id"]) is not int or observation["observation_id"] != request_id:
+    if type(observation) is not dict or not fields <= set(observation) or set(observation)-fields-{"policy_id"} or type(observation["observation_id"]) is not int or observation["observation_id"] != request_id:
         raise ValueError("private evaluator output cannot enter online feedback")
+    if "policy_id" in observation and observation["policy_id"] not in ("C", "D"):
+        raise ValueError("unsupported actual policy identity")
     feedback = observation["feedback"]
     fields = {"status", "input_digest", "coverage", "branch_distance", "contract_checked"}
     if type(feedback) is not dict or not fields <= set(feedback) or set(feedback)-fields-{"exception_type", "exception_location"}:

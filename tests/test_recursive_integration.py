@@ -17,7 +17,7 @@ def test_real_development_update_store_process_restart_and_next_search(tmp_path)
     assert summary["choices"] == ["common", "learned", "common"]
     assert summary["executed_candidates"] == [[-1, -2], [1, 1], [-1, -2]]
     assert [row["status"] for row in summary["resumed"]] == ["PASS", "FAILURE", "PASS"]
-    assert summary["resumed"][1]["full_new_search_changed_common"] >= 1
+    assert summary["fixed_slot_learning_effect"] == "COMMON_LEARNED_COMMON_ACTUAL_EXECUTIONS"
     assert len({row["process_id"] for row in summary["resumed"]}) == 3
     records = GenerationStore(workspace / "generations.jsonl").records()
     assert [row["generation"]["generation_id"] for row in records] == ["G0", "G1", "G2"]
@@ -26,6 +26,24 @@ def test_real_development_update_store_process_restart_and_next_search(tmp_path)
     assert generations[2]["parent_generation_digest"] == generations[1]["sha256"]
     assert [len(row["selector"]["evidence"]) for row in generations] == [0, 2, 4]
     assert [row["cost_ledger"]["target_calls"] for row in generations] == [0, 14, 28]
+    for row, generation in zip(summary["resumed"], generations):
+        receipt = json.loads((workspace/(row["generation_id"]+"-online.json")).read_text(encoding="utf-8"))
+        run, scheduler = receipt["run"], receipt["run"]["scheduler"]
+        assert receipt["selector_digest"] == generation["selector"]["selector_digest"] == row["selector_digest"]
+        assert receipt["generation_digest"] == generation["sha256"] == row["generation_digest"]
+        assert row["full_new_search_status"] == run["status"] == "COMPLETE"
+        assert row["full_new_search_allocation_policy"] == "STATIC_C_FLOOR_D_CIRCUIT_BREAKER_V3"
+        assert row["full_new_search_epsilon_static_floor"] == 0.5
+        changes = sum(bool(event.get("rule_id")) and
+            event.get("source_selection", {}).get("source_changed_common", False) for event in run["events"])
+        assert row["full_new_search_changed_common"] == changes == scheduler["learned_changed_common_executions"]
+        actual = row["full_new_search_policy_calls"]
+        assert actual == scheduler["mixed_policy"]["actual"]
+        for kind in ("target_calls", "oracle_calls"):
+            assert actual["C"][kind] >= 36 and actual["D"][kind] <= 36
+            assert row["full_new_search_cost"][kind] == run[kind] == sum(actual[arm][kind] for arm in ("C", "D"))
+            assert run[kind] <= 72
+        assert all(scheduler["actual"][lane] <= cap for lane, cap in scheduler["caps"].items())
     assert summary["paired_target_calls"] == 24
     assert summary["carrier_cost"]["target_calls"] == 4
     assert all(row["candidate_validation"]["default_adoption"] == "HOLD" for row in generations)
