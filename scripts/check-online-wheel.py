@@ -123,13 +123,39 @@ def main():
         fallback, _ = command("D-empty-mold-fallback", "online-run", examples/"target.py", *shared,
             "--method", "D", "--mold", external/"empty-mold.json", "--expected-digest", empty["mold_digest"],
             "--usage-ledger", external/"functional-empty-D-usage.jsonl", "--allow-local-execution")
-        assert semantic(fallback) == semantic(no_mold)
-        assert fallback["run"]["target_calls"] == no_mold["run"]["target_calls"]
-        assert fallback["run"]["oracle_calls"] == no_mold["run"]["oracle_calls"]
+        fallback_repeat, _ = command("D-empty-mold-repeat", "online-run", examples/"target.py", *shared,
+            "--method", "D", "--mold", external/"empty-mold.json", "--expected-digest", empty["mold_digest"],
+            "--usage-ledger", external/"functional-empty-D-repeat-usage.jsonl", "--allow-local-execution")
+        # V3 runs independent C and D states under one actual-call reservation.
+        # Determinism is checked within each algorithm; D is no longer C's RNG trace.
+        assert semantic(fallback) == semantic(fallback_repeat)
+        for value in (fallback, fallback_repeat):
+            measured = value["run"]
+            scheduler = measured["scheduler"]
+            mixed = scheduler["mixed_policy"]
+            assert measured["status"] == "COMPLETE"
+            assert scheduler["allocation_policy"] == "STATIC_C_FLOOR_D_CIRCUIT_BREAKER_V3"
+            assert scheduler["epsilon_static_floor"] == 0.5
+            assert scheduler["host_accounting_authoritative"] is True
+            assert not scheduler["learned_rule_uses"]
+            assert scheduler["learned_changed_common_executions"] == 0
+            assert mixed["static_c_budget_reserved"] == (measured["budget"]+1)//2
+            for kind in ("target_calls", "oracle_calls"):
+                assert measured[kind] == sum(mixed["actual"][arm][kind] for arm in ("C", "D")) <= measured["budget"]
+                assert mixed["actual"]["D"][kind] <= measured["budget"]//2
+                if measured[kind] == measured["budget"]:
+                    assert mixed["actual"]["C"][kind] >= mixed["static_c_budget_reserved"]
+            assert measured["hard_call_meter"]["target_calls_used"] == measured["target_calls"]
+            assert measured["hard_call_meter"]["oracle_calls_used"] == measured["oracle_calls"]
+            assert len(measured["events"]) == measured["target_calls"] == measured["oracle_calls"]
+            for arm in ("C", "D"):
+                assert sum(event["policy_id"] == arm for event in measured["events"]) == mixed["actual"][arm]["target_calls"]
+            assert all(scheduler["actual"][lane] <= cap for lane, cap in scheduler["caps"].items())
         def common_states(value):
             return [(e.get("common_policy_state_before"), e.get("common_policy_state_after"))
                     for e in value["run"]["events"]]
-        assert common_states(fallback) == common_states(no_mold)
+        assert common_states(fallback) == common_states(fallback_repeat)
+        assert fallback["run"]["scheduler"]["mixed_policy"] == fallback_repeat["run"]["scheduler"]["mixed_policy"]
         demo, _ = command("D-end-to-end-demo", "online-demo", "--method", "D", "--workspace", external/"demo",
             "--usage-ledger", external/"demo-usage.jsonl", "--budget", "32", "--shrink-budget", "6",
             "--allow-local-execution")
@@ -138,8 +164,10 @@ def main():
             wheel_sha256=hashlib.sha256(wheel.read_bytes()).hexdigest(), checks=records,
             dependency_installation="APPROVED_BYTE_REUSE" if args.reuse_approved_dependencies else "NORMAL_INDEX_INSTALL",
             reused_dependencies=dependencies, source_target_pipeline=True, replay_semantics_equal=True,
-            empty_mold_C_D_candidate_rng_and_budget_parity=True,
-            functional_target_calls=sum(v["run"]["target_calls"] for v in (source,target,no_mold,replay,fallback,demo))+demo["source_learning"]["target_calls"],
+            empty_mold_D_repeat_semantics_equal=True,
+            empty_mold_contract="V3_INDEPENDENT_ARMS_ACTUAL_CALL_FLOOR_AND_CAP",
+            empty_mold_zero_learned_execution=True,
+            functional_target_calls=sum(v["run"]["target_calls"] for v in (source,target,no_mold,replay,fallback,fallback_repeat,demo))+demo["source_learning"]["target_calls"],
             registered_comparison_reexecuted=False, allow_release=False)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("x", encoding="utf-8") as handle:

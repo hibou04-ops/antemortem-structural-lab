@@ -32,6 +32,55 @@ def require(condition, message):
         raise ValueError(message)
 
 
+def source_checkpoint_checks(root=ROOT):
+    """Check current source metadata; never inherit frozen upload authority."""
+    root = Path(root)
+    project = tomllib.loads((root/"pyproject.toml").read_text(encoding="utf-8"))["project"]
+    version = project["version"]
+    require(project["name"] == "antemortem-structural-lab", "distribution identity differs")
+    match = re.fullmatch(r"(\d+\.\d+\.\d+)a\d+", version)
+    require(match is not None, "source checkpoint requires an alpha package version")
+    require(project["urls"]["Repository"] == "https://github.com/"+REPOSITORY,
+            "repository metadata differs")
+    tree = ast.parse((root/"tomolab/__init__.py").read_text(encoding="utf-8"))
+    versions = [node.value.value for node in tree.body if isinstance(node, ast.Assign)
+                and any(isinstance(target, ast.Name) and target.id == "__version__"
+                        for target in node.targets) and isinstance(node.value, ast.Constant)]
+    require(versions == [version], "runtime and package versions differ")
+    source_tag = "v"+match.group(1)
+    for name in ("README.md", "README.ko.md"):
+        text = (root/name).read_text(encoding="utf-8")
+        require(all(token in text for token in (version, source_tag, "[qa]", "online-run", "online-replay")),
+                "README must distinguish source checkpoint and alpha installation: "+name)
+    authorization = read(root/"docs/PRODUCT_RELEASE_AUTHORIZATION.json")
+    # The old approval is evidence about its exact version, never this check.
+    require(authorization.get("schema") == SCHEMA and
+            authorization.get("repository") == REPOSITORY and
+            authorization.get("version") == "0.8.0a1" and
+            authorization.get("tag") == "v0.8.0a1" and
+            authorization.get("scope") == "EXPERIMENTAL_PRODUCT_PUBLICATION_ONLY" and
+            authorization.get("study_reruns_authorized") is False and
+            authorization.get("research_qualification_granted") is False and
+            authorization.get("final_evaluation_authorized") is False,
+            "preserved publication authorization scope changed")
+    require(read(root/"docs/E8_RELEASE_AUTHORIZATION.json").get("status") ==
+            "NOT_AUTHORIZED_READINESS_BLOCKED", "E8 research publication gate changed")
+    for name in ("ONLINE_PROFILE.json", "HISTORICAL_PROFILE.json"):
+        profile = read(root/"docs"/name)
+        require(profile["frozen_config"]["allow_release"] is False and
+                profile["profile"]["publication_authorized"] is False and
+                profile["profile"]["final_evaluation_authorized"] is False,
+                "historical research authorization changed: "+name)
+    require(read(root/"docs/HISTORICAL_RESULTS.json")["allow_release"] is False,
+            "historical result release flag changed")
+    return dict(schema="tomolab-source-checkpoint-v1", repository=REPOSITORY,
+        status="SOURCE_CHECKPOINT_VALIDATED_NOT_UPLOAD_AUTHORIZATION", version=version,
+        source_tag=source_tag, publication_authorized=False,
+        product_publication_authorized=False, research_allow_release=False,
+        research_execution_authorized=False, frozen_publication_version=authorization["version"],
+        frozen_authorization_sha256=sha(root/"docs/PRODUCT_RELEASE_AUTHORIZATION.json"))
+
+
 def static_checks(root, *, version=None, tag=None):
     """Validate product-only policy without granting upload authorization."""
     root = Path(root)
@@ -165,7 +214,10 @@ def evaluate(root=ROOT, *, version=None, tag=None, source_sha=None, ci_receipt=N
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--static", action="store_true")
+    modes = p.add_mutually_exclusive_group()
+    modes.add_argument("--static", action="store_true")
+    modes.add_argument("--source-checkpoint", action="store_true",
+                       help="Validate alpha source metadata without consuming or granting upload authority")
     p.add_argument("--version")
     p.add_argument("--tag")
     p.add_argument("--source-sha")
@@ -174,9 +226,15 @@ def main():
     p.add_argument("--required-job", action="append", default=[])
     p.add_argument("--output", type=Path)
     args = p.parse_args()
-    value = evaluate(version=args.version, tag=args.tag, source_sha=args.source_sha,
-        ci_receipt=args.ci_receipt, installation_receipt=args.installation_receipt,
-        required_jobs=args.required_job, static=args.static)
+    if args.source_checkpoint:
+        require(not any((args.version, args.tag, args.source_sha, args.ci_receipt,
+                         args.installation_receipt, args.required_job)),
+                "source-checkpoint checks do not consume publication inputs or receipts")
+        value = source_checkpoint_checks()
+    else:
+        value = evaluate(version=args.version, tag=args.tag, source_sha=args.source_sha,
+            ci_receipt=args.ci_receipt, installation_receipt=args.installation_receipt,
+            required_jobs=args.required_job, static=args.static)
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         with args.output.open("x", encoding="utf-8") as stream:

@@ -125,7 +125,7 @@ def test_existing_demo_workspace_is_preserved(completed_demo):
 def test_harvest_demo_cli_requires_explicit_local_opt_in(tmp_path):
     workspace = tmp_path/"must-not-execute"
     result = subprocess.run([sys.executable,"-m","tomolab","harvest-demo","--workspace",str(workspace)],
-        capture_output=True,text=True)
+        capture_output=True,text=True,encoding="utf-8")
     assert result.returncode != 0
     assert "allow-local-execution" in result.stderr
     assert not workspace.exists()

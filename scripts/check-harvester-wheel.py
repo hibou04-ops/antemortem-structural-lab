@@ -27,13 +27,13 @@ def main():
         venv.EnvBuilder(with_pip=True).create(environment)
         python = environment / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")
         install = subprocess.run([str(python), "-m", "pip", "install", str(artifact)+"[qa]"],
-            cwd=scratch, capture_output=True, text=True, timeout=240)
+            cwd=scratch, capture_output=True, text=True, encoding="utf-8", timeout=240)
         if install.returncode:
             raise RuntimeError("candidate install failed: " + install.stderr[-1000:])
         workspace = scratch / "authored-example"
         run = subprocess.run([str(python), "-I", "-m", "tomolab", "harvest-demo",
             "--workspace", str(workspace), "--allow-local-execution"], cwd=scratch,
-            capture_output=True, text=True, timeout=180)
+            capture_output=True, text=True, encoding="utf-8", timeout=180)
         if run.returncode:
             raise RuntimeError("installed example failed: " + run.stderr[-2000:])
         summary = json.loads((workspace / "summary.json").read_text(encoding="utf-8"))
@@ -63,7 +63,7 @@ def main():
             assert all(scheduler["actual"][lane] <= cap for lane,cap in scheduler["caps"].items())
         assert summary["fresh_search_changed_common"] == observed_changes
         check = subprocess.run([str(python), "-m", "pip", "check"], cwd=scratch,
-            capture_output=True, text=True, timeout=30)
+            capture_output=True, text=True, encoding="utf-8", timeout=30)
         assert check.returncode == 0, check.stdout
         receipt = dict(schema="tomolab-harvester-installed-check-v1", status="PASS",
             artifact=artifact.name, artifact_sha256=hashlib.sha256(artifact.read_bytes()).hexdigest(),

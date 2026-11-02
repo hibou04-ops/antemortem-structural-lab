@@ -88,7 +88,7 @@ def test_generation_execution_receipt_is_exclusive_and_bound_to_saved_selector(t
 
 def test_recursive_cli_requires_explicit_execution_opt_in(tmp_path):
     result = subprocess.run([sys.executable, "-m", "tomolab", "recursive-demo",
-        "--workspace", str(tmp_path / "not-created")], capture_output=True, text=True)
+        "--workspace", str(tmp_path / "not-created")], capture_output=True, text=True, encoding="utf-8")
     assert result.returncode != 0
     assert "allow-local-execution" in result.stderr
     assert not (tmp_path / "not-created").exists()

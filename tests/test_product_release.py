@@ -171,3 +171,55 @@ def test_missing_evidence_or_different_checkout_fails_closed(product):
 def test_static_mode_cannot_be_mixed_with_publication_receipts(product):
     with pytest.raises(ValueError, match="static-only"):
         evaluate(product, static=True)
+
+
+def source_checkpoint(product):
+    root = product[0]
+    project = root/"pyproject.toml"
+    project.write_text(project.read_text(encoding="utf-8").replace("0.8.0a1", "0.8.1a1"), encoding="utf-8")
+    (root/"tomolab/__init__.py").write_text('__version__ = "0.8.1a1"\n', encoding="utf-8")
+    for name in ("README.md", "README.ko.md"):
+        (root/name).write_text('Experimental source v0.8.1 / alpha 0.8.1a1 [qa] online-run online-replay', encoding="utf-8")
+    return root
+
+
+def test_new_alpha_source_checkpoint_does_not_inherit_old_publication_approval(product):
+    root = source_checkpoint(product)
+    original = (root/"docs/PRODUCT_RELEASE_AUTHORIZATION.json").read_bytes()
+    value = gate.source_checkpoint_checks(root)
+    assert value["version"] == "0.8.1a1" and value["source_tag"] == "v0.8.1"
+    assert value["frozen_publication_version"] == "0.8.0a1"
+    assert value["publication_authorized"] is value["product_publication_authorized"] is False
+    assert value["research_allow_release"] is value["research_execution_authorized"] is False
+    assert (root/"docs/PRODUCT_RELEASE_AUTHORIZATION.json").read_bytes() == original
+    # The real publisher still requires an exact version-specific approval.
+    with pytest.raises(ValueError, match="authorization differs: version"):
+        evaluate(product)
+
+
+def test_source_checkpoint_rejects_runtime_version_drift(product):
+    root = source_checkpoint(product)
+    (root/"tomolab/__init__.py").write_text('__version__ = "0.8.0a1"\n', encoding="utf-8")
+    with pytest.raises(ValueError, match="runtime and package versions differ"):
+        gate.source_checkpoint_checks(root)
+
+
+def test_source_checkpoint_cannot_expand_the_preserved_approval(product):
+    root = source_checkpoint(product)
+    mutate(root/"docs/PRODUCT_RELEASE_AUTHORIZATION.json", lambda v: v.update(version="0.8.1a1", tag="v0.8.1a1"))
+    with pytest.raises(ValueError, match="preserved publication authorization scope changed"):
+        gate.source_checkpoint_checks(root)
+
+
+def test_current_CI_checks_source_separately_from_manual_publication():
+    current = (ROOT/".github/workflows/tests.yml").read_text(encoding="utf-8")
+    publisher = (ROOT/".github/workflows/publish-pypi.yml").read_text(encoding="utf-8")
+    assert "check-product-release.py --source-checkpoint" in current
+    assert "check-product-release.py --static" not in current
+    assert "check-product-release.py --source-sha" in publisher
+    assert "--ci-receipt" in publisher and "--installation-receipt" in publisher
+    assert "--source-checkpoint" not in publisher
+    registrations = [line for line in current.splitlines() if "--manifest docs/HISTORICAL_PROFILE.json" in line]
+    assert registrations
+    assert all("--allow-current-test-change tests/test_online_engine.py" in line for line in registrations)
+    assert all(line.count("--allow-current-test-change") == 1 for line in registrations)

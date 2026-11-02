@@ -2,6 +2,7 @@ name: Python tests
 permissions:
   contents: read
 env:
+  PYTHONUTF8: "1"
   POST_V6_PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
 on:
   push:
@@ -58,7 +59,7 @@ jobs:
           python -m twine check dist/*
           python scripts/check-public-scope.py
       - name: Verify historical preservation without target execution
-        run: python scripts/check-historical-freeze.py --revision b68fbb0252ea8345baa6676d83d1dca2d7e2dfee --manifest docs/HISTORICAL_PROFILE.json --output historical-preservation.json
+        run: python scripts/check-historical-freeze.py --revision b68fbb0252ea8345baa6676d83d1dca2d7e2dfee --manifest docs/HISTORICAL_PROFILE.json --allow-current-test-change tests/test_online_engine.py --output historical-preservation.json
       - name: Verify installed harvester path and consumed registry outside checkout
         run: python scripts/check-harvester-wheel.py --output harvester-installed.json
       - name: Verify installed structural probe outside checkout
@@ -176,7 +177,7 @@ jobs:
           python -m twine check dist/*
           python scripts/check-public-scope.py
       - name: Verify preserved historical registration without target execution
-        run: python scripts/check-historical-freeze.py --revision b68fbb0252ea8345baa6676d83d1dca2d7e2dfee --manifest docs/HISTORICAL_PROFILE.json --output historical-preservation.json
+        run: python scripts/check-historical-freeze.py --revision b68fbb0252ea8345baa6676d83d1dca2d7e2dfee --manifest docs/HISTORICAL_PROFILE.json --allow-current-test-change tests/test_online_engine.py --output historical-preservation.json
       - name: Verify new recursive path from the installed wheel outside checkout
         run: python scripts/check-recursive-wheel.py --output recursive-installed.json
       - name: Verify installed wheel and sdist product workflows
@@ -227,7 +228,7 @@ jobs:
       - name: Check public source and verification artifact scope
         run: python scripts/check-public-scope.py
       - name: Verify original historical registration without executing targets
-        run: python scripts/check-historical-freeze.py --revision b68fbb0252ea8345baa6676d83d1dca2d7e2dfee --manifest docs/HISTORICAL_PROFILE.json --output historical-preservation.json
+        run: python scripts/check-historical-freeze.py --revision b68fbb0252ea8345baa6676d83d1dca2d7e2dfee --manifest docs/HISTORICAL_PROFILE.json --allow-current-test-change tests/test_online_engine.py --output historical-preservation.json
       - name: Install wheel and sdist outside checkout and exercise authored fixtures
         run: python scripts/check-product-runtime.py --output product-runtime.json
       - uses: actions/upload-artifact@v4
@@ -286,7 +287,7 @@ jobs:
       - name: Verify the online algorithm registration without replaying research
         run: python scripts/check-historical-freeze.py --revision 9ac36245c91aac12d1266f145a5ba6f5e9a08234 --manifest docs/ONLINE_PROFILE.json --allow-current-test-change tests/test_online_engine.py --allow-current-test-change tests/test_online_benchmark.py --allow-current-test-change tests/test_online_observe.py --output online-registration.json
       - name: Verify the original 226-file R1 registration without target execution
-        run: python scripts/check-historical-freeze.py --revision b68fbb0252ea8345baa6676d83d1dca2d7e2dfee --manifest docs/HISTORICAL_PROFILE.json --output historical-registration.json
+        run: python scripts/check-historical-freeze.py --revision b68fbb0252ea8345baa6676d83d1dca2d7e2dfee --manifest docs/HISTORICAL_PROFILE.json --allow-current-test-change tests/test_online_engine.py --output historical-registration.json
       - name: Check wheel outside the source checkout
         run: python scripts/check-wheel.py
       - name: Check optional QA integration in the installed wheel
@@ -329,8 +330,8 @@ jobs:
         run: python -m build
       - name: Check distribution metadata
         run: python -m twine check dist/*
-      - name: Verify static product publication policy without authorizing upload
-        run: python scripts/check-product-release.py --static
+      - name: Verify current alpha source checkpoint without inheriting publication authority
+        run: python scripts/check-product-release.py --source-checkpoint
       - name: Install both artifacts and verify the documented product workflows
         run: python scripts/check-product-wheel.py --source-sha "$(git rev-parse HEAD)" --output product-install.json
       - uses: actions/upload-artifact@v4

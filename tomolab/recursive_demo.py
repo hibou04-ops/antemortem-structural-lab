@@ -213,7 +213,7 @@ def run_demo(workspace):
     for generation_id in ("G0", "G1", "G2"):
         completed = subprocess.run([sys.executable, "-m", "tomolab.recursive_demo",
             "--resume", str(workspace), "--generation", generation_id],
-            capture_output=True, text=True, timeout=90)
+            capture_output=True, text=True, encoding="utf-8", timeout=90)
         if completed.returncode:
             raise RuntimeError("authored generation resume failed: " + completed.stderr[-3000:])
         resumed.append(json.loads((workspace / (generation_id+"-resumed.json")).read_text(encoding="utf-8")))

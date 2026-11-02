@@ -260,7 +260,7 @@ def run_demo(workspace):
     resumed = []
     for generation_id in ("G0", "G1", "G2"):
         process = subprocess.run([sys.executable, "-m", "tomolab.recursive_demo", "--resume", str(workspace),
-            "--generation", generation_id], capture_output=True, text=True, timeout=90)
+            "--generation", generation_id], capture_output=True, text=True, encoding="utf-8", timeout=90)
         if process.returncode:
             raise RuntimeError("saved harvest generation failed to execute in a new process")
         resumed.append(json.loads((workspace/(generation_id+"-resumed.json")).read_text(encoding="utf-8")))
