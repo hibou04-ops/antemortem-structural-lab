@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "antemortem-structural-lab"
-version = "0.8.2a1"
+version = "0.8.2"
 requires-python = ">=3.11"
 description = "Experimental contract-driven Python counterexample search, replay and evidence recording"
 readme = "README.md"
@@ -19,6 +19,7 @@ Issues = "https://github.com/hibou04-ops/antemortem-structural-lab/issues"
 
 [project.scripts]
 tomolab = "tomolab.cli:main"
+antemortem-structural-lab = "tomolab.cli:main"
 
 [project.optional-dependencies]
 solver = ["z3-solver>=4.13,<6"]

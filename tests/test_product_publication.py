@@ -106,6 +106,14 @@ def test_alpha_input_is_not_hardcoded_to_one_minor_version(publisher,monkeypatch
     assert publisher.inputs()==("12.34.56a7",SOURCE,"v12.34.56a7")
 
 
+def test_explicit_082_release_is_accepted_without_authorizing_other_stable_versions(publisher, monkeypatch):
+    monkeypatch.setenv("RELEASE_VERSION", "0.8.2")
+    assert publisher.inputs() == ("0.8.2", SOURCE, "v0.8.2")
+    monkeypatch.setenv("RELEASE_VERSION", "0.8.3")
+    with pytest.raises(ValueError):
+        publisher.inputs()
+
+
 def test_lightweight_tag_cannot_replace_an_annotated_release_identity(publisher,monkeypatch):
     monkeypatch.setattr(publisher,"api",lambda *a,**k:dict(object=dict(type="commit",sha=SOURCE)))
     with pytest.raises(ValueError,match="annotated"):
@@ -253,7 +261,10 @@ def prepared_handoff(module,monkeypatch):
         '"\n[project.urls]\nRepository="https://github.com/'+module.REPO+'"\n',encoding="utf-8")
     (root/"README.ko.md").write_text("A online-run → online-replay; D Source 선택 기능",encoding="utf-8")
     (root/"docs/MIGRATION_0_8.md").write_text("Preserve 0.7.0a1; experimental product 0.8.0a1",encoding="utf-8")
-    auth=json.loads((ROOT/"docs/PRODUCT_RELEASE_AUTHORIZATION.json").read_text(encoding="utf-8"))
+    # This fixture intentionally exercises the historical 0.8.0a1 handoff;
+    # never borrow the current package's separately approved version.
+    auth=json.loads((ROOT/"docs/PRODUCT_RELEASE_AUTHORIZATION_0_8_0a1.json").read_text(encoding="utf-8"))
+    assert auth["version"] == VERSION
     module.write(root/"docs/PRODUCT_RELEASE_AUTHORIZATION.json",auth)
     module.write(root/"docs/E8_RELEASE_AUTHORIZATION.json",dict(status="NOT_AUTHORIZED_READINESS_BLOCKED"))
     for name in("ONLINE_PROFILE.json","HISTORICAL_PROFILE.json"):

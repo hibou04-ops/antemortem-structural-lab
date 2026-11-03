@@ -38,8 +38,8 @@ def source_checkpoint_checks(root=ROOT):
     project = tomllib.loads((root/"pyproject.toml").read_text(encoding="utf-8"))["project"]
     version = project["version"]
     require(project["name"] == "antemortem-structural-lab", "distribution identity differs")
-    match = re.fullmatch(r"(\d+\.\d+\.\d+)a\d+", version)
-    require(match is not None, "source checkpoint requires an alpha package version")
+    match = re.fullmatch(r"(\d+\.\d+\.\d+)(?:a\d+)?", version)
+    require(match is not None, "source checkpoint requires a numeric package version")
     require(project["urls"]["Repository"] == "https://github.com/"+REPOSITORY,
             "repository metadata differs")
     tree = ast.parse((root/"tomolab/__init__.py").read_text(encoding="utf-8"))
@@ -51,8 +51,11 @@ def source_checkpoint_checks(root=ROOT):
     for name in ("README.md", "README.ko.md"):
         text = (root/name).read_text(encoding="utf-8")
         require(all(token in text for token in (version, source_tag, "[qa]", "online-run", "online-replay")),
-                "README must distinguish source checkpoint and alpha installation: "+name)
-    authorization = read(root/"docs/PRODUCT_RELEASE_AUTHORIZATION.json")
+                "README must document the source tag and package installation: "+name)
+    frozen = root/"docs/PRODUCT_RELEASE_AUTHORIZATION_0_8_0a1.json"
+    if not frozen.exists():
+        frozen = root/"docs/PRODUCT_RELEASE_AUTHORIZATION.json"
+    authorization = read(frozen)
     # The old approval is evidence about its exact version, never this check.
     require(authorization.get("schema") == SCHEMA and
             authorization.get("repository") == REPOSITORY and
@@ -78,7 +81,7 @@ def source_checkpoint_checks(root=ROOT):
         source_tag=source_tag, publication_authorized=False,
         product_publication_authorized=False, research_allow_release=False,
         research_execution_authorized=False, frozen_publication_version=authorization["version"],
-        frozen_authorization_sha256=sha(root/"docs/PRODUCT_RELEASE_AUTHORIZATION.json"))
+        frozen_authorization_sha256=sha(frozen))
 
 
 def static_checks(root, *, version=None, tag=None):
@@ -87,15 +90,15 @@ def static_checks(root, *, version=None, tag=None):
     project = tomllib.loads((root/"pyproject.toml").read_text(encoding="utf-8"))["project"]
     actual = project["version"]
     require(project["name"] == "antemortem-structural-lab", "distribution identity differs")
-    require(re.fullmatch(r"\d+\.\d+\.\d+(?:a|b|rc)\d+", actual), "experimental prerelease version required")
+    require(actual == "0.8.2" or re.fullmatch(r"\d+\.\d+\.\d+(?:a|b|rc)\d+", actual), "approved product version required")
     require(project["urls"]["Repository"] == "https://github.com/"+REPOSITORY,
             "repository metadata differs")
     require(version is None or version == actual, "expected version differs")
     require(tag is None or tag == "v"+actual, "expected tag differs")
     auth = read(root/"docs/PRODUCT_RELEASE_AUTHORIZATION.json")
     required = dict(schema=SCHEMA, repository=REPOSITORY, version=actual, tag="v"+actual,
-        product_publication_authorized=True, prerelease=True,
-        approval_source="USER_EXPLICIT_2026-11-01", research_revision=RESEARCH_REVISION,
+        product_publication_authorized=True, prerelease=actual != "0.8.2",
+        approval_source="USER_EXPLICIT_2026-11-03" if actual == "0.8.2" else "USER_EXPLICIT_2026-11-01", research_revision=RESEARCH_REVISION,
         scope="EXPERIMENTAL_PRODUCT_PUBLICATION_ONLY", study_reruns_authorized=False,
         distribution_policy="ONE_VERIFIED_BUILD_SHARED_BETWEEN_GITHUB_AND_PYPI",
         workflow="publish-pypi.yml", environment="pypi",
@@ -217,7 +220,7 @@ def main():
     modes = p.add_mutually_exclusive_group()
     modes.add_argument("--static", action="store_true")
     modes.add_argument("--source-checkpoint", action="store_true",
-                       help="Validate alpha source metadata without consuming or granting upload authority")
+                       help="Validate source metadata without consuming or granting upload authority")
     p.add_argument("--version")
     p.add_argument("--tag")
     p.add_argument("--source-sha")

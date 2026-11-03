@@ -1,6 +1,6 @@
 # 0.7 → 0.8 migration / 마이그레이션
 
-The package remains `antemortem-structural-lab`; imports and commands remain `tomolab`. Version `0.8.0a1` is a prerelease. The published `0.7.0a1` files and earlier tags are preserved. Installing 0.7 does not provide the new online/replay interface.
+The package remains `antemortem-structural-lab`; imports and commands remain `tomolab`. Version `0.8.2` unifies the package, runtime, and Git tag identifiers. The tool remains experimental; a distribution version does not establish research readiness. The published `0.7.0a1` files and earlier tags are preserved. Installing 0.7 does not provide the new online/replay interface.
 
 배포·import·CLI 이름은 유지합니다. 기존 `0.7.0a1` 파일과 과거 태그를 변경하지 않습니다. 새 제품 기능의 게시와 기존 연구의 전이·최종 평가 readiness는 별도이며, 역사적 `allow_release=false` 기록을 성공으로 바꾸지 않습니다.
 
@@ -11,7 +11,7 @@ Use a separate environment when keeping 0.7 workflows in use. The online command
 ```bash
 python -m venv lab-08-env
 # Activate this environment with your platform's usual command, then:
-python -m pip install "antemortem-structural-lab[qa]==0.8.0a1"
+python -m pip install "antemortem-structural-lab[qa]==0.8.2"
 python -m tomolab online-run --help
 python -m tomolab online-replay --help
 ```

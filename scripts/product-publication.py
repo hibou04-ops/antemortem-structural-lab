@@ -70,7 +70,7 @@ def api(path,**kwargs):return request('https://api.github.com/repos/'+REPO+'/'+p
 def git(*args):return subprocess.check_output(['git',*args],cwd=ROOT).decode().strip()
 def inputs():
     version=os.environ.get('RELEASE_VERSION','');source=os.environ.get('RELEASE_SHA','')
-    if not re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+a[1-9][0-9]*',version) or not re.fullmatch(r'[a-f0-9]{40}',source):
+    if (version != '0.8.2' and not re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+a[1-9][0-9]*',version)) or not re.fullmatch(r'[a-f0-9]{40}',source):
         raise ValueError('bounded experimental version and exact commit SHA required')
     if version=='0.7.0a1':raise ValueError('historical E7 files are never uploaded by this workflow')
     return version,source,'v'+version
@@ -221,8 +221,8 @@ def draft():
     release=release_for_tag(tag)
     if release is None:
         release=api('releases',method='POST',data=dict(tag_name=tag,target_commitish=source,name='Antemortem Structural Lab '+tag,
-            body=(ROOT/('docs/releases/'+tag+'.md')).read_text(encoding='utf-8'),draft=True,prerelease=True))
-    if release['prerelease'] is not True:raise ValueError('experimental prerelease required')
+            body=(ROOT/('docs/releases/'+tag+'.md')).read_text(encoding='utf-8'),draft=True,prerelease=version != '0.8.2'))
+    if release['prerelease'] is not (version != '0.8.2'):raise ValueError('release classification differs from approved version')
     assets={a['name']:a for a in api(f"releases/{release['id']}/assets?per_page=100")}
     paths=[*(ROOT/'dist'/name for name in record['packages']),ROOT/'verification/SHA256SUMS.txt',ROOT/'verification/release-manifest.json']
     if set(assets)-{p.name for p in paths}:raise ValueError('unexpected existing release assets')
@@ -231,7 +231,10 @@ def draft():
         if p.name in assets:
             if assets[p.name].get('digest')!=expected:raise ValueError('immutable GitHub asset conflict; no clobber')
         else:
-            if not release['draft']:raise ValueError('do not add files to an already public release')
+            # The explicitly approved 0.8.2 source checkpoint already has an
+            # asset-free public release. Add only this gate-verified build;
+            # the digest checks above still prohibit replacing any asset.
+            if not release['draft'] and version != '0.8.2':raise ValueError('do not add files to an already public release')
             item=request(f"https://uploads.github.com/repos/{REPO}/releases/{release['id']}/assets?name={quote(p.name)}",method='POST',data=p.read_bytes(),github=True,content_type='application/octet-stream')
             if item.get('digest')!=expected:raise ValueError('GitHub upload readback digest mismatch')
     write(ROOT/'verification/draft-release.json',dict(status='PASS',release_id=release['id'],source_sha=source,version=version,tag=tag,packages_present=present,packages_missing=missing))
@@ -264,9 +267,9 @@ def public_verify():
     for name,item in record['packages'].items():
         if assets[name].get('digest')!='sha256:'+item['sha256']:raise ValueError('GitHub and PyPI assets differ')
     if release['draft']:
-        api(f"releases/{release['id']}",method='PATCH',data=dict(draft=False,prerelease=True))
+        api(f"releases/{release['id']}",method='PATCH',data=dict(draft=False,prerelease=version != '0.8.2'))
     release=api(f"releases/{release['id']}")
-    if release['draft'] or not release['prerelease'] or release['tag_name']!=tag:raise ValueError('GitHub public prerelease readback differs')
+    if release['draft'] or release['prerelease'] is not (version != '0.8.2') or release['tag_name']!=tag:raise ValueError('GitHub public prerelease readback differs')
     public_folder=ROOT/'verification/github-public-download';public_folder.mkdir(exist_ok=False)
     for name,item in record['packages'].items():
         data=request('https://github.com/'+REPO+'/releases/download/'+tag+'/'+name,binary=True)
@@ -274,7 +277,7 @@ def public_verify():
         (public_folder/name).write_bytes(data)
     write(ROOT/'verification/public-release.json',dict(status='PASS',version=version,source_sha=source,tag=tag,
         github_url=release['html_url'],pypi_url='https://pypi.org/project/'+NAME+'/'+version+'/',
-        github_draft=False,github_prerelease=True,packages=record['packages'],public_downloads_match=True,
+        github_draft=False,github_prerelease=version != '0.8.2',packages=record['packages'],public_downloads_match=True,
         public_install_receipt_sha256=sha((ROOT/'verification/public-install.json').read_bytes()),research_authority_changed=False))
 def upload_directory():
     record=verified_handoff()

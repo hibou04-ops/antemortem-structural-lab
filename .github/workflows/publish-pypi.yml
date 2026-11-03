@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Approved experimental version (for example 0.8.0a1)'
+        description: 'Approved distribution version (0.8.2)'
         required: true
         type: string
       release_sha:
@@ -71,6 +71,7 @@ jobs:
         run: python -m build
       - name: Check metadata and public file scope
         run: |
+          python check_repo_consistency.py
           python -m twine check dist/*
           python scripts/check-public-scope.py
       - name: Recheck source CI and bind exact distribution files to reviewed source
@@ -125,7 +126,7 @@ jobs:
         with:
           name: product-checksums
           path: verification
-      - name: Prepare a prerelease draft with the exact verified assets; never overwrite existing assets
+      - name: Prepare an approved release draft with the exact verified assets; never overwrite existing assets
         env:
           GH_TOKEN: ${{ github.token }}
         run: python scripts/product-publication.py draft
@@ -201,7 +202,7 @@ jobs:
         with:
           name: product-validation
           path: verification
-      - name: Download and install public PyPI files, verify the description, publish the GitHub prerelease, and download its assets
+      - name: Download and install public PyPI files, verify the description, publish the GitHub release, and download its assets
         env:
           GH_TOKEN: ${{ github.token }}
         run: python scripts/product-publication.py public-verify

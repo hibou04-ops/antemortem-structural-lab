@@ -1,18 +1,30 @@
 # Antemortem Structural Lab
 
+<!-- QUICKSTART_DEMO_START -->
+## 10-second quickstart
+
+```bash
+pip install antemortem-structural-lab
+uvx antemortem-structural-lab --help
+python -m tomolab.quickstart_demo
+```
+
+The bundled authored fixture runs the real observation comparator on a known failing input and a repaired function. It is a replay demonstration, not autonomous discovery or a correctness proof.
+
+```diff
+- [COUNTEREXAMPLE] point=0 actual=1 expected=0 confirmations=3
++ [PASS] fixed point=0 actual=0 expected=0
++ [PASS] replay matched all 3 failure observations
+```
+<!-- QUICKSTART_DEMO_END -->
+
 An experimental Python testing tool for **your reviewed functions, an explicit input contract, and a reference Oracle**. Generate inputs with Hypothesis, record reproducible disagreements, shrink counterexamples within a budget, and replay the evidence. It does not supply a universal Oracle or prove program correctness.
 
 [한국어 안내](https://github.com/hibou04-ops/antemortem-structural-lab/blob/main/README.ko.md) · [0.8 migration](https://github.com/hibou04-ops/antemortem-structural-lab/blob/main/docs/MIGRATION_0_8.md) · [Changelog](https://github.com/hibou04-ops/antemortem-structural-lab/blob/main/CHANGELOG.md)
 
-## Source checkpoint and package identity
+## Package and research scope
 
-| Surface | Identifier | Scope |
-|---|---|---|
-| GitHub research/source checkpoint tag | `v0.8.2` | Source and engineering evidence; not production or OOS qualification |
-| Source distribution and runtime `tomolab.__version__` | `0.8.2a1` | Experimental alpha; the `a1` suffix is retained |
-| Preserved earlier publication authorization | `0.8.0a1` | Historical scope only; it does not authorize a new PyPI publication |
-
-This checkpoint publishes source through GitHub tags. The installation below reads `v0.8.2` directly; it does not claim that `0.8.2a1` is on PyPI. Earlier package files, research ledgers and frozen conclusions retain their original identities.
+Package metadata, `tomolab.__version__`, and Git tag now agree on **0.8.2 / v0.8.2**. Install from PyPI using the commands below. This distribution update does not promote research readiness: `M0_HOLD`, utility and independent OOS remain `NOT_ESTABLISHED`. Historical artifacts retain their original versions and authority; the prior `0.8.0a1` approval is archived separately.
 
 ## Mixed C/D budget and negative-transfer protection
 
@@ -26,17 +38,17 @@ The authored generation fixture still executes the controlled `common → learne
 
 ## Install and try an example
 
-Python 3.11+ is required. The **0.8.2a1 prerelease** online commands need the `qa` extra.
+Python 3.11+ is required. The **0.8.2** online commands need the `qa` extra.
 
 ```bash
-python -m pip install "antemortem-structural-lab[qa] @ https://github.com/hibou04-ops/antemortem-structural-lab/archive/refs/tags/v0.8.2.zip"
+python -m pip install "antemortem-structural-lab[qa]==0.8.2"
 python -m tomolab --help
 python -m tomolab online-demo --workspace demo-work --usage-ledger demo-usage.jsonl --allow-local-execution --budget 24 --shrink-budget 6 --output demo-result.json
 ```
 
 The default is **A: native Hypothesis generation with the shared observation, confirmation, and shrinking path**. This authored demo deliberately returns the wrong answer at zero. A/B demos execute the Target and Oracle with **no Source collection or learning**. Use new workspace, ledger, and output paths; existing receipts are preserved.
 
-The distribution is `antemortem-structural-lab`; the import and CLI are `tomolab`. `python -m tomolab` and `tomolab` expose the same CLI. The optional `solver`, `analysis`, and `corr` extras serve other integrations and are not needed for this example.
+The distribution is `antemortem-structural-lab`; the import is `tomolab`. `python -m tomolab`, `tomolab`, and the `antemortem-structural-lab` console alias expose the same CLI. The optional `solver`, `analysis`, and `corr` extras serve other integrations and are not needed for this example.
 
 The validated CI scope is Windows and Linux on Python 3.11–3.13; macOS and other Python versions are outside that validation. `solver` installs Z3 for supported bounded constraint checks, `analysis` adds the optional CrossHair comparison integration, and `corr` installs the declared SciPy/NumPy versions on Python 3.12+ for the separate correlation adapters. None supplies a universal Oracle.
 
@@ -173,7 +185,7 @@ Project code is Apache-2.0. Historical extracts retain their original MIT/BSD li
 
 ## Troubleshooting
 
-- **Missing Hypothesis / `qa`:** install it into the interpreter running the command: `python -m pip install "antemortem-structural-lab[qa] @ https://github.com/hibou04-ops/antemortem-structural-lab/archive/refs/tags/v0.8.2.zip"`.
+- **Missing Hypothesis / `qa`:** install it into the interpreter running the command: `python -m pip install "antemortem-structural-lab[qa]==0.8.2"`.
 - **Existing workspace or output rejected:** choose a new run path and preserve the previous receipts. The examples intentionally do not overwrite them.
 - **Unsupported signature:** provide one synchronous positional JSON argument; adapt multi-argument functions explicitly as above. Async/generator functions and arbitrary callable objects are not accepted by this file CLI.
 - **Unexpected failure or `ORACLE_ERROR`:** review the independent reference, domain, expected exceptions, and numeric comparison before treating a mismatch as a bug. Inspect error and UNKNOWN counters rather than interpreting a budget miss as a pass.

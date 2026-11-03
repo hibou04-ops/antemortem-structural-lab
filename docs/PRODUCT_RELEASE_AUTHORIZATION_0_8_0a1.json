@@ -1,0 +1,18 @@
+{
+  "schema": "tomolab-product-release-authorization-v1",
+  "repository": "hibou04-ops/antemortem-structural-lab",
+  "version": "0.8.0a1",
+  "tag": "v0.8.0a1",
+  "approval_source": "USER_EXPLICIT_2026-11-01",
+  "scope": "EXPERIMENTAL_PRODUCT_PUBLICATION_ONLY",
+  "product_publication_authorized": true,
+  "prerelease": true,
+  "research_revision": "591f802dea6f8ac88a27af3ffd89bd6e1396b318",
+  "research_qualification_granted": false,
+  "final_evaluation_authorized": false,
+  "study_reruns_authorized": false,
+  "existing_versions_immutable": true,
+  "distribution_policy": "ONE_VERIFIED_BUILD_SHARED_BETWEEN_GITHUB_AND_PYPI",
+  "workflow": "publish-pypi.yml",
+  "environment": "pypi"
+}

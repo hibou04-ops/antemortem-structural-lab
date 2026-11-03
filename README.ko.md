@@ -1,18 +1,30 @@
 # Antemortem Structural Lab
 
+<!-- QUICKSTART_DEMO_START -->
+## 10초 시작 예제
+
+```bash
+pip install antemortem-structural-lab
+uvx antemortem-structural-lab --help
+python -m tomolab.quickstart_demo
+```
+
+동봉한 작성 예제로 실제 관측 비교기를 실행해 알려진 실패 입력과 수정 함수를 대조합니다. 이 출력은 재현 예제이며 자율 발견이나 완전한 정확성 증명이 아닙니다.
+
+```diff
+- [COUNTEREXAMPLE] point=0 actual=1 expected=0 confirmations=3
++ [PASS] fixed point=0 actual=0 expected=0
++ [PASS] replay matched all 3 failure observations
+```
+<!-- QUICKSTART_DEMO_END -->
+
 **검토한 Python 함수·명시적 입력 계약·참조 Oracle로 실행하는 실험적 검증 도구**입니다. Hypothesis로 입력을 만들고 재현되는 불일치를 기록하며, 예산 안에서 반례를 축소하고 저장한 증거를 다시 실행합니다. 범용 Oracle를 제공하거나 프로그램의 완전한 정확성을 증명하지 않습니다.
 
 [English](https://github.com/hibou04-ops/antemortem-structural-lab/blob/main/README.md) · [0.8 마이그레이션](https://github.com/hibou04-ops/antemortem-structural-lab/blob/main/docs/MIGRATION_0_8.md) · [변경 이력](https://github.com/hibou04-ops/antemortem-structural-lab/blob/main/CHANGELOG.md)
 
-## 소스 체크포인트와 패키지 식별자
+## 패키지와 연구 범위
 
-| 구분 | 식별자 | 범위 |
-|---|---|---|
-| GitHub 연구·소스 체크포인트 태그 | `v0.8.2` | 소스와 엔지니어링 근거이며 실전 배포·OOS 자격 승격이 아님 |
-| 소스 배포 메타데이터와 runtime `tomolab.__version__` | `0.8.2a1` | 실험적 alpha이며 `a1` 접미사를 유지 |
-| 보존된 이전 출판 권한 | `0.8.0a1` | 과거 범위만 해당하며 새 PyPI 게시를 승인하지 않음 |
-
-이 체크포인트는 GitHub 태그로 소스를 게시합니다. 아래 설치는 `v0.8.2`을 직접 읽으며 `0.8.2a1`이 PyPI에 게시됐다는 뜻이 아닙니다. 이전 패키지 파일·연구 원장·동결 판정은 원래 식별자를 유지합니다.
+배포 메타데이터, `tomolab.__version__`, Git 태그를 **0.8.2 / v0.8.2**로 통일했습니다. 아래 명령으로 PyPI에서 설치합니다. 배포 식별자 통일은 연구 자격 승격이 아닙니다. `M0_HOLD`이며 효용·독립 OOS는 `NOT_ESTABLISHED`입니다. 과거 아티팩트의 버전·권한은 보존하며 이전 `0.8.0a1` 권한 문서는 별도로 보관합니다.
 
 ## C/D 혼합 예산과 음의 전이 방어
 
@@ -26,17 +38,17 @@
 
 ## 설치하고 작은 예제 실행하기
 
-Python 3.11 이상이 필요합니다. **0.8.2a1 사전 릴리스**의 온라인 명령에는 `qa` extra를 설치합니다.
+Python 3.11 이상이 필요합니다. **0.8.2**의 온라인 명령에는 `qa` extra를 설치합니다.
 
 ```bash
-python -m pip install "antemortem-structural-lab[qa] @ https://github.com/hibou04-ops/antemortem-structural-lab/archive/refs/tags/v0.8.2.zip"
+python -m pip install "antemortem-structural-lab[qa]==0.8.2"
 python -m tomolab --help
 python -m tomolab online-demo --workspace demo-work --usage-ledger demo-usage.jsonl --allow-local-execution --budget 24 --shrink-budget 6 --output demo-result.json
 ```
 
 기본 방법은 **A: native Hypothesis 생성과 공통 관측·확인·축소 경로**입니다. 직접 작성한 이 데모는 입력 0에서 의도적으로 틀린 값을 반환합니다. A/B 데모는 Target과 Oracle만 실행하며 **Source 수집·학습을 하지 않습니다**. workspace·장부·출력에는 새 경로를 사용하며 기존 영수증은 덮어쓰지 않습니다.
 
-배포 이름은 `antemortem-structural-lab`, import와 CLI 이름은 `tomolab`입니다. `python -m tomolab`과 `tomolab`은 같은 CLI입니다. 다른 통합에 쓰는 `solver`, `analysis`, `corr` extra는 이 예제에 필요하지 않습니다.
+배포 이름은 `antemortem-structural-lab`, import 이름은 `tomolab`입니다. `python -m tomolab`, `tomolab`, `antemortem-structural-lab` 별칭은 같은 CLI입니다. 다른 통합에 쓰는 `solver`, `analysis`, `corr` extra는 이 예제에 필요하지 않습니다.
 
 검증한 CI 범위는 Windows·Linux의 Python 3.11–3.13입니다. macOS와 그 밖의 Python 버전은 이 검증 범위 밖입니다. `solver`는 지원되는 제한된 제약 검사에 Z3를, `analysis`는 선택적 CrossHair 비교 통합을 제공합니다. `corr`는 별도 상관계수 adapter용으로 Python 3.12 이상에서 선언한 SciPy/NumPy 버전을 설치합니다. 이 의존성이 범용 Oracle를 제공하지는 않습니다.
 
@@ -173,7 +185,7 @@ B/C/D는 `--method`로 선택합니다. C에는 입력만 담은 JSON list를 `-
 
 ## 설치·실행 문제 해결
 
-- **Hypothesis 또는 `qa` 누락:** 명령을 실행하는 interpreter에 `python -m pip install "antemortem-structural-lab[qa] @ https://github.com/hibou04-ops/antemortem-structural-lab/archive/refs/tags/v0.8.2.zip"`로 설치합니다.
+- **Hypothesis 또는 `qa` 누락:** 명령을 실행하는 interpreter에 `python -m pip install "antemortem-structural-lab[qa]==0.8.2"`로 설치합니다.
 - **기존 workspace·출력 거절:** 이전 영수증을 보존하고 새 실행 경로를 사용합니다. 예제는 기존 파일을 덮어쓰지 않습니다.
 - **지원하지 않는 함수 signature:** 동기 함수의 위치 인자 하나로 JSON 값을 받습니다. 여러 인자는 위 wrapper처럼 명시적으로 대응시킵니다. 이 파일 CLI는 async·generator 함수나 임의 callable 객체를 받지 않습니다.
 - **예상 밖 실패·`ORACLE_ERROR`:** 불일치를 결함으로 판단하기 전에 독립 reference·domain·기대 예외·수치 비교를 검토합니다. 오류·UNKNOWN 수를 확인하며 예산 내 미검출을 정상 판정으로 해석하지 않습니다.
