@@ -24,7 +24,7 @@ class _ShrinkBudgetExhausted(BaseException):
 
 class OnlinePolicy:
     """Explicit policy state. Only limited feedback can change the next edit."""
-    def __init__(self, contract, *, method, seed, budget, mold=None, replays=(), structure=None):
+    def __init__(self, contract, *, method, seed, budget, mold=None, replays=(), structure=None, selector=None):
         self.contract, self.method = deepcopy(contract), method.removeprefix("E9_")
         self.rng, self.structure = random.Random(seed), deepcopy(structure or {})
         # Rule lookup has a private, stable stream. It cannot perturb native,
@@ -36,6 +36,14 @@ class OnlinePolicy:
                 raise ValueError("only D receives Source-learned Mold")
             validate_mold(mold)
         self.mold = deepcopy(mold) if self.method == "D" else None
+        self.selector = None
+        if selector is not None:
+            from .recursive_policy import validate_selector, public_selector
+            if self.method != "D" or self.mold is None:
+                raise ValueError("selector requires explicit D and frozen Mold")
+            self.selector = public_selector(validate_selector(selector, mold_digest=self.mold["artifact_digest"]))
+            if self.selector["input_contract_digest"] is not None and self.selector["input_contract_digest"] != digest(contract):
+                raise ValueError("selector input contract identity mismatch")
         self.replays = [deepcopy(p) for p in replays if validate_input(p, contract)] if self.method in ("C", "D") else []
         self.caps = dict(replay=budget // 5, structure=3 * budget // 10)
         self.used = dict(base=0, replay=0, structure=0)
@@ -52,12 +60,15 @@ class OnlinePolicy:
         self.seen = set()
 
     def state_digest(self):
-        return digest(dict(method=self.method, contract=self.contract, rng=self.rng.getstate(),
+        state = dict(method=self.method, contract=self.contract, rng=self.rng.getstate(),
                            rule_rng=self.rule_rng.getstate(),
                            archive=self.archive, last_feedback=self.last_feedback, caps=self.caps,
                            used=self.used, attempts=self.attempts, operator_rewards=self.operator_rewards,
                            seen=sorted(self.seen), used_rules=self.used_rules,
-                           mold_digest=self.mold.get("artifact_digest") if self.mold else None))
+                           mold_digest=self.mold.get("artifact_digest") if self.mold else None)
+        if self.selector is not None:
+            state["selector_digest"] = self.selector["selector_digest"]
+        return digest(state)
 
     def common_state_digest(self):
         """Fields that must agree before an effective Source edit diverges.
@@ -148,6 +159,15 @@ class OnlinePolicy:
             self.last_selection["source_state"] = "DUPLICATE_RESULT"
             return common
         changed = input_identity(point) != input_identity(common[0])
+        if self.selector is not None:
+            from .recursive_policy import make_context, choose_candidate
+            context = make_context(anchor, self.contract, common[2], selected["operators"])
+            choice = choose_candidate(self.selector, context)
+            self.last_selection.update(selector_choice=choice, selector_context=context,
+                                       selector_digest=self.selector.get("source_selector_digest", self.selector.get("selector_digest")))
+            if choice == "common":
+                self.last_selection["source_state"] = "SELECTOR_ABSTAINED_COMMON"
+                return common
         self.guidance_applied += 1
         self.guidance_changed_common += changed
         self.last_selection.update(source_state="APPLIED", source_changed_common=changed,
@@ -191,7 +211,7 @@ def _validate_configuration(contract, method, seed, budget, shrink_budget, max_s
 
 
 def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget=48, shrink_budget=8,
-                     mold=None, replays=(), max_seconds=30, _started=None):
+                     mold=None, replays=(), max_seconds=30, _started=None, diagnostics=None, selector=None):
     """Worker-only search. Its callback receives no Target or Oracle objects."""
     started = time.perf_counter() if _started is None else _started
     from hypothesis import given, target as hypothesis_target, settings, seed as hypothesis_seed
@@ -200,7 +220,7 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
     contract, method = _validate_configuration(contract, method, seed, budget, shrink_budget, max_seconds, mold)
     discovery_limit = budget - shrink_budget
     policy = OnlinePolicy(contract, method=method, seed=seed, budget=discovery_limit,
-                          mold=mold, replays=replays, structure=structure)
+                          mold=mold, replays=replays, structure=structure, selector=selector)
     strategy = hypothesis_strategy(contract, structure)
     result = dict(schema="tomolab-online-result-v1", status="COMPLETE", method="E9_"+method,
                   seed=seed, budget=budget, shrink_budget=shrink_budget, contract=deepcopy(contract),
@@ -222,6 +242,12 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
                                   mutable_state="EXPLICIT_TARGET_LOCAL_NO_GLOBAL_STATE",
                                   common_public_prior="AUTOMATIC_TARGET_MRI_LITERALS_AND_TYPED_ADJACENCY_SHARED_BY_ABCD",
                                   A="NATIVE_TARGETED_TESTING_WITH_SHARED_PUBLIC_PRIOR", BCD="NATIVE_BASE_WITH_EXPLICIT_ONLINE_EDIT_POLICY"))
+    diagnostic_trace, shadow_rule_state = None, None
+    if diagnostics is not None:
+        from .recursive_observe import new_trace
+        if method != "C":
+            raise ValueError("paired diagnostic transport must use unmodified C")
+        diagnostic_trace = new_trace(diagnostics)
     confirmed, seen = set(), set()
     known_replay_identities = {input_identity(p) for p in replays if validate_input(p, contract)}
     first_witness = None
@@ -284,12 +310,27 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
               suppress_health_check=list(HealthCheck), report_multiple_bugs=False)
     @given(strategy)
     def search(base):
+        nonlocal shadow_rule_state
         if result["target_calls"] + 3 > discovery_limit or expired():
             return
         tick = time.perf_counter()
         state_before = policy.state_digest()
         common_state_before = policy.common_state_digest()
+        diagnostic_tick = time.perf_counter()
+        diagnostic_before = deepcopy(policy) if diagnostic_trace is not None and diagnostic_trace["status"] == "COMPLETE" else None
+        if diagnostic_before is not None:
+            diagnostic_trace["cost"]["snapshot_seconds"] += time.perf_counter()-diagnostic_tick
         point, phase, operator, rule_id, decision = policy.propose(base)
+        if diagnostic_before is not None:
+            from .recursive_observe import observe_proposal
+            try:
+                shadow_rule_state = observe_proposal(diagnostic_before, base,
+                    (point, phase, operator, rule_id, decision), config=diagnostics,
+                    trace=diagnostic_trace, seed=seed, actual_calls_before=result["target_calls"],
+                    shadow_rule_state=shadow_rule_state)
+            except (ValueError, TypeError, KeyError, OverflowError) as error:
+                diagnostic_trace["status"] = "HOLD_MEASUREMENT"
+                diagnostic_trace["unknown_reasons"].append(type(error).__name__+":"+str(error)[:160])
         result["cost"]["matching_seconds"] += time.perf_counter()-tick
         if not validate_input(point, contract):
             result["invalid_inputs"] += 1
@@ -410,12 +451,15 @@ def _run_online_core(contract, structure, execute, *, method="C", seed=7, budget
     result["known_input_identities_observed"] = len(seen & known_replay_identities)
     result["source_replay_calls"] = sum(r["origin"] == "source_replay" for r in result["observations"])
     result["outcome"] = "CONFIRMED_FAILURE" if confirmed else ("INCONCLUSIVE" if result["status"] != "COMPLETE" or result["unknown"] or result["execution_errors"] or result["oracle_errors"] else "NO_CONFIRMED_FAILURE_WITHIN_BUDGET")
+    if diagnostic_trace is not None:
+        result["diagnostic_trace"] = diagnostic_trace
     result["receipt_sha256"] = digest(result)
     return result
 
 
 def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrink_budget=8,
-               mold=None, replays=(), max_seconds=30, mode="structural", inspection_target=None):
+               mold=None, replays=(), max_seconds=30, mode="structural", inspection_target=None,
+               diagnostics=None, diagnostic_reset=None, selector=None):
     """Fresh data-only search process; trusted Target/Oracle stay on the host.
 
     The existing reviewed process loader, allowlisted copies and sanitized
@@ -432,6 +476,20 @@ def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrin
             raise ValueError("reviewed synchronous non-generator callables required")
     if inspection_target is oracle and target is not oracle:
         raise ValueError("an Oracle cannot be supplied as the public Target inspection reference")
+    if diagnostics is not None:
+        from .recursive_observe import validate_diagnostics
+        diagnostics = validate_diagnostics(diagnostics)
+        if method != "C":
+            raise ValueError("paired diagnostics require C transport")
+        if diagnostic_reset is not None and not callable(diagnostic_reset):
+            raise ValueError("reviewed fresh reset must be callable")
+    if selector is not None:
+        from .recursive_policy import validate_selector, public_selector
+        if method != "D" or mold is None:
+            raise ValueError("selector requires explicit D and frozen Mold")
+        selector = public_selector(validate_selector(selector, mold_digest=mold["artifact_digest"]))
+        if selector["input_contract_digest"] is not None and selector["input_contract_digest"] != digest(contract):
+            raise ValueError("selector input contract identity mismatch")
     inspected = target if inspection_target is None else inspection_target
     structure = inspect_target(inspected, contract, mode=mode)
     if inspection_target is not None and inspection_target is not target and mode == "structural":
@@ -477,6 +535,10 @@ def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrin
     config = dict(contract=contract, structure=structure, method=method, seed=seed, budget=budget,
                   shrink_budget=shrink_budget, mold=mold, replays=approved_replays,
                   max_seconds=max_seconds, _started=started)
+    if diagnostics is not None:
+        config["diagnostics"] = diagnostics["public"]
+    if selector is not None:
+        config["selector"] = selector
     boundary_receipt, inventory = None, None
     try:
         with OnlineBoundary(timeout=max_seconds+5) as boundary:
@@ -533,6 +595,26 @@ def run_online(target, oracle, contract, *, method="A", seed=7, budget=48, shrin
             shrinking=dict(status="INCOMPLETE_BOUNDARY_ERROR", minimality="NOT_CLAIMED", witness=None),
             scheduler={}, new_valid_inputs=0, source_replay_calls=0, duplicate_candidates=0,
             policy_state_reused=False, target_state_reset="CALLER_RESPONSIBILITY", allow_release=False)
+    if diagnostics is not None:
+        from .recursive_observe import validate_trace, execute_pairs
+        try:
+            if result.get("status") == "INCONCLUSIVE_BOUNDARY_ERROR":
+                raise ValueError("C transport boundary failed")
+            diagnostic_validation_tick = time.perf_counter()
+            trace = validate_trace(result.get("diagnostic_trace"), config=diagnostics["public"], host_rows=host_rows)
+            diagnostic_validation_seconds = time.perf_counter()-diagnostic_validation_tick
+            if trace["status"] != "COMPLETE":
+                raise ValueError("worker diagnostic measurement incomplete: "+str(trace["unknown_reasons"]))
+            result["paired_diagnostics"] = execute_pairs(trace, config=diagnostics["public"],
+                identity=diagnostics["identity"], target=target, oracle=oracle, contract=contract,
+                structure=structure, reset=diagnostic_reset, tracing=mode == "structural",
+                trace_target=inspection_target)
+            result["paired_diagnostics"]["trace_validation_seconds"] = diagnostic_validation_seconds
+            result["paired_diagnostics"]["host_reconstruction_proposals"] = 5*len(trace["reservations"])
+        except (ValueError, TypeError, KeyError, OverflowError) as error:
+            result["paired_diagnostics"] = dict(schema="tomolab-paired-host-result-v1",
+                status="HOLD_MEASUREMENT", receipts=[], cost=dict(target_calls=0, oracle_calls=0,
+                reset_calls=0, wall_seconds=0.0), unknown_reasons=[type(error).__name__+":"+str(error)[:200]])
     result["private_outcomes"] = [dict(event=i, outcome=r["private_outcome"], semantic_digest=r["semantic_digest"])
                                     for i, r in enumerate(host_rows)]
     result["boundary"] = dict(boundary_receipt or {}, **(inventory or {}),

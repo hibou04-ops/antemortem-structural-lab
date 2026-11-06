@@ -28,3 +28,7 @@ Z3 경로를 검사하려면 `python -m pip install -e ".[qa,solver]"`로 선택
 [이슈](https://github.com/hibou04-ops/antemortem-structural-lab/issues)에 문제와 기대 동작을 남기거나 PR에 재현·검증 결과를 적어 주세요. 기존 태그를 이동하거나 검토 정책을 우회하지 않습니다. [보안 모델](SECURITY.md), [검증 기록](docs/RELEASE_VALIDATION.md), [라이선스](LICENSE)를 참고하세요.
 
 Contributions must preserve the difference between observed executions, declared contracts, bounded checks and independent proof. Keep Korean and English guidance aligned, test installed artifacts, and do not publish private evidence or infer general superiority from synthetic fixtures.
+
+## 재귀 정책의 제한된 기능 검증
+
+`python -m pytest tests/test_recursive_observe.py tests/test_recursive_policy.py tests/test_recursive_store.py tests/test_recursive_integration.py tests/test_recursive_review.py -q`는 직접 작성한 합성 fixture와 세대 복원만 검증합니다. 실제 연구 실행은 포함하지 않습니다. `python -m tomolab recursive-demo --workspace work/recursive-example --allow-local-execution`은 새 출력 디렉터리가 필요합니다. 지원 범위와 비용·자료 경계는 `docs/RECURSIVE_PROGRESS_20261101.ko.md`를 따릅니다.

@@ -13,7 +13,7 @@ from .schema import canonical
 from .online_schema import validate_online_config, validate_online_observation, validate_input
 
 GENERATOR_FILES = ("__init__.py", "schema.py", "online_schema.py", "online_mold.py",
-                   "online_engine.py", "online_worker.py")
+                   "online_engine.py", "online_worker.py", "recursive_observe.py", "recursive_policy.py")
 
 
 def bounded_message(value):

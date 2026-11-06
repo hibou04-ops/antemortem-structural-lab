@@ -173,3 +173,7 @@ python scripts/check-public-scope.py
 공개 범위 검사는 빌드 후 소스와 배포 파일의 내용을 검사합니다. 역사적 평가 배치와 검토된 외부 원본 캡슐은 일반적인 로컬 개발 테스트가 아니며 기존 실행·재소비 경계를 따릅니다.
 
 [보안 범위](https://github.com/hibou04-ops/antemortem-structural-lab/blob/main/SECURITY.md) · [제3자 고지](https://github.com/hibou04-ops/antemortem-structural-lab/blob/main/THIRD_PARTY_NOTICES.md) · [역사적 실행 경계](https://github.com/hibou04-ops/antemortem-structural-lab/blob/main/docs/HISTORICAL_USAGE_KO.md) · [기여 안내](https://github.com/hibou04-ops/antemortem-structural-lab/blob/main/CONTRIBUTING.md)
+
+## 실험적 재귀 선택 정책
+
+개발 paired 관측으로 후보 선택을 갱신하고 저장한 세대를 새 탐색에 적용하는 opt-in 기능은 [구현·검증·실행 예제](docs/RECURSIVE_PROGRESS_20261101.ko.md)를 참고하세요. `python -m tomolab recursive-demo --workspace work/recursive-example --allow-local-execution`은 작성된 합성 fixture만 실행합니다. 실제 효용·미관측 일반화·세대 성능 개선은 입증되지 않았으며 기본 정책은 자동 변경되지 않습니다.

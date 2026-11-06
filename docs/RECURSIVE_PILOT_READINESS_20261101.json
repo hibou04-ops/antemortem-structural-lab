@@ -1,0 +1,61 @@
+{
+  "schema": "tomolab-recursive-pilot-readiness-v1",
+  "date": "2026-11-01",
+  "status": "HOLD_INSUFFICIENT_LINEAGES",
+  "scope": "LOCAL_READ_ONLY_ARTIFACT_AND_CONTRACT_REVIEW",
+  "base_sha": "525ca8b262497f5491c390580238de8949b241ef",
+  "historical_research_execution_sha": "6cbe985e77c482cda6413250a9a270924e648c0d",
+  "historical_report_sha": "591f802dea6f8ac88a27af3ffd89bd6e1396b318",
+  "prepared_original": {
+    "status": "BYTE_VERIFIED_LOCAL_ORIGINAL",
+    "source_class": "PREVIOUS_PRIVATE_E9_R1_STUDY_ARTIFACT_READ_ONLY",
+    "sha256": "c6159e46e4dd2c738c7c85f388da128e7ac05a192fd4a4961e361d27b9fc42eb",
+    "mold_artifact_digest": "8524b488e51ad145e9c9d544522a54a2bc2f4371b3baebf0d51108bfd998e24e",
+    "rule_count": 3,
+    "supported_kind": "sequence_int",
+    "raw_inputs_copied_to_public_report": false,
+    "regenerated": false
+  },
+  "required_new_development_material": {
+    "minimum_lineages": 4,
+    "minimum_projects": 2,
+    "minimum_mechanism_families": 2,
+    "qualified_new_lineages": 0,
+    "qualification_status": "NOT_ESTABLISHED",
+    "missing": [
+      "Unconsumed development Source manifest identifying four reviewed implementation/defect lineages across two projects and two mechanism families",
+      "Explicit sequence_int input contracts and implementation/Oracle identities for those new lineages",
+      "Reviewed independent Oracle semantics and pure-callable or complete fresh-reset evidence",
+      "License/access scope and pre-observation selection/exclusion/seed/replay/MRI/limits registry"
+    ],
+    "historical_consumed_cases_not_relabelled_as_new": true,
+    "search_boundary": "EXISTING_LOCAL_CODEX_WORKSPACES_AND_CURRENT_REPOSITORY_METADATA_ONLY",
+    "search_is_exhaustive_external_source_census": false
+  },
+  "execution": {
+    "real_research_target_calls": 0,
+    "real_research_oracle_calls": 0,
+    "real_research_wall_seconds": 0,
+    "m0": "NOT_EXECUTED_MATERIAL_GATE",
+    "policy_utility_comparison": "HOLD_M0_NOT_EXECUTED",
+    "unseen_generalization": "NOT_ESTABLISHED",
+    "intergeneration_performance_improvement": "NOT_ESTABLISHED",
+    "synthetic_functional_checks_are_separate": true
+  },
+  "resource_caps_if_later_qualified": {
+    "first_m0_target_calls": 1152,
+    "first_m0_oracle_calls": 1152,
+    "all_real_research_target_calls": 10000,
+    "all_real_research_oracle_calls": 10000,
+    "all_real_research_wall_minutes": 60,
+    "material_and_oracle_review_minutes": 120,
+    "unallocated_followup_calls_do_not_authorize_execution": true
+  },
+  "e7": {
+    "selector_linkage": "E7_LINKAGE_UNKNOWN",
+    "rule_to_claim_mapping_invented": false,
+    "existing_semantic_archive_validation_required": true,
+    "final_feedback_allowed": false
+  },
+  "report_sha256": "ba979a7d46eebe917729be25c9d9fff3eeed8c3dd0173dca038be6db3c880999"
+}
