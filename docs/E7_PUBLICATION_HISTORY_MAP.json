@@ -1,0 +1,77 @@
+{
+  "schema": "e7-publication-document-history-v1",
+  "original_source": "2edfb1230bd8519072845d9b9b0e2d4c42ab3837",
+  "rewritten_source": "7f01d3656ec799f67eb48c06ab03ee583d60492c",
+  "documents": [
+    {
+      "path": "CONTRIBUTING.md",
+      "original_sha256": "9eca4181ce6fd6fc376a82be2ef9ea87f56c9c74919d8afa0451aca1d05a2da1",
+      "rewritten_sha256": "7f2bd8d8d866215f882734fb96ebf0f7d4a03a1ca12c27e8d381a2644ff93f30",
+      "original_bytes": 2562,
+      "rewritten_bytes": 2569
+    },
+    {
+      "path": "PUBLIC_IMPORT_NOTICE.md",
+      "original_sha256": "b7065b08f1f3c6cdc47953b36e652d4492a050e0e3de034c282c53d871a8b2ba",
+      "rewritten_sha256": "0a5c6b15ebd6f66f4aabfff96e5781aece6c053daa6edad5324064b91c7ca500",
+      "original_bytes": 2271,
+      "rewritten_bytes": 2410
+    },
+    {
+      "path": "SECURITY.md",
+      "original_sha256": "a071e31145626cab173128e7cc246fc756a1ad2a6fd335f9ad167420e18771d3",
+      "rewritten_sha256": "64f4bb69b879a9864409c06616c2f16e550c746328934d42e8c7fea17712f9d6",
+      "original_bytes": 14065,
+      "rewritten_bytes": 14068
+    },
+    {
+      "path": "docs/E3_EVALUATION.md",
+      "original_sha256": "e9bfca053c9a5b41fb03763ccb608376228470f02926c59a0d61040b2bca9471",
+      "rewritten_sha256": "fa54f1dcab9898cb3f4ce26a67399107ba95e8f5433ffbd251a71d736fb9fa7f",
+      "original_bytes": 5523,
+      "rewritten_bytes": 5519
+    },
+    {
+      "path": "docs/E5_EVALUATION_REPORT.md",
+      "original_sha256": "9e5f890f285f05571ea022991ab0f9e16c553d7fdab4bef4016990a364f1458e",
+      "rewritten_sha256": "61596643f2fc6768125e3e2f5ab33223d293620866af03f9d77ea9d2c60b4c7d",
+      "original_bytes": 4730,
+      "rewritten_bytes": 4730
+    },
+    {
+      "path": "docs/E6_EVALUATION_REPORT.md",
+      "original_sha256": "6b72643f2c5d1d8d42b9574dce8957b40bb610455585923074af5f17d898f503",
+      "rewritten_sha256": "95fec2cbc8f76cc686f17a7fd05f3586e2e9f2b998c12f4b94882feec96d4f77",
+      "original_bytes": 6799,
+      "rewritten_bytes": 6799
+    },
+    {
+      "path": "docs/RELEASE_VALIDATION.md",
+      "original_sha256": "23df655a2201ba6bd9d5ba0243141972c12432b86dc254f45b4fbf29a8d69baf",
+      "rewritten_sha256": "3337c2121110896228d869bc5e4861ba304ccd319549220c37f1e17f87a4a709",
+      "original_bytes": 16467,
+      "rewritten_bytes": 16531
+    },
+    {
+      "path": "docs/releases/v0.3.0a1.md",
+      "original_sha256": "84f13bef49b1a8f2d2b9528dd1ce8c1704bdb49c82f2d46f19efcede94cdeaa9",
+      "rewritten_sha256": "49b31f682a09f5db0a891de06125a28df8ffb7652a4efa721054f4c04f9abb7a",
+      "original_bytes": 4722,
+      "rewritten_bytes": 4729
+    },
+    {
+      "path": "docs/releases/v0.4.0a1.md",
+      "original_sha256": "8198b35e78cc9cf9fba634e17c1b53c4e7fa2609ac1a120df6b6bbc0d23e588c",
+      "rewritten_sha256": "40e1a2c01121e81f502fdc0bd94f03642217da330ba5d2759c0f043155a9ff02",
+      "original_bytes": 1975,
+      "rewritten_bytes": 1982
+    },
+    {
+      "path": "docs/releases/v0.7.0a1.md",
+      "original_sha256": "4dcdcee7a71de174784f2189457b752db038c96b8166dbd4c6a97e66a178bb59",
+      "rewritten_sha256": "5f9baf9927379ee0793902bd98b55c3f2a911618c7369e3e2ebcb17c50ef8e42",
+      "original_bytes": 4386,
+      "rewritten_bytes": 4393
+    }
+  ]
+}

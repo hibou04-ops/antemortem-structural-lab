@@ -452,13 +452,12 @@ jobs:
           python-version: '3.12'
       - name: Materialize the pinned publication-workflow revision without altering research files
         run: git worktree add --detach "${{ runner.temp }}/pypi-publication-source" 88f01d82a177a75a80df6a42885b0c659a8bac69
-      - name: Verify historical E7 files through the preserved publication scripts, without uploading
-        working-directory: ${{ runner.temp }}/pypi-publication-source
-        run: python scripts/verify-pypi-release.py --download --check-registry --directory verified-public-e7 --receipt verification/existing-e7-release.json
+      - name: Verify original E7 artifacts through exact document history mapping, without uploading
+        run: python scripts/verify-historical-e7-release.py --source-root "${{ runner.temp }}/pypi-publication-source" --download --check-registry --directory "${{ runner.temp }}/verified-public-e7" --receipt "${{ runner.temp }}/existing-e7-release.json"
       - uses: actions/upload-artifact@v4
         with:
           name: existing-e7-release-verification
-          path: ${{ runner.temp }}/pypi-publication-source/verification/existing-e7-release.json
+          path: ${{ runner.temp }}/existing-e7-release.json
           if-no-files-found: error
   historical-functional:
     if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') && !startsWith(github.head_ref || github.ref_name, 'feat/post-v7-') }}
