@@ -1,0 +1,266 @@
+{
+  "schema": "tomolab-real-qualification-public-contract-v1",
+  "date": "2026-11-01",
+  "document_scope": "VERSIONED_PRE_EXECUTION_PLAN_AND_PRIOR_LOCAL_SAFE_AGGREGATES",
+  "executable_authorization": false,
+  "post_commit_authority": "CURRENT_DEVELOPMENT_PR_BODY_POST_COMMIT_CI_ARTIFACT_AND_EXECUTION_RECEIPT_READBACK",
+  "state_planes": {
+    "public_release": "SEPARATE_EXISTING_RELEASE_NOT_CHANGED_BY_THIS_DEVELOPMENT",
+    "development": "LOCAL_IMPLEMENTATION_AND_MOCK_FUNCTIONAL_VALIDATION",
+    "research": "REAL_QUALIFICATION_AND_UTILITY_ARE_SEPARATE_GATES"
+  },
+  "source_consultation": {
+    "sha256": "4ef7769f2a7e244d51c930080910090716690fe612b7f706e9be51935f60c2cc",
+    "pages": 47,
+    "classification": "USER_SUPPLIED_EXPOSED_CONSULTATION_PROPOSAL_NOT_EXECUTION_AUTHORITY",
+    "public_pdf_body_included": false,
+    "public_pdf_copy_included": false
+  },
+  "preserved_first_batch": {
+    "metadata": 50,
+    "detail_reservations": 10,
+    "qualification_reservations": 4,
+    "repositories": 8,
+    "original_collection_api_requests": 56,
+    "original_batch_and_registry_unchanged": true,
+    "reserved_static_review": {
+      "qualified": 0,
+      "hold": 2,
+      "rejected": 2,
+      "unknown": 0
+    },
+    "other_candidates_not_semantically_reviewed": 46,
+    "semantic_review_sha256": "994bfd552b743353aebfa2542c50cc37a8d3bcbe0d2714a7cea78cb4ad2c1487",
+    "additional_linked_issue_read": 1,
+    "qualification_slots_replaced": false
+  },
+  "prospective_batch_02": {
+    "plan_sha256": "e2dc7b559e27a9bbc0d26e13ad23ae5be286e6869d01fc136cb473cd6374213d",
+    "metadata": 16,
+    "detail_reservations": 8,
+    "qualification_reservations": 4,
+    "repositories": 2,
+    "repository_scope": [
+      "TheAlgorithms/Python",
+      "keon/algorithms"
+    ],
+    "actual_collection_api_requests": 42,
+    "actual_collection_wall_seconds": 22.780891600006726,
+    "exact_separate_preregistration": true,
+    "automatic_retries": 0,
+    "additional_followup_batches": 0,
+    "reserved_static_review": {
+      "qualified": 0,
+      "hold": 2,
+      "rejected": 1,
+      "unknown": 1
+    },
+    "other_candidates_not_semantically_reviewed": 12,
+    "registry_collection_state": "HOLD_REVIEW_16_PRESERVED_STATIC_REVIEW_DOES_NOT_REWRITE_AUTOMATIC_STATE",
+    "semantic_review_sha256": "45c5588d927c5eae073ffca5b053fe3c6599f65846b183b9cc9fe2924f6bfb27",
+    "external_execution_during_collection_or_static_review": 0
+  },
+  "public_known_case_plan": {
+    "repository": "keon/algorithms",
+    "pull_request": 2772,
+    "url": "https://github.com/keon/algorithms/pull/2772",
+    "role": "EXPOSED_PUBLIC_KNOWN_REGRESSION_DEVELOPMENT_REPRODUCTION_ONLY",
+    "original_metadata_digest": "4644cd09e527d2f69a14f073aefe95907023410860c976020d3b9b14fef7d72e",
+    "buggy_revision": "7f71a911232b2ef4f5396f16f5ea704d4315ce0c",
+    "fixed_revision": "25772ca62d04a8bbd31faac27455c9fa94227b50",
+    "source_path": "algorithms/string/longest_palindromic_substring.py",
+    "function": "longest_palindrome",
+    "input_contract": {
+      "kind": "text",
+      "alphabet": "ab#",
+      "min_size": 0,
+      "max_size": 16
+    },
+    "specification": "Longest contiguous palindromic original substring; earliest start on equal length; empty returns empty.",
+    "tie_policy_basis": "EXPLICIT_BOUNDED_REVIEW_INFERRED_FROM_ASCENDING_CENTER_AND_STRICT_IMPROVEMENT_NOT_UNIVERSAL_SPEC_PROOF",
+    "witness": "a#a",
+    "expected_fixed_result": "a#a",
+    "witness_source": "PUBLIC_UPSTREAM_REGRESSION_NOT_BLIND_DISCOVERY",
+    "oracle": "FIRST_PARTY_EXHAUSTIVE_ORIGINAL_SUBSTRING_AND_REVERSE_COMPARISON_NOT_POSTFIX_COPY",
+    "original_source_license_patch_bytes_and_metadata_digest_must_be_reconstructed": true,
+    "existing_input_grammar": "TEXT_ALREADY_SUPPORTED_NO_NEW_KIND",
+    "caps": {
+      "target_calls": 6,
+      "oracle_calls": 6,
+      "fresh_resets": 12,
+      "fresh_containers": 12,
+      "per_call_seconds": 30,
+      "controller_seconds": 300,
+      "cleanup_reserve_seconds": 20,
+      "minimum_entry_remaining_seconds": 25
+    },
+    "deadline_scope": "COOPERATIVE_CONTROLLER_AND_BOUNDED_CLI_CALLS_WITH_CLEANUP_RESERVE_NOT_OS_GLOBAL_HARD_KILL",
+    "automatic_retries": 0,
+    "substitutions": 0,
+    "default_external_execution": false,
+    "prerequisites": [
+      "EXPLICIT_ONE_WORKFLOW_DISPATCH",
+      "FIRST_PARTY_OCI_CONTROL_PASS",
+      "SAME_REVIEWED_HEAD_AND_IMMUTABLE_IMAGE",
+      "FROZEN_SOURCE_CONTRACT_ORACLE_RESET_LICENSE_PLAN_BEFORE_EXTERNAL_ENTRY"
+    ],
+    "actual_oci_and_case_status": "PENDING_ROOT_CI_READBACK",
+    "actual_target_calls": null,
+    "actual_oracle_calls": null,
+    "actual_fresh_resets": null,
+    "actual_counts_authority": "POST_COMMIT_PR_READBACK_NOT_THIS_PRE_EXECUTION_DOCUMENT",
+    "new_bug_discovery": false,
+    "blind_target": false,
+    "final_evaluation": false,
+    "transfer_utility": "NOT_ESTABLISHED"
+  },
+  "local_docker": {
+    "client_start_request": "ACCEPTED_CLI_AND_HIDDEN_DESKTOP_START_REQUESTS",
+    "default_pipe_daemon_available": false,
+    "desktop_linux_pipe_daemon_available": false,
+    "backend": "NOT_VERIFIED",
+    "cause": "UNKNOWN",
+    "actual_boundary": "NOT_VERIFIED_LOCALLY",
+    "host_external_source_fallback": false
+  },
+  "structural_functional_probe": {
+    "evidence_class": "DEVELOPMENT_SYNTHETIC_EXPOSED",
+    "exposed_fixtures": 4,
+    "independent_oos_cases": 0,
+    "grammar": "SEPARATE_OPT_IN_RELATIONAL_COMMON_PRIOR_CANDIDATES_NOT_NEW_LEARNED_RULES",
+    "mutators": [
+      "M1_LENGTH_VALUE_COUPLED",
+      "M2_ADJACENT_DIFF_INVERSION",
+      "M3_AGGREGATE_COMPENSATED",
+      "M4_CARDINALITY_TOPOLOGY"
+    ],
+    "max_proposals_per_call": 3,
+    "native_baseline": "EXISTING_RUN_ONLINE_METHOD_A_REPORTS_E9_A_NATIVE_HYPOTHESIS_GIVEN_TARGET",
+    "relational_path": "SEPARATE_NATIVE_GIVEN_PUBLIC_STRATEGY_WITH_AUTHORED_MECHANISM_SELECTION",
+    "native_target_and_oracle_per_fixture": 22,
+    "relational_target_and_oracle_per_fixture": 24,
+    "local_pairs": 16,
+    "labels": {
+      "gain": 11,
+      "loss": 0,
+      "neutral_pass": 5,
+      "neutral_failure": 0,
+      "UNKNOWN": 0
+    },
+    "actual": {
+      "oracle_calls": 184,
+      "reset_calls": 96,
+      "target_calls": 184
+    },
+    "caps": {
+      "oracle_calls": 192,
+      "reset_calls": 96,
+      "target_calls": 192
+    },
+    "wall_seconds": 3.2811701000027824,
+    "summary_sha256": "782e054a2fd5cc6cbef3f9a8d07abe6aa768322924b6e5b4332da4e01102a68f",
+    "equal_total_cost_policy_comparison": false,
+    "utility": "NOT_ESTABLISHED",
+    "policy_no_regression": "NOT_GUARANTEED",
+    "learning_updates": 0
+  },
+  "transfer_scope_audit": {
+    "scopes": [
+      "PAIRED_REMEASUREMENT",
+      "WITHIN_FUNCTION_UNSEEN_INPUT",
+      "CROSS_IMPLEMENTATION_TRANSFER"
+    ],
+    "existing_reused": [
+      "identity_tokens",
+      "input_identity",
+      "validate_contract",
+      "validate_input",
+      "validate_pair_receipt",
+      "validate_review_bundle",
+      "validate_reproduction_receipt",
+      "GenerationStore"
+    ],
+    "source_pool_observed_selected_and_frozen_generation_consumption_are_distinct": true,
+    "missing_qualification_or_history": "HOLD_UNKNOWN",
+    "scope_pass_is_not_execution_or_promotion": true,
+    "execution_authorized": false,
+    "promotion_authorized": false,
+    "generalization_demonstrated": false
+  },
+  "original_research_boundary": {
+    "frozen_all_mold_digest": "8524b488e51ad145e9c9d544522a54a2bc2f4371b3baebf0d51108bfd998e24e",
+    "first_real_m0_target_cap": 1152,
+    "first_real_m0_oracle_cap": 1152,
+    "required_new_sequence_int_lineages": 4,
+    "required_projects": 2,
+    "required_mechanisms": 2,
+    "current_sufficient_lineages": false,
+    "m0": "HOLD_INSUFFICIENT_LINEAGES",
+    "real_selector_learning_updates": 0,
+    "existing_185_unknown_resampled": 0,
+    "existing_negative_results_preserved": true
+  },
+  "mini_contract": {
+    "distribution": "mini-antemortem-cli",
+    "version": "0.11.0",
+    "import_module": "mini_antemortem_cli",
+    "actual_public_rules": 11,
+    "actual_scope": "PROMPT_CALIBRATION_DETERMINISTIC_TRAPS_NOT_A_RESEARCH_LINEAGE_PROFILE",
+    "tag_commit": "8010537d4e81a6dac7b8318965d45fe348554152",
+    "new_dependency_added": false,
+    "mini_source_changed": false
+  },
+  "jev": {
+    "existing_adapter_preserved": true,
+    "default_enabled": false,
+    "paid_api_calls": 0,
+    "new_default_search_path": false,
+    "live_current_adapter_compatibility": "UNKNOWN_NOT_CALLED",
+    "failed_request_cost": "UNKNOWN_NOT_ZERO_IMPUTED",
+    "ranker_is_not_oracle_or_execution_authority": true
+  },
+  "not_adopted": [
+    "FORCED_ZERO_UNKNOWN",
+    "FULL_BUDGET_NO_REGRESSION_GUARANTEE",
+    "SHARED_MAGIC_CONSTANT_PROVES_ORACLE_COPY",
+    "BLANKET_SHARED_PROJECT_OR_COMMIT_LEAKAGE",
+    "TWELVE_AUTHORED_CASES_RELABELED_BLIND_TARGETS",
+    "PDF_PROMOTION_THRESHOLDS_AS_AUTHORITY",
+    "NEW_PAID_JEV_CALLS_OR_DEFAULT_PATH"
+  ],
+  "validation": {
+    "local_full_regressions": {
+      "platform": "Windows",
+      "python": "3.12",
+      "collected": 439,
+      "passed": 438,
+      "skipped": 1,
+      "skip": "LOCAL_WINDOWS_SYMLINK_CAPABILITY",
+      "wall_seconds": 65.973
+    },
+    "local_build": "PASS",
+    "twine": "PASS",
+    "public_scope": "PASS",
+    "new_installed_wheel_probe": "IN_PROGRESS_AT_DOCUMENT_FREEZE",
+    "component_checks_included_in_full_total_not_additional": {
+      "real_case_projection_and_path_mock_only": 52,
+      "oci_probe_and_backend_mock_only": 46,
+      "transfer_scope_audit": 21,
+      "relational_and_structural": 34
+    },
+    "remote_final_head_and_ci": "SEE_CURRENT_DEVELOPMENT_PR_POST_COMMIT_READBACK",
+    "actual_oci_control_and_public_case": "PENDING_ROOT_CI_READBACK",
+    "global_repeated_validation_cost_aggregated": false
+  },
+  "publication": {
+    "main_merge": false,
+    "tags": false,
+    "new_release": false,
+    "pypi": false,
+    "private_pdf_or_raw_api_evidence_published": false
+  },
+  "default_adoption": "HOLD",
+  "utility": "NOT_ESTABLISHED",
+  "oos": "NOT_ESTABLISHED",
+  "cumulative_generation_performance": "NOT_ESTABLISHED"
+}

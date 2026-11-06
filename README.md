@@ -177,3 +177,11 @@ The public-scope check runs after building and checks source and distribution co
 ## 실험적 재귀 선택 정책
 
 개발 paired 관측으로 후보 선택을 갱신하고 저장한 세대를 새 탐색에 적용하는 opt-in 기능은 [구현·검증·실행 예제](docs/RECURSIVE_PROGRESS_20261101.ko.md)를 참고하세요. `python -m tomolab recursive-demo --workspace work/recursive-example --allow-local-execution`은 작성된 합성 fixture만 실행합니다. 실제 효용·미관측 일반화·세대 성능 개선은 입증되지 않았으며 기본 정책은 자동 변경되지 않습니다.
+
+## 제한된 GitHub 증거 수집
+
+`python -m tomolab harvest-run --workspace work/harvest`는 공개 GitHub API에서 최대 50개 후보를 등록하고 검토 대기열을 만듭니다. 기본 동작은 외부 코드 실행과 학습을 포함하지 않습니다. 적격성·독립 Oracle·OCI 실행·재귀 API 연결 및 작성 fixture 예제는 [Harvester 사용·검증 기록](docs/HARVESTER_20261101.ko.md)을 따릅니다. 후보 메타데이터 수와 신규 고유 결함 수를 구분하며 실제 추가 효용은 미입증입니다.
+
+## 실제 증거 자격과 구조적 후보 개발
+
+기존 후보 의미 검토·실제 OCI control·공개 회귀 사례 재현·M1~M4 개발 후보·최소 전이 범위 감사는 [마일스톤 계약](docs/REAL_QUALIFICATION_20261101.ko.md)을 따릅니다. `python -m tomolab structural-probe --workspace work/structural --allow-local-execution`은 노출된 작성 fixture와 실제 Hypothesis만 실행하며 실제 전이 효용을 주장하지 않습니다. `python -m tomolab transfer-audit --manifest scope.json`은 자료 범위를 읽기 전용으로 감사하고 실행·승격 권한을 부여하지 않습니다. 실제 외부 함수는 별도 OCI control 및 명시적 실행 게이트가 필요합니다.

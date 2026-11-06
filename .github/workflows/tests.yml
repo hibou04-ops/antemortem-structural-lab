@@ -1,16 +1,143 @@
 name: Python tests
 permissions:
   contents: read
+env:
+  POST_V6_PR_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
 on:
   push:
     branches: [main]
     tags: ['v*']
   pull_request:
   workflow_dispatch:
+    inputs:
+      run_real_qualification:
+        description: 'Run exactly the pinned exposed public regression after actual OCI control; no M0 or learning'
+        type: boolean
+        required: false
+        default: false
+      run_sequence_qualification:
+        description: 'Run only the preregistered reviewed sequence_int cases after actual OCI control; no text replay or M0'
+        type: boolean
+        required: false
+        default: false
 jobs:
   # Product-repair and recursive-progress branches use explicitly bounded checks.
   # Legacy Source/historical jobs are excluded for both branch families;
   # actual new research is never hidden in the synthetic functional job.
+  harvester-functional:
+    if: startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') || (startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') && github.event_name == 'pull_request')
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ['3.11', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install functional verification dependencies
+        run: |
+          python -m pip install -e ".[qa,solver]"
+          python -m pip install pytest build twine
+      - name: Verify authored supply chain and preserved product paths
+        run: python -m pytest tests/test_harvester_github.py tests/test_harvester_registry.py tests/test_harvester_review.py tests/test_harvester_execution.py tests/test_harvester_learning.py tests/test_harvester_integration.py tests/test_harvester_adversarial.py tests/test_recursive_observe.py tests/test_recursive_policy.py tests/test_recursive_store.py tests/test_recursive_integration.py tests/test_recursive_review.py tests/test_online_engine.py tests/test_online_boundary.py tests/test_online_observe.py tests/test_online_learning.py tests/test_online_authority.py tests/test_product_runtime_regressions.py tests/test_product_workflows.py tests/test_e7_knowledge.py tests/test_relational_candidates.py tests/test_structural_probe.py tests/test_transfer_audit.py tests/test_oci_probe.py tests/test_real_qualification.py tests/test_prequalification_triage.py tests/test_triage_cli.py tests/test_call_meter.py tests/test_sequence_qualification.py -q --junitxml=harvester-regressions.xml
+      - name: Run authored candidate to generation and restart example
+        run: python -m tomolab harvest-demo --workspace work/harvester-example --allow-local-execution
+      - name: Run exposed relational candidate probe with native Hypothesis
+        run: python -m tomolab structural-probe --workspace work/structural-example --allow-local-execution --budget 24 --equal-cost
+      - name: Build candidate artifacts without publishing
+        run: python -m build
+      - name: Check metadata and public artifact scope
+        run: |
+          python -m twine check dist/*
+          python scripts/check-public-scope.py
+      - name: Verify historical preservation without target execution
+        run: python scripts/check-historical-freeze.py --revision b68fbb0252ea8345baa6676d83d1dca2d7e2dfee --manifest docs/HISTORICAL_PROFILE.json --output historical-preservation.json
+      - name: Verify installed harvester path and consumed registry outside checkout
+        run: python scripts/check-harvester-wheel.py --output harvester-installed.json
+      - name: Verify installed structural probe outside checkout
+        run: python scripts/check-qualification-wheel.py --output qualification-installed.json
+      - name: Verify installed product wheel and sdist
+        run: python scripts/check-product-runtime.py --output product-runtime.json
+      - name: Publish functional verification readback summary
+        if: always()
+        run: python scripts/summarize-post-v6-ci.py --mode functional
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: harvester-functional-${{ matrix.os }}-${{ matrix.python-version }}
+          path: |
+            post-v6-functional-readback.json
+            harvester-regressions.xml
+            work/harvester-example/summary.json
+            harvester-installed.json
+            qualification-installed.json
+            work/structural-example/*.json
+            historical-preservation.json
+            product-runtime.json
+            dist/*
+          if-no-files-found: error
+  qualification-oci:
+    if: startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') && (github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && (inputs.run_real_qualification == true || inputs.run_sequence_qualification == true)))
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Require exactly one explicitly selected qualification track
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          RUN_TEXT_TRACK: ${{ inputs.run_real_qualification }}
+          RUN_SEQUENCE_TRACK: ${{ inputs.run_sequence_qualification }}
+        run: |
+          python -c "import os; a=os.environ['RUN_TEXT_TRACK']=='true'; b=os.environ['RUN_SEQUENCE_TRACK']=='true'; assert a != b, 'Select exactly one qualification track; no combined replay'"
+      - name: Install first-party verification controller
+        run: python -m pip install -e ".[qa]"
+      - name: Build reviewed dependency-only image and record immutable identity
+        run: |
+          mkdir -p work
+          docker build --iidfile work/qualification-image.id -f containers/historical-review.Dockerfile containers
+      - name: Verify actual inspected OCI kernel and resource boundary with first-party control only
+        run: |
+          qualification_image_id="$(cat work/qualification-image.id)"
+          python scripts/check-qualification-oci.py --workspace work/oci-control --image "$qualification_image_id" --allow-container-execution
+      - name: Qualify exactly one exposed public regression after the actual control gate
+        if: success() && github.event_name == 'workflow_dispatch' && inputs.run_real_qualification == true
+        run: |
+          qualification_image_id="$(cat work/qualification-image.id)"
+          python scripts/check-real-qualification.py --workspace work/public-qualification --image "$qualification_image_id" --allow-external-execution
+      - name: Qualify only the frozen sequence_int track after its actual control gate
+        if: success() && (github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.run_sequence_qualification == true))
+        run: |
+          qualification_image_id="$(cat work/qualification-image.id)"
+          python scripts/check-sequence-qualification.py --workspace work/sequence-qualification --manifest docs/SEQUENCE_QUALIFICATION_V7_20261101.json --image "$qualification_image_id" --allow-external-execution --allow-reviewed-development --source-cache docs/sequence-v7-source
+      - name: Publish offline OCI qualification readback summary
+        if: always()
+        run: python scripts/summarize-post-v6-ci.py --mode oci
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: qualification-oci-${{ github.event_name }}
+          path: |
+            post-v6-oci-readback.json
+            work/qualification-image.id
+            work/oci-control/oci-probe.json
+            work/oci-control/container/*.json
+            work/oci-control/container/*.log
+            work/public-qualification/public/**
+            work/sequence-qualification/public/**
+          if-no-files-found: error
   recursive-functional:
     if: startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-')
     runs-on: ${{ matrix.os }}
@@ -108,7 +235,7 @@ jobs:
             dist/*
           if-no-files-found: error
   tests:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -178,7 +305,7 @@ jobs:
             online-registration.json
             historical-registration.json
   product-installation:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') }}
     # Read-only product CI. Publication is a separate, manually invoked workflow.
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -208,7 +335,7 @@ jobs:
             dist/*
           if-no-files-found: error
   generator-isolation:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -220,7 +347,7 @@ jobs:
       - name: Verify restricted generator filesystem and network
         run: python scripts/check-isolation.py
   unified-generator-isolation:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -233,7 +360,7 @@ jobs:
       - name: Verify actual E5 access control and integrated discovery
         run: python scripts/check-discovery-isolation.py
   temporal-generator-isolation:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -246,7 +373,7 @@ jobs:
       - name: Verify E6 access controls, native state learning and replay
         run: python scripts/check-temporal-isolation.py
   knowledge-generator-isolation:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -272,7 +399,7 @@ jobs:
             compact-r3-docker.json
           if-no-files-found: error
   corroboration-integration:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') }}
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -293,7 +420,7 @@ jobs:
           path: corroboration-wheel.json
           if-no-files-found: error
   release-eligibility:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') }}
     runs-on: ubuntu-latest
     outputs:
       allow_release: ${{ steps.gate.outputs.allow_release }}
@@ -306,7 +433,7 @@ jobs:
         name: Determine conditional E8 publication eligibility
         run: python scripts/check-e8-release-eligibility.py --github-output
   historical-e7-release:
-    if: (!startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-')) && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')
+    if: (!startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-')) && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')
     needs: [tests, generator-isolation, unified-generator-isolation, temporal-generator-isolation, knowledge-generator-isolation]
     runs-on: ubuntu-latest
     steps:
@@ -327,7 +454,7 @@ jobs:
           path: ${{ runner.temp }}/pypi-publication-source/verification/existing-e7-release.json
           if-no-files-found: error
   historical-functional:
-    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') }}
+    if: ${{ !startsWith(github.head_ref || github.ref_name, 'fix/product-runtime-diagnostics-') && !startsWith(github.head_ref || github.ref_name, 'feat/recursive-progress-') && !startsWith(github.head_ref || github.ref_name, 'feat/evidence-harvester-') && !startsWith(github.head_ref || github.ref_name, 'feat/real-evidence-qualification-') }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:

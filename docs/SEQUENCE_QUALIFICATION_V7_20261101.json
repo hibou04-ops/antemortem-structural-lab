@@ -1,0 +1,398 @@
+{
+  "schema": "tomolab-sequence-qualification-manifest-v1",
+  "track": "TRACK_SEQ_INT",
+  "plan_digest": "96e62841697e5c88a8dd9d7fa35650c2f26983b9a599ac25abc2240ee226d07e",
+  "scope": "TWO_EXPOSED_PUBLIC_SEQUENCE_INT_DEVELOPMENT_REPRODUCTIONS_ONLY_NOT_M0_OR_OOS_OR_UTILITY",
+  "cases": [
+    {
+      "case_id": "40e6a3c206a358d128550497163adc3c2fadc681ab7cea71216d1b2f0df04fff",
+      "projection": {
+        "buggy_revision": "cdae90c04847db53a60a85a6be398b412574be7e",
+        "candidate_id": "40e6a3c206a358d128550497163adc3c2fadc681ab7cea71216d1b2f0df04fff",
+        "changed_files": [
+          {
+            "additions": 6,
+            "deletions": 8,
+            "patch_present": true,
+            "patch_sha256": "61b7f17c27271add2fc4283a9f6e2621c2b7c536661fa2a537114a6508d1c1ce",
+            "path": "algorithms/sort/radix_sort.py",
+            "previous_path": null,
+            "sha": "89a2dbcc99ed2582f7ac091c19da571a00402e26",
+            "status": "modified"
+          }
+        ],
+        "discovered_at": "2026-11-01T11:25:29+00:00",
+        "fixed_revision": "f5fec1231f5c6212fc5c5faf7e42780da721fdd9",
+        "identity_support": {
+          "consumption_status": "NOT_REVIEWED",
+          "independence_status": "NOT_ESTABLISHED",
+          "python_source_available": true,
+          "raw_sources_verified": true,
+          "source_files_inspected": 1
+        },
+        "issues": [],
+        "license": {
+          "git_blob_sha": "76e14882e47d16548334bcdc1e116c239ec6ffb7",
+          "path": "LICENSE",
+          "revision": "f5fec1231f5c6212fc5c5faf7e42780da721fdd9",
+          "sha256": "f676cbf8e504df7f12c9628ab17dddf686671d785f2a9f403098f29fadde4a96",
+          "spdx_id": "MIT",
+          "status": "ORIGINAL_BYTES_VERIFIED_NOT_LEGAL_REVIEW"
+        },
+        "metadata_digest": "2ef5b1c500b82980c5b192ae57602453b433d59afd274b5e0b62783ee8c997a8",
+        "number": 397,
+        "provenance": {
+          "api_objects": [
+            {
+              "endpoint": "/search/issues?q=repo%3Akeon%2Falgorithms+is%3Apr+is%3Amerged+fix+sort+in%3Atitle+merged%3A%3C%3D2026-10-31&sort=created&order=desc&per_page=3&page=1",
+              "raw_sha256": "8c9279de003a480c9ebdffb8947e78a13baa121a3f170c28cb0b63d167a2baf9",
+              "status": 200
+            },
+            {
+              "endpoint": "/repos/keon/algorithms/pulls/397",
+              "raw_sha256": "716e40c58759bc5ba50937a467d1c45c57f4b55ef588a069a61c625f121b9855",
+              "status": 200
+            },
+            {
+              "endpoint": "/repos/keon/algorithms/commits/f5fec1231f5c6212fc5c5faf7e42780da721fdd9",
+              "raw_sha256": "6dbe33fc5fbaf2042fa065257e496e6c26ad661bce6d01aeb30d2c7c27bb9c7b",
+              "status": 200
+            },
+            {
+              "endpoint": "/repos/keon/algorithms/pulls/397/files?per_page=50&page=1",
+              "raw_sha256": "b29474518e3c2c5ad824fab5e0cc191d52bd535c2f8477bd622f4f599a348b6b",
+              "status": 200
+            },
+            {
+              "endpoint": "/repos/keon/algorithms/contents/algorithms/sort/radix_sort.py?ref=cdae90c04847db53a60a85a6be398b412574be7e",
+              "raw_sha256": "daefc125f5f447b3c77bd8d5214131634ee05b36e3f336d95ee4dae09b8155a9",
+              "status": 200
+            },
+            {
+              "endpoint": "/repos/keon/algorithms/contents/algorithms/sort/radix_sort.py?ref=f5fec1231f5c6212fc5c5faf7e42780da721fdd9",
+              "raw_sha256": "0dfdeb01e9d9195113d8fd420c986edb3fea01630d782c6cce5724d45be986f2",
+              "status": 200
+            },
+            {
+              "endpoint": "/repos/keon/algorithms/license?ref=f5fec1231f5c6212fc5c5faf7e42780da721fdd9",
+              "raw_sha256": "b973706a4614150ce402b7445fca7d4806f9795d6c64297cf97fb0d0987d7dcd",
+              "status": 200
+            }
+          ],
+          "detail_reserved": true,
+          "merge_commit_sha": "f5fec1231f5c6212fc5c5faf7e42780da721fdd9",
+          "merged": true,
+          "proposed_buggy_first_parent": true,
+          "proposed_buggy_parent_sha": "cdae90c04847db53a60a85a6be398b412574be7e",
+          "public_repository": true,
+          "qualification_reserved": true,
+          "reported_base_sha": "e6df88755e27825fee34197ca33284bf2395cbb9",
+          "reported_head_sha": "9057f8f78c09131a9eecfdf330fdf008199caaf8",
+          "repository_id": 74073233
+        },
+        "repository": "keon/algorithms",
+        "source_blobs": [
+          {
+            "git_blob_sha": "dd4113d05cfddeb76fb796336db7123153631af4",
+            "path": "algorithms/sort/radix_sort.py",
+            "revision": "cdae90c04847db53a60a85a6be398b412574be7e",
+            "sha256": "a9bb8d4326a403f84466b6f2b76e5e46590960b1ad65364919ea9bb98325dd50"
+          },
+          {
+            "git_blob_sha": "89a2dbcc99ed2582f7ac091c19da571a00402e26",
+            "path": "algorithms/sort/radix_sort.py",
+            "revision": "f5fec1231f5c6212fc5c5faf7e42780da721fdd9",
+            "sha256": "767dff94979c9aab5388b45b31798edbf06a971b3e459c7f27a38b66ee0072b4"
+          }
+        ],
+        "source_url": "https://github.com/keon/algorithms/pull/397",
+        "stage": "PROVENANCE_VERIFIED",
+        "test_evidence": {
+          "patches": [],
+          "paths": []
+        },
+        "title": "fix sort/radix_sort (#395)",
+        "unknown_reasons": [
+          "CONTRACT_ORACLE_RESET_AND_INDEPENDENCE_NOT_REVIEWED",
+          "REGRESSION_TEST_EVIDENCE_NOT_IDENTIFIED"
+        ]
+      },
+      "source_path": "algorithms/sort/radix_sort.py",
+      "function": "radix_sort",
+      "function_identity": {
+        "canonical_function_identity": "991a6031f8da2d56526a337a5cb22efdc4c27b3d7b474ed7f9ec57a90cf8d3a8",
+        "cross_revision_function_key": "c629da22b0c5b86063dd271347270f7355fc69bc6a303b2c4d86d6f9814b13fc",
+        "implementation_sha256": "a9bb8d4326a403f84466b6f2b76e5e46590960b1ad65364919ea9bb98325dd50",
+        "normalized_ast_clone_sha256": "e2d527b1a9fe54db009249de9284fe21450e1ef88fcf7c02cb5717395aac8f9e"
+      },
+      "contract": {
+        "comparison": {
+          "absolute": 0,
+          "exception_policy": "unexpected",
+          "expected_exceptions": [],
+          "nan_equal": false,
+          "relative": 0
+        },
+        "description": "Nonempty finite list of exact nonnegative integers, each0..99; return input multiset in nondecreasing order. Original simulation=False remains fixed and is not an input.",
+        "high": 99,
+        "kind": "sequence_int",
+        "low": 0,
+        "max_size": 8,
+        "min_size": 1,
+        "preconditions": [
+          "nonempty"
+        ]
+      },
+      "witness": [
+        20,
+        10
+      ],
+      "witness_origin": "SOURCE_DERIVED_EXPOSED_PUBLIC_DEVELOPMENT_WITNESS_NOT_UPSTREAM_TEST_OR_BLIND_DISCOVERY",
+      "oracle_key": "WHOLE_VALUE_COUNT_SORT",
+      "oracle_sha256": "7fd79cfc0a3efae2b2f1ce65ff544c205160af71d2158cc41831befd31a08208",
+      "reset_sha256": "4057703231cd7783027ffd9424baf9b74a83c4cec0043cc2c721816e3e651db1",
+      "lineage": {
+        "source_lineage_id": "keon-algorithms-pr397-radix-sort",
+        "project_id": "keon.algorithms",
+        "mechanism_id": "least-digit-zero-premature-termination",
+        "independence_id": "independent-whole-value-spec-pr397-v1"
+      },
+      "review_ids": {
+        "contract_review_id": "batch03-keon397-bounded-seq-contract-v1",
+        "oracle_review_id": "batch03-keon397-whole-value-oracle-v1",
+        "reset_review_id": "batch03-keon397-fresh-oci-input-v1",
+        "license_review_id": "batch03-keon397-original-mit-v1",
+        "reviewer_id": "root-delegated-explicit-development-review"
+      },
+      "oracle_independence_basis": "Independent bounded multiset-order specification: count complete integer values in the original input, then enumerate increasing whole values with their multiplicities. It does not inspect radix positions, decimal queues, termination flags, the fixed patch or a regression output constant. Original simulation=False is an immutable default; print branches are unreachable for the approved unary call. Source-derived exposed witness20,10 is frozen before OCI; no target was run to select it. This is bounded semantic review, not a proof of complete global Oracle fidelity.",
+      "review_digest": "42247606b52bbe9455fa518150a263112d8cb7745ef279703660af74068ea967",
+      "static_contract_support_digest": "8f48642d7a91b34408144c98cc9be7fa97e977c0d7f593cab574b197eb1e9aa9",
+      "contract_scope": "ORIGINAL_UNARY_SUPPORTED_TYPED_PARTIAL_DOMAIN_NOT_COMMON_FOUR_CASE_M0_CONTRACT"
+    },
+    {
+      "case_id": "a742d619ef68fa33c3a27d42e88440a482452c0586fac058b3c8ffff85e50643",
+      "projection": {
+        "buggy_revision": "bac3222c1dd51741887a2187ef0be10e8902c5af",
+        "candidate_id": "a742d619ef68fa33c3a27d42e88440a482452c0586fac058b3c8ffff85e50643",
+        "changed_files": [
+          {
+            "additions": 2,
+            "deletions": 2,
+            "patch_present": true,
+            "patch_sha256": "80e2e9f74d7e23cf9b812fd1a0a912badf09fe2654643bee801a90bf9a4da516",
+            "path": "algorithms/arrays/plus_one.py",
+            "previous_path": null,
+            "sha": "473b6c7d04b040dbfec182ded63c0dcd78422df2",
+            "status": "modified"
+          },
+          {
+            "additions": 1,
+            "deletions": 0,
+            "patch_present": true,
+            "patch_sha256": "a559903d72973fb5cf961f5b4dfd50b434ea198489d843a9ca510183b1ee2479",
+            "path": "algorithms/linkedlist/__init__.py",
+            "previous_path": null,
+            "sha": "1c9c3b9fc90103be365795fb3d6a74ebc7652ba5",
+            "status": "modified"
+          },
+          {
+            "additions": 41,
+            "deletions": 31,
+            "patch_present": true,
+            "patch_sha256": "b044eeedfba4c7d5ef112d90a2bea9b814055697810392da88152c9597db4fd9",
+            "path": "algorithms/linkedlist/copy_random_pointer.py",
+            "previous_path": null,
+            "sha": "b3ef4628d60d581eefa6d200d79fc56db9a8d61f",
+            "status": "modified"
+          },
+          {
+            "additions": 44,
+            "deletions": 3,
+            "patch_present": true,
+            "patch_sha256": "d3b4ebfda0efb33d633fe32c54a6e3fefdefcf7817ea7895a1ff1e2fb1c2774a",
+            "path": "tests/test_linkedlist.py",
+            "previous_path": null,
+            "sha": "6b7f1f4fa77b776ba156cdad2c6c85713a4f3052",
+            "status": "modified"
+          }
+        ],
+        "discovered_at": "2026-11-01T11:25:30+00:00",
+        "fixed_revision": "8694de54ad1efdc0c1ee5823e46cdc1370c9f2ec",
+        "identity_support": {
+          "consumption_status": "NOT_REVIEWED",
+          "independence_status": "NOT_ESTABLISHED",
+          "python_source_available": true,
+          "raw_sources_verified": true,
+          "source_files_inspected": 1
+        },
+        "issues": [],
+        "license": {
+          "git_blob_sha": "76e14882e47d16548334bcdc1e116c239ec6ffb7",
+          "path": "LICENSE",
+          "revision": "8694de54ad1efdc0c1ee5823e46cdc1370c9f2ec",
+          "sha256": "f676cbf8e504df7f12c9628ab17dddf686671d785f2a9f403098f29fadde4a96",
+          "spdx_id": "MIT",
+          "status": "ORIGINAL_BYTES_VERIFIED_NOT_LEGAL_REVIEW"
+        },
+        "metadata_digest": "fd33cbc999b9a706b6a516502dc668c104eb3034584e34ee1c60c996ba0d7177",
+        "number": 432,
+        "provenance": {
+          "api_objects": [
+            {
+              "endpoint": "/search/issues?q=repo%3Akeon%2Falgorithms+is%3Apr+is%3Amerged+fix+array+in%3Atitle+merged%3A%3C%3D2026-10-31&sort=created&order=desc&per_page=3&page=1",
+              "raw_sha256": "68d8929bb4befba374c00710fa663e1849c5f245ae66801788db19fdae5bc9ea",
+              "status": 200
+            },
+            {
+              "endpoint": "/repos/keon/algorithms/pulls/432",
+              "raw_sha256": "9bef1a88021d2d35c9859e49c441f2cd1d96d3f7ffc3e618a17690935dbf75f4",
+              "status": 200
+            },
+            {
+              "endpoint": "/repos/keon/algorithms/commits/8694de54ad1efdc0c1ee5823e46cdc1370c9f2ec",
+              "raw_sha256": "7df5a5934715aba28a26f903d652e4da9c6d60b77fe2ffe9da145816f4f42906",
+              "status": 200
+            },
+            {
+              "endpoint": "/repos/keon/algorithms/pulls/432/files?per_page=50&page=1",
+              "raw_sha256": "6904f5605f7c43e9920343cbf02408c85452f5f657358040d5870857d74f4b77",
+              "status": 200
+            },
+            {
+              "endpoint": "/repos/keon/algorithms/contents/algorithms/arrays/plus_one.py?ref=bac3222c1dd51741887a2187ef0be10e8902c5af",
+              "raw_sha256": "c72aa27b06e1d0e70173efd2e9cdc553f54e5b4d305cb4247f263e69a37e028c",
+              "status": 200
+            },
+            {
+              "endpoint": "/repos/keon/algorithms/contents/algorithms/arrays/plus_one.py?ref=8694de54ad1efdc0c1ee5823e46cdc1370c9f2ec",
+              "raw_sha256": "b7eb3c673c1084a8d119bba18b997a4e7f67bd3d2ecc295e786ecb91e81a6859",
+              "status": 200
+            },
+            {
+              "endpoint": "/repos/keon/algorithms/license?ref=8694de54ad1efdc0c1ee5823e46cdc1370c9f2ec",
+              "raw_sha256": "0eaf1c607b95dabeb430133c40fc26c1808511e1e731386c2965fa2349c4b231",
+              "status": 200
+            }
+          ],
+          "detail_reserved": true,
+          "merge_commit_sha": "8694de54ad1efdc0c1ee5823e46cdc1370c9f2ec",
+          "merged": true,
+          "proposed_buggy_first_parent": true,
+          "proposed_buggy_parent_sha": "bac3222c1dd51741887a2187ef0be10e8902c5af",
+          "public_repository": true,
+          "qualification_reserved": true,
+          "reported_base_sha": "bac3222c1dd51741887a2187ef0be10e8902c5af",
+          "reported_head_sha": "995bedd697fffea1f7d3cc957838aaf456c42d0b",
+          "repository_id": 74073233
+        },
+        "repository": "keon/algorithms",
+        "source_blobs": [
+          {
+            "git_blob_sha": "f63aafaea53d8045cfa2d9163ecf357e96de2de3",
+            "path": "algorithms/arrays/plus_one.py",
+            "revision": "bac3222c1dd51741887a2187ef0be10e8902c5af",
+            "sha256": "da767f1be450a1b504e386fd2f993d9e564db336c43aeec37c0d9e91d66d8be6"
+          },
+          {
+            "git_blob_sha": "473b6c7d04b040dbfec182ded63c0dcd78422df2",
+            "path": "algorithms/arrays/plus_one.py",
+            "revision": "8694de54ad1efdc0c1ee5823e46cdc1370c9f2ec",
+            "sha256": "5628711a5a5192b305499522b6f1ed42d8eb651fc7755d7c1e879fa0e9cdd80c"
+          }
+        ],
+        "source_url": "https://github.com/keon/algorithms/pull/432",
+        "stage": "PROVENANCE_VERIFIED",
+        "test_evidence": {
+          "patches": [
+            {
+              "path": "tests/test_linkedlist.py",
+              "sha256": "d3b4ebfda0efb33d633fe32c54a6e3fefdefcf7817ea7895a1ff1e2fb1c2774a"
+            }
+          ],
+          "paths": [
+            "tests/test_linkedlist.py"
+          ]
+        },
+        "title": "Fix array plus one v3",
+        "unknown_reasons": [
+          "CONTRACT_ORACLE_RESET_AND_INDEPENDENCE_NOT_REVIEWED"
+        ]
+      },
+      "source_path": "algorithms/arrays/plus_one.py",
+      "function": "plus_one_v3",
+      "function_identity": {
+        "canonical_function_identity": "ea9e9236d2cb0b0f2fdc67a734d89500ec319af89ded0e721f2c6892fc968166",
+        "cross_revision_function_key": "f49feb5d400b1259be4b853dc8ff945a17d1db70a7e007a514d3a6cd645f8cfb",
+        "implementation_sha256": "da767f1be450a1b504e386fd2f993d9e564db336c43aeec37c0d9e91d66d8be6",
+        "normalized_ast_clone_sha256": "6b35bef774c3c74d3f671b58a73982bc1288d74af3a76d68e7aed52f7761e8be"
+      },
+      "contract": {
+        "comparison": {
+          "absolute": 0,
+          "exception_policy": "unexpected",
+          "expected_exceptions": [],
+          "nan_equal": false,
+          "relative": 0
+        },
+        "description": "Nonempty big-endian exact decimal digit list0..9 of length1..8; increment represented integer by one, retain original digit width unless carry adds one digit. Input mutation is observed only through returned list.",
+        "high": 9,
+        "kind": "sequence_int",
+        "low": 0,
+        "max_size": 8,
+        "min_size": 1,
+        "preconditions": [
+          "nonempty"
+        ]
+      },
+      "witness": [
+        1
+      ],
+      "witness_origin": "SOURCE_DERIVED_EXPOSED_PUBLIC_DEVELOPMENT_WITNESS_NOT_UPSTREAM_TEST_OR_BLIND_DISCOVERY",
+      "oracle_key": "WIDTH_PRESERVING_DECIMAL_INCREMENT",
+      "oracle_sha256": "af17d6e6541ff427a1c7a9b57ca26cb640e6606d4ef051cf9d016945779fd5b0",
+      "reset_sha256": "4057703231cd7783027ffd9424baf9b74a83c4cec0043cc2c721816e3e651db1",
+      "lineage": {
+        "source_lineage_id": "keon-algorithms-pr432-plus-one-v3",
+        "project_id": "keon.algorithms",
+        "mechanism_id": "enumerate-tuple-used-as-list-index",
+        "independence_id": "independent-whole-value-spec-pr432-v1"
+      },
+      "review_ids": {
+        "contract_review_id": "batch03-keon432-bounded-seq-contract-v1",
+        "oracle_review_id": "batch03-keon432-whole-value-oracle-v1",
+        "reset_review_id": "batch03-keon432-fresh-oci-input-v1",
+        "license_review_id": "batch03-keon432-original-mit-v1",
+        "reviewer_id": "root-delegated-explicit-development-review"
+      },
+      "oracle_independence_basis": "Independent whole-number decimal specification: interpret a nonempty big-endian digit list as a number, add one, decompose the whole result by divmod and left-pad to the original minimum width. This differs from the target per-index carry loop and does not copy its fixed patch. Leading-zero width is an explicit source-inferred bounded contract: original sibling plus_one_v1/v2 and the selected v3 return branches retain list width except overflow, rather than an unconditional upstream prose promise. Inputs such as0,0 remain in-domain and yield0,1; no hidden no-leading-zero precondition is assumed. Source-derived exposed witness1 is frozen before OCI; no target was run to select it. Semantic fidelity outside this stated scope is not established.",
+      "review_digest": "3e5a50bfdc1f0262bfd8087623db81515bbe03aa2c070d34a4579c1e6261fc2f",
+      "static_contract_support_digest": "e1c5af67abd3e5d74acf7a2d57d5244ef1b24699db5066e8869b75b3cba46271",
+      "contract_scope": "ORIGINAL_UNARY_SUPPORTED_TYPED_PARTIAL_DOMAIN_NOT_COMMON_FOUR_CASE_M0_CONTRACT"
+    }
+  ],
+  "resource_caps": {
+    "target_calls": 12,
+    "oracle_calls": 12,
+    "fresh_reset_count": 24,
+    "fresh_containers": 24,
+    "controller_seconds": 600,
+    "per_call_seconds": 30,
+    "cleanup_reserve_seconds": 20
+  },
+  "historical_text": {
+    "track": "TRACK_TEXT",
+    "candidate_id": "28c85a77103c1f1fddd26b09ca2aa8145582fe0a0974a1b87066a4c7f62bf528",
+    "qualified": 1,
+    "reproduced": 1,
+    "historical_counts": {
+      "target_calls": 6,
+      "oracle_calls": 6,
+      "fresh_reset_count": 12
+    },
+    "this_run_target_calls": 0,
+    "this_run_oracle_calls": 0,
+    "reexecuted": false,
+    "evidence": "V6_HISTORICAL_ONLY"
+  },
+  "manifest_digest": "7416363e23def8cb91fdc2988cf65845535ce900b402985fa518459be7a4eefb"
+}
